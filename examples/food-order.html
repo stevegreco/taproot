@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Place Your Order</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../dist/css/tokens.css">
+  <style>
+    /* ─── App-level form tokens ─── */
+    :root {
+      --border: var(--primitives-color-gray-200);
+      --brand: var(--primitives-color-blue-smoke-500);
+      --accent: var(--primitives-color-rob-roy-500);
+      --status-danger-fg: var(--primitives-color-red-700);
+      --status-danger-bg: var(--primitives-color-red-50);
+    }
+
+    [data-theme="dark"] {
+      --border: var(--primitives-color-gray-800);
+      --brand: var(--primitives-color-blue-smoke-400);
+      --accent: var(--primitives-color-rob-roy-400);
+      --status-danger-fg: var(--primitives-color-red-400);
+      --status-danger-bg: var(--primitives-color-red-950);
+    }
+
+    /* ─── Reset & base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--primitives-font-sans);
+      font-size: var(--primitives-text-base);
+      line-height: var(--primitives-leading-normal);
+      background: var(--semantic-color-background-default);
+      color: var(--semantic-color-content-default);
+      padding: var(--primitives-space-8) var(--primitives-space-4);
+    }
+
+    /* ─── Form card ─── */
+    form {
+      max-width: 32rem;
+      margin: 0 auto;
+      background: var(--semantic-color-background-surface);
+      padding: var(--primitives-space-8);
+      border-radius: var(--primitives-radius-xl);
+      border: var(--primitives-border-thin) solid var(--border);
+      box-shadow: var(--primitives-shadow-sm);
+    }
+
+    h1 {
+      font-size: var(--primitives-text-2xl);
+      font-weight: var(--primitives-weight-bold);
+      letter-spacing: var(--primitives-tracking-tight);
+      color: var(--semantic-color-content-default);
+      margin-bottom: var(--primitives-space-1);
+    }
+
+    .form-note {
+      font-size: var(--primitives-text-sm);
+      color: var(--semantic-color-content-subtle);
+      margin-bottom: var(--primitives-space-6);
+    }
+
+    /* ─── Form groups ─── */
+    .form-group {
+      margin-bottom: var(--primitives-space-5);
+    }
+
+    label {
+      display: block;
+      margin-bottom: var(--primitives-space-1-5);
+      font-size: var(--primitives-text-sm);
+      font-weight: var(--primitives-weight-semibold);
+      color: var(--semantic-color-content-default);
+    }
+
+    input,
+    select,
+    textarea {
+      display: block;
+      width: 100%;
+      padding: var(--primitives-space-2-5, 0.625rem) var(--primitives-space-3);
+      font-family: var(--primitives-font-sans);
+      font-size: var(--primitives-text-base);
+      line-height: var(--primitives-leading-normal);
+      color: var(--semantic-color-content-default);
+      background: var(--semantic-color-background-surface);
+      border: var(--primitives-border-thin) solid var(--border);
+      border-radius: var(--primitives-radius-md);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: var(--primitives-border-thick) solid var(--brand);
+      outline-offset: 2px;
+      border-color: var(--brand);
+    }
+
+    textarea {
+      min-height: 5rem;
+      resize: vertical;
+    }
+
+    /* ─── Fieldsets ─── */
+    fieldset {
+      border: var(--primitives-border-thin) solid var(--border);
+      border-radius: var(--primitives-radius-lg);
+      padding: var(--primitives-space-4) var(--primitives-space-5);
+      margin-bottom: var(--primitives-space-5);
+    }
+
+    legend {
+      font-size: var(--primitives-text-sm);
+      font-weight: var(--primitives-weight-semibold);
+      color: var(--semantic-color-content-default);
+      padding: 0 var(--primitives-space-1-5);
+    }
+
+    /* ─── Radio & checkbox groups ─── */
+    .checkbox-group,
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--primitives-space-2);
+    }
+
+    .checkbox-group label,
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: var(--primitives-space-2);
+      font-weight: var(--primitives-weight-normal);
+      font-size: var(--primitives-text-sm);
+      color: var(--semantic-color-content-surface);
+      cursor: pointer;
+      padding: var(--primitives-space-1) 0;
+    }
+
+    .checkbox-group input,
+    .radio-group input {
+      width: auto;
+      min-width: 1.25rem;
+      min-height: 1.25rem;
+      accent-color: var(--brand);
+    }
+
+    /* ─── Hint & error text ─── */
+    .hint {
+      margin-top: var(--primitives-space-1);
+      font-size: var(--primitives-text-xs);
+      color: var(--semantic-color-content-subtle);
+    }
+
+    .error {
+      margin-top: var(--primitives-space-1);
+      font-size: var(--primitives-text-xs);
+      color: var(--status-danger-fg);
+    }
+
+    input[aria-invalid="true"],
+    select[aria-invalid="true"],
+    textarea[aria-invalid="true"] {
+      border-color: var(--status-danger-fg);
+    }
+
+    /* ─── Submit button ─── */
+    button[type="submit"] {
+      display: block;
+      width: 100%;
+      padding: var(--primitives-space-3) var(--primitives-space-6);
+      font-family: var(--primitives-font-sans);
+      font-size: var(--primitives-text-base);
+      font-weight: var(--primitives-weight-semibold);
+      color: var(--primitives-color-white);
+      background: var(--accent);
+      border: none;
+      border-radius: var(--primitives-radius-md);
+      cursor: pointer;
+      margin-top: var(--primitives-space-6);
+      transition: opacity 0.15s;
+    }
+
+    button[type="submit"]:hover {
+      opacity: 0.85;
+    }
+
+    button[type="submit"]:focus {
+      outline: var(--primitives-border-thick) solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* ─── Theme toggle ─── */
+    .theme-toggle {
+      position: fixed;
+      top: var(--primitives-space-4);
+      right: var(--primitives-space-4);
+      padding: var(--primitives-space-2) var(--primitives-space-3);
+      border-radius: var(--primitives-radius-md);
+      border: var(--primitives-border-thin) solid var(--border);
+      background: var(--semantic-color-background-surface);
+      color: var(--semantic-color-content-surface);
+      font-family: var(--primitives-font-sans);
+      font-size: var(--primitives-text-xs);
+      font-weight: var(--primitives-weight-semibold);
+      cursor: pointer;
+    }
+
+    .theme-toggle:hover {
+      background: var(--semantic-color-background-subtle);
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" type="button" onclick="document.documentElement.toggleAttribute('data-theme') || document.documentElement.setAttribute('data-theme', 'dark'); if (!document.documentElement.getAttribute('data-theme')) document.documentElement.removeAttribute('data-theme');">Toggle theme</button>
+
+  <form action="/order" method="post">
+    <h1>Place your order</h1>
+    <p class="form-note">Fields marked with <abbr title="required">*</abbr> are required.</p>
+
+    <fieldset>
+      <legend>Your info</legend>
+
+      <div class="form-group">
+        <label for="order-name">Name <abbr title="required">*</abbr></label>
+        <input type="text" id="order-name" name="name"
+               required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label for="order-phone">Phone number <abbr title="required">*</abbr></label>
+        <input type="tel" id="order-phone" name="phone"
+               required autocomplete="tel"
+               aria-describedby="phone-hint">
+        <p id="phone-hint" class="hint">So we can notify you when your order is ready</p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Main item <abbr title="required">*</abbr></legend>
+      <div class="radio-group">
+        <label>
+          <input type="radio" name="main" value="burger" required>
+          Burger
+        </label>
+        <label>
+          <input type="radio" name="main" value="chicken-sandwich">
+          Chicken sandwich
+        </label>
+        <label>
+          <input type="radio" name="main" value="veggie-wrap">
+          Veggie wrap
+        </label>
+        <label>
+          <input type="radio" name="main" value="nuggets">
+          Chicken nuggets
+        </label>
+        <label>
+          <input type="radio" name="main" value="hot-dog">
+          Hot dog
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Sides</legend>
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" name="sides" value="fries">
+          French fries
+        </label>
+        <label>
+          <input type="checkbox" name="sides" value="onion-rings">
+          Onion rings
+        </label>
+        <label>
+          <input type="checkbox" name="sides" value="salad">
+          Side salad
+        </label>
+        <label>
+          <input type="checkbox" name="sides" value="coleslaw">
+          Coleslaw
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Drink</legend>
+      <div class="form-group">
+        <label for="order-drink">Choose a drink</label>
+        <select id="order-drink" name="drink">
+          <option value="">No drink</option>
+          <option value="cola">Cola</option>
+          <option value="diet-cola">Diet cola</option>
+          <option value="lemonade">Lemonade</option>
+          <option value="iced-tea">Iced tea</option>
+          <option value="water">Water</option>
+          <option value="milkshake">Milkshake</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="order-drink-size">Drink size</label>
+        <select id="order-drink-size" name="drink_size">
+          <option value="small">Small</option>
+          <option value="medium" selected>Medium</option>
+          <option value="large">Large</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <div class="form-group">
+      <label for="order-quantity">Quantity <abbr title="required">*</abbr></label>
+      <input type="number" id="order-quantity" name="quantity"
+             required min="1" max="20" value="1">
+    </div>
+
+    <div class="form-group">
+      <label for="order-notes">Special requests</label>
+      <textarea id="order-notes" name="notes"
+                placeholder="e.g., no onions, extra ketchup"></textarea>
+    </div>
+
+    <button type="submit">Place order</button>
+  </form>
+
+  <script>
+    // Theme toggle
+    const toggle = document.querySelector('.theme-toggle');
+    toggle.addEventListener('click', () => {
+      const html = document.documentElement;
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.removeAttribute('data-theme');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "design-system",
+  "version": "1.0.0",
+  "description": "Design tokens distributed as CSS and JSON artifacts.",
+  "type": "module",
+  "main": "./dist/tokens/primitives.json",
+  "style": "./dist/css/tokens.css",
+  "exports": {
+    ".": "./dist/tokens/primitives.json",
+    "./css": "./dist/css/tokens.css",
+    "./tokens": "./dist/tokens/primitives.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm run clean && style-dictionary build --config style-dictionary.config.js && style-dictionary build --config style-dictionary.semantic-light.config.js && style-dictionary build --config style-dictionary.semantic-dark.config.js && node build-css.js",
+    "showcase": "node generate-showcase.js",
+    "dashboard": "open examples/dashboard.html",
+    "prepack": "pnpm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "style-dictionary": "latest"
+  },
+  "packageManager": "pnpm@10.26.1"
+}

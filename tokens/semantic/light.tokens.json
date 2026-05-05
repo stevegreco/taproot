@@ -1,0 +1,58 @@
+{
+  "semantic": {
+    "color": {
+      "background": {
+        "default": {
+          "$value": "{color.gray.50}",
+          "$type": "color"
+        },
+        "surface": {
+          "$value": "{color.white}",
+          "$type": "color"
+        },
+        "subtle": {
+          "$value": "{color.gray.100}",
+          "$type": "color"
+        },
+        "brand": {
+          "$value": "{color.blueSmoke.100}",
+          "$type": "color"
+        },
+        "accent": {
+          "$value": "{color.robRoy.100}",
+          "$type": "color"
+        },
+        "inverse": {
+          "$value": "{color.blueSmoke.950}",
+          "$type": "color"
+        }
+      },
+      "content": {
+        "default": {
+          "$value": "{color.gray.900}",
+          "$type": "color"
+        },
+        "surface": {
+          "$value": "{color.gray.700}",
+          "$type": "color"
+        },
+        "subtle": {
+          "$value": "{color.gray.500}",
+          "$type": "color"
+        },
+        "brand": {
+          "$value": "{color.blueSmoke.700}",
+          "$type": "color"
+        },
+        "accent": {
+          "$value": "{color.robRoy.700}",
+          "$type": "color"
+        },
+        "inverse": {
+          "$value": "{color.gray.50}",
+          "$type": "color"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcadia — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../dist/css/tokens.css" />
+  <link rel="stylesheet" href="./dashboard.css" />
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ─── Sidebar ────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 20 20"><path d="M10 2L2 7l8 5 8-5-8-5zM2 13l8 5 8-5M2 10l8 5 8-5"/></svg>
+      </div>
+      <span class="logo-name">Arcadia</span>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-label">Main</div>
+
+      <a class="nav-item active" href="#">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </span>
+        Overview
+      </a>
+
+      <a class="nav-item" href="#">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </span>
+        Analytics
+        <span class="nav-badge">New</span>
+      </a>
+
+      <a class="nav-item" href="#">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </span>
+        Projects
+      </a>
+
+      <a class="nav-item" href="#">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </span>
+        Team
+      </a>
+
+      <div class="nav-label" style="margin-top: var(--primitives-space-3);">Finance</div>
+
+      <a class="nav-item" href="#">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </span>
+        Revenue
+      </a>
+
+      <a class="nav-item" href="#">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </span>
+        Billing
+      </a>
+
+      <div class="nav-label" style="margin-top: var(--primitives-space-3);">System</div>
+
+      <a class="nav-item" href="#">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M20 12h2M2 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 20v2M12 2v2"/></svg>
+        </span>
+        Settings
+      </a>
+
+      <a class="nav-item" href="#">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </span>
+        Help
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="avatar">SG</div>
+      <div class="user-info">
+        <div class="user-name">Steve Greco</div>
+        <div class="user-role">Admin</div>
+      </div>
+      <svg style="width:14px;height:14px;stroke:var(--nav-text-muted);fill:none;stroke-width:2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+    </div>
+  </aside>
+
+  <!-- ─── Top bar ─────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-title">
+      Overview
+      <span class="topbar-subtitle">— March 2026</span>
+    </div>
+
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search projects, members…
+    </div>
+
+    <div class="topbar-actions">
+      <button class="icon-btn" title="Notifications">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+      <button class="icon-btn" title="Messages">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </button>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <svg id="theme-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <span id="theme-label">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ─── Main content ─────────────────────────────── -->
+  <main class="main">
+
+    <!-- Alert strip -->
+    <div class="alert warning">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="alert-body">
+        <div class="alert-title">Q1 budget threshold approaching</div>
+        <div class="alert-desc">Infrastructure spend is at 87% of quarterly budget. Review the Billing page to adjust allocations.</div>
+      </div>
+    </div>
+
+    <!-- KPI cards -->
+    <section>
+      <div class="kpi-grid">
+
+        <!-- Card 1 -->
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-label">Total Revenue</div>
+            <div class="kpi-icon brand">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+          </div>
+          <div class="kpi-value">$284.5K</div>
+          <div class="kpi-footer">
+            <span class="delta up">
+              <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+              12.4%
+            </span>
+            vs last month
+          </div>
+          <div class="sparkline">
+            <div class="spark-bar" style="height:40%"></div>
+            <div class="spark-bar" style="height:55%"></div>
+            <div class="spark-bar" style="height:48%"></div>
+            <div class="spark-bar" style="height:65%"></div>
+            <div class="spark-bar active" style="height:70%"></div>
+            <div class="spark-bar active" style="height:58%"></div>
+            <div class="spark-bar active" style="height:75%"></div>
+            <div class="spark-bar active" style="height:82%"></div>
+            <div class="spark-bar active" style="height:79%"></div>
+            <div class="spark-bar active" style="height:88%"></div>
+            <div class="spark-bar active" style="height:94%"></div>
+            <div class="spark-bar latest" style="height:100%"></div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-label">Active Projects</div>
+            <div class="kpi-icon success">
+              <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+          </div>
+          <div class="kpi-value">47</div>
+          <div class="kpi-footer">
+            <span class="delta up">
+              <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+              3
+            </span>
+            new this week
+          </div>
+          <div class="sparkline">
+            <div class="spark-bar" style="height:55%"></div>
+            <div class="spark-bar" style="height:50%"></div>
+            <div class="spark-bar" style="height:60%"></div>
+            <div class="spark-bar active" style="height:65%"></div>
+            <div class="spark-bar active" style="height:72%"></div>
+            <div class="spark-bar active" style="height:68%"></div>
+            <div class="spark-bar active" style="height:80%"></div>
+            <div class="spark-bar active" style="height:85%"></div>
+            <div class="spark-bar active" style="height:90%"></div>
+            <div class="spark-bar active" style="height:88%"></div>
+            <div class="spark-bar active" style="height:95%"></div>
+            <div class="spark-bar latest" style="height:100%"></div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-label">Team Members</div>
+            <div class="kpi-icon warning">
+              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+          </div>
+          <div class="kpi-value">138</div>
+          <div class="kpi-footer">
+            <span class="delta up">
+              <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+              6
+            </span>
+            joined this month
+          </div>
+          <div class="sparkline">
+            <div class="spark-bar" style="height:35%"></div>
+            <div class="spark-bar" style="height:42%"></div>
+            <div class="spark-bar" style="height:50%"></div>
+            <div class="spark-bar" style="height:55%"></div>
+            <div class="spark-bar active" style="height:58%"></div>
+            <div class="spark-bar active" style="height:65%"></div>
+            <div class="spark-bar active" style="height:70%"></div>
+            <div class="spark-bar active" style="height:75%"></div>
+            <div class="spark-bar active" style="height:80%"></div>
+            <div class="spark-bar active" style="height:88%"></div>
+            <div class="spark-bar active" style="height:93%"></div>
+            <div class="spark-bar latest" style="height:100%"></div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-label">Avg. Delivery</div>
+            <div class="kpi-icon info">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+          <div class="kpi-value">18.2d</div>
+          <div class="kpi-footer">
+            <span class="delta down">
+              <svg viewBox="0 0 24 24"><polyline points="18 9 12 15 6 9"/></svg>
+              2.1d
+            </span>
+            slower vs target
+          </div>
+          <div class="sparkline">
+            <div class="spark-bar" style="height:80%"></div>
+            <div class="spark-bar" style="height:75%"></div>
+            <div class="spark-bar" style="height:70%"></div>
+            <div class="spark-bar active" style="height:65%"></div>
+            <div class="spark-bar active" style="height:58%"></div>
+            <div class="spark-bar active" style="height:62%"></div>
+            <div class="spark-bar active" style="height:55%"></div>
+            <div class="spark-bar active" style="height:70%"></div>
+            <div class="spark-bar active" style="height:78%"></div>
+            <div class="spark-bar active" style="height:82%"></div>
+            <div class="spark-bar active" style="height:90%"></div>
+            <div class="spark-bar latest" style="height:100%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Revenue chart + Activity feed -->
+    <div class="content-grid">
+
+      <!-- Bar chart card -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Revenue Overview</div>
+            <div class="card-subtitle">Monthly recurring vs one-time revenue</div>
+          </div>
+          <div style="display:flex;gap:var(--primitives-space-2)">
+            <button class="btn btn-ghost">Export</button>
+            <button class="btn btn-primary">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Report
+            </button>
+          </div>
+        </div>
+
+        <div class="chart-area">
+          <div class="chart-bars">
+            <div class="chart-gridlines">
+              <div class="chart-gridline"></div>
+              <div class="chart-gridline"></div>
+              <div class="chart-gridline"></div>
+              <div class="chart-gridline"></div>
+            </div>
+            <!-- Jan -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:95px"></div>
+                <div class="bar secondary" style="height:48px"></div>
+              </div>
+            </div>
+            <!-- Feb -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:108px"></div>
+                <div class="bar secondary" style="height:55px"></div>
+              </div>
+            </div>
+            <!-- Mar -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:88px"></div>
+                <div class="bar secondary" style="height:40px"></div>
+              </div>
+            </div>
+            <!-- Apr -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:120px"></div>
+                <div class="bar secondary" style="height:62px"></div>
+              </div>
+            </div>
+            <!-- May -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:135px"></div>
+                <div class="bar secondary" style="height:70px"></div>
+              </div>
+            </div>
+            <!-- Jun -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:112px"></div>
+                <div class="bar secondary" style="height:58px"></div>
+              </div>
+            </div>
+            <!-- Jul -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:148px"></div>
+                <div class="bar secondary" style="height:75px"></div>
+              </div>
+            </div>
+            <!-- Aug -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:160px"></div>
+                <div class="bar secondary" style="height:80px"></div>
+              </div>
+            </div>
+            <!-- Sep -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:143px"></div>
+                <div class="bar secondary" style="height:68px"></div>
+              </div>
+            </div>
+            <!-- Oct -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:168px"></div>
+                <div class="bar secondary" style="height:85px"></div>
+              </div>
+            </div>
+            <!-- Nov -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:175px"></div>
+                <div class="bar secondary" style="height:88px"></div>
+              </div>
+            </div>
+            <!-- Dec -->
+            <div class="chart-col">
+              <div class="bar-group">
+                <div class="bar primary"   style="height:180px"></div>
+                <div class="bar secondary" style="height:90px"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;margin-top:var(--primitives-space-2)">
+            <span class="chart-month-label">Jan</span>
+            <span class="chart-month-label">Feb</span>
+            <span class="chart-month-label">Mar</span>
+            <span class="chart-month-label">Apr</span>
+            <span class="chart-month-label">May</span>
+            <span class="chart-month-label">Jun</span>
+            <span class="chart-month-label">Jul</span>
+            <span class="chart-month-label">Aug</span>
+            <span class="chart-month-label">Sep</span>
+            <span class="chart-month-label">Oct</span>
+            <span class="chart-month-label">Nov</span>
+            <span class="chart-month-label">Dec</span>
+          </div>
+        </div>
+
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--brand)"></div>
+            Recurring Revenue
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--primitives-color-blue-smoke-300)"></div>
+            One-time Revenue
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent Activity</div>
+            <div class="card-subtitle">Last 24 hours</div>
+          </div>
+          <button class="btn btn-ghost">View all</button>
+        </div>
+
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-avatar" style="background:var(--primitives-color-blue-500)">LK</div>
+            <div class="activity-body">
+              <div class="activity-text"><strong>Laura Kim</strong> deployed <strong>v2.4.1</strong> to production</div>
+              <div class="activity-time">2 minutes ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-avatar" style="background:var(--primitives-color-green-600)">MR</div>
+            <div class="activity-body">
+              <div class="activity-text"><strong>Marco R.</strong> closed 3 billing issues</div>
+              <div class="activity-time">18 minutes ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-avatar" style="background:var(--primitives-color-purple-600)">AS</div>
+            <div class="activity-body">
+              <div class="activity-text"><strong>Anya S.</strong> added <strong>6 teammates</strong> to Redesign Q2</div>
+              <div class="activity-time">1 hour ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-avatar" style="background:var(--primitives-color-orange-600)">JT</div>
+            <div class="activity-body">
+              <div class="activity-text"><strong>James T.</strong> updated the API rate-limit policy</div>
+              <div class="activity-time">3 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-avatar" style="background:var(--primitives-color-rob-roy-600)">SG</div>
+            <div class="activity-body">
+              <div class="activity-text"><strong>Steve G.</strong> approved <strong>Invoice #4821</strong></div>
+              <div class="activity-time">5 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-avatar" style="background:var(--primitives-color-blue-smoke-600)">NW</div>
+            <div class="activity-body">
+              <div class="activity-text"><strong>Nina W.</strong> archived <strong>Project Atlas</strong></div>
+              <div class="activity-time">8 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-avatar" style="background:var(--primitives-color-red-600)">DC</div>
+            <div class="activity-body">
+              <div class="activity-text"><strong>Dev CI</strong> flagged a build failure on <strong>main</strong></div>
+              <div class="activity-time">11 hours ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects table + Donut chart -->
+    <div class="bottom-grid">
+
+      <!-- Projects table -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Active Projects</div>
+            <div class="card-subtitle">Sorted by priority · 47 total</div>
+          </div>
+          <div style="display:flex;gap:var(--primitives-space-2)">
+            <button class="btn btn-ghost">Filter</button>
+            <button class="btn btn-primary">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Project
+            </button>
+          </div>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Status</th>
+              <th>Owner</th>
+              <th>Progress</th>
+              <th class="text-right">Budget</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="project-name">Redesign Q2</div>
+                <div class="project-id">#PRJ-0041</div>
+              </td>
+              <td><span class="badge success">On track</span></td>
+              <td style="color:var(--semantic-color-content-surface)">Anya S.</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:var(--primitives-space-2)">
+                  <div class="progress-track"><div class="progress-fill high" style="width:78%"></div></div>
+                  <span style="font-size:var(--primitives-text-xs);color:var(--semantic-color-content-subtle)">78%</span>
+                </div>
+              </td>
+              <td class="text-right"><span class="mono-amount">$48,000</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">API v3 Migration</div>
+                <div class="project-id">#PRJ-0038</div>
+              </td>
+              <td><span class="badge warning">At risk</span></td>
+              <td style="color:var(--semantic-color-content-surface)">Laura K.</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:var(--primitives-space-2)">
+                  <div class="progress-track"><div class="progress-fill medium" style="width:42%"></div></div>
+                  <span style="font-size:var(--primitives-text-xs);color:var(--semantic-color-content-subtle)">42%</span>
+                </div>
+              </td>
+              <td class="text-right"><span class="mono-amount">$120,000</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Mobile App 2.0</div>
+                <div class="project-id">#PRJ-0035</div>
+              </td>
+              <td><span class="badge success">On track</span></td>
+              <td style="color:var(--semantic-color-content-surface)">Marco R.</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:var(--primitives-space-2)">
+                  <div class="progress-track"><div class="progress-fill high" style="width:91%"></div></div>
+                  <span style="font-size:var(--primitives-text-xs);color:var(--semantic-color-content-subtle)">91%</span>
+                </div>
+              </td>
+              <td class="text-right"><span class="mono-amount">$63,500</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Data Pipeline Infra</div>
+                <div class="project-id">#PRJ-0033</div>
+              </td>
+              <td><span class="badge danger">Delayed</span></td>
+              <td style="color:var(--semantic-color-content-surface)">James T.</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:var(--primitives-space-2)">
+                  <div class="progress-track"><div class="progress-fill low" style="width:21%"></div></div>
+                  <span style="font-size:var(--primitives-text-xs);color:var(--semantic-color-content-subtle)">21%</span>
+                </div>
+              </td>
+              <td class="text-right"><span class="mono-amount">$95,000</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Brand Identity</div>
+                <div class="project-id">#PRJ-0029</div>
+              </td>
+              <td><span class="badge info">In review</span></td>
+              <td style="color:var(--semantic-color-content-surface)">Nina W.</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:var(--primitives-space-2)">
+                  <div class="progress-track"><div class="progress-fill" style="width:100%;background:var(--primitives-color-blue-500)"></div></div>
+                  <span style="font-size:var(--primitives-text-xs);color:var(--semantic-color-content-subtle)">100%</span>
+                </div>
+              </td>
+              <td class="text-right"><span class="mono-amount">$28,200</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Security Audit</div>
+                <div class="project-id">#PRJ-0027</div>
+              </td>
+              <td><span class="badge neutral">Pending</span></td>
+              <td style="color:var(--semantic-color-content-surface)">Dev CI</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:var(--primitives-space-2)">
+                  <div class="progress-track"><div class="progress-fill" style="width:5%;background:var(--primitives-color-gray-400)"></div></div>
+                  <span style="font-size:var(--primitives-text-xs);color:var(--semantic-color-content-subtle)">5%</span>
+                </div>
+              </td>
+              <td class="text-right"><span class="mono-amount">$15,000</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Budget donut -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Budget Split</div>
+            <div class="card-subtitle">By department · Q1 2026</div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="donut-wrapper">
+            <!-- SVG donut -->
+            <div class="donut-chart">
+              <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
+                <!-- Engineering: 38% -->
+                <circle cx="70" cy="70" r="52" fill="none"
+                  stroke="var(--primitives-color-blue-500)" stroke-width="20"
+                  stroke-dasharray="123.9 203"
+                  stroke-dashoffset="0"/>
+                <!-- Design: 22% -->
+                <circle cx="70" cy="70" r="52" fill="none"
+                  stroke="var(--accent)" stroke-width="20"
+                  stroke-dasharray="71.7 255.2"
+                  stroke-dashoffset="-123.9"/>
+                <!-- Marketing: 18% -->
+                <circle cx="70" cy="70" r="52" fill="none"
+                  stroke="var(--primitives-color-purple-500)" stroke-width="20"
+                  stroke-dasharray="58.7 268.2"
+                  stroke-dashoffset="-195.6"/>
+                <!-- Ops: 14% -->
+                <circle cx="70" cy="70" r="52" fill="none"
+                  stroke="var(--primitives-color-green-500)" stroke-width="20"
+                  stroke-dasharray="45.7 281.2"
+                  stroke-dashoffset="-254.3"/>
+                <!-- Other: 8% -->
+                <circle cx="70" cy="70" r="52" fill="none"
+                  stroke="var(--primitives-color-gray-300)" stroke-width="20"
+                  stroke-dasharray="26.1 300.8"
+                  stroke-dashoffset="-300"/>
+              </svg>
+              <div class="donut-center">
+                <div class="donut-pct">$370K</div>
+                <div class="donut-label">total</div>
+              </div>
+            </div>
+
+            <div class="donut-legend">
+              <div class="donut-legend-row">
+                <div class="donut-legend-dot" style="background:var(--primitives-color-blue-500)"></div>
+                <span class="donut-legend-name">Engineering</span>
+                <span class="donut-legend-val">$140.6K</span>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-legend-dot" style="background:var(--accent)"></div>
+                <span class="donut-legend-name">Design</span>
+                <span class="donut-legend-val">$81.4K</span>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-legend-dot" style="background:var(--primitives-color-purple-500)"></div>
+                <span class="donut-legend-name">Marketing</span>
+                <span class="donut-legend-val">$66.6K</span>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-legend-dot" style="background:var(--primitives-color-green-500)"></div>
+                <span class="donut-legend-name">Operations</span>
+                <span class="donut-legend-val">$51.8K</span>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-legend-dot" style="background:var(--primitives-color-gray-300)"></div>
+                <span class="donut-legend-name">Other</span>
+                <span class="donut-legend-val">$29.6K</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const html = document.documentElement;
+  const themeIcon  = document.getElementById('theme-icon');
+  const themeLabel = document.getElementById('theme-label');
+
+  const sunPath  = 'M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42';
+  const sunCircle = '<circle cx="12" cy="12" r="5"/>';
+  const moonPath = 'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z';
+
+  function setTheme(dark) {
+    if (dark) {
+      html.setAttribute('data-theme', 'dark');
+      themeIcon.innerHTML = `<path d="${sunPath}"/>${sunCircle}`;
+      themeLabel.textContent = 'Light';
+    } else {
+      html.removeAttribute('data-theme');
+      themeIcon.innerHTML = `<path d="${moonPath}"/>`;
+      themeLabel.textContent = 'Dark';
+    }
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+  }
+
+  function toggleTheme() {
+    setTheme(!html.hasAttribute('data-theme'));
+  }
+
+  // Restore saved preference
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark') setTheme(true);
+  else if (saved === 'light') setTheme(false);
+  else if (window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme(true);
+</script>
+</body>
+</html>
