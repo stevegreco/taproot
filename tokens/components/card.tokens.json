@@ -1,0 +1,17 @@
+{
+  "component": {
+    "card": {
+      "bg":          { "$value": "{semantic.color.background.raised}",  "$type": "color" },
+      "border":      { "$value": "{semantic.color.border.default}",     "$type": "color" },
+      "radius":      { "$value": "{radius.lg}", "$type": "dimension" },
+      "shadow":      { "$value": "{shadow.sm}", "$type": "shadow" },
+      "shadowHover": { "$value": "{shadow.md}", "$type": "shadow" },
+      "padding":     { "$value": "{space.6}",   "$type": "dimension" },
+      "gap":         { "$value": "{space.4}",   "$type": "dimension" },
+      "warm": {
+        "bg":     { "$value": "{semantic.color.accent.soft}",    "$type": "color" },
+        "border": { "$value": "{semantic.color.border.warm}",    "$type": "color" }
+      }
+    }
+  }
+}

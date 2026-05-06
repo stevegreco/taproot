@@ -1,4 +1,4 @@
-/* ─── App-level tokens not yet in the semantic layer ─── */
+/* ─── App-level tokens ─── */
 :root {
   /* Nav — always dark, no semantic equivalent */
   --nav-bg:         var(--primitives-color-blue-smoke-900);
@@ -7,25 +7,21 @@
   --nav-text:       var(--primitives-color-blue-smoke-100);
   --nav-text-muted: var(--primitives-color-blue-smoke-400);
 
-  /* Structural border */
-  --border: var(--primitives-color-gray-200);
+  --border:       var(--semantic-color-border-default);
+  --brand:        var(--semantic-color-secondary-default);
+  --brand-border: var(--semantic-color-border-default);
+  --accent:       var(--semantic-color-accent-default);
 
-  /* Interactive colors (not tints — the actual action colors) */
-  --brand:        var(--primitives-color-blue-smoke-500);
-  --brand-border: var(--primitives-color-blue-smoke-200);
-  --accent:       var(--primitives-color-rob-roy-500);
-
-  /* Status */
-  --status-success-bg: var(--primitives-color-green-50);
-  --status-success-fg: var(--primitives-color-green-700);
-  --status-warning-bg: var(--primitives-color-yellow-50);
-  --status-warning-fg: var(--primitives-color-yellow-700);
-  --status-danger-bg:  var(--primitives-color-red-50);
-  --status-danger-fg:  var(--primitives-color-red-700);
-  --status-info-bg:    var(--primitives-color-blue-50);
-  --status-info-fg:    var(--primitives-color-blue-700);
-  --status-purple-bg:  var(--primitives-color-purple-50);
-  --status-purple-fg:  var(--primitives-color-purple-700);
+  --status-success-bg: var(--semantic-color-status-success-background);
+  --status-success-fg: var(--semantic-color-status-success-foreground);
+  --status-warning-bg: var(--semantic-color-status-warning-background);
+  --status-warning-fg: var(--semantic-color-status-warning-foreground);
+  --status-danger-bg:  var(--semantic-color-status-danger-background);
+  --status-danger-fg:  var(--semantic-color-status-danger-foreground);
+  --status-info-bg:    var(--semantic-color-status-info-background);
+  --status-info-fg:    var(--semantic-color-status-info-foreground);
+  --status-purple-bg:  var(--primitives-color-blue-smoke-100);
+  --status-purple-fg:  var(--primitives-color-blue-smoke-600);
 }
 
 [data-theme="dark"] {
@@ -33,22 +29,8 @@
   --nav-bg-hover:  var(--primitives-color-blue-smoke-900);
   --nav-bg-active: var(--primitives-color-blue-smoke-800);
 
-  --border: var(--primitives-color-gray-800);
-
-  --brand:        var(--primitives-color-blue-smoke-400);
-  --brand-border: var(--primitives-color-blue-smoke-600);
-  --accent:       var(--primitives-color-rob-roy-400);
-
-  --status-success-bg: var(--primitives-color-green-950);
-  --status-success-fg: var(--primitives-color-green-400);
-  --status-warning-bg: var(--primitives-color-yellow-950);
-  --status-warning-fg: var(--primitives-color-yellow-400);
-  --status-danger-bg:  var(--primitives-color-red-950);
-  --status-danger-fg:  var(--primitives-color-red-400);
-  --status-info-bg:    var(--primitives-color-blue-950);
-  --status-info-fg:    var(--primitives-color-blue-400);
-  --status-purple-bg:  var(--primitives-color-purple-950);
-  --status-purple-fg:  var(--primitives-color-purple-400);
+  --status-purple-bg: var(--primitives-color-blue-smoke-800);
+  --status-purple-fg: var(--primitives-color-blue-smoke-400);
 }
 
 /* ─── Reset & base ─── */
@@ -59,7 +41,7 @@ body {
   font-size: var(--primitives-text-sm);
   line-height: var(--primitives-leading-normal);
   background: var(--semantic-color-background-default);
-  color: var(--semantic-color-content-default);
+  color: var(--semantic-color-foreground-default);
   min-height: 100vh;
 }
 
@@ -103,10 +85,11 @@ body {
 .logo-mark svg { width: 18px; height: 18px; fill: var(--primitives-color-blue-smoke-950); }
 
 .logo-name {
-  font-size: var(--primitives-text-lg);
-  font-weight: var(--primitives-weight-bold);
+  font-size: var(--primitives-text-md);
+  font-weight: var(--primitives-weight-semibold);
   color: var(--primitives-color-white);
-  letter-spacing: var(--primitives-tracking-tight);
+  letter-spacing: var(--primitives-tracking-snug);
+  font-family: var(--primitives-font-display);
 }
 
 .nav-section {
@@ -118,7 +101,7 @@ body {
   font-size: var(--primitives-text-xs);
   font-weight: var(--primitives-weight-semibold);
   color: var(--nav-text-muted);
-  letter-spacing: var(--primitives-tracking-wide);
+  letter-spacing: var(--primitives-tracking-caps);
   text-transform: uppercase;
   padding: var(--primitives-space-3) var(--primitives-space-2) var(--primitives-space-1);
 }
@@ -133,10 +116,10 @@ body {
   font-size: var(--primitives-text-sm);
   font-weight: var(--primitives-weight-medium);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background var(--primitives-duration-fast) var(--primitives-ease-out);
   text-decoration: none;
   user-select: none;
-  margin-bottom: var(--primitives-space-0-5);
+  margin-bottom: 2px;
 }
 
 .nav-item:hover  { background: var(--nav-bg-hover); }
@@ -175,7 +158,7 @@ body {
   gap: var(--primitives-space-3);
   cursor: pointer;
   border-radius: var(--primitives-radius-md);
-  transition: background 0.15s;
+  transition: background var(--primitives-duration-fast) var(--primitives-ease-out);
 }
 .sidebar-user:hover { background: var(--nav-bg-hover); }
 
@@ -199,7 +182,7 @@ body {
 
 /* ─── Topbar ─── */
 .topbar {
-  background: var(--semantic-color-background-surface);
+  background: var(--semantic-color-background-raised);
   border-bottom: var(--primitives-border-thin) solid var(--border);
   padding: 0 var(--primitives-space-6);
   height: 60px;
@@ -212,14 +195,14 @@ body {
 .topbar-title {
   font-size: var(--primitives-text-lg);
   font-weight: var(--primitives-weight-semibold);
-  color: var(--semantic-color-content-default);
+  color: var(--semantic-color-foreground-default);
   flex: 1;
 }
 
 .topbar-subtitle {
   font-size: var(--primitives-text-sm);
-  color: var(--semantic-color-content-surface);
-  font-weight: var(--primitives-weight-normal);
+  color: var(--semantic-color-foreground-muted);
+  font-weight: var(--primitives-weight-regular);
   margin-left: var(--primitives-space-2);
 }
 
@@ -227,12 +210,12 @@ body {
   display: flex;
   align-items: center;
   gap: var(--primitives-space-2);
-  background: var(--semantic-color-background-subtle);
+  background: var(--semantic-color-background-sunken);
   border: var(--primitives-border-thin) solid var(--border);
   border-radius: var(--primitives-radius-lg);
   padding: var(--primitives-space-2) var(--primitives-space-3);
   width: 240px;
-  color: var(--semantic-color-content-subtle);
+  color: var(--semantic-color-foreground-subtle);
   font-size: var(--primitives-text-sm);
 }
 
@@ -245,16 +228,16 @@ body {
   height: 36px;
   border-radius: var(--primitives-radius-md);
   border: var(--primitives-border-thin) solid var(--border);
-  background: var(--semantic-color-background-surface);
+  background: var(--semantic-color-background-raised);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--semantic-color-content-surface);
-  transition: background 0.15s, color 0.15s;
+  color: var(--semantic-color-foreground-muted);
+  transition: background var(--primitives-duration-fast) var(--primitives-ease-out);
   position: relative;
 }
-.icon-btn:hover { background: var(--semantic-color-background-subtle); color: var(--semantic-color-content-default); }
+.icon-btn:hover { background: var(--semantic-color-background-sunken); color: var(--semantic-color-foreground-default); }
 .icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.75; }
 
 .notif-dot {
@@ -262,25 +245,25 @@ body {
   top: 6px; right: 6px;
   width: 7px; height: 7px;
   border-radius: var(--primitives-radius-full);
-  background: var(--primitives-color-red-500);
-  border: 1.5px solid var(--semantic-color-background-surface);
+  background: var(--primitives-color-rust-500);
+  border: 1.5px solid var(--semantic-color-background-raised);
 }
 
 .theme-toggle {
   padding: var(--primitives-space-2) var(--primitives-space-3);
   border-radius: var(--primitives-radius-md);
   border: var(--primitives-border-thin) solid var(--border);
-  background: var(--semantic-color-background-surface);
-  color: var(--semantic-color-content-surface);
+  background: var(--semantic-color-background-raised);
+  color: var(--semantic-color-foreground-muted);
   font-size: var(--primitives-text-xs);
   font-weight: var(--primitives-weight-semibold);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background var(--primitives-duration-fast) var(--primitives-ease-out);
   display: flex;
   align-items: center;
-  gap: var(--primitives-space-1-5);
+  gap: 6px;
 }
-.theme-toggle:hover { background: var(--semantic-color-background-subtle); color: var(--semantic-color-content-default); }
+.theme-toggle:hover { background: var(--semantic-color-background-sunken); color: var(--semantic-color-foreground-default); }
 .theme-toggle svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
 
 /* ─── Main content ─── */
@@ -300,7 +283,7 @@ body {
 }
 
 .kpi-card {
-  background: var(--semantic-color-background-surface);
+  background: var(--semantic-color-background-raised);
   border: var(--primitives-border-thin) solid var(--border);
   border-radius: var(--primitives-radius-xl);
   padding: var(--primitives-space-5);
@@ -320,8 +303,8 @@ body {
   font-size: var(--primitives-text-xs);
   font-weight: var(--primitives-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: var(--primitives-tracking-wide);
-  color: var(--semantic-color-content-surface);
+  letter-spacing: var(--primitives-tracking-caps);
+  color: var(--semantic-color-foreground-muted);
 }
 
 .kpi-icon {
@@ -333,7 +316,7 @@ body {
   justify-content: center;
 }
 .kpi-icon svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
-.kpi-icon.brand   { background: var(--semantic-color-background-accent); color: var(--semantic-color-content-accent); }
+.kpi-icon.brand   { background: var(--semantic-color-accent-soft); color: var(--semantic-color-accent-default); }
 .kpi-icon.success { background: var(--status-success-bg); color: var(--status-success-fg); }
 .kpi-icon.warning { background: var(--status-warning-bg); color: var(--status-warning-fg); }
 .kpi-icon.info    { background: var(--status-info-bg);    color: var(--status-info-fg); }
@@ -342,16 +325,17 @@ body {
   font-size: var(--primitives-text-3xl);
   font-weight: var(--primitives-weight-bold);
   letter-spacing: var(--primitives-tracking-tight);
-  line-height: var(--primitives-leading-none);
-  color: var(--semantic-color-content-default);
+  line-height: var(--primitives-leading-tight);
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--primitives-font-display);
 }
 
 .kpi-footer {
   display: flex;
   align-items: center;
-  gap: var(--primitives-space-1-5);
+  gap: 6px;
   font-size: var(--primitives-text-xs);
-  color: var(--semantic-color-content-subtle);
+  color: var(--semantic-color-foreground-subtle);
 }
 
 .delta {
@@ -361,7 +345,7 @@ body {
   font-weight: var(--primitives-weight-semibold);
   font-size: var(--primitives-text-xs);
   border-radius: var(--primitives-radius-full);
-  padding: 2px var(--primitives-space-1-5);
+  padding: 2px 6px;
 }
 .delta.up   { background: var(--status-success-bg); color: var(--status-success-fg); }
 .delta.down { background: var(--status-danger-bg);  color: var(--status-danger-fg); }
@@ -379,7 +363,7 @@ body {
   flex: 1;
   border-radius: 2px 2px 0 0;
   background: var(--border);
-  transition: background 0.15s;
+  transition: background var(--primitives-duration-fast) var(--primitives-ease-out);
 }
 .spark-bar.active { background: var(--brand); opacity: 0.7; }
 .spark-bar.latest { background: var(--accent); opacity: 1; }
@@ -394,7 +378,7 @@ body {
 
 /* ─── Card ─── */
 .card {
-  background: var(--semantic-color-background-surface);
+  background: var(--semantic-color-background-raised);
   border: var(--primitives-border-thin) solid var(--border);
   border-radius: var(--primitives-radius-xl);
   box-shadow: var(--primitives-shadow-xs);
@@ -412,12 +396,13 @@ body {
 .card-title {
   font-size: var(--primitives-text-base);
   font-weight: var(--primitives-weight-semibold);
-  color: var(--semantic-color-content-default);
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--primitives-font-display);
 }
 
 .card-subtitle {
   font-size: var(--primitives-text-xs);
-  color: var(--semantic-color-content-subtle);
+  color: var(--semantic-color-foreground-subtle);
   margin-top: 2px;
 }
 
@@ -471,7 +456,7 @@ body {
 
 .bar {
   border-radius: var(--primitives-radius-sm) var(--primitives-radius-sm) 0 0;
-  transition: opacity 0.15s;
+  transition: opacity var(--primitives-duration-fast) var(--primitives-ease-out);
 }
 .bar:hover { opacity: 0.8; }
 .bar.primary   { background: var(--brand); width: 14px; }
@@ -481,7 +466,7 @@ body {
 
 .chart-month-label {
   font-size: 10px;
-  color: var(--semantic-color-content-subtle);
+  color: var(--semantic-color-foreground-subtle);
   text-align: center;
   margin-top: var(--primitives-space-2);
 }
@@ -496,9 +481,9 @@ body {
 .legend-item {
   display: flex;
   align-items: center;
-  gap: var(--primitives-space-1-5);
+  gap: 6px;
   font-size: var(--primitives-text-xs);
-  color: var(--semantic-color-content-surface);
+  color: var(--semantic-color-foreground-muted);
 }
 
 .legend-dot {
@@ -535,13 +520,13 @@ body {
 .activity-body { flex: 1; min-width: 0; }
 .activity-text {
   font-size: var(--primitives-text-sm);
-  color: var(--semantic-color-content-default);
+  color: var(--semantic-color-foreground-default);
   line-height: var(--primitives-leading-snug);
 }
 .activity-text strong { font-weight: var(--primitives-weight-semibold); }
 .activity-time {
   font-size: var(--primitives-text-xs);
-  color: var(--semantic-color-content-subtle);
+  color: var(--semantic-color-foreground-subtle);
   margin-top: 2px;
 }
 
@@ -565,30 +550,30 @@ body {
   font-size: var(--primitives-text-xs);
   font-weight: var(--primitives-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: var(--primitives-tracking-wide);
-  color: var(--semantic-color-content-subtle);
+  letter-spacing: var(--primitives-tracking-caps);
+  color: var(--semantic-color-foreground-subtle);
   padding: var(--primitives-space-2) var(--primitives-space-5);
   border-bottom: var(--primitives-border-thin) solid var(--border);
-  background: var(--semantic-color-background-subtle);
+  background: var(--semantic-color-background-sunken);
 }
 
 .data-table td {
   padding: var(--primitives-space-3) var(--primitives-space-5);
   border-bottom: var(--primitives-border-thin) solid var(--border);
-  color: var(--semantic-color-content-default);
+  color: var(--semantic-color-foreground-default);
   vertical-align: middle;
 }
 
 .data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: var(--semantic-color-background-subtle); }
+.data-table tr:hover td { background: var(--semantic-color-background-sunken); }
 
 .project-name {
   font-weight: var(--primitives-weight-semibold);
-  color: var(--semantic-color-content-default);
+  color: var(--semantic-color-foreground-default);
 }
 .project-id {
   font-size: var(--primitives-text-xs);
-  color: var(--semantic-color-content-subtle);
+  color: var(--semantic-color-foreground-subtle);
   font-family: var(--primitives-font-mono);
   margin-top: 1px;
 }
@@ -607,8 +592,8 @@ body {
 .badge.warning { background: var(--status-warning-bg); color: var(--status-warning-fg); }
 .badge.danger  { background: var(--status-danger-bg);  color: var(--status-danger-fg); }
 .badge.info    { background: var(--status-info-bg);    color: var(--status-info-fg); }
-.badge.neutral { background: var(--semantic-color-background-subtle); color: var(--semantic-color-content-surface); border: var(--primitives-border-thin) solid var(--border); }
-.badge.brand   { background: var(--semantic-color-background-accent); color: var(--semantic-color-content-accent); }
+.badge.neutral { background: var(--semantic-color-background-sunken); color: var(--semantic-color-foreground-muted); border: var(--primitives-border-thin) solid var(--border); }
+.badge.brand   { background: var(--semantic-color-accent-soft); color: var(--semantic-color-accent-default); }
 
 .badge::before {
   content: '';
@@ -626,15 +611,15 @@ body {
   width: 80px;
 }
 .progress-fill        { height: 100%; border-radius: var(--primitives-radius-full); background: var(--brand); }
-.progress-fill.low    { background: var(--primitives-color-red-500); }
-.progress-fill.medium { background: var(--primitives-color-yellow-500); }
-.progress-fill.high   { background: var(--primitives-color-green-500); }
+.progress-fill.low    { background: var(--primitives-color-rust-500); }
+.progress-fill.medium { background: var(--primitives-color-rob-roy-500); }
+.progress-fill.high   { background: var(--primitives-color-moss-500); }
 
 .mono-amount {
   font-family: var(--primitives-font-mono);
   font-size: var(--primitives-text-sm);
   font-weight: var(--primitives-weight-medium);
-  color: var(--semantic-color-content-default);
+  color: var(--semantic-color-foreground-default);
 }
 
 /* ─── Donut chart ─── */
@@ -664,18 +649,19 @@ body {
 .donut-pct {
   font-size: var(--primitives-text-2xl);
   font-weight: var(--primitives-weight-bold);
-  line-height: var(--primitives-leading-none);
-  color: var(--semantic-color-content-default);
+  line-height: var(--primitives-leading-tight);
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--primitives-font-display);
 }
 .donut-label {
   font-size: var(--primitives-text-xs);
-  color: var(--semantic-color-content-subtle);
+  color: var(--semantic-color-foreground-subtle);
 }
 
 .donut-legend {
   display: flex;
   flex-direction: column;
-  gap: var(--primitives-space-2-5, 0.625rem);
+  gap: 10px;
 }
 
 .donut-legend-row {
@@ -692,8 +678,8 @@ body {
   flex-shrink: 0;
 }
 
-.donut-legend-name { flex: 1; color: var(--semantic-color-content-surface); }
-.donut-legend-val  { font-weight: var(--primitives-weight-semibold); color: var(--semantic-color-content-default); font-family: var(--primitives-font-mono); font-size: var(--primitives-text-xs); }
+.donut-legend-name { flex: 1; color: var(--semantic-color-foreground-muted); }
+.donut-legend-val  { font-weight: var(--primitives-weight-semibold); color: var(--semantic-color-foreground-default); font-family: var(--primitives-font-mono); font-size: var(--primitives-text-xs); }
 
 /* ─── Alert ─── */
 .alert {
@@ -706,10 +692,10 @@ body {
 }
 .alert.warning {
   background: var(--status-warning-bg);
-  border-color: var(--primitives-color-yellow-200);
+  border-color: var(--primitives-color-rob-roy-200);
   color: var(--status-warning-fg);
 }
-[data-theme="dark"] .alert.warning { border-color: var(--primitives-color-yellow-800); }
+[data-theme="dark"] .alert.warning { border-color: var(--primitives-color-rob-roy-800); }
 .alert svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 1px; }
 .alert-body  { font-size: var(--primitives-text-sm); }
 .alert-title { font-weight: var(--primitives-weight-semibold); margin-bottom: 2px; }
@@ -719,27 +705,27 @@ body {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--primitives-space-1-5);
+  gap: 6px;
   border-radius: var(--primitives-radius-md);
   font-size: var(--primitives-text-xs);
   font-weight: var(--primitives-weight-semibold);
-  padding: var(--primitives-space-1-5) var(--primitives-space-3);
+  padding: 6px var(--primitives-space-3);
   border: var(--primitives-border-thin) solid transparent;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: opacity var(--primitives-duration-fast) var(--primitives-ease-out);
 }
 .btn:hover { opacity: 0.85; }
 
 .btn-primary {
   background: var(--accent);
-  color: var(--primitives-color-blue-smoke-950);
+  color: var(--semantic-color-foreground-on-accent);
 }
 .btn-ghost {
   background: transparent;
   border-color: var(--border);
-  color: var(--semantic-color-content-surface);
+  color: var(--semantic-color-foreground-muted);
 }
-.btn-ghost:hover { background: var(--semantic-color-background-subtle); }
+.btn-ghost:hover { background: var(--semantic-color-background-sunken); }
 
 .btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; }
 

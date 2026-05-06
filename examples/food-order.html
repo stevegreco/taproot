@@ -6,24 +6,16 @@
   <title>Place Your Order</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../dist/css/tokens.css">
   <style>
     /* ─── App-level form tokens ─── */
     :root {
-      --border: var(--primitives-color-gray-200);
-      --brand: var(--primitives-color-blue-smoke-500);
-      --accent: var(--primitives-color-rob-roy-500);
-      --status-danger-fg: var(--primitives-color-red-700);
-      --status-danger-bg: var(--primitives-color-red-50);
-    }
-
-    [data-theme="dark"] {
-      --border: var(--primitives-color-gray-800);
-      --brand: var(--primitives-color-blue-smoke-400);
-      --accent: var(--primitives-color-rob-roy-400);
-      --status-danger-fg: var(--primitives-color-red-400);
-      --status-danger-bg: var(--primitives-color-red-950);
+      --border: var(--semantic-color-border-default);
+      --brand: var(--semantic-color-secondary-default);
+      --accent: var(--semantic-color-accent-default);
+      --status-danger-fg: var(--semantic-color-status-danger-foreground);
+      --status-danger-bg: var(--semantic-color-status-danger-background);
     }
 
     /* ─── Reset & base ─── */
@@ -34,7 +26,7 @@
       font-size: var(--primitives-text-base);
       line-height: var(--primitives-leading-normal);
       background: var(--semantic-color-background-default);
-      color: var(--semantic-color-content-default);
+      color: var(--semantic-color-foreground-default);
       padding: var(--primitives-space-8) var(--primitives-space-4);
     }
 
@@ -42,7 +34,7 @@
     form {
       max-width: 32rem;
       margin: 0 auto;
-      background: var(--semantic-color-background-surface);
+      background: var(--semantic-color-background-raised);
       padding: var(--primitives-space-8);
       border-radius: var(--primitives-radius-xl);
       border: var(--primitives-border-thin) solid var(--border);
@@ -53,13 +45,13 @@
       font-size: var(--primitives-text-2xl);
       font-weight: var(--primitives-weight-bold);
       letter-spacing: var(--primitives-tracking-tight);
-      color: var(--semantic-color-content-default);
+      color: var(--semantic-color-foreground-default);
       margin-bottom: var(--primitives-space-1);
     }
 
     .form-note {
       font-size: var(--primitives-text-sm);
-      color: var(--semantic-color-content-subtle);
+      color: var(--semantic-color-foreground-subtle);
       margin-bottom: var(--primitives-space-6);
     }
 
@@ -70,10 +62,10 @@
 
     label {
       display: block;
-      margin-bottom: var(--primitives-space-1-5);
+      margin-bottom: 6px;
       font-size: var(--primitives-text-sm);
       font-weight: var(--primitives-weight-semibold);
-      color: var(--semantic-color-content-default);
+      color: var(--semantic-color-foreground-default);
     }
 
     input,
@@ -81,12 +73,12 @@
     textarea {
       display: block;
       width: 100%;
-      padding: var(--primitives-space-2-5, 0.625rem) var(--primitives-space-3);
+      padding: 10px var(--primitives-space-3);
       font-family: var(--primitives-font-sans);
       font-size: var(--primitives-text-base);
       line-height: var(--primitives-leading-normal);
-      color: var(--semantic-color-content-default);
-      background: var(--semantic-color-background-surface);
+      color: var(--semantic-color-foreground-default);
+      background: var(--semantic-color-background-raised);
       border: var(--primitives-border-thin) solid var(--border);
       border-radius: var(--primitives-radius-md);
     }
@@ -115,8 +107,8 @@
     legend {
       font-size: var(--primitives-text-sm);
       font-weight: var(--primitives-weight-semibold);
-      color: var(--semantic-color-content-default);
-      padding: 0 var(--primitives-space-1-5);
+      color: var(--semantic-color-foreground-default);
+      padding: 0 6px;
     }
 
     /* ─── Radio & checkbox groups ─── */
@@ -134,7 +126,7 @@
       gap: var(--primitives-space-2);
       font-weight: var(--primitives-weight-normal);
       font-size: var(--primitives-text-sm);
-      color: var(--semantic-color-content-surface);
+      color: var(--semantic-color-foreground-muted);
       cursor: pointer;
       padding: var(--primitives-space-1) 0;
     }
@@ -151,7 +143,7 @@
     .hint {
       margin-top: var(--primitives-space-1);
       font-size: var(--primitives-text-xs);
-      color: var(--semantic-color-content-subtle);
+      color: var(--semantic-color-foreground-subtle);
     }
 
     .error {
@@ -200,8 +192,8 @@
       padding: var(--primitives-space-2) var(--primitives-space-3);
       border-radius: var(--primitives-radius-md);
       border: var(--primitives-border-thin) solid var(--border);
-      background: var(--semantic-color-background-surface);
-      color: var(--semantic-color-content-surface);
+      background: var(--semantic-color-background-raised);
+      color: var(--semantic-color-foreground-muted);
       font-family: var(--primitives-font-sans);
       font-size: var(--primitives-text-xs);
       font-weight: var(--primitives-weight-semibold);
@@ -209,7 +201,7 @@
     }
 
     .theme-toggle:hover {
-      background: var(--semantic-color-background-subtle);
+      background: var(--semantic-color-background-sunken);
     }
   </style>
 </head>

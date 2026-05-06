@@ -1,6 +1,6 @@
 {
-  "name": "design-system",
-  "version": "1.0.0",
+  "name": "@bloom/design-system",
+  "version": "0.0.1",
   "description": "Design tokens distributed as CSS and JSON artifacts.",
   "type": "module",
   "main": "./dist/tokens/primitives.json",
@@ -15,14 +15,18 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "pnpm run clean && style-dictionary build --config style-dictionary.config.js && style-dictionary build --config style-dictionary.semantic-light.config.js && style-dictionary build --config style-dictionary.semantic-dark.config.js && node build-css.js",
+    "build": "pnpm run clean && node build-tokens.js && node build-css.js",
     "showcase": "node generate-showcase.js",
     "dashboard": "open examples/dashboard.html",
+    "food": "open examples/food-order.html",
     "prepack": "pnpm run build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["design-system", "design-tokens", "css-variables"],
+  "author": "Steve Greco",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "style-dictionary": "latest"
   },

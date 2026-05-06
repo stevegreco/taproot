@@ -2,55 +2,57 @@
   "semantic": {
     "color": {
       "background": {
-        "default": {
-          "$value": "{color.blueSmoke.950}",
-          "$type": "color"
-        },
-        "surface": {
-          "$value": "{color.blueSmoke.900}",
-          "$type": "color"
-        },
-        "subtle": {
-          "$value": "{color.blueSmoke.800}",
-          "$type": "color"
-        },
-        "brand": {
-          "$value": "{color.blueSmoke.700}",
-          "$type": "color"
-        },
-        "accent": {
-          "$value": "{color.robRoy.700}",
-          "$type": "color"
-        },
-        "inverse": {
-          "$value": "{color.gray.50}",
-          "$type": "color"
-        }
+        "default":  { "$value": "{color.blueSmoke.950}", "$type": "color" },
+        "raised":   { "$value": "{color.blueSmoke.900}", "$type": "color" },
+        "sunken":   { "$value": "#0e1211",               "$type": "color" },
+        "muted":    { "$value": "{color.blueSmoke.800}", "$type": "color" }
       },
-      "content": {
-        "default": {
-          "$value": "{color.gray.50}",
-          "$type": "color"
+      "foreground": {
+        "default":  { "$value": "{color.clay.50}",       "$type": "color" },
+        "muted":    { "$value": "{color.blueSmoke.200}", "$type": "color" },
+        "subtle":   { "$value": "{color.blueSmoke.300}", "$type": "color" },
+        "faint":    { "$value": "{color.blueSmoke.500}", "$type": "color" },
+        "onAccent": { "$value": "{color.blueSmoke.950}", "$type": "color" },
+        "inverse":  { "$value": "{color.blueSmoke.950}", "$type": "color" }
+      },
+      "border": {
+        "default": { "$value": "{color.blueSmoke.800}", "$type": "color" },
+        "strong":  { "$value": "{color.blueSmoke.700}", "$type": "color" },
+        "subtle":  { "$value": "{color.blueSmoke.900}", "$type": "color" },
+        "warm":    { "$value": "{color.robRoy.800}",    "$type": "color" }
+      },
+      "accent": {
+        "default":    { "$value": "{color.robRoy.400}", "$type": "color" },
+        "hover":      { "$value": "{color.robRoy.300}", "$type": "color" },
+        "press":      { "$value": "{color.robRoy.500}", "$type": "color" },
+        "soft":       { "$value": "#3a2e1e",            "$type": "color" },
+        "foreground": { "$value": "{color.blueSmoke.950}", "$type": "color" }
+      },
+      "secondary": {
+        "default": { "$value": "{color.blueSmoke.200}", "$type": "color" },
+        "hover":   { "$value": "{color.clay.50}",       "$type": "color" },
+        "soft":    { "$value": "{color.blueSmoke.800}", "$type": "color" }
+      },
+      "status": {
+        "success": {
+          "default":    { "$value": "{color.moss.500}", "$type": "color" },
+          "foreground": { "$value": "{color.moss.100}", "$type": "color" },
+          "background": { "$value": "{color.moss.900}", "$type": "color" }
         },
-        "surface": {
-          "$value": "{color.gray.200}",
-          "$type": "color"
+        "danger": {
+          "default":    { "$value": "{color.rust.500}", "$type": "color" },
+          "foreground": { "$value": "{color.rust.100}", "$type": "color" },
+          "background": { "$value": "{color.rust.900}", "$type": "color" }
         },
-        "subtle": {
-          "$value": "{color.gray.400}",
-          "$type": "color"
+        "warning": {
+          "default":    { "$value": "{color.robRoy.500}", "$type": "color" },
+          "foreground": { "$value": "{color.robRoy.100}", "$type": "color" },
+          "background": { "$value": "#51432d",            "$type": "color" }
         },
-        "brand": {
-          "$value": "{color.blueSmoke.200}",
-          "$type": "color"
-        },
-        "accent": {
-          "$value": "{color.robRoy.300}",
-          "$type": "color"
-        },
-        "inverse": {
-          "$value": "{color.blueSmoke.950}",
-          "$type": "color"
+        "info": {
+          "default":    { "$value": "{color.sky.500}", "$type": "color" },
+          "foreground": { "$value": "{color.sky.100}", "$type": "color" },
+          "background": { "$value": "{color.sky.900}", "$type": "color" }
         }
       }
     }

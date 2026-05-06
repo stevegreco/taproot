@@ -1,0 +1,41 @@
+{
+  "component": {
+    "badge": {
+      "radius":     { "$value": "{radius.full}", "$type": "dimension" },
+      "paddingX":   { "$value": "{space.2}",     "$type": "dimension" },
+      "paddingY":   { "$value": "{space.px}",    "$type": "dimension" },
+      "fontSize":   { "$value": "{text.xs}",     "$type": "dimension" },
+      "fontWeight": { "$value": "{weight.medium}", "$type": "fontWeight" },
+      "default": {
+        "bg":     { "$value": "{semantic.color.background.muted}",    "$type": "color" },
+        "fg":     { "$value": "{semantic.color.foreground.muted}",    "$type": "color" },
+        "border": { "$value": "{semantic.color.border.default}",      "$type": "color" }
+      },
+      "accent": {
+        "bg":     { "$value": "{semantic.color.accent.soft}",         "$type": "color" },
+        "fg":     { "$value": "{semantic.color.accent.default}",      "$type": "color" },
+        "border": { "$value": "{semantic.color.border.warm}",         "$type": "color" }
+      },
+      "success": {
+        "bg":     { "$value": "{semantic.color.status.success.background}", "$type": "color" },
+        "fg":     { "$value": "{semantic.color.status.success.foreground}", "$type": "color" },
+        "border": { "$value": "{semantic.color.status.success.background}", "$type": "color" }
+      },
+      "danger": {
+        "bg":     { "$value": "{semantic.color.status.danger.background}",  "$type": "color" },
+        "fg":     { "$value": "{semantic.color.status.danger.foreground}",  "$type": "color" },
+        "border": { "$value": "{semantic.color.status.danger.background}",  "$type": "color" }
+      },
+      "warning": {
+        "bg":     { "$value": "{semantic.color.status.warning.background}", "$type": "color" },
+        "fg":     { "$value": "{semantic.color.status.warning.foreground}", "$type": "color" },
+        "border": { "$value": "{semantic.color.status.warning.background}", "$type": "color" }
+      },
+      "info": {
+        "bg":     { "$value": "{semantic.color.status.info.background}",    "$type": "color" },
+        "fg":     { "$value": "{semantic.color.status.info.foreground}",    "$type": "color" },
+        "border": { "$value": "{semantic.color.status.info.background}",    "$type": "color" }
+      }
+    }
+  }
+}
