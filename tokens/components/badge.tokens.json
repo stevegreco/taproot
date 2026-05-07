@@ -1,11 +1,11 @@
 {
   "component": {
     "badge": {
-      "radius":     { "$value": "{radius.full}", "$type": "dimension" },
-      "paddingX":   { "$value": "{space.2}",     "$type": "dimension" },
-      "paddingY":   { "$value": "{space.px}",    "$type": "dimension" },
-      "fontSize":   { "$value": "{text.xs}",     "$type": "dimension" },
-      "fontWeight": { "$value": "{weight.medium}", "$type": "fontWeight" },
+      "radius":     { "$value": "{primitives.radius.full}", "$type": "dimension" },
+      "paddingX":   { "$value": "{primitives.space.2}",     "$type": "dimension" },
+      "paddingY":   { "$value": "{primitives.space.px}",    "$type": "dimension" },
+      "fontSize":   { "$value": "{primitives.text.xs}",     "$type": "dimension" },
+      "fontWeight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" },
       "default": {
         "bg":     { "$value": "{semantic.color.background.muted}",    "$type": "color" },
         "fg":     { "$value": "{semantic.color.foreground.muted}",    "$type": "color" },

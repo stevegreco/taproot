@@ -1,11 +1,11 @@
 {
   "component": {
     "alert": {
-      "radius":   { "$value": "{radius.md}", "$type": "dimension" },
-      "padding":  { "$value": "{space.4}",   "$type": "dimension" },
-      "gap":      { "$value": "{space.3}",   "$type": "dimension" },
-      "fontSize": { "$value": "{text.sm}",   "$type": "dimension" },
-      "titleFontWeight": { "$value": "{weight.semibold}", "$type": "fontWeight" },
+      "radius":   { "$value": "{primitives.radius.md}", "$type": "dimension" },
+      "padding":  { "$value": "{primitives.space.4}",   "$type": "dimension" },
+      "gap":      { "$value": "{primitives.space.3}",   "$type": "dimension" },
+      "fontSize": { "$value": "{primitives.text.sm}",   "$type": "dimension" },
+      "titleFontWeight": { "$value": "{primitives.weight.semibold}", "$type": "fontWeight" },
       "success": {
         "bg":          { "$value": "{semantic.color.status.success.background}", "$type": "color" },
         "fg":          { "$value": "{semantic.color.status.success.foreground}", "$type": "color" },

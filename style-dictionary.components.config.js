@@ -15,8 +15,7 @@ export default {
           format: "css/variables",
           filter: (token) => token.path[0] === "component",
           options: {
-            selector: ":root",
-            outputReferences: true
+            selector: ":root"
           }
         }
       ]
