@@ -1,5 +1,5 @@
 {
-  "name": "@bloom/design-system",
+  "name": "@stevegreco/design-system",
   "version": "0.0.1",
   "description": "Design tokens distributed as CSS and JSON artifacts.",
   "type": "module",
@@ -21,7 +21,11 @@
     "food": "open examples/food-order.html",
     "prepack": "pnpm run build"
   },
-  "keywords": ["design-system", "design-tokens", "css-variables"],
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "css-variables"
+  ],
   "author": "Steve Greco",
   "license": "ISC",
   "publishConfig": {
@@ -30,5 +34,5 @@
   "devDependencies": {
     "style-dictionary": "latest"
   },
-  "packageManager": "pnpm@10.26.1"
+  "packageManager": "pnpm@10.33.4"
 }
