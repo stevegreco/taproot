@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Context Architecture — Design Token System</title>
+  <link rel="stylesheet" href="../dist/css/tokens.css" />
+  <style>
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--semantic-color-background-default);
+      color: var(--semantic-color-foreground-default);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 52px 32px 64px;
+    }
+
+    /* ── Header ─────────────────────────────────── */
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .wordmark {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--semantic-color-foreground-faint);
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--semantic-color-foreground-default);
+    }
+    header p {
+      font-size: 14px;
+      color: var(--semantic-color-foreground-subtle);
+      margin-top: 8px;
+    }
+
+    /* ── Flow ────────────────────────────────────── */
+    .flow {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    /* ── Layer card ──────────────────────────────── */
+    .layer {
+      background: var(--semantic-color-background-raised);
+      border: 1px solid var(--semantic-color-border-default);
+      border-radius: 12px;
+      padding: 22px 26px;
+    }
+
+    .layer-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--semantic-color-foreground-faint);
+      margin-bottom: 3px;
+    }
+    .layer-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--semantic-color-foreground-default);
+      margin-bottom: 2px;
+    }
+    .layer-path {
+      font-size: 11px;
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      color: var(--semantic-color-foreground-subtle);
+      margin-bottom: 18px;
+    }
+
+    /* ── Arrow (single, centered) ─────────────────── */
+    .arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 0;
+    }
+    .arrow-stem {
+      width: 2px;
+      height: 24px;
+      background: var(--semantic-color-border-default);
+    }
+    .arrow-head {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid var(--semantic-color-border-default);
+    }
+
+    /* ── Forked / joined arrow pair ───────────────── */
+    .arrow-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 6px 0;
+    }
+
+    /* ── Two-column layout ───────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* ── Tier columns ─────────────────────────────── */
+    .tier-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 2fr;
+      gap: 10px;
+    }
+    .tier-col {
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .tier-col.primitive {
+      background: var(--semantic-color-background-muted);
+      border: 1px solid var(--semantic-color-border-default);
+    }
+    .tier-col.semantic {
+      background: var(--semantic-color-status-warning-background);
+      border: 1px solid #dfc880;
+    }
+    .tier-col.component {
+      background: var(--semantic-color-status-danger-background);
+      border: 1px solid #d4a49a;
+    }
+    .tier-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .primitive .tier-label { color: var(--semantic-color-secondary-default); }
+    .semantic  .tier-label { color: var(--semantic-color-status-warning-foreground); }
+    .component .tier-label { color: var(--semantic-color-status-danger-foreground); }
+
+    /* ── Chips ────────────────────────────────────── */
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+
+    .chip {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .chip-primitive { background: var(--semantic-color-background-muted);   color: var(--semantic-color-secondary-default);   border: 1px solid var(--semantic-color-border-default); }
+    .chip-semantic  { background: var(--semantic-color-status-warning-background); color: var(--semantic-color-status-warning-foreground); }
+    .chip-component { background: var(--semantic-color-status-danger-background);  color: var(--semantic-color-status-danger-foreground); }
+    .chip-tool      { background: var(--semantic-color-status-info-background);    color: var(--semantic-color-status-info-foreground); }
+    .chip-resource  { background: var(--semantic-color-status-success-background); color: var(--semantic-color-status-success-foreground); }
+    .chip-prompt    { background: var(--semantic-color-accent-soft); color: var(--semantic-color-accent-hover); }
+    .chip-skill     { background: var(--semantic-color-secondary-soft); color: var(--semantic-color-secondary-default); }
+
+    /* ── Build layer ─────────────────────────────── */
+    .build-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--semantic-color-background-sunken);
+      border: 1px solid var(--semantic-color-border-subtle);
+      border-radius: 8px;
+      padding: 13px 16px;
+    }
+    .build-cmd {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--semantic-color-foreground-default);
+      color: var(--semantic-color-background-default);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .build-text {
+      font-size: 12px;
+      color: var(--semantic-color-foreground-muted);
+    }
+    .build-text strong { color: var(--semantic-color-foreground-default); }
+    .build-text code {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      background: var(--semantic-color-background-muted);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+
+    /* ── Context type badge ───────────────────────── */
+    .context-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+    .tag-dynamic { background: var(--semantic-color-status-info-background);    color: var(--semantic-color-status-info-foreground); }
+    .tag-static  { background: var(--semantic-color-status-success-background); color: var(--semantic-color-status-success-foreground); }
+
+    /* ── Subsection within a layer card ──────────── */
+    .subsection { margin-top: 12px; }
+    .subsection-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--semantic-color-foreground-faint);
+      margin-bottom: 6px;
+    }
+
+    /* ── Consumers row ────────────────────────────── */
+    .consumers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .consumer {
+      background: var(--semantic-color-background-sunken);
+      border: 1px solid var(--semantic-color-border-subtle);
+      border-radius: 8px;
+      padding: 16px 14px;
+      text-align: center;
+    }
+    .consumer-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--semantic-color-foreground-default);
+      margin-bottom: 3px;
+    }
+    .consumer-desc {
+      font-size: 11px;
+      color: var(--semantic-color-foreground-subtle);
+      margin-bottom: 10px;
+    }
+    .consumer-tags { display: flex; gap: 4px; justify-content: center; }
+    .ctag {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    /* ── Legend ──────────────────────────────────── */
+    .legend {
+      max-width: 860px;
+      margin: 40px auto 0;
+      padding-top: 28px;
+      border-top: 1px solid var(--semantic-color-border-subtle);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 28px;
+      justify-content: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--semantic-color-foreground-subtle);
+    }
+    .ldot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark">@stevegreco/design-system</div>
+  <h1>Agent Context Architecture</h1>
+  <p>How AI agents discover and use design tokens — from source files to AI tooling</p>
+</header>
+
+<div class="flow">
+
+  <!-- Layer 1: Source Tokens -->
+  <div class="layer">
+    <div class="layer-eyebrow">Layer 1</div>
+    <div class="layer-name">Token Source Files</div>
+    <div class="layer-path">tokens/</div>
+    <div class="tier-cols">
+      <div class="tier-col primitive">
+        <div class="tier-label">Primitive</div>
+        <div class="chips">
+          <span class="chip chip-primitive">primitives.tokens.json</span>
+        </div>
+      </div>
+      <div class="tier-col semantic">
+        <div class="tier-label">Semantic</div>
+        <div class="chips">
+          <span class="chip chip-semantic">light.tokens.json</span>
+          <span class="chip chip-semantic">dark.tokens.json</span>
+        </div>
+      </div>
+      <div class="tier-col component">
+        <div class="tier-label">Component</div>
+        <div class="chips">
+          <span class="chip chip-component">button.tokens.json</span>
+          <span class="chip chip-component">card.tokens.json</span>
+          <span class="chip chip-component">input.tokens.json</span>
+          <span class="chip chip-component">badge.tokens.json</span>
+          <span class="chip chip-component">alert.tokens.json</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">
+    <div class="arrow-stem"></div>
+    <div class="arrow-head"></div>
+  </div>
+
+  <!-- Layer 2: Build System -->
+  <div class="layer">
+    <div class="layer-eyebrow">Layer 2</div>
+    <div class="layer-name">Build System</div>
+    <div class="layer-path">style-dictionary.*.config.js</div>
+    <div class="build-inner">
+      <div class="build-cmd">pnpm build</div>
+      <div class="build-text">
+        <strong>Style Dictionary</strong> — resolves <code>{alias}</code> references,
+        applies transforms, emits CSS custom properties + JSON to <code>dist/</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">
+    <div class="arrow-stem"></div>
+    <div class="arrow-head"></div>
+  </div>
+
+  <!-- Layer 3: Dist Output -->
+  <div class="layer">
+    <div class="layer-eyebrow">Layer 3</div>
+    <div class="layer-name">Resolved Output</div>
+    <div class="layer-path">dist/tokens/  ·  src/tokens/</div>
+    <div class="tier-cols">
+      <div class="tier-col primitive">
+        <div class="tier-label">Primitive</div>
+        <div class="chips">
+          <span class="chip chip-primitive">primitives.json</span>
+          <span class="chip chip-primitive">primitives.css</span>
+        </div>
+      </div>
+      <div class="tier-col semantic">
+        <div class="tier-label">Semantic</div>
+        <div class="chips">
+          <span class="chip chip-semantic">semantic.light.json</span>
+          <span class="chip chip-semantic">semantic.dark.json</span>
+        </div>
+      </div>
+      <div class="tier-col component">
+        <div class="tier-label">Component</div>
+        <div class="chips">
+          <span class="chip chip-component">components.json</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fork: one arrow splits to two columns -->
+  <div class="arrow-pair">
+    <div class="arrow"><div class="arrow-stem"></div><div class="arrow-head"></div></div>
+    <div class="arrow"><div class="arrow-stem"></div><div class="arrow-head"></div></div>
+  </div>
+
+  <!-- Layer 4: Context Layer -->
+  <div class="two-col">
+
+    <!-- 4a: MCP Server -->
+    <div class="layer">
+      <div class="context-tag tag-dynamic">Dynamic · Real-time</div>
+      <div class="layer-eyebrow">Layer 4a</div>
+      <div class="layer-name">MCP Server</div>
+      <div class="layer-path">mcp/index.js</div>
+
+      <div class="subsection">
+        <div class="subsection-label">Tools</div>
+        <div class="chips">
+          <span class="chip chip-tool">search_tokens</span>
+          <span class="chip chip-tool">get_token</span>
+          <span class="chip chip-tool">suggest_token</span>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">Resources</div>
+        <div class="chips">
+          <span class="chip chip-resource">tokens://primitives</span>
+          <span class="chip chip-resource">tokens://components</span>
+          <span class="chip chip-resource">tokens://semantic/{theme}</span>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">Prompts</div>
+        <div class="chips">
+          <span class="chip chip-prompt">find-token</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4b: Agent Skill -->
+    <div class="layer">
+      <div class="context-tag tag-static">Static · Stable Knowledge</div>
+      <div class="layer-eyebrow">Layer 4b</div>
+      <div class="layer-name">Agent Skill</div>
+      <div class="layer-path">.agents/skills/design-tokens/</div>
+
+      <div class="subsection">
+        <div class="subsection-label">SKILL.md</div>
+        <div class="chips">
+          <span class="chip chip-skill">three-tier architecture</span>
+          <span class="chip chip-skill">token selection workflow</span>
+          <span class="chip chip-skill">MCP tool guide</span>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-label">references/token-reference.md</div>
+        <div class="chips">
+          <span class="chip chip-skill">color palette intent</span>
+          <span class="chip chip-skill">semantic categories</span>
+          <span class="chip chip-skill">naming conventions</span>
+          <span class="chip chip-skill">CSS variable derivation</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Join: two arrows converge to full-width consumers -->
+  <div class="arrow-pair">
+    <div class="arrow"><div class="arrow-stem"></div><div class="arrow-head"></div></div>
+    <div class="arrow"><div class="arrow-stem"></div><div class="arrow-head"></div></div>
+  </div>
+
+  <!-- Layer 5: AI Consumers -->
+  <div class="layer">
+    <div class="layer-eyebrow">Layer 5</div>
+    <div class="layer-name">AI Consumers</div>
+    <div class="layer-path" style="margin-bottom:16px">Claude Desktop · Cursor IDE · Claude Code</div>
+    <div class="consumers">
+      <div class="consumer">
+        <div class="consumer-name">Claude Desktop</div>
+        <div class="consumer-desc">Native MCP host</div>
+        <div class="consumer-tags">
+          <span class="ctag" style="background:var(--semantic-color-status-info-background);color:var(--semantic-color-status-info-foreground)">MCP</span>
+          <span class="ctag" style="background:var(--semantic-color-status-success-background);color:var(--semantic-color-status-success-foreground)">Skill</span>
+        </div>
+      </div>
+      <div class="consumer">
+        <div class="consumer-name">Cursor IDE</div>
+        <div class="consumer-desc">MCP in agent mode</div>
+        <div class="consumer-tags">
+          <span class="ctag" style="background:var(--semantic-color-status-info-background);color:var(--semantic-color-status-info-foreground)">MCP</span>
+          <span class="ctag" style="background:var(--semantic-color-status-success-background);color:var(--semantic-color-status-success-foreground)">Skill</span>
+        </div>
+      </div>
+      <div class="consumer">
+        <div class="consumer-name">Claude Code</div>
+        <div class="consumer-desc">CLI / IDE extension</div>
+        <div class="consumer-tags">
+          <span class="ctag" style="background:var(--semantic-color-status-success-background);color:var(--semantic-color-status-success-foreground)">Skill</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="ldot" style="background:var(--semantic-color-background-muted);border:1px solid var(--semantic-color-border-default)"></div>
+    Primitive tier
+  </div>
+  <div class="legend-item">
+    <div class="ldot" style="background:var(--semantic-color-status-warning-background);border:1px solid #dfc880"></div>
+    Semantic tier
+  </div>
+  <div class="legend-item">
+    <div class="ldot" style="background:var(--semantic-color-status-danger-background);border:1px solid #d4a49a"></div>
+    Component tier
+  </div>
+  <div class="legend-item">
+    <div class="ldot" style="background:var(--semantic-color-status-info-background)"></div>
+    MCP Tool
+  </div>
+  <div class="legend-item">
+    <div class="ldot" style="background:var(--semantic-color-status-success-background)"></div>
+    MCP Resource
+  </div>
+  <div class="legend-item">
+    <div class="ldot" style="background:var(--semantic-color-accent-soft)"></div>
+    MCP Prompt
+  </div>
+  <div class="legend-item">
+    <div class="ldot" style="background:var(--semantic-color-secondary-soft)"></div>
+    Skill Knowledge
+  </div>
+</div>
+
+</body>
+</html>

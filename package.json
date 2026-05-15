@@ -19,7 +19,8 @@
     "showcase": "node generate-showcase.js",
     "dashboard": "open examples/dashboard.html",
     "food": "open examples/food-order.html",
-    "prepack": "pnpm run build"
+    "prepack": "pnpm run build",
+    "mcp": "node mcp/index.js"
   },
   "keywords": [
     "design-system",
@@ -34,5 +35,9 @@
   "devDependencies": {
     "style-dictionary": "latest"
   },
-  "packageManager": "pnpm@10.33.4"
+  "packageManager": "pnpm@10.33.4",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  }
 }

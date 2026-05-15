@@ -14,6 +14,17 @@ export default {
           }
         }
       ]
+    },
+    tokensJson: {
+      transformGroup: "js",
+      buildPath: "dist/tokens/",
+      files: [
+        {
+          destination: "semantic.dark.json",
+          format: "json/nested",
+          filter: (token) => token.path[0] === "semantic"
+        }
+      ]
     }
   }
 };

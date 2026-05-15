@@ -52,6 +52,36 @@ The sample semantic token is `--semantic-color-background-brand`.
 import tokens from "design-system/tokens";
 ```
 
+## MCP Token Server
+
+A local [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI assistants search and retrieve tokens directly from your editor.
+
+### Tools
+
+| Tool | Description |
+|---|---|
+| `search_tokens` | Substring search across token paths and resolved values. Accepts optional `tier`, `type`, and `theme` filters. |
+| `get_token` | Exact lookup by token path (e.g. `component.button.primary.bg`). |
+
+Both tools return: `path`, `cssVariable`, `value`, `type`, `tier`. A stale-build warning is appended if source files are newer than the last build.
+
+### Setup
+
+Run `pnpm build` first, then add this to your MCP client config (e.g. Claude Desktop's `claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "design-system-tokens": {
+      "command": "node",
+      "args": ["/absolute/path/to/design-system/mcp/index.js"]
+    }
+  }
+}
+```
+
+Replace `/absolute/path/to/design-system` with the real path on your machine.
+
 ## Publish checklist
 
 1. Run `pnpm run build`

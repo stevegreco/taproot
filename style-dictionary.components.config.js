@@ -19,6 +19,17 @@ export default {
           }
         }
       ]
+    },
+    tokensJson: {
+      transformGroup: "js",
+      buildPath: "dist/tokens/",
+      files: [
+        {
+          destination: "components.json",
+          format: "json/nested",
+          filter: (token) => token.path[0] === "component"
+        }
+      ]
     }
   }
 };
