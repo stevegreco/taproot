@@ -28,8 +28,8 @@ Semantic tokens express *purpose*, not appearance. When in doubt about which to 
 
 | Segment | Meaning |
 |---|---|
-| `bg` | Background color |
-| `fg` | Foreground / text / icon color |
+| `background` | Background color |
+| `foreground` | Foreground / text / icon color |
 | `border` | Border color |
 | `radius` | Border radius |
 | `paddingX` / `paddingY` | Horizontal / vertical padding |
@@ -44,6 +44,6 @@ Semantic tokens express *purpose*, not appearance. When in doubt about which to 
 Token paths map to CSS variables by replacing `.` with `-` and prepending `--`:
 
 ```
-component.button.primary.bg  →  var(--component-button-primary-bg)
+component.button.primary.background  →  var(--component-button-primary-background)
 semantic.color.border.default  →  var(--semantic-color-border-default)
 ```

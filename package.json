@@ -8,7 +8,10 @@
   "exports": {
     ".": "./dist/tokens/primitives.json",
     "./css": "./dist/css/tokens.css",
-    "./tokens": "./dist/tokens/primitives.json"
+    "./tokens/primitives": "./dist/tokens/primitives.json",
+    "./tokens/semantic-light": "./dist/tokens/semantic.light.json",
+    "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
+    "./tokens/components": "./dist/tokens/components.json"
   },
   "files": [
     "dist"

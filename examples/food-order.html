@@ -14,8 +14,8 @@
       --border: var(--semantic-color-border-default);
       --brand: var(--semantic-color-secondary-default);
       --accent: var(--semantic-color-accent-default);
-      --status-danger-fg: var(--semantic-color-status-danger-foreground);
-      --status-danger-bg: var(--semantic-color-status-danger-background);
+      --status-danger-foreground: var(--semantic-color-status-danger-foreground);
+      --status-danger-background: var(--semantic-color-status-danger-background);
     }
 
     /* ─── Reset & base ─── */
@@ -149,13 +149,13 @@
     .error {
       margin-top: var(--primitives-space-1);
       font-size: var(--primitives-text-xs);
-      color: var(--status-danger-fg);
+      color: var(--status-danger-foreground);
     }
 
     input[aria-invalid="true"],
     select[aria-invalid="true"],
     textarea[aria-invalid="true"] {
-      border-color: var(--status-danger-fg);
+      border-color: var(--status-danger-foreground);
     }
 
     /* ─── Submit button ─── */

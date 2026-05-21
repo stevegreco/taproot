@@ -1,36 +1,36 @@
 /* ─── App-level tokens ─── */
 :root {
   /* Nav — always dark, no semantic equivalent */
-  --nav-bg:         var(--primitives-color-blue-smoke-900);
-  --nav-bg-hover:   var(--primitives-color-blue-smoke-800);
-  --nav-bg-active:  var(--primitives-color-blue-smoke-700);
-  --nav-text:       var(--primitives-color-blue-smoke-100);
-  --nav-text-muted: var(--primitives-color-blue-smoke-400);
+  --nav-background:        var(--primitives-color-blue-smoke-900);
+  --nav-background-hover:  var(--primitives-color-blue-smoke-800);
+  --nav-background-active: var(--primitives-color-blue-smoke-700);
+  --nav-text:              var(--primitives-color-blue-smoke-100);
+  --nav-text-muted:        var(--primitives-color-blue-smoke-400);
 
   --border:       var(--semantic-color-border-default);
   --brand:        var(--semantic-color-secondary-default);
   --brand-border: var(--semantic-color-border-default);
   --accent:       var(--semantic-color-accent-default);
 
-  --status-success-bg: var(--semantic-color-status-success-background);
-  --status-success-fg: var(--semantic-color-status-success-foreground);
-  --status-warning-bg: var(--semantic-color-status-warning-background);
-  --status-warning-fg: var(--semantic-color-status-warning-foreground);
-  --status-danger-bg:  var(--semantic-color-status-danger-background);
-  --status-danger-fg:  var(--semantic-color-status-danger-foreground);
-  --status-info-bg:    var(--semantic-color-status-info-background);
-  --status-info-fg:    var(--semantic-color-status-info-foreground);
-  --status-purple-bg:  var(--primitives-color-blue-smoke-100);
-  --status-purple-fg:  var(--primitives-color-blue-smoke-600);
+  --status-success-background: var(--semantic-color-status-success-background);
+  --status-success-foreground: var(--semantic-color-status-success-foreground);
+  --status-warning-background: var(--semantic-color-status-warning-background);
+  --status-warning-foreground: var(--semantic-color-status-warning-foreground);
+  --status-danger-background:  var(--semantic-color-status-danger-background);
+  --status-danger-foreground:  var(--semantic-color-status-danger-foreground);
+  --status-info-background:    var(--semantic-color-status-info-background);
+  --status-info-foreground:    var(--semantic-color-status-info-foreground);
+  --status-purple-background:  var(--primitives-color-blue-smoke-100);
+  --status-purple-foreground:  var(--primitives-color-blue-smoke-600);
 }
 
 [data-theme="dark"] {
-  --nav-bg:        var(--primitives-color-blue-smoke-950);
-  --nav-bg-hover:  var(--primitives-color-blue-smoke-900);
-  --nav-bg-active: var(--primitives-color-blue-smoke-800);
+  --nav-background:        var(--primitives-color-blue-smoke-950);
+  --nav-background-hover:  var(--primitives-color-blue-smoke-900);
+  --nav-background-active: var(--primitives-color-blue-smoke-800);
 
-  --status-purple-bg: var(--primitives-color-blue-smoke-800);
-  --status-purple-fg: var(--primitives-color-blue-smoke-400);
+  --status-purple-background: var(--primitives-color-blue-smoke-800);
+  --status-purple-foreground: var(--primitives-color-blue-smoke-400);
 }
 
 /* ─── Reset & base ─── */
@@ -56,7 +56,7 @@ body {
 /* ─── Sidebar ─── */
 .sidebar {
   grid-row: 1 / -1;
-  background: var(--nav-bg);
+  background: var(--nav-background);
   display: flex;
   flex-direction: column;
   padding: var(--primitives-space-4) 0;
@@ -122,9 +122,9 @@ body {
   margin-bottom: 2px;
 }
 
-.nav-item:hover  { background: var(--nav-bg-hover); }
+.nav-item:hover  { background: var(--nav-background-hover); }
 .nav-item.active {
-  background: var(--nav-bg-active);
+  background: var(--nav-background-active);
   color: var(--primitives-color-white);
   box-shadow: inset 3px 0 0 var(--accent);
 }
@@ -160,7 +160,7 @@ body {
   border-radius: var(--primitives-radius-md);
   transition: background var(--primitives-duration-fast) var(--primitives-ease-out);
 }
-.sidebar-user:hover { background: var(--nav-bg-hover); }
+.sidebar-user:hover { background: var(--nav-background-hover); }
 
 .avatar {
   width: 34px;
@@ -317,9 +317,9 @@ body {
 }
 .kpi-icon svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
 .kpi-icon.brand   { background: var(--semantic-color-accent-soft); color: var(--semantic-color-accent-default); }
-.kpi-icon.success { background: var(--status-success-bg); color: var(--status-success-fg); }
-.kpi-icon.warning { background: var(--status-warning-bg); color: var(--status-warning-fg); }
-.kpi-icon.info    { background: var(--status-info-bg);    color: var(--status-info-fg); }
+.kpi-icon.success { background: var(--status-success-background); color: var(--status-success-foreground); }
+.kpi-icon.warning { background: var(--status-warning-background); color: var(--status-warning-foreground); }
+.kpi-icon.info    { background: var(--status-info-background);    color: var(--status-info-foreground); }
 
 .kpi-value {
   font-size: var(--primitives-text-3xl);
@@ -347,8 +347,8 @@ body {
   border-radius: var(--primitives-radius-full);
   padding: 2px 6px;
 }
-.delta.up   { background: var(--status-success-bg); color: var(--status-success-fg); }
-.delta.down { background: var(--status-danger-bg);  color: var(--status-danger-fg); }
+.delta.up   { background: var(--status-success-background); color: var(--status-success-foreground); }
+.delta.down { background: var(--status-danger-background);  color: var(--status-danger-foreground); }
 .delta svg  { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.5; }
 
 /* Sparkline bars */
@@ -588,10 +588,10 @@ body {
   padding: 2px 8px;
   white-space: nowrap;
 }
-.badge.success { background: var(--status-success-bg); color: var(--status-success-fg); }
-.badge.warning { background: var(--status-warning-bg); color: var(--status-warning-fg); }
-.badge.danger  { background: var(--status-danger-bg);  color: var(--status-danger-fg); }
-.badge.info    { background: var(--status-info-bg);    color: var(--status-info-fg); }
+.badge.success { background: var(--status-success-background); color: var(--status-success-foreground); }
+.badge.warning { background: var(--status-warning-background); color: var(--status-warning-foreground); }
+.badge.danger  { background: var(--status-danger-background);  color: var(--status-danger-foreground); }
+.badge.info    { background: var(--status-info-background);    color: var(--status-info-foreground); }
 .badge.neutral { background: var(--semantic-color-background-sunken); color: var(--semantic-color-foreground-muted); border: var(--primitives-border-thin) solid var(--border); }
 .badge.brand   { background: var(--semantic-color-accent-soft); color: var(--semantic-color-accent-default); }
 
@@ -691,9 +691,9 @@ body {
   border: var(--primitives-border-thin) solid;
 }
 .alert.warning {
-  background: var(--status-warning-bg);
+  background: var(--status-warning-background);
   border-color: var(--primitives-color-rob-roy-200);
-  color: var(--status-warning-fg);
+  color: var(--status-warning-foreground);
 }
 [data-theme="dark"] .alert.warning { border-color: var(--primitives-color-rob-roy-800); }
 .alert svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 1px; }

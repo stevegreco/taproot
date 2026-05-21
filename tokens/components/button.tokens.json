@@ -12,30 +12,30 @@
       "fontSize":   { "$value": "{primitives.text.sm}", "$type": "dimension" },
       "transition": { "$value": "{primitives.duration.fast}", "$type": "duration" },
       "primary": {
-        "bg":         { "$value": "{semantic.color.accent.default}",    "$type": "color" },
-        "bgHover":    { "$value": "{semantic.color.accent.hover}",      "$type": "color" },
-        "bgPress":    { "$value": "{semantic.color.accent.press}",      "$type": "color" },
-        "fg":         { "$value": "{semantic.color.accent.foreground}", "$type": "color" },
-        "border":     { "$value": "{semantic.color.accent.default}",    "$type": "color" }
+        "background":      { "$value": "{semantic.color.accent.default}",    "$type": "color" },
+        "backgroundHover": { "$value": "{semantic.color.accent.hover}",      "$type": "color" },
+        "backgroundPress": { "$value": "{semantic.color.accent.press}",      "$type": "color" },
+        "foreground":      { "$value": "{semantic.color.accent.foreground}", "$type": "color" },
+        "border":          { "$value": "{semantic.color.accent.default}",    "$type": "color" }
       },
       "secondary": {
-        "bg":         { "$value": "transparent",                         "$type": "color" },
-        "bgHover":    { "$value": "{semantic.color.secondary.soft}",     "$type": "color" },
-        "bgPress":    { "$value": "{semantic.color.secondary.soft}",     "$type": "color" },
-        "fg":         { "$value": "{semantic.color.secondary.default}",  "$type": "color" },
-        "border":     { "$value": "{semantic.color.border.default}",     "$type": "color" }
+        "background":      { "$value": "transparent",                         "$type": "color" },
+        "backgroundHover": { "$value": "{semantic.color.secondary.soft}",     "$type": "color" },
+        "backgroundPress": { "$value": "{semantic.color.secondary.soft}",     "$type": "color" },
+        "foreground":      { "$value": "{semantic.color.secondary.default}",  "$type": "color" },
+        "border":          { "$value": "{semantic.color.border.default}",     "$type": "color" }
       },
       "ghost": {
-        "bg":         { "$value": "transparent",                        "$type": "color" },
-        "bgHover":    { "$value": "{semantic.color.secondary.soft}",    "$type": "color" },
-        "fg":         { "$value": "{semantic.color.foreground.default}", "$type": "color" },
-        "border":     { "$value": "transparent",                        "$type": "color" }
+        "background":      { "$value": "transparent",                        "$type": "color" },
+        "backgroundHover": { "$value": "{semantic.color.secondary.soft}",    "$type": "color" },
+        "foreground":      { "$value": "{semantic.color.foreground.default}", "$type": "color" },
+        "border":          { "$value": "transparent",                        "$type": "color" }
       },
       "danger": {
-        "bg":         { "$value": "{semantic.color.status.danger.default}",    "$type": "color" },
-        "bgHover":    { "$value": "{semantic.color.status.danger.foreground}", "$type": "color" },
-        "fg":         { "$value": "{primitives.color.white}",                  "$type": "color" },
-        "border":     { "$value": "{semantic.color.status.danger.default}",    "$type": "color" }
+        "background":      { "$value": "{semantic.color.status.danger.default}",    "$type": "color" },
+        "backgroundHover": { "$value": "{semantic.color.status.danger.foreground}", "$type": "color" },
+        "foreground":      { "$value": "{primitives.color.white}",                  "$type": "color" },
+        "border":          { "$value": "{semantic.color.status.danger.default}",    "$type": "color" }
       }
     }
   }

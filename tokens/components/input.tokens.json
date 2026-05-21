@@ -1,25 +1,25 @@
 {
   "component": {
     "input": {
-      "bg":              { "$value": "{semantic.color.background.raised}",  "$type": "color" },
-      "bgDisabled":      { "$value": "{semantic.color.background.muted}",   "$type": "color" },
-      "border":          { "$value": "{semantic.color.border.default}",     "$type": "color" },
-      "borderHover":     { "$value": "{semantic.color.border.strong}",      "$type": "color" },
-      "borderFocus":     { "$value": "{semantic.color.accent.default}",     "$type": "color" },
-      "borderError":     { "$value": "{semantic.color.status.danger.default}", "$type": "color" },
-      "fg":              { "$value": "{semantic.color.foreground.default}",  "$type": "color" },
-      "fgPlaceholder":   { "$value": "{semantic.color.foreground.faint}",    "$type": "color" },
-      "fgDisabled":      { "$value": "{semantic.color.foreground.subtle}",   "$type": "color" },
-      "labelFg":         { "$value": "{semantic.color.foreground.muted}",    "$type": "color" },
-      "hintFg":          { "$value": "{semantic.color.foreground.subtle}",   "$type": "color" },
-      "errorFg":         { "$value": "{semantic.color.status.danger.foreground}", "$type": "color" },
-      "radius":          { "$value": "{primitives.radius.sm}", "$type": "dimension" },
-      "paddingX":        { "$value": "{primitives.space.3}",   "$type": "dimension" },
-      "paddingY":        { "$value": "{primitives.space.2}",   "$type": "dimension" },
-      "shadow":          { "$value": "{primitives.shadow.inset}", "$type": "shadow" },
-      "shadowFocus":     { "$value": "{primitives.shadow.xs}",    "$type": "shadow" },
-      "fontFamily":      { "$value": "{primitives.font.sans}",    "$type": "fontFamily" },
-      "fontSize":        { "$value": "{primitives.text.sm}",      "$type": "dimension" }
+      "background":            { "$value": "{semantic.color.background.raised}",  "$type": "color" },
+      "backgroundDisabled":    { "$value": "{semantic.color.background.muted}",   "$type": "color" },
+      "border":                { "$value": "{semantic.color.border.default}",     "$type": "color" },
+      "borderHover":           { "$value": "{semantic.color.border.strong}",      "$type": "color" },
+      "borderFocus":           { "$value": "{semantic.color.accent.default}",     "$type": "color" },
+      "borderError":           { "$value": "{semantic.color.status.danger.default}", "$type": "color" },
+      "foreground":            { "$value": "{semantic.color.foreground.default}",  "$type": "color" },
+      "foregroundPlaceholder": { "$value": "{semantic.color.foreground.faint}",    "$type": "color" },
+      "foregroundDisabled":    { "$value": "{semantic.color.foreground.subtle}",   "$type": "color" },
+      "labelForeground":       { "$value": "{semantic.color.foreground.muted}",    "$type": "color" },
+      "hintForeground":        { "$value": "{semantic.color.foreground.subtle}",   "$type": "color" },
+      "errorForeground":       { "$value": "{semantic.color.status.danger.foreground}", "$type": "color" },
+      "radius":                { "$value": "{primitives.radius.sm}", "$type": "dimension" },
+      "paddingX":              { "$value": "{primitives.space.3}",   "$type": "dimension" },
+      "paddingY":              { "$value": "{primitives.space.2}",   "$type": "dimension" },
+      "shadow":                { "$value": "{primitives.shadow.inset}", "$type": "shadow" },
+      "shadowFocus":           { "$value": "{primitives.shadow.xs}",    "$type": "shadow" },
+      "fontFamily":            { "$value": "{primitives.font.sans}",    "$type": "fontFamily" },
+      "fontSize":              { "$value": "{primitives.text.sm}",      "$type": "dimension" }
     }
   }
 }

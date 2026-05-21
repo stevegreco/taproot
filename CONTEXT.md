@@ -8,14 +8,14 @@ The system uses a three-tier token architecture:
 |---|---|
 | **Primitive token** | Raw, scale-based values with no semantic meaning (e.g. `primitives.color.robRoy.700`, `primitives.space.4`). Never referenced directly in component code. |
 | **Semantic token** | Intent-named aliases that reference primitive tokens (e.g. `semantic.color.accent.default`). Theme-aware — light and dark variants exist with identical paths but different resolved values. |
-| **Component token** | Component-scoped aliases that reference semantic tokens (e.g. `component.button.primary.bg`). One file per component. |
+| **Component token** | Component-scoped aliases that reference semantic tokens (e.g. `component.button.primary.background`). One file per component. |
 
 ## Token Identity
 
 | Term | Definition |
 |---|---|
-| **Token path** | Dot-separated key sequence identifying a token (e.g. `component.button.primary.bg`). Derived from the nested JSON structure. |
-| **CSS variable** | The CSS custom property name emitted by Style Dictionary for a token (e.g. `--component-button-primary-bg`). Derived mechanically from the token path. |
+| **Token path** | Dot-separated key sequence identifying a token (e.g. `component.button.primary.background`). Derived from the nested JSON structure. |
+| **CSS variable** | The CSS custom property name emitted by Style Dictionary for a token (e.g. `--component-button-primary-background`). Derived mechanically from the token path. |
 | **Resolved value** | The final computed value of a token after Style Dictionary has followed all alias references (e.g. `#a0501d`). Lives in `dist/tokens/`. |
 | **Raw value** | The alias reference as written in the source token file (e.g. `{semantic.color.accent.default}`). Lives in `tokens/`. |
 
@@ -40,8 +40,8 @@ The shape returned by both MCP tools:
 
 | Field | Example |
 |---|---|
-| `path` | `component.button.primary.bg` |
-| `cssVariable` | `--component-button-primary-bg` |
+| `path` | `component.button.primary.background` |
+| `cssVariable` | `--component-button-primary-background` |
 | `value` | `#a0501d` |
 | `type` | `color` |
 | `tier` | `component` |

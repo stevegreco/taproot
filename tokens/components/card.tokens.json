@@ -1,7 +1,7 @@
 {
   "component": {
     "card": {
-      "bg":          { "$value": "{semantic.color.background.raised}",  "$type": "color" },
+      "background":  { "$value": "{semantic.color.background.raised}",  "$type": "color" },
       "border":      { "$value": "{semantic.color.border.default}",     "$type": "color" },
       "radius":      { "$value": "{primitives.radius.lg}", "$type": "dimension" },
       "shadow":      { "$value": "{primitives.shadow.sm}", "$type": "shadow" },
@@ -9,8 +9,8 @@
       "padding":     { "$value": "{primitives.space.6}",   "$type": "dimension" },
       "gap":         { "$value": "{primitives.space.4}",   "$type": "dimension" },
       "warm": {
-        "bg":     { "$value": "{semantic.color.accent.soft}",    "$type": "color" },
-        "border": { "$value": "{semantic.color.border.warm}",    "$type": "color" }
+        "background": { "$value": "{semantic.color.accent.soft}",    "$type": "color" },
+        "border":     { "$value": "{semantic.color.border.warm}",    "$type": "color" }
       }
     }
   }

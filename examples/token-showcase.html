@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Design Token Showcase</title>
+  <link rel="stylesheet" href="../dist/css/tokens.css" />
+  <style>
+    :root {
+      color-scheme: light dark;
+      --ui-bg: #0f172a;
+      --ui-bg-soft: #111827;
+      --ui-card: #1f2937;
+      --ui-text: #f8fafc;
+      --ui-muted: #94a3b8;
+      --ui-border: #334155;
+    }
+    :root:not([data-theme="dark"]) {
+      --ui-bg: #f8fafc;
+      --ui-bg-soft: #eef2f7;
+      --ui-card: #ffffff;
+      --ui-text: #0f172a;
+      --ui-muted: #475569;
+      --ui-border: #dbe5ef;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px;
+      background: radial-gradient(1200px 400px at 20% -10%, #1e293b 0%, var(--ui-bg) 45%);
+      color: var(--ui-text);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      line-height: 1.45;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    .hero {
+      background: linear-gradient(135deg, var(--ui-card), var(--ui-bg-soft));
+      border: 1px solid var(--ui-border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    h1 { margin: 0; font-size: 1.8rem; }
+    .muted { color: var(--ui-muted); margin: 6px 0 0; }
+    .controls { display: flex; gap: 8px; }
+    button {
+      border: 1px solid var(--ui-border);
+      background: var(--ui-card);
+      color: var(--ui-text);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .semantic-banner {
+      background: var(--semantic-color-background-brand);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    section { margin-bottom: 24px; }
+    h2 { margin: 0 0 10px; font-size: 1.2rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 12px;
+    }
+    .scale-list {
+      display: grid;
+      gap: 12px;
+    }
+    .scale-row {
+      background: var(--ui-card);
+      border: 1px solid var(--ui-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    .scale-title h3 {
+      margin: 0;
+      font-size: 0.95rem;
+      text-transform: capitalize;
+      letter-spacing: 0.02em;
+    }
+    .scale-swatches {
+      display: flex;
+      gap: 10px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .scale-swatch-wrap {
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+      min-width: 46px;
+    }
+    .scale-swatch {
+      width: 46px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+    .scale-step {
+      font-size: 0.7rem;
+      color: var(--ui-muted);
+    }
+    .token-card {
+      background: var(--ui-card);
+      border: 1px solid var(--ui-border);
+      border-radius: 12px;
+      padding: 10px;
+      min-height: 88px;
+    }
+    .token-meta { margin-top: 8px; display: grid; gap: 4px; }
+    .token-name, .token-value {
+      font-size: 0.75rem;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--ui-muted);
+    }
+    .color-swatch {
+      height: 58px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .type-sample { margin: 0; }
+    .space-row { height: 32px; display: flex; align-items: center; }
+    .space-bar {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #6366f1);
+    }
+    .radius-box {
+      height: 56px;
+      border: 1px solid var(--ui-border);
+      background: linear-gradient(135deg, #34d399, #10b981);
+    }
+    .shadow-box {
+      height: 56px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+    }
+    .font-sample { margin: 0; font-size: 1.45rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <h1>Design Token Showcase</h1>
+        <p class="muted">Generated from dist/css/tokens.css</p>
+      </div>
+      <div class="controls">
+        <button id="lightBtn" type="button">Light</button>
+        <button id="darkBtn" type="button">Dark</button>
+      </div>
+    </header>
+
+    <p class="semantic-banner">
+      Semantic background preview using <code>--semantic-color-background-brand</code>
+    </p>
+
+    <section>
+      <h2>Semantic Colors (Light)</h2>
+      <div class="grid"><article class="token-card">
+  <div class="color-swatch" style="background:#faf6f0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-background-default</code>
+    <code class="token-value">#faf6f0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#ffffff;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-background-raised</code>
+    <code class="token-value">#ffffff</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#f2ebdf;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-background-sunken</code>
+    <code class="token-value">#f2ebdf</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#e0e7e3;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-background-muted</code>
+    <code class="token-value">#e0e7e3</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#171c1a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-default</code>
+    <code class="token-value">#171c1a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#3b4a43;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-muted</code>
+    <code class="token-value">#3b4a43</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#5b7168;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-subtle</code>
+    <code class="token-value">#5b7168</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#7a9086;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-faint</code>
+    <code class="token-value">#7a9086</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#faf6f0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-on-accent</code>
+    <code class="token-value">#faf6f0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#faf6f0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-inverse</code>
+    <code class="token-value">#faf6f0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#c1cec7;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-border-default</code>
+    <code class="token-value">#c1cec7</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#9aaea4;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-border-strong</code>
+    <code class="token-value">#9aaea4</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#e6d8c3;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-border-subtle</code>
+    <code class="token-value">#e6d8c3</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#efda98;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-border-warm</code>
+    <code class="token-value">#efda98</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#a0501d;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-default</code>
+    <code class="token-value">#a0501d</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#823f1e;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-hover</code>
+    <code class="token-value">#823f1e</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#6b341c;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-press</code>
+    <code class="token-value">#6b341c</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#f7edce;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-soft</code>
+    <code class="token-value">#f7edce</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#faf6f0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-foreground</code>
+    <code class="token-value">#faf6f0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#3b4a43;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-secondary-default</code>
+    <code class="token-value">#3b4a43</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#323d38;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-secondary-hover</code>
+    <code class="token-value">#323d38</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#e0e7e3;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-secondary-soft</code>
+    <code class="token-value">#e0e7e3</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#6b8e5a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-success-default</code>
+    <code class="token-value">#6b8e5a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#4a6b3d;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-success-foreground</code>
+    <code class="token-value">#4a6b3d</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#e3ecd9;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-success-background</code>
+    <code class="token-value">#e3ecd9</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#b8472a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-danger-default</code>
+    <code class="token-value">#b8472a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#84301c;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-danger-foreground</code>
+    <code class="token-value">#84301c</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#f5dbd0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-danger-background</code>
+    <code class="token-value">#f5dbd0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#c06d1f;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-warning-default</code>
+    <code class="token-value">#c06d1f</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#823f1e;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-warning-foreground</code>
+    <code class="token-value">#823f1e</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#f7edce;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-warning-background</code>
+    <code class="token-value">#f7edce</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#4a7896;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-info-default</code>
+    <code class="token-value">#4a7896</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#2f5973;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-info-foreground</code>
+    <code class="token-value">#2f5973</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#d6e1ea;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-info-background</code>
+    <code class="token-value">#d6e1ea</code>
+  </div>
+</article></div>
+    </section>
+
+    <section>
+      <h2>Semantic Colors (Dark)</h2>
+      <div class="grid"><article class="token-card">
+  <div class="color-swatch" style="background:#171c1a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-background-default</code>
+    <code class="token-value">#171c1a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#2c3531;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-background-raised</code>
+    <code class="token-value">#2c3531</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#0e1211;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-background-sunken</code>
+    <code class="token-value">#0e1211</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#323d38;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-background-muted</code>
+    <code class="token-value">#323d38</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#faf6f0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-default</code>
+    <code class="token-value">#faf6f0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#c1cec7;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-muted</code>
+    <code class="token-value">#c1cec7</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#9aaea4;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-subtle</code>
+    <code class="token-value">#9aaea4</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#5b7168;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-faint</code>
+    <code class="token-value">#5b7168</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#171c1a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-on-accent</code>
+    <code class="token-value">#171c1a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#171c1a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-foreground-inverse</code>
+    <code class="token-value">#171c1a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#323d38;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-border-default</code>
+    <code class="token-value">#323d38</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#3b4a43;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-border-strong</code>
+    <code class="token-value">#3b4a43</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#2c3531;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-border-subtle</code>
+    <code class="token-value">#2c3531</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#823f1e;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-border-warm</code>
+    <code class="token-value">#823f1e</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#e1ac3e;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-default</code>
+    <code class="token-value">#e1ac3e</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#e8c468;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-hover</code>
+    <code class="token-value">#e8c468</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#d98f27;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-press</code>
+    <code class="token-value">#d98f27</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#3a2e1e;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-soft</code>
+    <code class="token-value">#3a2e1e</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#171c1a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-accent-foreground</code>
+    <code class="token-value">#171c1a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#c1cec7;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-secondary-default</code>
+    <code class="token-value">#c1cec7</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#faf6f0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-secondary-hover</code>
+    <code class="token-value">#faf6f0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#323d38;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-secondary-soft</code>
+    <code class="token-value">#323d38</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#6b8e5a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-success-default</code>
+    <code class="token-value">#6b8e5a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#e3ecd9;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-success-foreground</code>
+    <code class="token-value">#e3ecd9</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#394739;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-success-background</code>
+    <code class="token-value">#394739</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#b8472a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-danger-default</code>
+    <code class="token-value">#b8472a</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#f5dbd0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-danger-foreground</code>
+    <code class="token-value">#f5dbd0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#483930;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-danger-background</code>
+    <code class="token-value">#483930</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#d98f27;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-warning-default</code>
+    <code class="token-value">#d98f27</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#f7edce;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-warning-foreground</code>
+    <code class="token-value">#f7edce</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#51432d;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-warning-background</code>
+    <code class="token-value">#51432d</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#4a7896;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-info-default</code>
+    <code class="token-value">#4a7896</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#d6e1ea;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-info-foreground</code>
+    <code class="token-value">#d6e1ea</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="color-swatch" style="background:#34464a;"></div>
+  <div class="token-meta">
+    <code class="token-name">--semantic-color-status-info-background</code>
+    <code class="token-value">#34464a</code>
+  </div>
+</article></div>
+    </section>
+
+    <section>
+      <h2>Primitive Colors</h2>
+      <div class="scale-list"><article class="scale-row">
+  <div class="scale-title">
+    <h3>black</h3>
+  </div>
+  <div class="scale-swatches">
+    <div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#000000;" title="--primitives-color-black: #000000"></div>
+      <code class="scale-step">black</code>
+    </div>
+  </div>
+</article>
+<article class="scale-row">
+  <div class="scale-title">
+    <h3>blue-smoke</h3>
+  </div>
+  <div class="scale-swatches">
+    <div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#f6f7f7;" title="--primitives-color-blue-smoke-50: #f6f7f7"></div>
+      <code class="scale-step">50</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#e0e7e3;" title="--primitives-color-blue-smoke-100: #e0e7e3"></div>
+      <code class="scale-step">100</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#c1cec7;" title="--primitives-color-blue-smoke-200: #c1cec7"></div>
+      <code class="scale-step">200</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#9aaea4;" title="--primitives-color-blue-smoke-300: #9aaea4"></div>
+      <code class="scale-step">300</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#7a9086;" title="--primitives-color-blue-smoke-400: #7a9086"></div>
+      <code class="scale-step">400</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#5b7168;" title="--primitives-color-blue-smoke-500: #5b7168"></div>
+      <code class="scale-step">500</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#475a52;" title="--primitives-color-blue-smoke-600: #475a52"></div>
+      <code class="scale-step">600</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#3b4a43;" title="--primitives-color-blue-smoke-700: #3b4a43"></div>
+      <code class="scale-step">700</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#323d38;" title="--primitives-color-blue-smoke-800: #323d38"></div>
+      <code class="scale-step">800</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#2c3531;" title="--primitives-color-blue-smoke-900: #2c3531"></div>
+      <code class="scale-step">900</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#171c1a;" title="--primitives-color-blue-smoke-950: #171c1a"></div>
+      <code class="scale-step">950</code>
+    </div>
+  </div>
+</article>
+<article class="scale-row">
+  <div class="scale-title">
+    <h3>clay</h3>
+  </div>
+  <div class="scale-swatches">
+    <div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#faf6f0;" title="--primitives-color-clay-50: #faf6f0"></div>
+      <code class="scale-step">50</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#f2ebdf;" title="--primitives-color-clay-100: #f2ebdf"></div>
+      <code class="scale-step">100</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#e6d8c3;" title="--primitives-color-clay-200: #e6d8c3"></div>
+      <code class="scale-step">200</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#d4bea0;" title="--primitives-color-clay-300: #d4bea0"></div>
+      <code class="scale-step">300</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#b89977;" title="--primitives-color-clay-400: #b89977"></div>
+      <code class="scale-step">400</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#9a7a58;" title="--primitives-color-clay-500: #9a7a58"></div>
+      <code class="scale-step">500</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#7c6044;" title="--primitives-color-clay-600: #7c6044"></div>
+      <code class="scale-step">600</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#5e4733;" title="--primitives-color-clay-700: #5e4733"></div>
+      <code class="scale-step">700</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#3f2f22;" title="--primitives-color-clay-800: #3f2f22"></div>
+      <code class="scale-step">800</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#221a13;" title="--primitives-color-clay-900: #221a13"></div>
+      <code class="scale-step">900</code>
+    </div>
+  </div>
+</article>
+<article class="scale-row">
+  <div class="scale-title">
+    <h3>moss</h3>
+  </div>
+  <div class="scale-swatches">
+    <div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#e3ecd9;" title="--primitives-color-moss-100: #e3ecd9"></div>
+      <code class="scale-step">100</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#6b8e5a;" title="--primitives-color-moss-500: #6b8e5a"></div>
+      <code class="scale-step">500</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#4a6b3d;" title="--primitives-color-moss-700: #4a6b3d"></div>
+      <code class="scale-step">700</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#394739;" title="--primitives-color-moss-900: #394739"></div>
+      <code class="scale-step">900</code>
+    </div>
+  </div>
+</article>
+<article class="scale-row">
+  <div class="scale-title">
+    <h3>rob-roy</h3>
+  </div>
+  <div class="scale-swatches">
+    <div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#fdf9ed;" title="--primitives-color-rob-roy-50: #fdf9ed"></div>
+      <code class="scale-step">50</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#f7edce;" title="--primitives-color-rob-roy-100: #f7edce"></div>
+      <code class="scale-step">100</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#efda98;" title="--primitives-color-rob-roy-200: #efda98"></div>
+      <code class="scale-step">200</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#e8c468;" title="--primitives-color-rob-roy-300: #e8c468"></div>
+      <code class="scale-step">300</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#e1ac3e;" title="--primitives-color-rob-roy-400: #e1ac3e"></div>
+      <code class="scale-step">400</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#d98f27;" title="--primitives-color-rob-roy-500: #d98f27"></div>
+      <code class="scale-step">500</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#c06d1f;" title="--primitives-color-rob-roy-600: #c06d1f"></div>
+      <code class="scale-step">600</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#a0501d;" title="--primitives-color-rob-roy-700: #a0501d"></div>
+      <code class="scale-step">700</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#823f1e;" title="--primitives-color-rob-roy-800: #823f1e"></div>
+      <code class="scale-step">800</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#6b341c;" title="--primitives-color-rob-roy-900: #6b341c"></div>
+      <code class="scale-step">900</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#3d1a0b;" title="--primitives-color-rob-roy-950: #3d1a0b"></div>
+      <code class="scale-step">950</code>
+    </div>
+  </div>
+</article>
+<article class="scale-row">
+  <div class="scale-title">
+    <h3>rust</h3>
+  </div>
+  <div class="scale-swatches">
+    <div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#f5dbd0;" title="--primitives-color-rust-100: #f5dbd0"></div>
+      <code class="scale-step">100</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#b8472a;" title="--primitives-color-rust-500: #b8472a"></div>
+      <code class="scale-step">500</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#84301c;" title="--primitives-color-rust-700: #84301c"></div>
+      <code class="scale-step">700</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#483930;" title="--primitives-color-rust-900: #483930"></div>
+      <code class="scale-step">900</code>
+    </div>
+  </div>
+</article>
+<article class="scale-row">
+  <div class="scale-title">
+    <h3>sky</h3>
+  </div>
+  <div class="scale-swatches">
+    <div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#d6e1ea;" title="--primitives-color-sky-100: #d6e1ea"></div>
+      <code class="scale-step">100</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#4a7896;" title="--primitives-color-sky-500: #4a7896"></div>
+      <code class="scale-step">500</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#2f5973;" title="--primitives-color-sky-700: #2f5973"></div>
+      <code class="scale-step">700</code>
+    </div>
+<div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#34464a;" title="--primitives-color-sky-900: #34464a"></div>
+      <code class="scale-step">900</code>
+    </div>
+  </div>
+</article>
+<article class="scale-row">
+  <div class="scale-title">
+    <h3>white</h3>
+  </div>
+  <div class="scale-swatches">
+    <div class="scale-swatch-wrap">
+      <div class="scale-swatch" style="background:#ffffff;" title="--primitives-color-white: #ffffff"></div>
+      <code class="scale-step">white</code>
+    </div>
+  </div>
+</article></div>
+    </section>
+
+    <section>
+      <h2>Typography Scale</h2>
+      <div class="grid"><article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-2xs); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-2xs</code>
+    <code class="token-value">11px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-xs); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-xs</code>
+    <code class="token-value">12px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-sm); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-sm</code>
+    <code class="token-value">14px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-base); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-base</code>
+    <code class="token-value">16px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-md); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-md</code>
+    <code class="token-value">18px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-lg); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-lg</code>
+    <code class="token-value">20px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-xl); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-xl</code>
+    <code class="token-value">24px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-2xl); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-2xl</code>
+    <code class="token-value">30px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-3xl); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-3xl</code>
+    <code class="token-value">38px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-4xl); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-4xl</code>
+    <code class="token-value">48px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-5xl); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-5xl</code>
+    <code class="token-value">60px</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="type-sample" style="font-size: var(--primitives-text-6xl); font-family: var(--primitives-font-sans);">
+    The quick brown fox jumps over the lazy dog
+  </p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-text-6xl</code>
+    <code class="token-value">76px</code>
+  </div>
+</article></div>
+    </section>
+
+    <section>
+      <h2>Font Families</h2>
+      <div class="grid"><article class="token-card">
+  <p class="font-sample" style="font-family:'Lora', Georgia, serif;">Aa Bb Cc 123</p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-font-display</code>
+    <code class="token-value">'Lora', Georgia, serif</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="font-sample" style="font-family:'Source Sans 3', system-ui, -apple-system, sans-serif;">Aa Bb Cc 123</p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-font-sans</code>
+    <code class="token-value">'Source Sans 3', system-ui, -apple-system, sans-serif</code>
+  </div>
+</article>
+<article class="token-card">
+  <p class="font-sample" style="font-family:'JetBrains Mono', 'SF Mono', Menlo, monospace;">Aa Bb Cc 123</p>
+  <div class="token-meta">
+    <code class="token-name">--primitives-font-mono</code>
+    <code class="token-value">'JetBrains Mono', 'SF Mono', Menlo, monospace</code>
+  </div>
+</article></div>
+    </section>
+
+    <section>
+      <h2>Spacing Scale</h2>
+      <div class="grid"><article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(0 * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-0</code>
+    <code class="token-value">0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(4px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-1</code>
+    <code class="token-value">4px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(8px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-2</code>
+    <code class="token-value">8px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(12px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-3</code>
+    <code class="token-value">12px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(16px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-4</code>
+    <code class="token-value">16px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(20px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-5</code>
+    <code class="token-value">20px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(24px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-6</code>
+    <code class="token-value">24px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(32px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-8</code>
+    <code class="token-value">32px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(40px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-10</code>
+    <code class="token-value">40px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(48px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-12</code>
+    <code class="token-value">48px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(64px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-16</code>
+    <code class="token-value">64px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(80px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-20</code>
+    <code class="token-value">80px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(96px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-24</code>
+    <code class="token-value">96px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(128px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-32</code>
+    <code class="token-value">128px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="space-row">
+    <div class="space-bar" style="width:max(8px, min(260px, calc(1px * 14)));"></div>
+  </div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-space-px</code>
+    <code class="token-value">1px</code>
+  </div>
+</article></div>
+    </section>
+
+    <section>
+      <h2>Radius</h2>
+      <div class="grid"><article class="token-card">
+  <div class="radius-box" style="border-radius:0;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-radius-none</code>
+    <code class="token-value">0</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="radius-box" style="border-radius:3px;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-radius-xs</code>
+    <code class="token-value">3px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="radius-box" style="border-radius:6px;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-radius-sm</code>
+    <code class="token-value">6px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="radius-box" style="border-radius:10px;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-radius-md</code>
+    <code class="token-value">10px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="radius-box" style="border-radius:14px;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-radius-lg</code>
+    <code class="token-value">14px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="radius-box" style="border-radius:20px;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-radius-xl</code>
+    <code class="token-value">20px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="radius-box" style="border-radius:28px;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-radius-2xl</code>
+    <code class="token-value">28px</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="radius-box" style="border-radius:9999px;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-radius-full</code>
+    <code class="token-value">9999px</code>
+  </div>
+</article></div>
+    </section>
+
+    <section>
+      <h2>Shadows</h2>
+      <div class="grid"><article class="token-card">
+  <div class="shadow-box" style="box-shadow:0 1px 2px rgba(61, 26, 11, 0.06);"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-shadow-xs</code>
+    <code class="token-value">0 1px 2px rgba(61, 26, 11, 0.06)</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="shadow-box" style="box-shadow:0 1px 2px rgba(61, 26, 11, 0.05), 0 2px 4px rgba(61, 26, 11, 0.04);"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-shadow-sm</code>
+    <code class="token-value">0 1px 2px rgba(61, 26, 11, 0.05), 0 2px 4px rgba(61, 26, 11, 0.04)</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="shadow-box" style="box-shadow:0 2px 4px rgba(61, 26, 11, 0.05), 0 6px 14px rgba(61, 26, 11, 0.07);"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-shadow-md</code>
+    <code class="token-value">0 2px 4px rgba(61, 26, 11, 0.05), 0 6px 14px rgba(61, 26, 11, 0.07)</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="shadow-box" style="box-shadow:0 4px 8px rgba(61, 26, 11, 0.06), 0 16px 32px rgba(61, 26, 11, 0.10);"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-shadow-lg</code>
+    <code class="token-value">0 4px 8px rgba(61, 26, 11, 0.06), 0 16px 32px rgba(61, 26, 11, 0.10)</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="shadow-box" style="box-shadow:0 8px 16px rgba(61, 26, 11, 0.08), 0 32px 64px rgba(61, 26, 11, 0.14);"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-shadow-xl</code>
+    <code class="token-value">0 8px 16px rgba(61, 26, 11, 0.08), 0 32px 64px rgba(61, 26, 11, 0.14)</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="shadow-box" style="box-shadow:inset 0 1px 2px rgba(61, 26, 11, 0.08);"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-shadow-inset</code>
+    <code class="token-value">inset 0 1px 2px rgba(61, 26, 11, 0.08)</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="shadow-box" style="box-shadow:inset 0 2px 6px rgba(61, 26, 11, 0.10);"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-shadow-inset-lg</code>
+    <code class="token-value">inset 0 2px 6px rgba(61, 26, 11, 0.10)</code>
+  </div>
+</article>
+<article class="token-card">
+  <div class="shadow-box" style="box-shadow:0 0 #0000;"></div>
+  <div class="token-meta">
+    <code class="token-name">--primitives-shadow-none</code>
+    <code class="token-value">0 0 #0000</code>
+  </div>
+</article></div>
+    </section>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    document.getElementById("lightBtn").addEventListener("click", () => root.removeAttribute("data-theme"));
+    document.getElementById("darkBtn").addEventListener("click", () => root.setAttribute("data-theme", "dark"));
+  </script>
+</body>
+</html>
