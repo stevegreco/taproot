@@ -1,0 +1,188 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Installation — Design System">
+  <div class="page">
+    <header class="page-header">
+      <p class="eyebrow">Getting Started</p>
+      <h1>Installation</h1>
+      <p class="lead">
+        Add the design system token package to your project and start using
+        tokens in CSS, JSON, or directly via the MCP server.
+      </p>
+    </header>
+
+    <section class="section">
+      <h2>Requirements</h2>
+      <ul class="list">
+        <li>Node.js <code>≥ 22.12</code></li>
+        <li>pnpm, npm, or yarn</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Install the package</h2>
+      <p>Add the package from the workspace (or npm registry once published):</p>
+      <div class="code-block">
+        <p class="code-block-label">pnpm</p>
+        <pre><code>pnpm add @stevegreco/design-system</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Import the CSS tokens</h2>
+      <p>
+        The single CSS file includes all three tiers — primitives, semantic
+        aliases, and component tokens — scoped to <code>:root</code> with dark
+        theme overrides under <code>:root[data-theme="dark"]</code>.
+      </p>
+      <div class="code-block">
+        <p class="code-block-label">CSS / PostCSS</p>
+        <pre><code>@import '@stevegreco/design-system/css';</code></pre>
+      </div>
+      <div class="code-block">
+        <p class="code-block-label">JavaScript / TypeScript bundler</p>
+        <pre><code>import '@stevegreco/design-system/css';</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Dark mode</h2>
+      <p>
+        Set <code>data-theme="dark"</code> on the <code>&lt;html&gt;</code> element
+        to switch all semantic tokens to their dark-mode values automatically.
+        Primitive tokens are unchanged — only the semantic layer swaps.
+      </p>
+      <div class="code-block">
+        <p class="code-block-label">HTML</p>
+        <pre><code>&lt;html data-theme="dark"&gt;</code></pre>
+      </div>
+      <div class="code-block">
+        <p class="code-block-label">JavaScript</p>
+        <pre><code>document.documentElement.dataset.theme = 'dark';</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>JSON token access</h2>
+      <p>
+        Import individual token tiers as structured JSON for use in design tools,
+        build scripts, or Style Dictionary pipelines.
+      </p>
+      <div class="code-block">
+        <p class="code-block-label">JavaScript / TypeScript</p>
+        <pre><code>import primitives from '@stevegreco/design-system/tokens/primitives';
+import semanticLight from '@stevegreco/design-system/tokens/semantic-light';
+import semanticDark from '@stevegreco/design-system/tokens/semantic-dark';
+import components from '@stevegreco/design-system/tokens/components';</code></pre>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .page {
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--semantic-color-border-default);
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-size: var(--primitives-text-2xs);
+    font-weight: var(--primitives-weight-semibold);
+    letter-spacing: var(--primitives-tracking-caps);
+    text-transform: uppercase;
+    color: var(--semantic-color-accent-default);
+  }
+
+  h1 {
+    font-size: var(--primitives-text-3xl);
+    letter-spacing: var(--primitives-tracking-tight);
+  }
+
+  .lead {
+    margin: 0;
+    font-size: var(--primitives-text-md);
+    color: var(--semantic-color-foreground-muted);
+    line-height: var(--primitives-leading-relaxed);
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  h2 {
+    font-size: var(--primitives-text-xl);
+    letter-spacing: var(--primitives-tracking-snug);
+  }
+
+  p {
+    margin: 0;
+    color: var(--semantic-color-foreground-muted);
+    line-height: var(--primitives-leading-relaxed);
+  }
+
+  .list {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    color: var(--semantic-color-foreground-muted);
+  }
+
+  code {
+    font-size: 0.875em;
+    padding: 0.1em 0.35em;
+    background-color: var(--semantic-color-background-muted);
+    border-radius: 4px;
+    color: var(--semantic-color-foreground-default);
+  }
+
+  .code-block {
+    background-color: var(--semantic-color-background-raised);
+    border: 1px solid var(--semantic-color-border-default);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .code-block-label {
+    margin: 0;
+    padding: 0.375rem 1rem;
+    font-size: var(--primitives-text-2xs);
+    font-weight: var(--primitives-weight-semibold);
+    letter-spacing: var(--primitives-tracking-caps);
+    text-transform: uppercase;
+    color: var(--semantic-color-foreground-subtle);
+    background-color: var(--semantic-color-background-sunken);
+    border-bottom: 1px solid var(--semantic-color-border-default);
+  }
+
+  pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: var(--primitives-text-sm);
+    color: var(--semantic-color-foreground-default);
+    line-height: var(--primitives-leading-relaxed);
+  }
+</style>

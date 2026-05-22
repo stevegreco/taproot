@@ -1,0 +1,46 @@
+{
+  "name": "@stevegreco/design-system",
+  "version": "0.0.2",
+  "description": "Design tokens distributed as CSS and JSON artifacts.",
+  "type": "module",
+  "main": "./dist/tokens/primitives.json",
+  "style": "./dist/css/tokens.css",
+  "exports": {
+    ".": "./dist/tokens/primitives.json",
+    "./css": "./dist/css/tokens.css",
+    "./tokens/primitives": "./dist/tokens/primitives.json",
+    "./tokens/semantic-light": "./dist/tokens/semantic.light.json",
+    "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
+    "./tokens/components": "./dist/tokens/components.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm run clean && node build-tokens.js && node build-css.js",
+    "showcase": "node generate-showcase.js",
+    "dashboard": "open examples/dashboard.html",
+    "food": "open examples/food-order.html",
+    "prepack": "pnpm run build",
+    "mcp": "node mcp/index.js"
+  },
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "css-variables"
+  ],
+  "author": "Steve Greco",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "style-dictionary": "latest"
+  },
+  "packageManager": "pnpm@10.33.4",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  }
+}
