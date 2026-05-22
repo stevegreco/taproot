@@ -1,6 +1,6 @@
 {
   "name": "@stevegreco/design-system",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Design tokens distributed as CSS and JSON artifacts.",
   "type": "module",
   "main": "./dist/tokens/primitives.json",
