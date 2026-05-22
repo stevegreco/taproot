@@ -13,8 +13,12 @@
     "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
     "./tokens/components": "./dist/tokens/components.json"
   },
+  "bin": {
+    "design-system-mcp": "mcp/index.js"
+  },
   "files": [
-    "dist"
+    "dist",
+    "mcp"
   ],
   "scripts": {
     "clean": "rm -rf dist",
