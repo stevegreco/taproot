@@ -33,8 +33,8 @@
       },
       "danger": {
         "background":      { "$value": "{semantic.color.status.danger.default}",    "$type": "color" },
-        "backgroundHover": { "$value": "{semantic.color.status.danger.foreground}", "$type": "color" },
-        "foreground":      { "$value": "{primitives.color.white}",                  "$type": "color" },
+        "backgroundHover": { "$value": "{semantic.color.status.danger.hover}",      "$type": "color" },
+        "foreground":      { "$value": "{semantic.color.status.danger.onDefault}",  "$type": "color" },
         "border":          { "$value": "{semantic.color.status.danger.default}",    "$type": "color" }
       }
     }

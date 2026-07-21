@@ -11,14 +11,17 @@
     "./tokens/primitives": "./dist/tokens/primitives.json",
     "./tokens/semantic-light": "./dist/tokens/semantic.light.json",
     "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
-    "./tokens/components": "./dist/tokens/components.json"
+    "./tokens/components": "./dist/tokens/components.json",
+    "./read-tokens": "./src/read-tokens.js",
+    "./flatten": "./src/flatten.js"
   },
   "bin": {
     "design-system-mcp": "mcp/index.js"
   },
   "files": [
     "dist",
-    "mcp"
+    "mcp",
+    "src"
   ],
   "scripts": {
     "clean": "rm -rf dist",
@@ -40,7 +43,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "style-dictionary": "latest"
+    "style-dictionary": "^5.5.0"
   },
   "packageManager": "pnpm@10.33.4",
   "dependencies": {

@@ -4,7 +4,7 @@
       "background": {
         "default":  { "$value": "{primitives.color.blueSmoke.950}", "$type": "color" },
         "raised":   { "$value": "{primitives.color.blueSmoke.900}", "$type": "color" },
-        "sunken":   { "$value": "#0e1211",               "$type": "color" },
+        "sunken":   { "$value": "{primitives.color.blueSmoke.975}", "$type": "color" },
         "muted":    { "$value": "{primitives.color.blueSmoke.800}", "$type": "color" }
       },
       "foreground": {
@@ -25,7 +25,7 @@
         "default":    { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
         "hover":      { "$value": "{primitives.color.robRoy.300}", "$type": "color" },
         "press":      { "$value": "{primitives.color.robRoy.500}", "$type": "color" },
-        "soft":       { "$value": "#3a2e1e",            "$type": "color" },
+        "soft":       { "$value": "{primitives.color.robRoy.925}", "$type": "color" },
         "foreground": { "$value": "{primitives.color.blueSmoke.950}", "$type": "color" }
       },
       "secondary": {
@@ -41,13 +41,15 @@
         },
         "danger": {
           "default":    { "$value": "{primitives.color.rust.500}", "$type": "color" },
+          "hover":      { "$value": "{primitives.color.rust.700}", "$type": "color" },
+          "onDefault":  { "$value": "{primitives.color.white}",    "$type": "color" },
           "foreground": { "$value": "{primitives.color.rust.100}", "$type": "color" },
           "background": { "$value": "{primitives.color.rust.900}", "$type": "color" }
         },
         "warning": {
           "default":    { "$value": "{primitives.color.robRoy.500}", "$type": "color" },
           "foreground": { "$value": "{primitives.color.robRoy.100}", "$type": "color" },
-          "background": { "$value": "#51432d",            "$type": "color" }
+          "background": { "$value": "{primitives.color.robRoy.850}", "$type": "color" }
         },
         "info": {
           "default":    { "$value": "{primitives.color.sky.500}", "$type": "color" },

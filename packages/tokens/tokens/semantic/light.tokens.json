@@ -41,6 +41,8 @@
         },
         "danger": {
           "default":    { "$value": "{primitives.color.rust.500}", "$type": "color" },
+          "hover":      { "$value": "{primitives.color.rust.700}", "$type": "color" },
+          "onDefault":  { "$value": "{primitives.color.white}",    "$type": "color" },
           "foreground": { "$value": "{primitives.color.rust.700}", "$type": "color" },
           "background": { "$value": "{primitives.color.rust.100}", "$type": "color" }
         },

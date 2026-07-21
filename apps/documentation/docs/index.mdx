@@ -1,0 +1,53 @@
+---
+title: Introduction
+description: Build consistent, themeable interfaces with a token-first design system.
+---
+
+This design system provides a shared language for color, typography, spacing,
+and component decisions. Its tokens are available as CSS custom properties and
+structured JSON, so the same source of truth can support applications, design
+tools, and automation.
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" href="/getting-started/quick-start" icon="rocket">
+    Install the package and use your first semantic token.
+  </Card>
+  <Card
+    title="Installation"
+    href="/getting-started/installation"
+    icon="download"
+  >
+    Add the token package and start using it in CSS, JSON, or build tools.
+  </Card>
+  <Card
+    title="Primitive tokens"
+    href="/design-tokens/primitives/overview"
+    icon="palette"
+  >
+    Explore the raw color, typography, spacing, shape, motion, and layout scales.
+  </Card>
+</CardGroup>
+
+## Token architecture
+
+<Steps>
+  <Step title="Primitives">
+    Raw scales such as color ramps, spacing values, and type sizes. They define
+    the available palette but carry no UI intent.
+  </Step>
+  <Step title="Semantic tokens">
+    Intent-based aliases such as background, foreground, border, and status.
+    Use these for patterns that do not have a component token.
+  </Step>
+  <Step title="Component tokens">
+    Decisions scoped to a component and variant. Prefer these when styling an
+    existing component such as a button, input, card, badge, or alert.
+  </Step>
+</Steps>
+
+:::tip[Selection rule]
+Choose the most specific token available: component first, semantic second,
+primitive only when defining or extending the token system.
+:::

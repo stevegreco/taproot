@@ -1,0 +1,103 @@
+---
+title: Button
+description: A React button for triggering actions and submitting forms.
+---
+
+<Badge variant="accent">React</Badge>
+
+Buttons let people initiate an action. Use a clear, concise label that
+describes what happens when the button is selected.
+
+## Preview
+
+The example below is a real React component. Select the primary button to
+confirm that the preview is interactive, then switch to **Code** to inspect
+the source that powers it.
+
+<Component path="button" />
+
+## Usage
+
+<CodeBlock
+  lang="tsx"
+  code={`import { Button } from "@stevegreco/design-system";
+
+export function SaveChanges() {
+  return <Button onClick={() => save()}>Save changes</Button>;
+}`}
+/>
+
+## Variants
+
+<Tabs>
+  <Tab title="Primary">
+    Use for the most important action in a view. Prefer one primary button per
+    action group.
+
+    <CodeBlock
+      lang="tsx"
+      code={'<Button variant="primary">Save changes</Button>'}
+    />
+  </Tab>
+  <Tab title="Secondary">
+    Use for supporting actions that should remain visible without competing
+    with the primary action.
+
+    <CodeBlock
+      lang="tsx"
+      code={'<Button variant="secondary">Cancel</Button>'}
+    />
+  </Tab>
+  <Tab title="Danger">
+    Reserve for destructive or difficult-to-reverse actions.
+
+    <CodeBlock
+      lang="tsx"
+      code={'<Button variant="danger">Delete project</Button>'}
+    />
+  </Tab>
+</Tabs>
+
+## Props
+
+<TypeTable
+  type={{
+    children: {
+      type: "React.ReactNode",
+      required: true,
+      description: "The button label or content.",
+    },
+    variant: {
+      type: '"primary" | "secondary" | "danger"',
+      default: '"primary"',
+      description: "Controls the visual emphasis of the button.",
+    },
+    size: {
+      type: '"small" | "medium" | "large"',
+      default: '"medium"',
+      description: "Controls the button height, padding, and text size.",
+    },
+    disabled: {
+      type: "boolean",
+      default: "false",
+      description: "Prevents pointer and keyboard interaction.",
+    },
+    onClick: {
+      type: "() => void",
+      description: "Runs when the button is activated.",
+    },
+  }}
+/>
+
+## Accessibility
+
+- Use text that describes the action rather than a generic label such as
+  “Click here.”
+- Keep keyboard focus visible.
+- Use `disabled` only when the action is unavailable and explain why nearby.
+- Add an accessible name when an icon is the only visible content.
+
+:::note
+This is a fictional component created to test the component-documentation
+workflow. It is not currently exported by the design system package.
+:::

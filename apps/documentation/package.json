@@ -6,13 +6,26 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "blume dev",
+    "build": "blume build",
+    "preview": "blume preview",
+    "verify": "node scripts/verify-design-tokens.mjs",
+    "verify:tokens": "node scripts/verify-design-tokens.mjs"
   },
   "dependencies": {
+    "@astrojs/mdx": "^7.0.3",
+    "@astrojs/react": "^6.0.1",
+    "@shikijs/twoslash": "^4.3.1",
     "@stevegreco/design-system": "workspace:*",
-    "astro": "^6.3.7"
+    "@tailwindcss/vite": "^4.3.2",
+    "astro": "^7.0.6",
+    "blume": "^1.1.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3"
   }
 }
