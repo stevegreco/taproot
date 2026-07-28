@@ -61,11 +61,18 @@ On every tool call, the MCP compares the `mtime` of source token files (`tokens/
 
 Checks that run as the last step of `pnpm build`, after `dist/` exists — they read resolved values, so they cannot run against source.
 
+`pnpm audit` runs both. Contrast asks whether a pair is legible; parity asks whether the two themes are the same system. TOK-01 passed every contrast check it was subject to and was still wrong, which is why both exist.
+
 | Script | Checks |
 |---|---|
 | `scripts/audit-contrast.js` | WCAG 2.1 contrast for every semantic foreground/background pair in both themes. Distinguishes 4.5:1 text pairs from 3:1 non-text (1.4.11) pairs; disabled states are computed but exempt. |
+| `scripts/audit-parity.js` | Structural equivalence of the two themes, enforcing the machine-checkable half of [[adr-0002-theming-policy]]: identical key sets, every color token responds to the theme, and interaction states step the direction §2 requires. |
 
-The contrast audit is **report-only** — it prints failures and exits 0, so the build stays green while the remediation lands. `pnpm audit:contrast --strict` exits non-zero instead; the build switches to `--strict` when `border.default` is fixed.
+Both are **report-only** — they print failures and exit 0, so the build stays green while the remediation lands. `pnpm audit --strict` exits non-zero instead; the build switches to `--strict` when `border.default` is fixed.
+
+### Why parity compares tokens to themselves
+
+The obvious mirroring test — "is the token darker than the page in light and lighter than it in dark?" — passes for `status.danger.default`, the exact token TOK-01 is about. Its L\* is 45 in both themes, the light page is L\*97 and the dark page is L\*10, so it satisfies the test without ever moving. The page moved past it. The assertion has to compare a token against **itself across themes**.
 
 ## Docs
 

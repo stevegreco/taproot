@@ -4,13 +4,12 @@
 // unresolved aliases, so this must run after the build (see ADR-0001 for the
 // same reasoning applied to the MCP server).
 //
-// Report-only by default: prints failures and exits 0, so `pnpm build` stays
-// green while the remediation lands. Pass --strict to exit non-zero instead.
-// Issue #8 flips the build over to --strict once border.default is fixed.
+// Report-only by default — see scripts/audit.js for how that is applied.
 
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { ratio } from "./lib/color.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -65,23 +64,6 @@ const PAIRS = [
 
 function get(tree, path) {
   return path.split(".").reduce((node, key) => node?.[key], tree);
-}
-
-function channel(v) {
-  const c = v / 255;
-  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-}
-
-function luminance(hex) {
-  const h = hex.replace("#", "");
-  const full = h.length === 3 ? [...h].map((c) => c + c).join("") : h;
-  const [r, g, b] = [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
-  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
-}
-
-function ratio(a, b) {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (hi + 0.05) / (lo + 0.05);
 }
 
 function auditTheme(theme) {
@@ -148,23 +130,12 @@ function report(theme, results) {
   return failures.length;
 }
 
-const strict = process.argv.includes("--strict");
+export function run() {
+  console.log("\nContrast audit — WCAG 2.1");
 
-console.log("\nContrast audit — WCAG 2.1");
-
-let total = 0;
-for (const theme of ["light", "dark"]) {
-  total += report(theme, auditTheme(theme));
+  let total = 0;
+  for (const theme of ["light", "dark"]) {
+    total += report(theme, auditTheme(theme));
+  }
+  return total;
 }
-
-console.log("");
-if (total === 0) {
-  console.log("  No contrast failures.\n");
-  process.exit(0);
-}
-
-console.log(`  ${total} contrast failure${total === 1 ? "" : "s"} across both themes.`);
-if (strict) {
-  process.exit(1);
-}
-console.log("  Report-only — see issue #8. Run with --strict to make this blocking.\n");
