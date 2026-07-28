@@ -33,6 +33,14 @@
         "hover":   { "$value": "{primitives.color.blueSmoke.800}", "$type": "color" },
         "soft":    { "$value": "{primitives.color.blueSmoke.100}", "$type": "color" }
       },
+      "disabled": {
+        "background": { "$value": "{primitives.color.clay.100}",      "$type": "color" },
+        "foreground": { "$value": "{primitives.color.blueSmoke.500}", "$type": "color" },
+        "border":     { "$value": "{primitives.color.clay.200}",      "$type": "color" }
+      },
+      "focus": {
+        "ring": { "$value": "{primitives.color.robRoy.700}", "$type": "color" }
+      },
       "status": {
         "success": {
           "default":    { "$value": "{primitives.color.moss.500}", "$type": "color" },

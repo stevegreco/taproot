@@ -1,0 +1,9 @@
+{
+  "semantic": {
+    "radius": {
+      "control": { "$value": "{primitives.radius.md}",   "$type": "dimension" },
+      "surface": { "$value": "{primitives.radius.lg}",   "$type": "dimension" },
+      "pill":    { "$value": "{primitives.radius.full}", "$type": "dimension" }
+    }
+  }
+}
