@@ -56,3 +56,5 @@ On every tool call, the MCP compares the `mtime` of source token files (`tokens/
 |---|---|
 | `docs/token-docs.html` | Visual reference of all resolved token values across all tiers and themes. Open in a browser; no build step required. |
 | `docs/agent-architecture.html` | Diagram of the agent/MCP architecture for this system. |
+| `docs/token-architecture-audit.md` | Audit of the token architecture (2026-07-28). 12 findings covering theming inconsistency, ramp integrity, and contrast. |
+| `docs/token-remediation-plan.md` | Work breakdown acting on the audit findings, with dependencies and release sequencing. |
