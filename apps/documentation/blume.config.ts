@@ -11,4 +11,12 @@ export default defineConfig({
       mono: "jetbrains-mono",
     },
   },
+  navigation: {
+
+    sidebar: {
+      display: "group"
+    }
+  }
+
+
 });
