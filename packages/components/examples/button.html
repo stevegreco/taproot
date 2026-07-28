@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>&lt;ds-button&gt; — Design System Components</title>
+
+    <!-- The only stylesheet the component needs. Every value it paints with
+         comes from here, including the [data-theme="dark"] overrides. -->
+    <link rel="stylesheet" href="../node_modules/@stevegreco/design-system/dist/css/tokens.css" />
+
+    <script type="module" src="../src/index.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: var(--primitives-space-8);
+        background-color: var(--semantic-color-background-default);
+        color: var(--semantic-color-foreground-default);
+        font-family: var(--primitives-font-sans);
+        transition: background-color var(--primitives-duration-base) ease;
+      }
+      h1 {
+        margin: 0 0 var(--primitives-space-2);
+        font-size: var(--primitives-text-2xl);
+      }
+      h2 {
+        margin: var(--primitives-space-8) 0 var(--primitives-space-3);
+        font-size: var(--primitives-text-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--semantic-color-foreground-subtle);
+      }
+      p {
+        margin: 0;
+        color: var(--semantic-color-foreground-muted);
+        font-size: var(--primitives-text-sm);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--primitives-space-3);
+      }
+      form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--primitives-space-3);
+        padding: var(--component-card-padding);
+        background-color: var(--component-card-background);
+        border: 1px solid var(--component-card-border);
+        border-radius: var(--component-card-radius);
+      }
+      input {
+        padding: var(--component-input-padding-y) var(--component-input-padding-x);
+        background-color: var(--component-input-background);
+        border: 1px solid var(--component-input-border);
+        border-radius: var(--component-input-radius);
+        color: var(--component-input-foreground);
+        font-family: var(--component-input-font-family);
+        font-size: var(--component-input-font-size);
+      }
+      output {
+        color: var(--semantic-color-foreground-subtle);
+        font-size: var(--primitives-text-sm);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>&lt;ds-button&gt;</h1>
+    <p>Everything below is one custom element driven entirely by design tokens.</p>
+
+    <h2>Theme</h2>
+    <div class="row">
+      <ds-button id="theme-toggle" variant="secondary" size="sm">Toggle dark mode</ds-button>
+    </div>
+
+    <h2>Variants</h2>
+    <div class="row">
+      <ds-button>Primary</ds-button>
+      <ds-button variant="secondary">Secondary</ds-button>
+      <ds-button variant="ghost">Ghost</ds-button>
+      <ds-button variant="danger">Delete</ds-button>
+    </div>
+
+    <h2>Sizes</h2>
+    <div class="row">
+      <ds-button size="sm">Small</ds-button>
+      <ds-button>Medium</ds-button>
+      <ds-button pill>Pill</ds-button>
+    </div>
+
+    <h2>Disabled</h2>
+    <div class="row">
+      <ds-button disabled>Primary</ds-button>
+      <ds-button variant="secondary" disabled>Secondary</ds-button>
+      <ds-button variant="danger" disabled>Delete</ds-button>
+    </div>
+
+    <h2>With an icon</h2>
+    <div class="row">
+      <ds-button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+        Continue
+      </ds-button>
+      <ds-button variant="ghost" aria-label="Next step">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </ds-button>
+    </div>
+
+    <h2>Form participation</h2>
+    <form id="demo-form">
+      <input name="email" type="email" placeholder="you@example.com" required />
+      <ds-button type="submit">Submit</ds-button>
+      <ds-button type="reset" variant="secondary">Reset</ds-button>
+      <output id="demo-output">Waiting…</output>
+    </form>
+
+    <h2>Full width</h2>
+    <ds-button full-width variant="secondary">Full width</ds-button>
+
+    <script type="module">
+      const root = document.documentElement;
+      document.getElementById("theme-toggle").addEventListener("click", () => {
+        root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+      });
+
+      const form = document.getElementById("demo-form");
+      const out = document.getElementById("demo-output");
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        out.textContent = `Submitted: ${new FormData(form).get("email")}`;
+      });
+      form.addEventListener("reset", () => {
+        out.textContent = "Reset.";
+      });
+    </script>
+  </body>
+</html>

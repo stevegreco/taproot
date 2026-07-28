@@ -1,0 +1,156 @@
+/**
+ * <ds-button> styles.
+ *
+ * Adopted into the shadow root as a single shared CSSStyleSheet. Every value
+ * is a design token from @stevegreco/design-system; custom properties are
+ * inherited, so they cross the shadow boundary and themes apply for free.
+ *
+ * Built into dist/button.styles.js by build-styles.js — this file is the source.
+ */
+
+:host {
+  /* Variant surface. Remapped by the :host([variant=...]) rules below. */
+  --_background: var(--component-button-primary-background);
+  --_background-hover: var(--component-button-primary-background-hover);
+  --_background-press: var(--component-button-primary-background-press);
+  --_background-disabled: var(--component-button-primary-background-disabled);
+  --_foreground: var(--component-button-primary-foreground);
+  --_foreground-disabled: var(--component-button-primary-foreground-disabled);
+  --_border: var(--component-button-primary-border);
+  --_border-disabled: var(--component-button-primary-border-disabled);
+
+  /* Metrics. Remapped by size / pill. */
+  --_padding-x: var(--component-button-padding-x);
+  --_padding-y: var(--component-button-padding-y);
+  --_radius: var(--component-button-radius-md);
+
+  display: inline-block;
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([full-width]) {
+  display: block;
+}
+
+:host([variant="secondary"]) {
+  --_background: var(--component-button-secondary-background);
+  --_background-hover: var(--component-button-secondary-background-hover);
+  --_background-press: var(--component-button-secondary-background-press);
+  --_background-disabled: var(--component-button-secondary-background-disabled);
+  --_foreground: var(--component-button-secondary-foreground);
+  --_foreground-disabled: var(--component-button-secondary-foreground-disabled);
+  --_border: var(--component-button-secondary-border);
+  --_border-disabled: var(--component-button-secondary-border-disabled);
+}
+
+:host([variant="ghost"]) {
+  --_background: var(--component-button-ghost-background);
+  --_background-hover: var(--component-button-ghost-background-hover);
+  --_background-press: var(--component-button-ghost-background-hover);
+  --_background-disabled: var(--component-button-ghost-background-disabled);
+  --_foreground: var(--component-button-ghost-foreground);
+  --_foreground-disabled: var(--component-button-ghost-foreground-disabled);
+  --_border: var(--component-button-ghost-border);
+  --_border-disabled: var(--component-button-ghost-border-disabled);
+}
+
+:host([variant="danger"]) {
+  --_background: var(--component-button-danger-background);
+  --_background-hover: var(--component-button-danger-background-hover);
+  --_background-press: var(--component-button-danger-background-hover);
+  --_background-disabled: var(--component-button-danger-background-disabled);
+  --_foreground: var(--component-button-danger-foreground);
+  --_foreground-disabled: var(--component-button-danger-foreground-disabled);
+  --_border: var(--component-button-danger-border);
+  --_border-disabled: var(--component-button-danger-border-disabled);
+}
+
+:host([size="sm"]) {
+  --_padding-x: var(--component-button-padding-x-sm);
+  --_padding-y: var(--component-button-padding-y-sm);
+}
+
+:host([pill]) {
+  --_radius: var(--component-button-radius-full);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--primitives-space-2);
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--_padding-y) var(--_padding-x);
+  border: 1px solid var(--_border);
+  border-radius: var(--_radius);
+  background-color: var(--_background);
+  color: var(--_foreground);
+  font-family: var(--component-button-font-family);
+  font-size: var(--component-button-font-size);
+  font-weight: var(--component-button-font-weight);
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  user-select: none;
+  transition:
+    background-color var(--component-button-transition) ease,
+    border-color var(--component-button-transition) ease,
+    color var(--component-button-transition) ease;
+}
+
+:host([full-width]) .button {
+  width: 100%;
+}
+
+/*
+ * display:contents promotes slotted nodes to flex items of .button, so the
+ * gap above sits between an icon and its label without extra markup.
+ */
+slot {
+  display: contents;
+}
+
+::slotted(svg) {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--_background-hover);
+}
+
+.button:active:not(:disabled) {
+  background-color: var(--_background-press);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--semantic-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/*
+ * Disabled resolves per variant, so variants that are transparent at rest stay
+ * transparent when disabled — the muted foreground carries the signal instead
+ * of a fill the enabled button never had.
+ */
+.button:disabled {
+  background-color: var(--_background-disabled);
+  border-color: var(--_border-disabled);
+  color: var(--_foreground-disabled);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}

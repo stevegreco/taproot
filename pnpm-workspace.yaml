@@ -3,6 +3,7 @@ packages:
   - "apps/*"
 allowBuilds:
   esbuild: true
+  fsevents: false
   sharp: true
 minimumReleaseAgeExclude:
   - astro@6.3.7

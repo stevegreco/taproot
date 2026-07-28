@@ -1,0 +1,54 @@
+{
+  "name": "@stevegreco/design-system-components",
+  "version": "0.0.1",
+  "description": "Framework-agnostic web components styled entirely with design system tokens.",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./button": {
+      "types": "./src/button.d.ts",
+      "default": "./src/button.js"
+    }
+  },
+  "sideEffects": [
+    "./src/index.js"
+  ],
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "node build-styles.js",
+    "watch": "chokidar \"src/**/*.css\" -c \"node build-styles.js\" --initial",
+    "serve": "live-server --port=4500 --open=examples/button.html .",
+    "dev": "concurrently -n build,serve -c blue,green \"pnpm run watch\" \"pnpm run serve\"",
+    "prepack": "pnpm run build"
+  },
+  "keywords": [
+    "design-system",
+    "web-components",
+    "custom-elements",
+    "button"
+  ],
+  "author": "Steve Greco",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@stevegreco/design-system": ">=0.0.4"
+  },
+  "devDependencies": {
+    "@stevegreco/design-system": "workspace:*",
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^9.1.0",
+    "live-server": "^1.2.2"
+  }
+}
