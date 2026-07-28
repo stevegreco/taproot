@@ -13,33 +13,33 @@ Four rules govern the decomposition:
 
 ## Items
 
-| ID | Item | Fixes | Size | Breaking | Depends on |
-|---|---|---|---|---|---|
-| **A1** | Contrast audit script + build gate | TOK-07 | M | no | — |
-| **A2** | Theme parity check | TOK-01 | S | no | — |
-| **B1** | ADR-0002: theming policy | TOK-01, TOK-02 | S | no | — |
-| **C1** | Extend `rust`/`moss`/`sky` to full scale | TOK-03 | M | no | B1 |
-| **C2** | Relocate surface fills out of hue ramps | TOK-04 | M | **yes** | C1 |
-| **C3** | Dark elevation primitives + semantic tier | TOK-05 | M | no | — |
-| **D1** | Status interactive contract parity | TOK-01, TOK-02, TOK-10 | L | **yes** | B1, C1 |
-| **D2** | `border.default` contrast remediation | TOK-07 | S | **yes** | A1 |
-| **D3** | Semantic hygiene: dedupe + dead token | TOK-08, TOK-09 | S | **yes** | — |
-| **E1** | Button state parity | TOK-11 | S | no | D1 |
-| **E2** | Route components through semantic tier | TOK-05, TOK-12 | S | **yes** | C3 |
-| **F1** | Per-theme component JSON + MCP fix | TOK-06 | M | no | — |
+| ID | Issue | Item | Fixes | Size | Breaking | Depends on |
+|---|---|---|---|---|---|---|
+| **A1** | #1 | Contrast audit script + build gate | TOK-07 | M | no | — |
+| **A2** | #2 | Theme parity check | TOK-01 | S | no | — |
+| **B1** | #3 | ADR-0002: theming policy | TOK-01, TOK-02 | S | no | — |
+| **C1** | #7 | Extend `rust`/`moss`/`sky` to full scale | TOK-03 | M | no | #3 |
+| **C2** | #10 | Relocate surface fills out of hue ramps | TOK-04 | M | **yes** | #7 |
+| **C3** | #4 | Dark elevation primitives + semantic tier | TOK-05 | M | no | — |
+| **D1** | #11 | Status interactive contract parity | TOK-01, TOK-02, TOK-10 | L | **yes** | #3, #7 |
+| **D2** | #8 | `border.default` contrast remediation | TOK-07 | S | **yes** | #1 |
+| **D3** | #5 | Semantic hygiene: dedupe + dead token | TOK-08, TOK-09 | S | **yes** | — |
+| **E1** | #12 | Button state parity | TOK-11 | S | no | #11 |
+| **E2** | #9 | Route components through semantic tier | TOK-05, TOK-12 | S | **yes** | #4 |
+| **F1** | #6 | Per-theme component JSON + MCP fix | TOK-06 | M | no | — |
 
 ```mermaid
 graph LR
-  A1[A1 contrast gate] --> D2[D2 border fix]
-  A2[A2 parity check]
-  B1[B1 ADR-0002] --> C1[C1 extend ramps]
-  B1 --> D1[D1 status parity]
-  C1 --> C2[C2 relocate fills]
+  A1["A1 · #1 contrast gate"] --> D2["D2 · #8 border fix"]
+  A2["A2 · #2 parity check"]
+  B1["B1 · #3 ADR-0002"] --> C1["C1 · #7 extend ramps"]
+  B1 --> D1["D1 · #11 status parity"]
+  C1 --> C2["C2 · #10 relocate fills"]
   C1 --> D1
-  C3[C3 dark elevation] --> E2[E2 tier routing]
-  D1 --> E1[E1 button press states]
-  D3[D3 semantic hygiene]
-  F1[F1 per-theme JSON]
+  C3["C3 · #4 dark elevation"] --> E2["E2 · #9 tier routing"]
+  D1 --> E1["E1 · #12 button press states"]
+  D3["D3 · #5 semantic hygiene"]
+  F1["F1 · #6 per-theme JSON"]
 ```
 
 `A1`, `A2`, `B1`, `C3`, `D3` and `F1` have no blockers and can start in parallel.
