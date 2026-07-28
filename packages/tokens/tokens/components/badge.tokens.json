@@ -1,7 +1,7 @@
 {
   "component": {
     "badge": {
-      "radius":     { "$value": "{primitives.radius.full}", "$type": "dimension" },
+      "radius":     { "$value": "{semantic.radius.pill}", "$type": "dimension" },
       "paddingX":   { "$value": "{primitives.space.2}",     "$type": "dimension" },
       "paddingY":   { "$value": "{primitives.space.px}",    "$type": "dimension" },
       "fontSize":   { "$value": "{primitives.text.xs}",     "$type": "dimension" },

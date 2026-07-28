@@ -3,7 +3,7 @@
     "card": {
       "background":  { "$value": "{semantic.color.background.raised}",  "$type": "color" },
       "border":      { "$value": "{semantic.color.border.default}",     "$type": "color" },
-      "radius":      { "$value": "{primitives.radius.lg}", "$type": "dimension" },
+      "radius":      { "$value": "{semantic.radius.surface}", "$type": "dimension" },
       "shadow":      { "$value": "{primitives.shadow.sm}", "$type": "shadow" },
       "shadowHover": { "$value": "{primitives.shadow.md}", "$type": "shadow" },
       "padding":     { "$value": "{primitives.space.6}",   "$type": "dimension" },

@@ -2,14 +2,14 @@
   "component": {
     "input": {
       "background":            { "$value": "{semantic.color.background.raised}",  "$type": "color" },
-      "backgroundDisabled":    { "$value": "{semantic.color.background.muted}",   "$type": "color" },
+      "backgroundDisabled":    { "$value": "{semantic.color.disabled.background}", "$type": "color" },
       "border":                { "$value": "{semantic.color.border.default}",     "$type": "color" },
       "borderHover":           { "$value": "{semantic.color.border.strong}",      "$type": "color" },
-      "borderFocus":           { "$value": "{semantic.color.accent.default}",     "$type": "color" },
+      "borderFocus":           { "$value": "{semantic.color.focus.ring}",         "$type": "color" },
       "borderError":           { "$value": "{semantic.color.status.danger.default}", "$type": "color" },
       "foreground":            { "$value": "{semantic.color.foreground.default}",  "$type": "color" },
       "foregroundPlaceholder": { "$value": "{semantic.color.foreground.faint}",    "$type": "color" },
-      "foregroundDisabled":    { "$value": "{semantic.color.foreground.subtle}",   "$type": "color" },
+      "foregroundDisabled":    { "$value": "{semantic.color.disabled.foreground}", "$type": "color" },
       "labelForeground":       { "$value": "{semantic.color.foreground.muted}",    "$type": "color" },
       "hintForeground":        { "$value": "{semantic.color.foreground.subtle}",   "$type": "color" },
       "errorForeground":       { "$value": "{semantic.color.status.danger.foreground}", "$type": "color" },
