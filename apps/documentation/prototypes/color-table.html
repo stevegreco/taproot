@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Color token table prototypes</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23823f1e'/><text x='16' y='22' text-anchor='middle' font-size='18' fill='white'>S</text></svg>">
+  <style>
+    :root {
+      --white: #ffffff;
+      --ink: #171c1a;
+      --muted: #5b7168;
+      --line: #e0e7e3;
+      --line-soft: #f0f3f1;
+      --surface: #f6f7f7;
+      --warm: #fdf9ed;
+      --brand: #d98f27;
+      --brand-dark: #823f1e;
+      --moss: #6b8e5a;
+      --rust: #b8472a;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-lg: 0 4px 8px rgba(61, 26, 11, .06), 0 16px 32px rgba(61, 26, 11, .1);
+      font-family: "Source Sans 3", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--surface);
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; }
+    button { font: inherit; color: inherit; }
+    code, .mono {
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: .82em;
+    }
+
+    /* ---------- switcher ---------- */
+    .variant-switcher {
+      position: fixed;
+      z-index: 100;
+      top: 14px;
+      left: 50%;
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      transform: translateX(-50%);
+      border: 1px solid rgba(255, 255, 255, .4);
+      border-radius: 999px;
+      background: rgba(23, 28, 26, .92);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(12px);
+    }
+
+    .variant-switcher button {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 13px;
+      color: #c1cec7;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .variant-switcher button[aria-pressed="true"] {
+      color: var(--ink);
+      background: var(--white);
+    }
+
+    .variant-switcher button:focus-visible,
+    .copy:focus-visible {
+      outline: 3px solid #e8c468;
+      outline-offset: 3px;
+    }
+
+    /* ---------- page frame ---------- */
+    .variant { display: none; min-height: 100vh; background: var(--white); }
+    .variant.active { display: block; }
+
+    .doc {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 92px 32px 96px;
+    }
+
+    .doc-eyebrow {
+      margin: 0 0 8px;
+      color: var(--brand-dark);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .doc h1 {
+      margin: 0 0 12px;
+      font-size: 40px;
+      font-weight: 750;
+      letter-spacing: -.03em;
+    }
+
+    .doc-intro {
+      max-width: 62ch;
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .doc-note {
+      margin: 0 0 40px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* shared table scaffolding */
+    .scale { margin-bottom: 44px; }
+
+    .scale-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .scale-head h2 {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .scale-count { color: var(--muted); font-size: 13px; }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { font-weight: 650; }
+
+    .chip {
+      border: 1px solid rgba(23, 28, 26, .14);
+      border-radius: var(--radius-sm);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35);
+    }
+
+    .copy {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 11px;
+      color: var(--muted);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .copy:hover { border-color: var(--brand); color: var(--brand-dark); }
+    .copy.done { border-color: var(--moss); color: var(--moss); }
+
+    /* ---------- A · Dense ---------- */
+    #variant-A table { font-size: 13.5px; }
+
+    #variant-A thead th {
+      padding: 0 0 7px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    #variant-A tbody td {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line-soft);
+      vertical-align: middle;
+    }
+
+    #variant-A tbody tr:hover td { background: var(--warm); }
+    #variant-A .col-chip { width: 44px; }
+    #variant-A .chip { width: 22px; height: 22px; display: block; }
+    #variant-A .col-value { width: 110px; color: var(--muted); }
+    #variant-A .t-name { font-weight: 500; }
+
+    /* ---------- B · Detail ---------- */
+    #variant-B .scale-inner {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    #variant-B thead th {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    #variant-B tbody td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--line-soft);
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    #variant-B tbody tr:last-child td { border-bottom: 0; }
+    #variant-B tbody tr:hover td { background: var(--warm); }
+
+    #variant-B .col-chip { width: 68px; }
+    #variant-B .chip { width: 40px; height: 40px; display: block; border-radius: 9px; }
+    #variant-B .t-name { display: block; font-weight: 600; font-size: 13px; }
+    #variant-B .t-alias { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+    #variant-B .col-value { width: 100px; color: var(--muted); }
+    #variant-B .col-ratio { width: 88px; }
+    #variant-B .col-copy { width: 84px; text-align: right; }
+
+    .ratio { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #cdd6d1; }
+    .dot.pass { background: var(--moss); }
+
+    /* ---------- C · Preview ---------- */
+    #variant-C .scale-inner {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    #variant-C thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--white);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    #variant-C tbody td {
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line-soft);
+      vertical-align: middle;
+      font-size: 13.5px;
+    }
+
+    #variant-C tbody tr:nth-child(even) td { background: #fbfcfb; }
+    #variant-C tbody tr:last-child td { border-bottom: 0; }
+    #variant-C .col-preview { width: 190px; padding: 0; }
+
+    #variant-C .band {
+      display: flex;
+      align-items: center;
+      height: 48px;
+      padding-left: 18px;
+      font-size: 15px;
+      font-weight: 650;
+      letter-spacing: .02em;
+    }
+
+    #variant-C .col-value { width: 100px; color: var(--muted); }
+    #variant-C .col-rgb { width: 140px; color: var(--muted); }
+    #variant-C .t-name { font-weight: 500; }
+
+    @media (max-width: 720px) {
+      .doc { padding: 84px 18px 72px; }
+      .doc h1 { font-size: 30px; }
+      .variant-switcher button { padding: 7px 9px; font-size: 11px; }
+      #variant-B .col-ratio, #variant-C .col-rgb { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="variant-switcher" aria-label="Choose a prototype">
+    <button type="button" data-variant="A" aria-pressed="true">A · Dense</button>
+    <button type="button" data-variant="B" aria-pressed="false">B · Detail</button>
+    <button type="button" data-variant="C" aria-pressed="false">C · Preview</button>
+  </nav>
+
+  <section class="variant active" id="variant-A" aria-label="Dense reference table prototype">
+    <div class="doc">
+      <p class="doc-eyebrow">Design tokens · Primitives</p>
+      <h1>Color</h1>
+      <p class="doc-intro">Primitive colors are fixed palette values. Select from these scales when authoring semantic tokens; avoid using them directly in product interfaces.</p>
+      <p class="doc-note">One token per row · grouped by scale</p>
+      <div data-tables></div>
+    </div>
+  </section>
+
+  <section class="variant" id="variant-B" aria-label="Detailed table prototype">
+    <div class="doc">
+      <p class="doc-eyebrow">Design tokens · Primitives</p>
+      <h1>Color</h1>
+      <p class="doc-intro">Primitive colors are fixed palette values. Select from these scales when authoring semantic tokens; avoid using them directly in product interfaces.</p>
+      <p class="doc-note">Contrast ratios are measured against white and black. A filled dot marks a ratio at or above 4.5:1.</p>
+      <div data-tables></div>
+    </div>
+  </section>
+
+  <section class="variant" id="variant-C" aria-label="Preview band table prototype">
+    <div class="doc">
+      <p class="doc-eyebrow">Design tokens · Primitives</p>
+      <h1>Color</h1>
+      <p class="doc-intro">Primitive colors are fixed palette values. Select from these scales when authoring semantic tokens; avoid using them directly in product interfaces.</p>
+      <p class="doc-note">Each preview band renders sample text in whichever of black or white reads better on that color.</p>
+      <div data-tables></div>
+    </div>
+  </section>
+
+  <script>
+    /* ---------- token data (subset of docs/design-tokens/primitives/color.mdx) ---------- */
+    const scale = (title, slug, alias, steps) => ({
+      title,
+      items: Object.entries(steps).map(([step, value]) => ({
+        name: `--primitives-color-${slug}-${step}`,
+        alias: `${alias}.${step}`,
+        value,
+      })),
+    });
+
+    const SCALES = [
+      {
+        title: "Fixed",
+        items: [
+          { name: "--primitives-color-white", alias: "white", value: "#ffffff" },
+          { name: "--primitives-color-black", alias: "black", value: "#000000" },
+        ],
+      },
+      scale("Rob Roy", "rob-roy", "robRoy", {
+        50: "#fdf9ed", 100: "#f7edce", 200: "#efda98", 300: "#e8c468",
+        400: "#e1ac3e", 500: "#d98f27", 600: "#c06d1f", 700: "#a0501d",
+        800: "#823f1e", 850: "#51432d", 900: "#6b341c", 925: "#3a2e1e", 950: "#3d1a0b",
+      }),
+      scale("Blue Smoke", "blue-smoke", "blueSmoke", {
+        50: "#f6f7f7", 100: "#e0e7e3", 200: "#c1cec7", 300: "#9aaea4",
+        400: "#7a9086", 500: "#5b7168", 600: "#475a52", 700: "#3b4a43",
+        800: "#323d38", 900: "#2c3531", 950: "#171c1a", 975: "#0e1211",
+      }),
+      scale("Moss", "moss", "moss", {
+        100: "#e3ecd9", 500: "#6b8e5a", 700: "#4a6b3d", 900: "#394739",
+      }),
+    ];
+
+    /* ---------- contrast helpers ---------- */
+    const channel = (c) => {
+      const v = c / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+
+    const luminance = (hex) => {
+      const n = parseInt(hex.slice(1), 16);
+      return 0.2126 * channel((n >> 16) & 255)
+        + 0.7152 * channel((n >> 8) & 255)
+        + 0.0722 * channel(n & 255);
+    };
+
+    const contrast = (a, b) => {
+      const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+      return (hi + 0.05) / (lo + 0.05);
+    };
+
+    const rgb = (hex) => {
+      const n = parseInt(hex.slice(1), 16);
+      return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+    };
+
+    const ratioCell = (value, against) => {
+      const r = contrast(value, against);
+      return `<span class="ratio"><span class="dot${r >= 4.5 ? " pass" : ""}"></span>${r.toFixed(2)}</span>`;
+    };
+
+    /* ---------- renderers ---------- */
+    const head = (s) => `
+      <div class="scale-head">
+        <h2>${s.title}</h2>
+        <span class="scale-count">${s.items.length} token${s.items.length === 1 ? "" : "s"}</span>
+      </div>`;
+
+    const renderers = {
+      A: (s) => `
+        <section class="scale">
+          ${head(s)}
+          <table>
+            <thead>
+              <tr>
+                <th class="col-chip"><span class="sr">Swatch</span></th>
+                <th>Token</th>
+                <th class="col-value">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${s.items.map((t) => `
+                <tr>
+                  <td class="col-chip"><span class="chip" style="background:${t.value}"></span></td>
+                  <td><code class="t-name">${t.name}</code></td>
+                  <td class="col-value mono">${t.value}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </section>`,
+
+      B: (s) => `
+        <section class="scale">
+          ${head(s)}
+          <div class="scale-inner">
+            <table>
+              <thead>
+                <tr>
+                  <th class="col-chip"></th>
+                  <th>Token</th>
+                  <th class="col-value">Value</th>
+                  <th class="col-ratio">On white</th>
+                  <th class="col-ratio">On black</th>
+                  <th class="col-copy"></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${s.items.map((t) => `
+                  <tr>
+                    <td class="col-chip"><span class="chip" style="background:${t.value}"></span></td>
+                    <td>
+                      <code class="t-name">${t.name}</code>
+                      <span class="t-alias">${t.alias}</span>
+                    </td>
+                    <td class="col-value mono">${t.value}</td>
+                    <td class="col-ratio">${ratioCell(t.value, "#ffffff")}</td>
+                    <td class="col-ratio">${ratioCell(t.value, "#000000")}</td>
+                    <td class="col-copy"><button type="button" class="copy" data-copy="${t.name}">Copy</button></td>
+                  </tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+        </section>`,
+
+      C: (s) => `
+        <section class="scale">
+          ${head(s)}
+          <div class="scale-inner">
+            <table>
+              <thead>
+                <tr>
+                  <th class="col-preview" style="padding-left:18px">Preview</th>
+                  <th>Token</th>
+                  <th class="col-value">Hex</th>
+                  <th class="col-rgb">RGB</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${s.items.map((t) => {
+                  const onDark = contrast(t.value, "#ffffff") >= contrast(t.value, "#000000");
+                  return `
+                  <tr>
+                    <td class="col-preview">
+                      <div class="band" style="background:${t.value};color:${onDark ? "#ffffff" : "#171c1a"}">Aa</div>
+                    </td>
+                    <td><code class="t-name">${t.name}</code></td>
+                    <td class="col-value mono">${t.value}</td>
+                    <td class="col-rgb mono">${rgb(t.value)}</td>
+                  </tr>`;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        </section>`,
+    };
+
+    Object.entries(renderers).forEach(([id, render]) => {
+      document.querySelector(`#variant-${id} [data-tables]`).innerHTML =
+        SCALES.map(render).join("");
+    });
+
+    /* ---------- interactions ---------- */
+    const buttons = [...document.querySelectorAll("[data-variant]")];
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        buttons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+        document.querySelectorAll(".variant").forEach((v) => {
+          v.classList.toggle("active", v.id === `variant-${btn.dataset.variant}`);
+        });
+        window.scrollTo(0, 0);
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-copy]");
+      if (!btn) return;
+      navigator.clipboard?.writeText(btn.dataset.copy);
+      btn.textContent = "Copied";
+      btn.classList.add("done");
+      setTimeout(() => {
+        btn.textContent = "Copy";
+        btn.classList.remove("done");
+      }, 1200);
+    });
+  </script>
+</body>
+</html>
