@@ -25,7 +25,8 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "pnpm run clean && node build-tokens.js && node build-css.js",
+    "build": "pnpm run clean && node build-tokens.js && node build-css.js && pnpm run audit:contrast",
+    "audit:contrast": "node scripts/audit-contrast.js",
     "watch": "chokidar \"tokens/**/*.json\" -c \"pnpm run build\" --initial",
     "serve": "live-server --port=4400 --open=examples/dashboard.html --ignore=tokens,src,mcp,docs .",
     "dev": "concurrently -n build,serve -c blue,green \"pnpm run watch\" \"pnpm run serve\"",
