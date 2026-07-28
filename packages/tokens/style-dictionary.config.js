@@ -86,25 +86,52 @@ export const componentsConfig = {
           filter: (token) => token.path[0] === "component",
           options: {
             selector: ":root",
+            // Emits var() chains rather than resolved hex, so the component
+            // layer theme-swaps through the semantic variables. This is what
+            // makes one components.css correct for both themes — do not
+            // disable it, and do not build a per-theme CSS variant.
             outputReferences: true
           }
-        }
-      ]
-    },
-    tokensJson: {
-      transformGroup: "js",
-      buildPath: "dist/tokens/",
-      files: [
-        {
-          destination: "components.json",
-          format: "json/nested",
-          filter: (token) => token.path[0] === "component"
         }
       ]
     }
   }
 };
 
+// The JSON platform has no equivalent of outputReferences — `json/nested`
+// resolves every alias to a literal, so a single components.json can only
+// ever be correct for the theme it was built against. It has to be built
+// once per theme (TOK-06).
+export function componentsJsonConfig(theme) {
+  return {
+    log: { warnings: "disabled" },
+    source: [
+      "tokens/primitives.tokens.json",
+      `tokens/semantic/${theme}.tokens.json`,
+      "tokens/semantic/shape.tokens.json",
+      "tokens/components/*.tokens.json"
+    ],
+    platforms: {
+      tokensJson: {
+        transformGroup: "js",
+        buildPath: "dist/tokens/",
+        files: [
+          {
+            destination: `components.${theme}.json`,
+            format: "json/nested",
+            filter: (token) => token.path[0] === "component"
+          }
+        ]
+      }
+    }
+  };
+}
+
 export function getAllConfigs() {
-  return [primitivesConfig, ...THEMES.map(semanticConfig), componentsConfig];
+  return [
+    primitivesConfig,
+    ...THEMES.map(semanticConfig),
+    componentsConfig,
+    ...THEMES.map(componentsJsonConfig)
+  ];
 }

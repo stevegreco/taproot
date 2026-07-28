@@ -214,15 +214,23 @@ server.registerResource(
 
 server.registerResource(
   "components",
-  "tokens://components",
+  new ResourceTemplate("tokens://components/{theme}", {
+    list: async () => ({
+      resources: [
+        { uri: "tokens://components/light", name: "Component Tokens — Light" },
+        { uri: "tokens://components/dark", name: "Component Tokens — Dark" },
+      ],
+    }),
+  }),
   {
     title: "Component Tokens",
-    description: "Component-scoped tokens for button, input, card, badge, and alert.",
+    description: "Component-scoped tokens for button, input, card, badge, and alert. Pass 'light' or 'dark'.",
     mimeType: "application/json",
   },
-  async (uri) => ({
-    contents: [{ uri: uri.href, text: readFileSync(DIST.components, "utf-8") }],
-  })
+  async (uri, { theme }) => {
+    const file = theme === "dark" ? DIST.componentsDark : DIST.componentsLight;
+    return { contents: [{ uri: uri.href, text: readFileSync(file, "utf-8") }] };
+  }
 );
 
 server.registerResource(

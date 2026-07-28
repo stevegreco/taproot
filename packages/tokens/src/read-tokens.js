@@ -17,8 +17,19 @@ export const DIST = {
   primitives: join(ROOT, "dist/tokens/primitives.json"),
   semanticLight: join(ROOT, "dist/tokens/semantic.light.json"),
   semanticDark: join(ROOT, "dist/tokens/semantic.dark.json"),
-  components: join(ROOT, "dist/tokens/components.json"),
+  componentsLight: join(ROOT, "dist/tokens/components.light.json"),
+  componentsDark: join(ROOT, "dist/tokens/components.dark.json"),
 };
+
+// The files backing one theme. Both the semantic and the component tier are
+// theme-specific: `json/nested` resolves aliases to literals, so a component
+// file built against light semantics reports light values no matter what
+// theme was asked for (TOK-06).
+export function themeFiles(theme = "light") {
+  return theme === "dark"
+    ? [DIST.primitives, DIST.semanticDark, DIST.componentsDark]
+    : [DIST.primitives, DIST.semanticLight, DIST.componentsLight];
+}
 
 export function sourceFiles() {
   const base = [
@@ -55,9 +66,8 @@ export function isStale() {
 }
 
 export function loadTokens(theme = "light") {
-  const semanticFile = theme === "dark" ? DIST.semanticDark : DIST.semanticLight;
   const tokens = [];
-  for (const file of [DIST.primitives, semanticFile, DIST.components]) {
+  for (const file of themeFiles(theme)) {
     try {
       tokens.push(...flatten(JSON.parse(readFileSync(file, "utf-8"))));
     } catch {
