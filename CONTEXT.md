@@ -60,8 +60,13 @@ Checks that run as the last step of `pnpm build`, after `dist/` exists — they 
 |---|---|
 | `scripts/audit-contrast.js` | WCAG 2.1 contrast for every semantic foreground/background pair in both themes. Distinguishes 4.5:1 text pairs from 3:1 non-text (1.4.11) pairs; disabled states are computed but exempt. |
 | `scripts/audit-parity.js` | Structural equivalence of the two themes, enforcing the machine-checkable half of [[adr-0002-theming-policy]]: identical key sets, every color token responds to the theme, and interaction states step the direction §2 requires. |
+| `scripts/audit-ramps.js` | Ramp integrity per [[adr-0002-theming-policy]] §3 — monotonic lightness, saturation held within bounds, hue drifting without reversing. Catches a surface fill being given a ramp position it hasn't earned. |
 
 Both are **report-only** — they print failures and exit 0, so the build stays green while the remediation lands. `pnpm audit --strict` exits non-zero instead; the build switches to `--strict` when `border.default` is fixed.
+
+### Surfaces are not ramp stops
+
+`primitives.color.surface.*` holds dark, desaturated, hue-tinted fills — the dark theme's status and accent backgrounds. They are deliberately outside the numbered ramps: a surface is not "one step darker" than anything, and giving it a stop number makes the ramp lie about what its numbers mean. `audit-ramps.js` enforces the separation, keyed on saturation, because a fill collapses 30–45 points below its neighbours while a true stop holds a tight band.
 
 ### Why parity compares tokens to themselves
 
