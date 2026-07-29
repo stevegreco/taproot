@@ -20,14 +20,9 @@ const STATIC_L = 5;
 // Tokens that are the same in both themes on purpose. Each needs a reason —
 // an empty exemption list is the goal, and every entry here is a claim that
 // the token is theme-independent, not merely that it hasn't been fixed yet.
-const MIRROR_EXEMPT = new Map([
-  // Pure white on a saturated status fill reads the same on either ground.
-  // #11 replaces these with per-theme values; the exemption goes with it.
-  ["color.status.success.onDefault", "flat white label, superseded by #11"],
-  ["color.status.danger.onDefault", "flat white label, superseded by #11"],
-  ["color.status.warning.onDefault", "flat white label, superseded by #11"],
-  ["color.status.info.onDefault", "flat white label, superseded by #11"],
-]);
+// Empty, and worth keeping that way: #11 gave every status a per-theme
+// onDefault, which retired the last four entries.
+const MIRROR_EXEMPT = new Map([]);
 
 function loadTheme(theme) {
   const tree = JSON.parse(
