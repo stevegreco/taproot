@@ -72,8 +72,13 @@ that is visually identical to the one before it is not a state.
 
 A numbered stop in a hue ramp must satisfy all three of:
 
-- **Saturation** within **~10 points** of its neighbours.
-- **Hue** drifting monotonically, without reversing direction.
+- **Saturation** within **~10 points** of its neighbours when *falling*, ~15 when rising. The
+  bound is directional because a collapse is the surface-fill signature; a rise is ordinary, and
+  `robRoy` legitimately gains 10.9 points into its terminal stop.
+- **Hue** drifting monotonically, without reversing by more than ~2° — *where there is chroma to
+  carry it*. Below roughly 15% saturation hue is not a meaningful quantity: `blueSmoke` sits at
+  9–13 throughout and its measured hue swings 35° between adjacent stops purely from 8-bit
+  rounding. Near-neutrals are exempt from this bound, not from the other two.
 - **Lightness** monotonic across the ramp, with roughly even spacing.
 
 That is the whole promise a stop number makes: same hue family, one step of lightness.
