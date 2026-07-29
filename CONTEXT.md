@@ -38,15 +38,20 @@ A local MCP server (`mcp/index.js`) that exposes design tokens to AI assistants 
 
 ### Token Result
 
-The shape returned by both MCP tools:
+The shape returned by both MCP tools. `value` is theme-dependent at every tier, including the component tier:
 
-| Field | Example |
-|---|---|
-| `path` | `component.button.primary.background` |
-| `cssVariable` | `--component-button-primary-background` |
-| `value` | `#a0501d` |
-| `type` | `color` |
-| `tier` | `component` |
+| Field | Light | Dark |
+|---|---|---|
+| `path` | `component.button.primary.background` | `component.button.primary.background` |
+| `cssVariable` | `--component-button-primary-background` | `--component-button-primary-background` |
+| `value` | `#a0501d` | `#e1ac3e` |
+| `type` | `color` | `color` |
+| `tier` | `component` | `component` |
+
+The component tier is a set of aliases into the semantic tier, so `component.button.primary.background` always equals `semantic.color.accent.default` in the same response. The two platforms carry that differently:
+
+- **CSS** emits `var()` chains (`outputReferences: true`), so one `components.css` is correct for both themes and swaps at runtime.
+- **JSON** has no equivalent — `json/nested` resolves aliases to literals — so the component tier is built once per theme as `components.light.json` and `components.dark.json`.
 
 ### Stale Build Detection
 

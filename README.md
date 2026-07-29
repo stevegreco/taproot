@@ -108,8 +108,17 @@ Resolved token values are also available as JSON for use in design tooling, styl
 ```js
 import primitives  from "@stevegreco/design-system/tokens/primitives";
 import semantic    from "@stevegreco/design-system/tokens/semantic-light";
-import components  from "@stevegreco/design-system/tokens/components";
+import components  from "@stevegreco/design-system/tokens/components-light";
 ```
+
+The semantic *and* component tiers are both theme-specific. Component tokens are aliases into the semantic tier, and JSON has no equivalent of CSS's `var()` indirection, so each theme gets its own resolved file — pair `semantic-light` with `components-light`, `semantic-dark` with `components-dark`.
+
+```js
+import semantic   from "@stevegreco/design-system/tokens/semantic-dark";
+import components from "@stevegreco/design-system/tokens/components-dark";
+```
+
+The CSS build needs no such split: `dist/css/tokens.css` carries both themes and swaps at runtime.
 
 ## Build outputs
 
@@ -119,7 +128,8 @@ import components  from "@stevegreco/design-system/tokens/components";
 | `dist/tokens/primitives.json` | Raw primitive scale values |
 | `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme |
 | `dist/tokens/semantic.dark.json` | Resolved semantic tokens for dark theme |
-| `dist/tokens/components.json` | Resolved component tokens |
+| `dist/tokens/components.light.json` | Resolved component tokens for light theme |
+| `dist/tokens/components.dark.json` | Resolved component tokens for dark theme |
 
 ## Building from source
 

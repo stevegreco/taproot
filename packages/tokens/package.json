@@ -11,7 +11,9 @@
     "./tokens/primitives": "./dist/tokens/primitives.json",
     "./tokens/semantic-light": "./dist/tokens/semantic.light.json",
     "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
-    "./tokens/components": "./dist/tokens/components.json",
+    "./tokens/components": "./dist/tokens/components.light.json",
+    "./tokens/components-light": "./dist/tokens/components.light.json",
+    "./tokens/components-dark": "./dist/tokens/components.dark.json",
     "./read-tokens": "./src/read-tokens.js",
     "./flatten": "./src/flatten.js"
   },
@@ -33,6 +35,7 @@
     "showcase": "node generate-showcase.js",
     "dashboard": "open examples/dashboard.html",
     "food": "open examples/food-order.html",
+    "test": "node --test test/*.test.js",
     "prepack": "pnpm run build",
     "mcp": "node mcp/index.js"
   },
