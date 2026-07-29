@@ -718,7 +718,7 @@ body {
 
 .btn-primary {
   background: var(--accent);
-  color: var(--semantic-color-foreground-on-accent);
+  color: var(--semantic-color-accent-foreground);
 }
 .btn-ghost {
   background: transparent;

@@ -4,8 +4,8 @@
       "background":  { "$value": "{semantic.color.background.raised}",  "$type": "color" },
       "border":      { "$value": "{semantic.color.border.subtle}",      "$type": "color" },
       "radius":      { "$value": "{semantic.radius.surface}", "$type": "dimension" },
-      "shadow":      { "$value": "{primitives.shadow.sm}", "$type": "shadow" },
-      "shadowHover": { "$value": "{primitives.shadow.md}", "$type": "shadow" },
+      "shadow":      { "$value": "{semantic.elevation.sm}", "$type": "shadow" },
+      "shadowHover": { "$value": "{semantic.elevation.md}", "$type": "shadow" },
       "padding":     { "$value": "{primitives.space.6}",   "$type": "dimension" },
       "gap":         { "$value": "{primitives.space.4}",   "$type": "dimension" },
       "warm": {

@@ -1,7 +1,7 @@
 {
   "component": {
     "alert": {
-      "radius":   { "$value": "{primitives.radius.md}", "$type": "dimension" },
+      "radius":   { "$value": "{semantic.radius.control}", "$type": "dimension" },
       "padding":  { "$value": "{primitives.space.4}",   "$type": "dimension" },
       "gap":      { "$value": "{primitives.space.3}",   "$type": "dimension" },
       "fontSize": { "$value": "{primitives.text.sm}",   "$type": "dimension" },

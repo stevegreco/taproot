@@ -12,7 +12,6 @@
         "muted":    { "$value": "{primitives.color.blueSmoke.700}", "$type": "color" },
         "subtle":   { "$value": "{primitives.color.blueSmoke.600}", "$type": "color" },
         "faint":    { "$value": "{primitives.color.blueSmoke.500}", "$type": "color" },
-        "onAccent": { "$value": "{primitives.color.clay.50}",       "$type": "color" },
         "inverse":  { "$value": "{primitives.color.clay.50}",       "$type": "color" }
       },
       "border": {
@@ -29,9 +28,9 @@
         "foreground": { "$value": "{primitives.color.clay.50}",    "$type": "color" }
       },
       "secondary": {
-        "default": { "$value": "{primitives.color.blueSmoke.700}", "$type": "color" },
-        "hover":   { "$value": "{primitives.color.blueSmoke.800}", "$type": "color" },
-        "soft":    { "$value": "{primitives.color.blueSmoke.100}", "$type": "color" }
+        "default":   { "$value": "{primitives.color.blueSmoke.700}", "$type": "color" },
+        "soft":      { "$value": "{primitives.color.blueSmoke.100}", "$type": "color" },
+        "softPress": { "$value": "{primitives.color.blueSmoke.200}", "$type": "color" }
       },
       "disabled": {
         "background": { "$value": "{primitives.color.clay.100}",      "$type": "color" },
@@ -75,6 +74,14 @@
           "background": { "$value": "{primitives.color.sky.100}", "$type": "color" }
         }
       }
+    },
+    "elevation": {
+      "xs":    { "$value": "{primitives.shadow.xs}",    "$type": "shadow" },
+      "sm":    { "$value": "{primitives.shadow.sm}",    "$type": "shadow" },
+      "md":    { "$value": "{primitives.shadow.md}",    "$type": "shadow" },
+      "lg":    { "$value": "{primitives.shadow.lg}",    "$type": "shadow" },
+      "xl":    { "$value": "{primitives.shadow.xl}",    "$type": "shadow" },
+      "inset": { "$value": "{primitives.shadow.inset}", "$type": "shadow" }
     }
   }
 }

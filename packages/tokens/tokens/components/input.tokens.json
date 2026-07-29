@@ -13,11 +13,11 @@
       "labelForeground":       { "$value": "{semantic.color.foreground.muted}",    "$type": "color" },
       "hintForeground":        { "$value": "{semantic.color.foreground.subtle}",   "$type": "color" },
       "errorForeground":       { "$value": "{semantic.color.status.danger.foreground}", "$type": "color" },
-      "radius":                { "$value": "{primitives.radius.sm}", "$type": "dimension" },
+      "radius":                { "$value": "{semantic.radius.control}", "$type": "dimension" },
       "paddingX":              { "$value": "{primitives.space.3}",   "$type": "dimension" },
       "paddingY":              { "$value": "{primitives.space.2}",   "$type": "dimension" },
-      "shadow":                { "$value": "{primitives.shadow.inset}", "$type": "shadow" },
-      "shadowFocus":           { "$value": "{primitives.shadow.xs}",    "$type": "shadow" },
+      "shadow":                { "$value": "{semantic.elevation.inset}", "$type": "shadow" },
+      "shadowFocus":           { "$value": "{semantic.elevation.xs}",    "$type": "shadow" },
       "fontFamily":            { "$value": "{primitives.font.sans}",    "$type": "fontFamily" },
       "fontSize":              { "$value": "{primitives.text.sm}",      "$type": "dimension" }
     }
