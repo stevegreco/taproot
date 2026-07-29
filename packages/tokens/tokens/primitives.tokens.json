@@ -42,6 +42,19 @@
         "800": { "$value": "#3f2f22", "$type": "color" },
         "900": { "$value": "#221a13", "$type": "color" }
       },
+      "amber": {
+        "50":  { "$value": "#fbfae9", "$type": "color" },
+        "100": { "$value": "#f4f0b3", "$type": "color" },
+        "200": { "$value": "#e9df5a", "$type": "color" },
+        "300": { "$value": "#dbcb1b", "$type": "color" },
+        "400": { "$value": "#c8b616", "$type": "color" },
+        "500": { "$value": "#b49f16", "$type": "color" },
+        "600": { "$value": "#998015", "$type": "color" },
+        "700": { "$value": "#7b6314", "$type": "color" },
+        "800": { "$value": "#654f15", "$type": "color" },
+        "900": { "$value": "#554015", "$type": "color" },
+        "950": { "$value": "#2e220d", "$type": "color" }
+      },
       "moss": {
         "50":  { "$value": "#f4f8ef", "$type": "color" },
         "100": { "$value": "#e3ecd9", "$type": "color" },
@@ -83,6 +96,7 @@
       },
 
       "surface": {
+        "amber":  { "muted": { "$value": "#474227", "$type": "color" } },
         "rust":   { "muted": { "$value": "#483930", "$type": "color" } },
         "moss":   { "muted": { "$value": "#394739", "$type": "color" } },
         "sky":    { "muted": { "$value": "#34464a", "$type": "color" } },

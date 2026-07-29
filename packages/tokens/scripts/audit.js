@@ -5,15 +5,16 @@
 // are the same system. TOK-01 passed every contrast check it was subject to and
 // was still wrong, which is why both run.
 //
-// Report-only by default: prints everything, exits 0, so the build stays green
-// while the remediation lands. `--strict` exits non-zero. Issue #8 switches the
-// build over to --strict once border.default is fixed.
+// Blocking: any failure exits non-zero and fails `pnpm build`. This ran
+// report-only while the remediation landed; #8, #11 and #17 cleared the last
+// of it, so the gate is now the thing that keeps it clear. Pass --report-only
+// to see the full picture without failing, which is useful mid-change.
 
 import { run as contrast } from "./audit-contrast.js";
 import { run as parity } from "./audit-parity.js";
 import { run as ramps } from "./audit-ramps.js";
 
-const strict = process.argv.includes("--strict");
+const reportOnly = process.argv.includes("--report-only");
 
 const failures = contrast() + parity() + ramps();
 
@@ -24,7 +25,9 @@ if (failures === 0) {
 }
 
 console.log(`  ${failures} failure${failures === 1 ? "" : "s"}.`);
-if (strict) {
-  process.exit(1);
+if (reportOnly) {
+  console.log("  Report-only — omit --report-only to fail the build on these.\n");
+  process.exit(0);
 }
-console.log("  Report-only — see issue #8. Run with --strict to make this blocking.\n");
+console.log("");
+process.exit(1);

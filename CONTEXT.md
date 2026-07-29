@@ -69,7 +69,7 @@ Checks that run as the last step of `pnpm build`, after `dist/` exists — they 
 | `scripts/audit-parity.js` | Structural equivalence of the two themes, enforcing the machine-checkable half of [[adr-0002-theming-policy]]: identical key sets, every color token responds to the theme, and interaction states step the direction §2 requires. |
 | `scripts/audit-ramps.js` | Ramp integrity per [[adr-0002-theming-policy]] §3 — monotonic lightness, saturation held within bounds, hue drifting without reversing. Catches a surface fill being given a ramp position it hasn't earned. |
 
-Both are **report-only** — they print failures and exit 0, so the build stays green while the remediation lands. `pnpm audit --strict` exits non-zero instead; the build switches to `--strict` when `border.default` is fixed.
+All three are **blocking** — any failure exits non-zero and fails `pnpm build`. They ran report-only while the remediation landed; #8, #11 and #17 cleared the last of it, so the gate is now what keeps it clear. `pnpm audit --report-only` prints the full picture without failing, which is useful mid-change.
 
 ### Surfaces are not ramp stops
 
