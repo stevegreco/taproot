@@ -52,6 +52,16 @@ The shape returned by both MCP tools:
 
 On every tool call, the MCP compares the `mtime` of source token files (`tokens/`) against the dist files (`dist/tokens/`). If any source file is newer, a warning is appended to the response.
 
+## Guardrails
+
+Checks that run as the last step of `pnpm build`, after `dist/` exists — they read resolved values, so they cannot run against source.
+
+| Script | Checks |
+|---|---|
+| `scripts/audit-contrast.js` | WCAG 2.1 contrast for every semantic foreground/background pair in both themes. Distinguishes 4.5:1 text pairs from 3:1 non-text (1.4.11) pairs; disabled states are computed but exempt. |
+
+The contrast audit is **report-only** — it prints failures and exits 0, so the build stays green while the remediation lands. `pnpm audit:contrast --strict` exits non-zero instead; the build switches to `--strict` when `border.default` is fixed.
+
 ## Docs
 
 | File | Description |
