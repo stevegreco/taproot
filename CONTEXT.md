@@ -23,6 +23,8 @@ The system uses a three-tier token architecture:
 
 The semantic tier has two theme variants: **light** (default) and **dark**. Token paths are identical across themes; only resolved values differ.
 
+How values are expected to differ — mirrored ramps, interaction-state direction, and what a numbered ramp stop promises — is recorded in [[adr-0002-theming-policy]].
+
 ## MCP Server
 
 A local MCP server (`mcp/index.js`) that exposes design tokens to AI assistants and developer tooling. Reads from built output (`dist/tokens/`). See [[adr-0001-mcp-reads-from-dist]].
