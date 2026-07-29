@@ -9,7 +9,7 @@
       "default": {
         "background": { "$value": "{semantic.color.background.muted}",    "$type": "color" },
         "foreground": { "$value": "{semantic.color.foreground.muted}",    "$type": "color" },
-        "border":     { "$value": "{semantic.color.border.default}",      "$type": "color" }
+        "border":     { "$value": "{semantic.color.border.subtle}",       "$type": "color" }
       },
       "accent": {
         "background": { "$value": "{semantic.color.accent.soft}",         "$type": "color" },

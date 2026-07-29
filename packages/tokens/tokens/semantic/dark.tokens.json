@@ -9,15 +9,15 @@
       },
       "foreground": {
         "default":  { "$value": "{primitives.color.clay.50}",       "$type": "color" },
-        "muted":    { "$value": "{primitives.color.blueSmoke.200}", "$type": "color" },
-        "subtle":   { "$value": "{primitives.color.blueSmoke.300}", "$type": "color" },
-        "faint":    { "$value": "{primitives.color.blueSmoke.500}", "$type": "color" },
+        "muted":    { "$value": "{primitives.color.blueSmoke.100}", "$type": "color" },
+        "subtle":   { "$value": "{primitives.color.blueSmoke.200}", "$type": "color" },
+        "faint":    { "$value": "{primitives.color.blueSmoke.300}", "$type": "color" },
         "onAccent": { "$value": "{primitives.color.blueSmoke.950}", "$type": "color" },
         "inverse":  { "$value": "{primitives.color.blueSmoke.950}", "$type": "color" }
       },
       "border": {
-        "default": { "$value": "{primitives.color.blueSmoke.800}", "$type": "color" },
-        "strong":  { "$value": "{primitives.color.blueSmoke.700}", "$type": "color" },
+        "default": { "$value": "{primitives.color.blueSmoke.400}", "$type": "color" },
+        "strong":  { "$value": "{primitives.color.blueSmoke.300}", "$type": "color" },
         "subtle":  { "$value": "{primitives.color.blueSmoke.900}", "$type": "color" },
         "warm":    { "$value": "{primitives.color.robRoy.800}",    "$type": "color" }
       },
