@@ -70,19 +70,46 @@ that is visually identical to the one before it is not a state.
 
 ### 3. Ramp integrity
 
-A numbered stop in a hue ramp holds that ramp's hue within **~2°** and its saturation within
-**~5 points** of its neighbours. Lightness is monotonic across the ramp with roughly even
-spacing. That is the whole promise a stop number makes: same hue family, one step of lightness.
+A numbered stop in a hue ramp must satisfy all three of:
+
+- **Saturation** within **~10 points** of its neighbours.
+- **Hue** drifting monotonically, without reversing direction.
+- **Lightness** monotonic across the ramp, with roughly even spacing.
+
+That is the whole promise a stop number makes: same hue family, one step of lightness.
+
+Note what is deliberately *not* required: constant hue. Measured across the existing full ramps,
+`robRoy` travels from 45.0° at stop 50 to 18.0° at 950, moving 5–6° per step through its middle;
+`blueSmoke` and `clay` drift comparably. This is intentional and conventional — warm ramps redden
+as they darken. A constant-hue rule would flag legitimate stops while missing the values this
+clause is actually aimed at.
+
+Saturation is the reliable discriminator. Across every ramp, true stops hold a tight band while
+the retrofitted fills fall off a cliff:
+
+| Ramp | True stops | Fill |
+|---|---|---|
+| `robRoy` | 62–80 | `850` 28.6, `925` 31.8 |
+| `rust` | 63–65 | `900` 20.0 |
+| `moss` | 22–33 | `900` 10.9 |
+| `sky` | 32–42 | `900` 17.5 |
+
+A 30–45 point collapse is unmissable. The same values also reverse their ramp's hue direction —
+`robRoy` falls 45°→18° but jumps back to 36.7° at `850` — so the two tests agree.
 
 **Surfaces are not ramp stops.** A near-neutral fill tinted toward a hue is a different kind of
 value and belongs in a `primitives.surface.*` group, not at position 900 of a hue ramp. If a
-value cannot satisfy the hue and saturation bounds above, it is not a stop and must not be
-numbered as one.
+value cannot satisfy the bounds above, it is not a stop and must not be numbered as one.
 
 ## Consequences
 
 - `rust`, `moss` and `sky` must be extended to the full `50…950` scale so status tokens have
-  stops to flip to. Existing `100/500/700` values are anchors and do not move ([#7](https://github.com/stevegreco/design-system/issues/7)).
+  stops to flip to. Existing `100/500/700` values are anchors and do not move
+  ([#7](https://github.com/stevegreco/design-system/issues/7)). Because stop `900` in each of
+  those ramps is currently a surface fill that dark-theme status backgrounds consume, extending
+  the ramp and relocating the fills cannot be separated — a ramp cannot be filled to `900`
+  without displacing what is already there. #7 and
+  [#10](https://github.com/stevegreco/design-system/issues/10) therefore ship together.
 - All four statuses gain the full interactive contract — `default`, `hover`, `press`,
   `onDefault`, `foreground`, `background` — in both themes ([#11](https://github.com/stevegreco/design-system/issues/11)).
   This changes published token values and is a breaking change.
