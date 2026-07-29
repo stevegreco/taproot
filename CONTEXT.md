@@ -75,6 +75,12 @@ All three are **blocking** — any failure exits non-zero and fails `pnpm build`
 
 `primitives.color.surface.*` holds dark, desaturated, hue-tinted fills — the dark theme's status and accent backgrounds. They are deliberately outside the numbered ramps: a surface is not "one step darker" than anything, and giving it a stop number makes the ramp lie about what its numbers mean. `audit-ramps.js` enforces the separation, keyed on saturation, because a fill collapses 30–45 points below its neighbours while a true stop holds a tight band.
 
+### Elevation is a semantic tier, not a primitive one
+
+`primitives.shadow.*` is a warm brown tuned for light grounds; `primitives.shadowInk.*` is a near-black at roughly 4× the opacity, for dark ones. Neither is "the" shadow set — `semantic.elevation.{xs,sm,md,lg,xl,inset}` picks between them per theme, and components reference only that. The primitives are named for the pigment rather than the theme, the same reason `surface` is named for its role: a primitive describes what a value *is*, not who consumes it.
+
+`elevation` lives in the per-theme files rather than `shape.tokens.json` precisely because it is the thing that has to differ between themes; radius, which does not, stays shared.
+
 ### Why parity compares tokens to themselves
 
 The obvious mirroring test — "is the token darker than the page in light and lighter than it in dark?" — passes for `status.danger.default`, the exact token TOK-01 is about. Its L\* is 45 in both themes, the light page is L\*97 and the dark page is L\*10, so it satisfies the test without ever moving. The page moved past it. The assertion has to compare a token against **itself across themes**.
