@@ -11,10 +11,11 @@
 
 import { run as contrast } from "./audit-contrast.js";
 import { run as parity } from "./audit-parity.js";
+import { run as ramps } from "./audit-ramps.js";
 
 const strict = process.argv.includes("--strict");
 
-const failures = contrast() + parity();
+const failures = contrast() + parity() + ramps();
 
 console.log("");
 if (failures === 0) {
