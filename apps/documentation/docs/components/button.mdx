@@ -1,39 +1,40 @@
 ---
 title: Button
-description: A React button for triggering actions and submitting forms.
+description: A token-driven web component for triggering actions and submitting forms.
 ---
 
-<Badge variant="accent">React</Badge>
+<Badge variant="accent">Web component</Badge>
 
 Buttons let people initiate an action. Use a clear, concise label that
 describes what happens when the button is selected.
 
 ## Preview
 
-The example below is a real React component. Select the primary button to
-confirm that the preview is interactive, then switch to **Code** to inspect
-the source that powers it.
+The example below uses the published `<ds-button>` custom element. Select the
+primary button to confirm that the preview is interactive, then switch to
+**Code** to inspect the source.
 
 <Component path="button" />
 
 ## Import
 
-<CodeBlock lang="bash" code={`pnpm add @stevegreco/design-system`} />
+<CodeBlock
+  lang="bash"
+  code={`pnpm add @stevegreco/design-system @stevegreco/design-system-components`}
+/>
 
 <CodeBlock
-  lang="tsx"
-  code={`import { Button } from "@stevegreco/design-system";`}
+  lang="js"
+  code={`import { defineButton } from "@stevegreco/design-system-components/button";
+
+defineButton();`}
 />
 
 ## Usage
 
 <CodeBlock
-  lang="tsx"
-  code={`import { Button } from "@stevegreco/design-system";
-
-export function SaveChanges() {
-  return <Button onClick={() => save()}>Save changes</Button>;
-}`}
+  lang="html"
+  code={`<ds-button variant="primary">Save changes</ds-button>`}
 />
 
 ## Variants
@@ -44,8 +45,8 @@ export function SaveChanges() {
     action group.
 
     <CodeBlock
-      lang="tsx"
-      code={'<Button variant="primary">Save changes</Button>'}
+      lang="html"
+      code={'<ds-button variant="primary">Save changes</ds-button>'}
     />
   </Tab>
   <Tab title="Secondary">
@@ -53,47 +54,53 @@ export function SaveChanges() {
     with the primary action.
 
     <CodeBlock
-      lang="tsx"
-      code={'<Button variant="secondary">Cancel</Button>'}
+      lang="html"
+      code={'<ds-button variant="secondary">Cancel</ds-button>'}
     />
   </Tab>
   <Tab title="Danger">
     Reserve for destructive or difficult-to-reverse actions.
 
     <CodeBlock
-      lang="tsx"
-      code={'<Button variant="danger">Delete project</Button>'}
+      lang="html"
+      code={'<ds-button variant="danger">Delete project</ds-button>'}
     />
   </Tab>
 </Tabs>
 
-## Props
+## Attributes and properties
 
 <TypeTable
   type={{
-    children: {
-      type: "React.ReactNode",
-      required: true,
-      description: "The button label or content.",
-    },
     variant: {
-      type: '"primary" | "secondary" | "danger"',
+      type: '"primary" | "secondary" | "ghost" | "danger"',
       default: '"primary"',
       description: "Controls the visual emphasis of the button.",
     },
     size: {
-      type: '"small" | "medium" | "large"',
-      default: '"medium"',
-      description: "Controls the button height, padding, and text size.",
+      type: '"sm" | "md"',
+      default: '"md"',
+      description: "Controls the button padding.",
     },
     disabled: {
       type: "boolean",
       default: "false",
       description: "Prevents pointer and keyboard interaction.",
     },
-    onClick: {
-      type: "() => void",
-      description: "Runs when the button is activated.",
+    type: {
+      type: '"button" | "submit" | "reset"',
+      default: '"button"',
+      description: "Controls form behavior.",
+    },
+    pill: {
+      type: "boolean",
+      default: "false",
+      description: "Uses fully rounded ends.",
+    },
+    "full-width": {
+      type: "boolean",
+      default: "false",
+      description: "Fills the available inline size.",
     },
   }}
 />
@@ -106,7 +113,5 @@ export function SaveChanges() {
 - Use `disabled` only when the action is unavailable and explain why nearby.
 - Add an accessible name when an icon is the only visible content.
 
-:::note
-This is a fictional component created to test the component-documentation
-workflow. It is not currently exported by the design system package.
-:::
+The component emits the native `click` event. Its `form` property exposes its
+associated form, including association across its shadow boundary.

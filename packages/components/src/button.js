@@ -33,6 +33,7 @@ export class DsButton extends Base {
 
   #internals;
   #button;
+  #formDisabled = false;
 
   constructor() {
     super();
@@ -50,11 +51,17 @@ export class DsButton extends Base {
 
   attributeChangedCallback(name, _old, value) {
     if (name === "disabled") {
-      this.#button.disabled = value !== null;
+      this.#syncDisabled();
     } else if (name === "aria-label") {
       if (value === null) this.#button.removeAttribute("aria-label");
       else this.#button.setAttribute("aria-label", value);
     }
+  }
+
+  /** Mirrors disabled state inherited from an ancestor <fieldset>. */
+  formDisabledCallback(disabled) {
+    this.#formDisabled = disabled;
+    this.#syncDisabled();
   }
 
   /** Forward programmatic focus to the real control inside the shadow root. */
@@ -104,8 +111,12 @@ export class DsButton extends Base {
     this.setAttribute("size", value);
   }
 
+  #syncDisabled() {
+    this.#button.disabled = this.disabled || this.#formDisabled;
+  }
+
   #onClick = (event) => {
-    if (this.disabled) {
+    if (this.disabled || this.#formDisabled) {
       event.preventDefault();
       event.stopImmediatePropagation();
       return;
@@ -126,5 +137,9 @@ export class DsButton extends Base {
  */
 export function defineButton(tagName = "ds-button") {
   if (typeof customElements === "undefined") return;
-  if (!customElements.get(tagName)) customElements.define(tagName, DsButton);
+  if (!customElements.get(tagName)) {
+    // A CustomElementRegistry can only associate a constructor with one name.
+    // A trivial subclass preserves instanceof DsButton while allowing aliases.
+    customElements.define(tagName, class extends DsButton {});
+  }
 }

@@ -1,0 +1,72 @@
+---
+title: Badge
+description: A compact, token-driven web component for metadata and status labels.
+---
+
+<Badge variant="accent">Web component</Badge>
+
+Badges label an item's state, category, or supporting metadata. They are
+non-interactive; use a button or link when selecting the label should perform an
+action.
+
+## Preview
+
+The preview uses the published `<ds-badge>` custom element and shows every
+available variant.
+
+<Component path="badge" />
+
+## Import
+
+<CodeBlock
+  lang="bash"
+  code={`pnpm add @stevegreco/design-system @stevegreco/design-system-components`}
+/>
+
+<CodeBlock
+  lang="js"
+  code={`import { defineBadge } from "@stevegreco/design-system-components/badge";
+
+defineBadge();`}
+/>
+
+## Usage
+
+<CodeBlock
+  lang="html"
+  code={`<ds-badge variant="success">Active</ds-badge>`}
+/>
+
+## Variants
+
+| Variant | Use for |
+| --- | --- |
+| `default` | Neutral metadata or categorization |
+| `accent` | Brand emphasis without implying status |
+| `success` | Successful or active states |
+| `danger` | Failed, blocked, or destructive states |
+| `warning` | Conditions that need attention |
+| `info` | Informational states and feature labels |
+
+## Attributes and properties
+
+<TypeTable
+  type={{
+    variant: {
+      type: '"default" | "accent" | "success" | "danger" | "warning" | "info"',
+      default: '"default"',
+      description: "Controls the badge's visual intent.",
+    },
+  }}
+/>
+
+## Accessibility
+
+- Keep labels short and meaningful.
+- Do not rely on color alone; the text should communicate the state.
+- Do not use a badge as an interactive control.
+- The component intentionally sets no live-region role. If a badge changes in
+  response to background activity and must be announced, apply the appropriate
+  live-region semantics for that context.
+
+The badge surface is available as `::part(badge)` for limited styling overrides.

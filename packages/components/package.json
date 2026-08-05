@@ -10,6 +10,10 @@
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
     },
+    "./badge": {
+      "types": "./src/badge.d.ts",
+      "default": "./src/badge.js"
+    },
     "./button": {
       "types": "./src/button.d.ts",
       "default": "./src/button.js"
@@ -26,6 +30,8 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "node build-styles.js",
+    "pretest": "pnpm run build",
+    "test": "vitest run",
     "watch": "chokidar \"src/**/*.css\" -c \"node build-styles.js\" --initial",
     "serve": "live-server --port=4500 --open=examples/button.html .",
     "dev": "concurrently -n build,serve -c blue,green \"pnpm run watch\" \"pnpm run serve\"",
@@ -35,6 +41,7 @@
     "design-system",
     "web-components",
     "custom-elements",
+    "badge",
     "button"
   ],
   "author": "Steve Greco",
@@ -47,8 +54,10 @@
   },
   "devDependencies": {
     "@stevegreco/design-system": "workspace:*",
+    "@vitest/browser-playwright": "^4.1.10",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.1.0",
-    "live-server": "^1.2.2"
+    "live-server": "^1.2.2",
+    "vitest": "^4.1.10"
   }
 }

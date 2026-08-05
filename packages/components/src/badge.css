@@ -1,0 +1,63 @@
+/**
+ * <ds-badge> styles.
+ *
+ * Built into dist/badge.styles.js by build-styles.js — this file is the source.
+ */
+
+:host {
+  --_background: var(--component-badge-default-background);
+  --_foreground: var(--component-badge-default-foreground);
+  --_border: var(--component-badge-default-border);
+
+  display: inline-block;
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([variant="accent"]) {
+  --_background: var(--component-badge-accent-background);
+  --_foreground: var(--component-badge-accent-foreground);
+  --_border: var(--component-badge-accent-border);
+}
+
+:host([variant="success"]) {
+  --_background: var(--component-badge-success-background);
+  --_foreground: var(--component-badge-success-foreground);
+  --_border: var(--component-badge-success-border);
+}
+
+:host([variant="danger"]) {
+  --_background: var(--component-badge-danger-background);
+  --_foreground: var(--component-badge-danger-foreground);
+  --_border: var(--component-badge-danger-border);
+}
+
+:host([variant="warning"]) {
+  --_background: var(--component-badge-warning-background);
+  --_foreground: var(--component-badge-warning-foreground);
+  --_border: var(--component-badge-warning-border);
+}
+
+:host([variant="info"]) {
+  --_background: var(--component-badge-info-background);
+  --_foreground: var(--component-badge-info-foreground);
+  --_border: var(--component-badge-info-border);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: var(--component-badge-padding-y) var(--component-badge-padding-x);
+  border: 1px solid var(--_border);
+  border-radius: var(--component-badge-radius);
+  background-color: var(--_background);
+  color: var(--_foreground);
+  font-size: var(--component-badge-font-size);
+  font-weight: var(--component-badge-font-weight);
+  line-height: 1.25;
+  white-space: nowrap;
+}

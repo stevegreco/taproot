@@ -6,8 +6,11 @@
  * exported `define*` helpers to register under a custom tag name.
  */
 
+import { defineBadge } from "./badge.js";
 import { defineButton } from "./button.js";
 
+export { DsBadge, defineBadge } from "./badge.js";
 export { DsButton, defineButton } from "./button.js";
 
+defineBadge();
 defineButton();

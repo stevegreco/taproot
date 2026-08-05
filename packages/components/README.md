@@ -37,6 +37,26 @@ defineButton();              // <ds-button>
 defineButton("acme-button"); // <acme-button>
 ```
 
+## `<ds-badge>`
+
+Badges are non-interactive labels for metadata and status. Their content comes
+from the default slot:
+
+```html
+<ds-badge>Default</ds-badge>
+<ds-badge variant="success">Active</ds-badge>
+<ds-badge variant="warning">Pending</ds-badge>
+```
+
+The `variant` attribute accepts `default`, `accent`, `success`, `danger`,
+`warning`, or `info`, and defaults to `default`. The rendered surface is exposed
+as `::part(badge)`. Its visual values come from the published
+`--component-badge-*` tokens.
+
+Badge deliberately provides no button behavior or live-region role. Use a
+button for actions, and add an appropriate ARIA role only when a changing badge
+needs to be announced.
+
 ## `<ds-button>`
 
 ### Attributes
@@ -47,7 +67,7 @@ defineButton("acme-button"); // <acme-button>
 | `size`       | `md`, `sm`                                     | `md`        | |
 | `pill`       | boolean                                        | off         | Fully rounded ends |
 | `full-width` | boolean                                        | off         | Fills its container |
-| `disabled`   | boolean                                        | off         | Blocks activation and focus |
+| `disabled`   | boolean                                        | off         | Blocks activation and focus; also follows an ancestor disabled fieldset |
 | `type`       | `button`, `submit`, `reset`                    | `button`    | Works inside a `<form>` |
 | `aria-label` | string                                         | —           | Mirrored onto the inner control; use for icon-only buttons |
 
@@ -117,6 +137,18 @@ published package stays plain ES modules that every bundler already understands.
 
 Run `pnpm run build` after changing a `.css` file, or `pnpm run watch` to rebuild
 on save.
+
+## Tests
+
+The component contract runs in real Chromium through Vitest Browser Mode:
+
+```bash
+pnpm test
+```
+
+The suite covers Badge content, variants, aliases and token mappings, plus
+Button registration, disabled fieldsets, form behavior, accessible labels,
+focus forwarding and token wiring.
 
 ## Local development
 

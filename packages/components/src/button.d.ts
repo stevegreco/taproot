@@ -17,6 +17,7 @@ export declare class DsButton extends HTMLElement {
   /** The containing `<form>`, resolved across the shadow boundary. */
   readonly form: HTMLFormElement | null;
 
+  formDisabledCallback(disabled: boolean): void;
   focus(options?: FocusOptions): void;
   blur(): void;
 }

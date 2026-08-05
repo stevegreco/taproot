@@ -50,7 +50,7 @@
 :host([variant="ghost"]) {
   --_background: var(--component-button-ghost-background);
   --_background-hover: var(--component-button-ghost-background-hover);
-  --_background-press: var(--component-button-ghost-background-hover);
+  --_background-press: var(--component-button-ghost-background-press);
   --_background-disabled: var(--component-button-ghost-background-disabled);
   --_foreground: var(--component-button-ghost-foreground);
   --_foreground-disabled: var(--component-button-ghost-foreground-disabled);
@@ -61,7 +61,7 @@
 :host([variant="danger"]) {
   --_background: var(--component-button-danger-background);
   --_background-hover: var(--component-button-danger-background-hover);
-  --_background-press: var(--component-button-danger-background-hover);
+  --_background-press: var(--component-button-danger-background-press);
   --_background-disabled: var(--component-button-danger-background-disabled);
   --_foreground: var(--component-button-danger-foreground);
   --_foreground-disabled: var(--component-button-danger-foreground-disabled);
