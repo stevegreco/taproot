@@ -2,6 +2,9 @@
 
 Work breakdown for the findings in [token-architecture-audit.md](./token-architecture-audit.md).
 
+> Historical plan: the full status-interaction parity described in D1 was later narrowed. Only
+> danger retains interactive roles because it has a shipped consumer; see ADR-0002.
+
 ## How this is split
 
 Four rules govern the decomposition:

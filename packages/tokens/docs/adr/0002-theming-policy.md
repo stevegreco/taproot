@@ -115,9 +115,10 @@ value cannot satisfy the bounds above, it is not a stop and must not be numbered
   the ramp and relocating the fills cannot be separated — a ramp cannot be filled to `900`
   without displacing what is already there. #7 and
   [#10](https://github.com/stevegreco/design-system/issues/10) therefore ship together.
-- All four statuses gain the full interactive contract — `default`, `hover`, `press`,
-  `onDefault`, `foreground`, `background` — in both themes ([#11](https://github.com/stevegreco/design-system/issues/11)).
-  This changes published token values and is a breaking change.
+- Status groups expose only the roles their current consumers require. Success, warning, and info
+  are noninteractive and expose `default`, `foreground`, and `background`. Danger additionally
+  exposes `hover`, `press`, and `onDefault` because it backs the shipped danger button. New
+  interaction roles are added when a real component needs them, and then follow Decision 2.
 - `rust.900`, `moss.900`, `sky.900`, `robRoy.850` and `robRoy.925` fail the integrity rule and
   move to `primitives.surface.*` ([#10](https://github.com/stevegreco/design-system/issues/10)).
   Consumers referencing those primitive paths directly will break; the semantic tokens that

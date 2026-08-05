@@ -57,3 +57,22 @@ test("the theme argument actually changes component values", () => {
 test("light is the default theme", () => {
   assert.deepEqual(loadTokens(), loadTokens("light"));
 });
+
+test("only status roles with a shipped interactive consumer expose interaction states", () => {
+  for (const theme of ["light", "dark"]) {
+    const tokens = byPath(loadTokens(theme));
+
+    for (const status of ["success", "warning", "info"]) {
+      assert.ok(tokens.has(`semantic.color.status.${status}.default`));
+      assert.ok(tokens.has(`semantic.color.status.${status}.foreground`));
+      assert.ok(tokens.has(`semantic.color.status.${status}.background`));
+      assert.ok(!tokens.has(`semantic.color.status.${status}.hover`));
+      assert.ok(!tokens.has(`semantic.color.status.${status}.press`));
+      assert.ok(!tokens.has(`semantic.color.status.${status}.onDefault`));
+    }
+
+    assert.ok(tokens.has("semantic.color.status.danger.hover"));
+    assert.ok(tokens.has("semantic.color.status.danger.press"));
+    assert.ok(tokens.has("semantic.color.status.danger.onDefault"));
+  }
+});

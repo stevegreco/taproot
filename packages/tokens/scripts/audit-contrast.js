@@ -50,12 +50,14 @@ const PAIRS = [
   ["color.border.strong", "color.background.default", NON_TEXT, "strong border vs page"],
   ["color.focus.ring", "color.background.default", NON_TEXT, "focus ring vs page"],
 
-  // Status: solid surface, its label, and the tinted callout variant
+  // Status indicators and tinted callout variants
   ...["success", "danger", "warning", "info"].flatMap((s) => [
     [`color.status.${s}.default`, "color.background.default", NON_TEXT, `${s} surface vs page`],
-    [`color.status.${s}.onDefault`, `color.status.${s}.default`, TEXT, `label on ${s}`],
     [`color.status.${s}.foreground`, `color.status.${s}.background`, TEXT, `${s} callout text`],
   ]),
+
+  // Danger additionally backs the shipped solid button variant.
+  ["color.status.danger.onDefault", "color.status.danger.default", TEXT, "label on danger"],
 
   // Disabled — reported, never blocking
   ["color.disabled.foreground", "color.disabled.background", TEXT, "disabled label", "exempt"],
