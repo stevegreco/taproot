@@ -1,0 +1,33 @@
+---
+title: Design Tokens
+description: How primitive, semantic, and component tokens work together.
+---
+
+The design system has three token tiers, but a value does not need to pass through every tier.
+
+| Tier | Purpose | Typical use |
+|---|---|---|
+| Primitive | Raw visual scales such as color, spacing, type, and motion | Use when no semantic intent fits and another alias would add no meaning |
+| Semantic | Intent such as foreground, background, border, status, and elevation | The normal styling API for components and product UI |
+| Component | Selectively published component-specific contracts | Use an existing one when it covers the exact component property, variant, or state |
+
+## Choosing a tier
+
+Use an existing component token when it covers the exact component property, variant, or state.
+Component tokens are published selectively, so their absence does not mean a component is
+unsupported.
+
+For properties without a matching component token, use the semantic token that expresses the
+intended role. Use a primitive only when neither published layer fits. Never bypass an existing
+semantic or component token that already expresses the intent.
+
+```css
+/* Existing component-specific contract */
+background: var(--component-button-primary-background);
+
+/* No matching component token; use shared intent */
+color: var(--semantic-color-foreground-default);
+
+/* No matching semantic or component token */
+gap: var(--primitives-space-2);
+```

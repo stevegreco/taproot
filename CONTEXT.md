@@ -6,9 +6,23 @@ The system uses a three-tier token architecture:
 
 | Term | Definition |
 |---|---|
-| **Primitive token** | Raw, scale-based values with no semantic meaning (e.g. `primitives.color.robRoy.700`, `primitives.space.4`). Never referenced directly in component code. |
-| **Semantic token** | Intent-named aliases that reference primitive tokens (e.g. `semantic.color.accent.default`). Theme-aware — light and dark variants exist with identical paths but different resolved values. |
-| **Component token** | Component-scoped aliases that reference semantic tokens (e.g. `component.button.primary.background`). One file per component. |
+| **Primitive token** | Raw, scale-based values with no semantic meaning (e.g. `primitives.color.robRoy.700`, `primitives.space.4`). Components may consume one directly when no semantic intent fits and another alias would add no meaning. |
+| **Semantic token** | Intent-named aliases that reference primitive tokens (e.g. `semantic.color.accent.default`). The normal styling API for components; theme-aware variants have identical paths and different resolved values. |
+| **Component token** | A selective component-scoped contract (e.g. `component.button.primary.background`), created when independent customization, reuse, or API stability justifies it. Not every component property needs one. |
+
+## Token Selection Policy
+
+Components may consume semantic tokens directly. Component tokens are a limited specialization
+layer, not a mandatory stop between semantic tokens and component CSS. They generally alias
+semantic tokens and should exist only when they add a meaningful component contract, such as an
+independent customization point, a shared component-specific decision, a named variant or state,
+or insulation from an implementation detail likely to change.
+
+A component may consume a primitive directly when no semantic intent fits and a component token
+would only be a redundant wrapper. Never use a primitive when a semantic or component token already
+expresses the same intent, and do not create aliases solely to force every value through every tier.
+
+The full decision and examples are recorded in [[adr-0003-token-tier-consumption]].
 
 ## Token Identity
 
@@ -48,7 +62,9 @@ The shape returned by both MCP tools. `value` is theme-dependent at every tier, 
 | `type` | `color` | `color` |
 | `tier` | `component` | `component` |
 
-The component tier is a set of aliases into the semantic tier, so `component.button.primary.background` always equals `semantic.color.accent.default` in the same response. The two platforms carry that differently:
+Theme-dependent component tokens generally alias the semantic tier, so
+`component.button.primary.background` always equals `semantic.color.accent.default` in the same
+response. The two platforms carry that differently:
 
 - **CSS** emits `var()` chains (`outputReferences: true`), so one `components.css` is correct for both themes and swaps at runtime.
 - **JSON** has no equivalent — `json/nested` resolves aliases to literals — so the component tier is built once per theme as `components.light.json` and `components.dark.json`.

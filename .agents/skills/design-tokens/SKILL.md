@@ -1,35 +1,41 @@
 ---
 name: design-tokens
 description: >
-  Knowledge and workflow for working with the @stevegreco/design-system design token system.
-  Use when answering questions about design tokens, suggesting which token to use for a CSS
-  property, explaining token naming conventions, describing the color palette, or helping
-  developers and designers find and apply the right token. Also use when generating component
-  styles, reviewing token usage in code, or explaining the three-tier token architecture
-  (primitive → semantic → component).
+  Consumer guidance for selecting and applying existing published tokens from
+  @stevegreco/design-system. Use when developers or designers need to find an existing token,
+  choose a token for a CSS property, understand token names or palette intent, apply tokens in
+  component or product styles, or review token consumption. Do not use for creating or modifying
+  token definitions, reviewing the token architecture itself, or maintaining the token build
+  pipeline; use repository context and ADRs for those tasks.
 ---
 
 # Design Tokens
 
 ## Three-Tier Architecture
 
-Tokens are organized in three tiers. Always use the most specific tier available.
+Tokens are organized in three tiers. Choose the most specific published token that matches the
+property and intent, but do not assume every component property has a component token.
 
 | Tier | Prefix | Purpose | When to use |
 |---|---|---|---|
-| Primitive | `primitives.*` | Raw scale values — colors, spacing, type | Almost never directly. Only when no semantic or component token fits. |
-| Semantic | `semantic.*` | Intent-named aliases (background, foreground, border, status) | When building a new component or pattern not yet covered by component tokens. |
-| Component | `component.*` | Component-scoped tokens for specific UI elements | Always prefer these when styling a button, input, card, badge, or alert. |
+| Primitive | `primitives.*` | Raw scale values — colors, spacing, type | Use only when no published semantic or component token fits. |
+| Semantic | `semantic.*` | Intent-named aliases (background, foreground, border, status) | The normal styling API for components and product UI. |
+| Component | `component.*` | Selectively published component-scoped tokens | Prefer an existing one when it covers the exact component property, variant, or state. |
 
-**Rule:** Never reference a primitive token in component CSS when a semantic or component token exists for the same intent.
+**Rules:**
+
+- Use an existing component token when it covers the exact component property and context.
+- Otherwise use a semantic token when it expresses the intended role.
+- Use a primitive only when neither published layer fits.
+- Do not borrow a component token from another component or variant merely because its value looks right.
 
 ## Token Selection Workflow
 
 1. Identify the CSS property (e.g. `background-color`, `border-radius`, `color`)
 2. Identify the component or context (e.g. "danger button", "input focus state")
-3. Check component tokens first — if the component exists, use its token
-4. Fall back to semantic tokens for patterns not covered by a component
-5. Use primitives only for truly one-off values with no semantic equivalent
+3. Check whether an existing component token covers that exact property and context
+4. Otherwise choose the semantic token that expresses the intended role
+5. Fall back to a primitive only when neither published layer fits
 
 ## MCP Tools
 

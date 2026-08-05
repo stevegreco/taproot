@@ -24,6 +24,26 @@ Semantic tokens express *purpose*, not appearance. When in doubt about which to 
 | `secondary.*` | Supporting interaction color — secondary buttons, tags |
 | `status.success/danger/warning/info` | Feedback states — each has `default`, `foreground`, `background` sub-tokens |
 
+## Choosing Among Published Tiers
+
+Use an existing component token when it covers the exact component property, variant, or state.
+Component tokens are published selectively, so their absence does not mean the component is
+unsupported. Use the semantic token that expresses the intended role for properties without a
+matching component token, and use a primitive only when neither published layer fits.
+
+Examples for a token consumer:
+
+```css
+/* An existing token covers this exact component variant. */
+background: var(--component-button-primary-background);
+
+/* No component token covers this property; use its semantic intent. */
+color: var(--semantic-color-foreground-default);
+
+/* Neither published layer expresses this raw scale choice. */
+gap: var(--primitives-space-2);
+```
+
 ## Naming Conventions
 
 | Segment | Meaning |
