@@ -283,11 +283,11 @@ body {
 }
 
 .kpi-card {
-  background: var(--semantic-color-background-raised);
-  border: var(--primitives-border-thin) solid var(--border);
-  border-radius: var(--primitives-radius-xl);
+  background: var(--component-card-background);
+  border: var(--primitives-border-thin) solid var(--component-card-border);
+  border-radius: var(--component-card-radius);
   padding: var(--primitives-space-5);
-  box-shadow: var(--primitives-shadow-xs);
+  box-shadow: var(--component-card-shadow);
   display: flex;
   flex-direction: column;
   gap: var(--primitives-space-3);
@@ -378,10 +378,10 @@ body {
 
 /* ─── Card ─── */
 .card {
-  background: var(--semantic-color-background-raised);
-  border: var(--primitives-border-thin) solid var(--border);
-  border-radius: var(--primitives-radius-xl);
-  box-shadow: var(--primitives-shadow-xs);
+  background: var(--component-card-background);
+  border: var(--primitives-border-thin) solid var(--component-card-border);
+  border-radius: var(--component-card-radius);
+  box-shadow: var(--component-card-shadow);
   overflow: hidden;
 }
 
@@ -582,18 +582,19 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  border-radius: var(--primitives-radius-full);
-  font-size: var(--primitives-text-xs);
-  font-weight: var(--primitives-weight-semibold);
-  padding: 2px 8px;
+  border: var(--primitives-border-thin) solid transparent;
+  border-radius: var(--component-badge-radius);
+  font-size: var(--component-badge-font-size);
+  font-weight: var(--component-badge-font-weight);
+  padding: var(--component-badge-padding-y) var(--component-badge-padding-x);
   white-space: nowrap;
 }
-.badge.success { background: var(--status-success-background); color: var(--status-success-foreground); }
-.badge.warning { background: var(--status-warning-background); color: var(--status-warning-foreground); }
-.badge.danger  { background: var(--status-danger-background);  color: var(--status-danger-foreground); }
-.badge.info    { background: var(--status-info-background);    color: var(--status-info-foreground); }
-.badge.neutral { background: var(--semantic-color-background-sunken); color: var(--semantic-color-foreground-muted); border: var(--primitives-border-thin) solid var(--border); }
-.badge.brand   { background: var(--semantic-color-accent-soft); color: var(--semantic-color-accent-default); }
+.badge.success { background: var(--component-badge-success-background); color: var(--component-badge-success-foreground); border-color: var(--component-badge-success-border); }
+.badge.warning { background: var(--component-badge-warning-background); color: var(--component-badge-warning-foreground); border-color: var(--component-badge-warning-border); }
+.badge.danger  { background: var(--component-badge-danger-background);  color: var(--component-badge-danger-foreground);  border-color: var(--component-badge-danger-border); }
+.badge.info    { background: var(--component-badge-info-background);    color: var(--component-badge-info-foreground);    border-color: var(--component-badge-info-border); }
+.badge.neutral { background: var(--component-badge-default-background); color: var(--component-badge-default-foreground); border-color: var(--component-badge-default-border); }
+.badge.brand   { background: var(--component-badge-accent-background); color: var(--component-badge-accent-foreground); border-color: var(--component-badge-accent-border); }
 
 .badge::before {
   content: '';
@@ -685,20 +686,20 @@ body {
 .alert {
   display: flex;
   align-items: flex-start;
-  gap: var(--primitives-space-3);
-  padding: var(--primitives-space-3) var(--primitives-space-4);
-  border-radius: var(--primitives-radius-lg);
+  gap: var(--component-alert-gap);
+  padding: var(--component-alert-padding);
+  border-radius: var(--component-alert-radius);
   border: var(--primitives-border-thin) solid;
 }
 .alert.warning {
-  background: var(--status-warning-background);
-  border-color: var(--primitives-color-rob-roy-200);
-  color: var(--status-warning-foreground);
+  background: var(--component-alert-warning-background);
+  border-color: var(--component-alert-warning-border);
+  color: var(--component-alert-warning-foreground);
 }
-[data-theme="dark"] .alert.warning { border-color: var(--primitives-color-rob-roy-800); }
+.alert.warning svg { color: var(--component-alert-warning-icon-color); }
 .alert svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 1px; }
-.alert-body  { font-size: var(--primitives-text-sm); }
-.alert-title { font-weight: var(--primitives-weight-semibold); margin-bottom: 2px; }
+.alert-body  { font-size: var(--component-alert-font-size); }
+.alert-title { font-weight: var(--component-alert-title-font-weight); margin-bottom: 2px; }
 .alert-desc  { opacity: 0.85; font-size: var(--primitives-text-xs); }
 
 /* ─── Buttons ─── */
@@ -706,26 +707,30 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border-radius: var(--primitives-radius-md);
-  font-size: var(--primitives-text-xs);
-  font-weight: var(--primitives-weight-semibold);
-  padding: 6px var(--primitives-space-3);
+  border-radius: var(--component-button-radius-md);
+  font-family: var(--component-button-font-family);
+  font-size: var(--component-button-font-size);
+  font-weight: var(--component-button-font-weight);
+  padding: var(--component-button-padding-y-sm) var(--component-button-padding-x-sm);
   border: var(--primitives-border-thin) solid transparent;
   cursor: pointer;
-  transition: opacity var(--primitives-duration-fast) var(--primitives-ease-out);
+  transition: background var(--component-button-transition) var(--primitives-ease-out);
 }
-.btn:hover { opacity: 0.85; }
 
 .btn-primary {
-  background: var(--accent);
-  color: var(--semantic-color-accent-foreground);
+  background: var(--component-button-primary-background);
+  border-color: var(--component-button-primary-border);
+  color: var(--component-button-primary-foreground);
 }
+.btn-primary:hover { background: var(--component-button-primary-background-hover); border-color: var(--component-button-primary-background-hover); }
+.btn-primary:active { background: var(--component-button-primary-background-press); border-color: var(--component-button-primary-background-press); }
 .btn-ghost {
-  background: transparent;
-  border-color: var(--border);
-  color: var(--semantic-color-foreground-muted);
+  background: var(--component-button-ghost-background);
+  border-color: var(--component-button-ghost-border);
+  color: var(--component-button-ghost-foreground);
 }
-.btn-ghost:hover { background: var(--semantic-color-background-sunken); }
+.btn-ghost:hover { background: var(--component-button-ghost-background-hover); }
+.btn-ghost:active { background: var(--component-button-ghost-background-press); }
 
 .btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; }
 

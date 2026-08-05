@@ -14,8 +14,6 @@
       --border: var(--semantic-color-border-default);
       --brand: var(--semantic-color-secondary-default);
       --accent: var(--semantic-color-accent-default);
-      --status-danger-foreground: var(--semantic-color-status-danger-foreground);
-      --status-danger-background: var(--semantic-color-status-danger-background);
     }
 
     /* ─── Reset & base ─── */
@@ -34,11 +32,11 @@
     form {
       max-width: 32rem;
       margin: 0 auto;
-      background: var(--semantic-color-background-raised);
-      padding: var(--primitives-space-8);
-      border-radius: var(--primitives-radius-xl);
-      border: var(--primitives-border-thin) solid var(--border);
-      box-shadow: var(--primitives-shadow-sm);
+      background: var(--component-card-background);
+      padding: var(--component-card-padding);
+      border-radius: var(--component-card-radius);
+      border: var(--primitives-border-thin) solid var(--component-card-border);
+      box-shadow: var(--component-card-shadow);
     }
 
     h1 {
@@ -65,7 +63,7 @@
       margin-bottom: 6px;
       font-size: var(--primitives-text-sm);
       font-weight: var(--primitives-weight-semibold);
-      color: var(--semantic-color-foreground-default);
+      color: var(--component-input-label-foreground);
     }
 
     input,
@@ -73,22 +71,35 @@
     textarea {
       display: block;
       width: 100%;
-      padding: 10px var(--primitives-space-3);
-      font-family: var(--primitives-font-sans);
-      font-size: var(--primitives-text-base);
+      padding: var(--component-input-padding-y) var(--component-input-padding-x);
+      font-family: var(--component-input-font-family);
+      font-size: var(--component-input-font-size);
       line-height: var(--primitives-leading-normal);
-      color: var(--semantic-color-foreground-default);
-      background: var(--semantic-color-background-raised);
-      border: var(--primitives-border-thin) solid var(--border);
-      border-radius: var(--primitives-radius-md);
+      color: var(--component-input-foreground);
+      background: var(--component-input-background);
+      border: var(--primitives-border-thin) solid var(--component-input-border);
+      border-radius: var(--component-input-radius);
+      box-shadow: var(--component-input-shadow);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--component-input-foreground-placeholder);
+    }
+
+    input:hover,
+    select:hover,
+    textarea:hover {
+      border-color: var(--component-input-border-hover);
     }
 
     input:focus,
     select:focus,
     textarea:focus {
-      outline: var(--primitives-border-thick) solid var(--brand);
+      outline: var(--primitives-border-thick) solid var(--component-input-border-focus);
       outline-offset: 2px;
-      border-color: var(--brand);
+      border-color: var(--component-input-border-focus);
+      box-shadow: var(--component-input-shadow-focus);
     }
 
     textarea {
@@ -124,7 +135,7 @@
       display: flex;
       align-items: center;
       gap: var(--primitives-space-2);
-      font-weight: var(--primitives-weight-normal);
+      font-weight: var(--primitives-weight-regular);
       font-size: var(--primitives-text-sm);
       color: var(--semantic-color-foreground-muted);
       cursor: pointer;
@@ -143,44 +154,50 @@
     .hint {
       margin-top: var(--primitives-space-1);
       font-size: var(--primitives-text-xs);
-      color: var(--semantic-color-foreground-subtle);
+      color: var(--component-input-hint-foreground);
     }
 
     .error {
       margin-top: var(--primitives-space-1);
       font-size: var(--primitives-text-xs);
-      color: var(--status-danger-foreground);
+      color: var(--component-input-error-foreground);
     }
 
     input[aria-invalid="true"],
     select[aria-invalid="true"],
     textarea[aria-invalid="true"] {
-      border-color: var(--status-danger-foreground);
+      border-color: var(--component-input-border-error);
     }
 
     /* ─── Submit button ─── */
     button[type="submit"] {
       display: block;
       width: 100%;
-      padding: var(--primitives-space-3) var(--primitives-space-6);
-      font-family: var(--primitives-font-sans);
-      font-size: var(--primitives-text-base);
-      font-weight: var(--primitives-weight-semibold);
-      color: var(--primitives-color-white);
-      background: var(--accent);
-      border: none;
-      border-radius: var(--primitives-radius-md);
+      padding: var(--component-button-padding-y) var(--component-button-padding-x);
+      font-family: var(--component-button-font-family);
+      font-size: var(--component-button-font-size);
+      font-weight: var(--component-button-font-weight);
+      color: var(--component-button-primary-foreground);
+      background: var(--component-button-primary-background);
+      border: var(--primitives-border-thin) solid var(--component-button-primary-border);
+      border-radius: var(--component-button-radius-md);
       cursor: pointer;
       margin-top: var(--primitives-space-6);
-      transition: opacity 0.15s;
+      transition: background var(--component-button-transition) var(--primitives-ease-out);
     }
 
     button[type="submit"]:hover {
-      opacity: 0.85;
+      background: var(--component-button-primary-background-hover);
+      border-color: var(--component-button-primary-background-hover);
+    }
+
+    button[type="submit"]:active {
+      background: var(--component-button-primary-background-press);
+      border-color: var(--component-button-primary-background-press);
     }
 
     button[type="submit"]:focus {
-      outline: var(--primitives-border-thick) solid var(--accent);
+      outline: var(--primitives-border-thick) solid var(--semantic-color-focus-ring);
       outline-offset: 2px;
     }
 

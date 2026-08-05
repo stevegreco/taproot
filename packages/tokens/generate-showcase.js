@@ -45,6 +45,10 @@ const primitivesRadius = filterPrefix(rootTokens, "--primitives-radius-");
 const primitivesShadow = filterPrefix(rootTokens, "--primitives-shadow-");
 const semanticLight = filterPrefix(rootTokens, "--semantic-color-");
 const semanticDark = filterPrefix(darkTokens, "--semantic-color-");
+const semanticRadius = filterPrefix(rootTokens, "--semantic-radius-");
+const semanticElevationLight = filterPrefix(rootTokens, "--semantic-elevation-");
+const semanticElevationDark = filterPrefix(darkTokens, "--semantic-elevation-");
+const componentTokens = filterPrefix(rootTokens, "--component-");
 
 const groupPrimitiveColorsByScale = (items) => {
   const groups = new Map();
@@ -176,6 +180,18 @@ const renderFontCards = (items) =>
     )
     .join("\n");
 
+const renderValueCards = (items) =>
+  items
+    .map(
+      (item) => `<article class="token-card">
+  <div class="token-meta">
+    <code class="token-name">${escapeHtml(item.name)}</code>
+    <code class="token-value">${escapeHtml(item.value)}</code>
+  </div>
+</article>`
+    )
+    .join("\n");
+
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -236,10 +252,10 @@ const html = `<!doctype html>
       cursor: pointer;
     }
     .semantic-banner {
-      background: var(--semantic-color-background-brand);
+      background: var(--semantic-color-accent-default);
       border-radius: 14px;
       padding: 14px 16px;
-      color: #fff;
+      color: var(--semantic-color-accent-foreground);
       margin-bottom: 20px;
     }
     section { margin-bottom: 24px; }
@@ -347,7 +363,7 @@ const html = `<!doctype html>
     </header>
 
     <p class="semantic-banner">
-      Semantic background preview using <code>--semantic-color-background-brand</code>
+      Semantic accent preview using <code>--semantic-color-accent-default</code>
     </p>
 
     <section>
@@ -358,6 +374,26 @@ const html = `<!doctype html>
     <section>
       <h2>Semantic Colors (Dark)</h2>
       <div class="grid">${renderColorCards(semanticDark)}</div>
+    </section>
+
+    <section>
+      <h2>Semantic Radius</h2>
+      <div class="grid">${renderRadiusCards(semanticRadius)}</div>
+    </section>
+
+    <section>
+      <h2>Semantic Elevation (Light)</h2>
+      <div class="grid">${renderShadowCards(semanticElevationLight)}</div>
+    </section>
+
+    <section>
+      <h2>Semantic Elevation (Dark)</h2>
+      <div class="grid">${renderShadowCards(semanticElevationDark)}</div>
+    </section>
+
+    <section>
+      <h2>Component Tokens</h2>
+      <div class="grid">${renderValueCards(componentTokens)}</div>
     </section>
 
     <section>

@@ -13,10 +13,11 @@
 import { run as contrast } from "./audit-contrast.js";
 import { run as parity } from "./audit-parity.js";
 import { run as ramps } from "./audit-ramps.js";
+import { run as examples } from "./audit-examples.js";
 
 const reportOnly = process.argv.includes("--report-only");
 
-const failures = contrast() + parity() + ramps();
+const failures = contrast() + parity() + ramps() + examples();
 
 console.log("");
 if (failures === 0) {
