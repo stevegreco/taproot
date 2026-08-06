@@ -1,4 +1,4 @@
-# Semantic color naming plan
+# Semantic naming plan
 
 **Status:** Working draft
 
@@ -237,3 +237,15 @@ foundation backgrounds.
 
 Borders do not use an `on` family because they do not carry content. Transparent borders remain a
 literal implementation value rather than a semantic color role.
+
+## Secondary actions
+
+**WIP:** To discuss.
+
+## Typography
+
+**WIP:** To discuss.
+
+## Size
+
+**WIP:** To discuss.
