@@ -1,623 +1,1039 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Primitive token documentation prototypes</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23823f1e'/><text x='16' y='22' text-anchor='middle' font-size='18' fill='white'>S</text></svg>">
-  <style>
-    :root {
-      --white: #ffffff;
-      --ink: #171c1a;
-      --muted: #5b7168;
-      --line: #e0e7e3;
-      --surface: #f6f7f7;
-      --warm: #fdf9ed;
-      --brand: #d98f27;
-      --brand-dark: #823f1e;
-      --clay: #9a7a58;
-      --moss: #6b8e5a;
-      --sky: #4a7896;
-      --rust: #b8472a;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --shadow-sm: 0 1px 2px rgba(61, 26, 11, .05), 0 2px 4px rgba(61, 26, 11, .04);
-      --shadow-lg: 0 4px 8px rgba(61, 26, 11, .06), 0 16px 32px rgba(61, 26, 11, .1);
-      font-family: "Source Sans 3", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--ink);
-      background: var(--surface);
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Primitive token documentation prototypes</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23823f1e'/><text x='16' y='22' text-anchor='middle' font-size='18' fill='white'>S</text></svg>"
+    />
+    <style>
+      :root {
+        --white: #ffffff;
+        --ink: #171c1a;
+        --muted: #5b7168;
+        --line: #e0e7e3;
+        --surface: #f6f7f7;
+        --warm: #fdf9ed;
+        --brand: #d98f27;
+        --brand-dark: #823f1e;
+        --clay: #9a7a58;
+        --moss: #6b8e5a;
+        --sky: #4a7896;
+        --rust: #b8472a;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --shadow-sm: 0 1px 2px rgba(61, 26, 11, 0.05), 0 2px 4px rgba(61, 26, 11, 0.04);
+        --shadow-lg: 0 4px 8px rgba(61, 26, 11, 0.06), 0 16px 32px rgba(61, 26, 11, 0.1);
+        font-family:
+          "Source Sans 3",
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background: var(--surface);
+      }
 
-    * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; }
-    button, input { font: inherit; }
-    button { color: inherit; }
-    code {
-      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
-      font-size: .82em;
-    }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-width: 320px;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        color: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+        font-size: 0.82em;
+      }
 
-    .variant-switcher {
-      position: fixed;
-      z-index: 100;
-      top: 14px;
-      left: 50%;
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      transform: translateX(-50%);
-      border: 1px solid rgba(255, 255, 255, .4);
-      border-radius: 999px;
-      background: rgba(23, 28, 26, .92);
-      box-shadow: var(--shadow-lg);
-      backdrop-filter: blur(12px);
-    }
+      .variant-switcher {
+        position: fixed;
+        z-index: 100;
+        top: 14px;
+        left: 50%;
+        display: flex;
+        gap: 4px;
+        padding: 4px;
+        transform: translateX(-50%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 999px;
+        background: rgba(23, 28, 26, 0.92);
+        box-shadow: var(--shadow-lg);
+        backdrop-filter: blur(12px);
+      }
 
-    .variant-switcher button {
-      border: 0;
-      border-radius: 999px;
-      padding: 8px 13px;
-      color: #c1cec7;
-      background: transparent;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 650;
-      white-space: nowrap;
-    }
+      .variant-switcher button {
+        border: 0;
+        border-radius: 999px;
+        padding: 8px 13px;
+        color: #c1cec7;
+        background: transparent;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 650;
+        white-space: nowrap;
+      }
 
-    .variant-switcher button[aria-pressed="true"] {
-      color: var(--ink);
-      background: var(--white);
-    }
+      .variant-switcher button[aria-pressed="true"] {
+        color: var(--ink);
+        background: var(--white);
+      }
 
-    .variant-switcher button:focus-visible,
-    a:focus-visible {
-      outline: 3px solid #e8c468;
-      outline-offset: 3px;
-    }
+      .variant-switcher button:focus-visible,
+      a:focus-visible {
+        outline: 3px solid #e8c468;
+        outline-offset: 3px;
+      }
 
-    .variant { display: none; min-height: 100vh; background: var(--white); }
-    .variant.active { display: block; }
+      .variant {
+        display: none;
+        min-height: 100vh;
+        background: var(--white);
+      }
+      .variant.active {
+        display: block;
+      }
 
-    .site-header {
-      position: sticky;
-      z-index: 20;
-      top: 0;
-      display: grid;
-      grid-template-columns: 250px minmax(0, 1fr) 260px;
-      align-items: center;
-      height: 64px;
-      padding: 0 24px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, .95);
-      backdrop-filter: blur(10px);
-    }
+      .site-header {
+        position: sticky;
+        z-index: 20;
+        top: 0;
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr) 260px;
+        align-items: center;
+        height: 64px;
+        padding: 0 24px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+      }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 750;
-      letter-spacing: -.02em;
-    }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+      }
 
-    .brand-mark {
-      display: grid;
-      width: 29px;
-      height: 29px;
-      place-items: center;
-      border-radius: 8px;
-      color: var(--white);
-      background: var(--brand-dark);
-      font-family: Georgia, serif;
-      font-size: 17px;
-    }
+      .brand-mark {
+        display: grid;
+        width: 29px;
+        height: 29px;
+        place-items: center;
+        border-radius: 8px;
+        color: var(--white);
+        background: var(--brand-dark);
+        font-family: Georgia, serif;
+        font-size: 17px;
+      }
 
-    .search {
-      justify-self: center;
-      width: min(440px, 80%);
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      padding: 9px 13px;
-      color: var(--muted);
-      background: var(--surface);
-      font-size: 13px;
-    }
+      .search {
+        justify-self: center;
+        width: min(440px, 80%);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 9px 13px;
+        color: var(--muted);
+        background: var(--surface);
+        font-size: 13px;
+      }
 
-    .header-links {
-      display: flex;
-      justify-content: flex-end;
-      gap: 20px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 600;
-    }
+      .header-links {
+        display: flex;
+        justify-content: flex-end;
+        gap: 20px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+      }
 
-    .header-links a, .side-nav a, .toc a { color: inherit; text-decoration: none; }
+      .header-links a,
+      .side-nav a,
+      .toc a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-    .docs-shell {
-      display: grid;
-      grid-template-columns: 250px minmax(0, 1fr);
-      min-height: calc(100vh - 64px);
-    }
+      .docs-shell {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        min-height: calc(100vh - 64px);
+      }
 
-    .side-nav {
-      padding: 28px 22px 40px;
-      border-right: 1px solid var(--line);
-      color: var(--muted);
-      background: #fbfcfb;
-      font-size: 14px;
-    }
+      .side-nav {
+        padding: 28px 22px 40px;
+        border-right: 1px solid var(--line);
+        color: var(--muted);
+        background: #fbfcfb;
+        font-size: 14px;
+      }
 
-    .nav-label {
-      margin: 24px 10px 9px;
-      color: #7a9086;
-      font-size: 11px;
-      font-weight: 750;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-    }
+      .nav-label {
+        margin: 24px 10px 9px;
+        color: #7a9086;
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
 
-    .nav-label:first-child { margin-top: 0; }
-    .side-nav a {
-      display: block;
-      margin: 2px 0;
-      border-radius: 7px;
-      padding: 8px 10px;
-    }
-    .side-nav a.active {
-      color: var(--brand-dark);
-      background: #f7edce;
-      font-weight: 700;
-    }
-    .side-nav .nested { padding-left: 26px; font-size: 13px; }
+      .nav-label:first-child {
+        margin-top: 0;
+      }
+      .side-nav a {
+        display: block;
+        margin: 2px 0;
+        border-radius: 7px;
+        padding: 8px 10px;
+      }
+      .side-nav a.active {
+        color: var(--brand-dark);
+        background: #f7edce;
+        font-weight: 700;
+      }
+      .side-nav .nested {
+        padding-left: 26px;
+        font-size: 13px;
+      }
 
-    .page {
-      min-width: 0;
-      background: var(--white);
-    }
+      .page {
+        min-width: 0;
+        background: var(--white);
+      }
 
-    .eyebrow {
-      margin: 0 0 10px;
-      color: var(--brand-dark);
-      font-size: 12px;
-      font-weight: 750;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--brand-dark);
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
 
-    h1, h2, h3, p { margin-top: 0; }
-    h1 {
-      margin-bottom: 14px;
-      font-family: Lora, Georgia, serif;
-      font-size: clamp(36px, 5vw, 54px);
-      font-weight: 500;
-      letter-spacing: -.04em;
-      line-height: 1.06;
-    }
-    h2 { font-size: 23px; letter-spacing: -.02em; }
-    h3 { font-size: 16px; }
-    .lede { color: var(--muted); font-size: 18px; line-height: 1.6; }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 4px 8px;
-      color: var(--muted);
-      background: var(--surface);
-      font-size: 11px;
-      font-weight: 700;
-    }
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+      h1 {
+        margin-bottom: 14px;
+        font-family: Lora, Georgia, serif;
+        font-size: clamp(36px, 5vw, 54px);
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1.06;
+      }
+      h2 {
+        font-size: 23px;
+        letter-spacing: -0.02em;
+      }
+      h3 {
+        font-size: 16px;
+      }
+      .lede {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.6;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 4px 8px;
+        color: var(--muted);
+        background: var(--surface);
+        font-size: 11px;
+        font-weight: 700;
+      }
 
-    /* A: Reference table */
-    .reference-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 860px) 190px;
-      gap: 70px;
-      max-width: 1160px;
-      margin: 0 auto;
-      padding: 72px 46px 100px;
-    }
-    .reference-intro { margin-bottom: 48px; }
-    .reference-intro .lede { max-width: 690px; }
-    .category-block { margin-top: 48px; scroll-margin-top: 88px; }
-    .section-heading {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 14px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
-    }
-    .section-heading h2 { margin: 0; }
-    .section-heading span { color: #7a9086; font-size: 12px; }
+      /* A: Reference table */
+      .reference-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 860px) 190px;
+        gap: 70px;
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 72px 46px 100px;
+      }
+      .reference-intro {
+        margin-bottom: 48px;
+      }
+      .reference-intro .lede {
+        max-width: 690px;
+      }
+      .category-block {
+        margin-top: 48px;
+        scroll-margin-top: 88px;
+      }
+      .section-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .section-heading h2 {
+        margin: 0;
+      }
+      .section-heading span {
+        color: #7a9086;
+        font-size: 12px;
+      }
 
-    .token-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    .token-table th {
-      padding: 9px 12px;
-      color: #7a9086;
-      font-size: 11px;
-      letter-spacing: .06em;
-      text-align: left;
-      text-transform: uppercase;
-    }
-    .token-table td {
-      padding: 12px;
-      border-top: 1px solid #edf1ef;
-      vertical-align: middle;
-    }
-    .token-table code { color: #3b4a43; }
-    .token-preview {
-      display: inline-block;
-      width: 32px;
-      height: 32px;
-      border: 1px solid rgba(23, 28, 26, .1);
-      border-radius: 6px;
-      vertical-align: middle;
-    }
-    .space-preview { height: 10px; border: 0; border-radius: 2px; background: var(--brand); }
-    .radius-preview { background: #f7edce; border: 2px solid var(--brand); }
-    .toc { position: sticky; top: 96px; align-self: start; font-size: 13px; }
-    .toc strong { display: block; margin-bottom: 11px; }
-    .toc a { display: block; padding: 5px 0; color: var(--muted); }
+      .token-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      .token-table th {
+        padding: 9px 12px;
+        color: #7a9086;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-align: left;
+        text-transform: uppercase;
+      }
+      .token-table td {
+        padding: 12px;
+        border-top: 1px solid #edf1ef;
+        vertical-align: middle;
+      }
+      .token-table code {
+        color: #3b4a43;
+      }
+      .token-preview {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border: 1px solid rgba(23, 28, 26, 0.1);
+        border-radius: 6px;
+        vertical-align: middle;
+      }
+      .space-preview {
+        height: 10px;
+        border: 0;
+        border-radius: 2px;
+        background: var(--brand);
+      }
+      .radius-preview {
+        background: #f7edce;
+        border: 2px solid var(--brand);
+      }
+      .toc {
+        position: sticky;
+        top: 96px;
+        align-self: start;
+        font-size: 13px;
+      }
+      .toc strong {
+        display: block;
+        margin-bottom: 11px;
+      }
+      .toc a {
+        display: block;
+        padding: 5px 0;
+        color: var(--muted);
+      }
 
-    /* B: Visual catalog */
-    .catalog-page { padding: 70px 56px 100px; }
-    .catalog-header {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      max-width: 1120px;
-      margin: 0 auto 42px;
-      gap: 32px;
-    }
-    .catalog-header > div:first-child { max-width: 680px; }
-    .count-card {
-      min-width: 170px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 17px;
-      background: var(--surface);
-    }
-    .count-card strong { display: block; font-family: Georgia, serif; font-size: 30px; }
-    .count-card span { color: var(--muted); font-size: 12px; }
-    .catalog-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 18px;
-      max-width: 1120px;
-      margin: 0 auto;
-    }
-    .catalog-card {
-      grid-column: span 4;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: var(--white);
-      box-shadow: var(--shadow-sm);
-    }
-    .catalog-card.wide { grid-column: span 8; }
-    .catalog-card header { padding: 20px 20px 14px; }
-    .catalog-card header p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
-    .color-ramp { display: flex; height: 130px; }
-    .color-ramp div { flex: 1; position: relative; }
-    .color-ramp span {
-      position: absolute;
-      bottom: 8px;
-      left: 8px;
-      color: rgba(255,255,255,.9);
-      font-size: 10px;
-      font-weight: 700;
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
-    }
-    .sample-list { display: grid; gap: 1px; background: var(--line); border-top: 1px solid var(--line); }
-    .sample-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      min-height: 52px;
-      padding: 11px 20px;
-      background: var(--white);
-    }
-    .sample-row code { color: var(--muted); }
-    .type-sample { font-family: Georgia, serif; font-size: 30px; line-height: 1; }
-    .space-sample { height: 12px; border-radius: 2px; background: var(--sky); }
-    .motion-track { width: 104px; height: 6px; border-radius: 999px; background: var(--line); }
-    .motion-dot { width: 14px; height: 14px; margin-top: -4px; border-radius: 50%; background: var(--rust); }
+      /* B: Visual catalog */
+      .catalog-page {
+        padding: 70px 56px 100px;
+      }
+      .catalog-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        max-width: 1120px;
+        margin: 0 auto 42px;
+        gap: 32px;
+      }
+      .catalog-header > div:first-child {
+        max-width: 680px;
+      }
+      .count-card {
+        min-width: 170px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        padding: 17px;
+        background: var(--surface);
+      }
+      .count-card strong {
+        display: block;
+        font-family: Georgia, serif;
+        font-size: 30px;
+      }
+      .count-card span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .catalog-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 18px;
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+      .catalog-card {
+        grid-column: span 4;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        background: var(--white);
+        box-shadow: var(--shadow-sm);
+      }
+      .catalog-card.wide {
+        grid-column: span 8;
+      }
+      .catalog-card header {
+        padding: 20px 20px 14px;
+      }
+      .catalog-card header p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .color-ramp {
+        display: flex;
+        height: 130px;
+      }
+      .color-ramp div {
+        flex: 1;
+        position: relative;
+      }
+      .color-ramp span {
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 10px;
+        font-weight: 700;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+      }
+      .sample-list {
+        display: grid;
+        gap: 1px;
+        background: var(--line);
+        border-top: 1px solid var(--line);
+      }
+      .sample-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 52px;
+        padding: 11px 20px;
+        background: var(--white);
+      }
+      .sample-row code {
+        color: var(--muted);
+      }
+      .type-sample {
+        font-family: Georgia, serif;
+        font-size: 30px;
+        line-height: 1;
+      }
+      .space-sample {
+        height: 12px;
+        border-radius: 2px;
+        background: var(--sky);
+      }
+      .motion-track {
+        width: 104px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--line);
+      }
+      .motion-dot {
+        width: 14px;
+        height: 14px;
+        margin-top: -4px;
+        border-radius: 50%;
+        background: var(--rust);
+      }
 
-    /* C: Split explorer */
-    .explorer-shell { grid-template-columns: 250px 220px minmax(0, 1fr); }
-    .category-rail {
-      padding: 36px 18px;
-      border-right: 1px solid var(--line);
-      background: var(--white);
-    }
-    .category-rail h2 { margin: 0 10px 20px; font-size: 13px; }
-    .category-rail button {
-      display: flex;
-      width: 100%;
-      align-items: center;
-      justify-content: space-between;
-      margin: 2px 0;
-      border: 0;
-      border-radius: 8px;
-      padding: 10px;
-      background: transparent;
-      cursor: default;
-      text-align: left;
-    }
-    .category-rail button:first-of-type {
-      color: var(--brand-dark);
-      background: var(--warm);
-      font-weight: 700;
-    }
-    .category-rail span { color: #7a9086; font-size: 11px; }
-    .explorer-main { padding: 66px 54px 100px; }
-    .explorer-main > * { max-width: 900px; }
-    .explorer-main .lede { max-width: 650px; }
-    .ramp-hero {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      overflow: hidden;
-      margin: 38px 0 34px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-    }
-    .ramp-cell {
-      display: flex;
-      min-height: 154px;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 12px;
-      color: var(--white);
-      font-size: 11px;
-    }
-    .ramp-cell.light { color: var(--ink); }
-    .detail-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .detail-card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      background: var(--white);
-    }
-    .detail-card .swatch { height: 72px; margin-bottom: 14px; border-radius: 7px; }
-    .detail-card strong, .detail-card code { display: block; }
-    .detail-card code { margin-top: 5px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
-    .guidance {
-      margin-top: 30px;
-      border-left: 3px solid var(--brand);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      padding: 17px 20px;
-      color: #3b4a43;
-      background: var(--warm);
-      font-size: 14px;
-      line-height: 1.55;
-    }
+      /* C: Split explorer */
+      .explorer-shell {
+        grid-template-columns: 250px 220px minmax(0, 1fr);
+      }
+      .category-rail {
+        padding: 36px 18px;
+        border-right: 1px solid var(--line);
+        background: var(--white);
+      }
+      .category-rail h2 {
+        margin: 0 10px 20px;
+        font-size: 13px;
+      }
+      .category-rail button {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        margin: 2px 0;
+        border: 0;
+        border-radius: 8px;
+        padding: 10px;
+        background: transparent;
+        cursor: default;
+        text-align: left;
+      }
+      .category-rail button:first-of-type {
+        color: var(--brand-dark);
+        background: var(--warm);
+        font-weight: 700;
+      }
+      .category-rail span {
+        color: #7a9086;
+        font-size: 11px;
+      }
+      .explorer-main {
+        padding: 66px 54px 100px;
+      }
+      .explorer-main > * {
+        max-width: 900px;
+      }
+      .explorer-main .lede {
+        max-width: 650px;
+      }
+      .ramp-hero {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        overflow: hidden;
+        margin: 38px 0 34px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+      }
+      .ramp-cell {
+        display: flex;
+        min-height: 154px;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 12px;
+        color: var(--white);
+        font-size: 11px;
+      }
+      .ramp-cell.light {
+        color: var(--ink);
+      }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .detail-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        background: var(--white);
+      }
+      .detail-card .swatch {
+        height: 72px;
+        margin-bottom: 14px;
+        border-radius: 7px;
+      }
+      .detail-card strong,
+      .detail-card code {
+        display: block;
+      }
+      .detail-card code {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 11px;
+        overflow-wrap: anywhere;
+      }
+      .guidance {
+        margin-top: 30px;
+        border-left: 3px solid var(--brand);
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        padding: 17px 20px;
+        color: #3b4a43;
+        background: var(--warm);
+        font-size: 14px;
+        line-height: 1.55;
+      }
 
-    @media (max-width: 980px) {
-      .site-header { grid-template-columns: 1fr auto; }
-      .search { display: none; }
-      .docs-shell, .explorer-shell { grid-template-columns: 210px minmax(0, 1fr); }
-      .explorer-shell .side-nav { display: none; }
-      .reference-layout { grid-template-columns: 1fr; padding-inline: 34px; }
-      .toc { display: none; }
-      .catalog-card, .catalog-card.wide { grid-column: span 6; }
-    }
+      @media (max-width: 980px) {
+        .site-header {
+          grid-template-columns: 1fr auto;
+        }
+        .search {
+          display: none;
+        }
+        .docs-shell,
+        .explorer-shell {
+          grid-template-columns: 210px minmax(0, 1fr);
+        }
+        .explorer-shell .side-nav {
+          display: none;
+        }
+        .reference-layout {
+          grid-template-columns: 1fr;
+          padding-inline: 34px;
+        }
+        .toc {
+          display: none;
+        }
+        .catalog-card,
+        .catalog-card.wide {
+          grid-column: span 6;
+        }
+      }
 
-    @media (max-width: 700px) {
-      .variant-switcher { top: 8px; }
-      .variant-switcher button { padding: 7px 9px; font-size: 11px; }
-      .site-header { height: 58px; padding: 0 16px; }
-      .header-links { display: none; }
-      .docs-shell, .explorer-shell { display: block; }
-      .side-nav, .category-rail { display: none; }
-      .reference-layout, .catalog-page, .explorer-main { padding: 72px 20px 70px; }
-      .catalog-header { display: block; }
-      .count-card { display: inline-block; margin-top: 12px; }
-      .catalog-card, .catalog-card.wide { grid-column: 1 / -1; }
-      .token-table th:nth-child(2), .token-table td:nth-child(2) { display: none; }
-      .ramp-hero { grid-template-columns: repeat(3, 1fr); }
-      .detail-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-  <nav class="variant-switcher" aria-label="Choose a prototype">
-    <button type="button" data-variant="A" aria-pressed="true">A · Table</button>
-    <button type="button" data-variant="B" aria-pressed="false">B · Catalog</button>
-    <button type="button" data-variant="C" aria-pressed="false">C · Explorer</button>
-  </nav>
+      @media (max-width: 700px) {
+        .variant-switcher {
+          top: 8px;
+        }
+        .variant-switcher button {
+          padding: 7px 9px;
+          font-size: 11px;
+        }
+        .site-header {
+          height: 58px;
+          padding: 0 16px;
+        }
+        .header-links {
+          display: none;
+        }
+        .docs-shell,
+        .explorer-shell {
+          display: block;
+        }
+        .side-nav,
+        .category-rail {
+          display: none;
+        }
+        .reference-layout,
+        .catalog-page,
+        .explorer-main {
+          padding: 72px 20px 70px;
+        }
+        .catalog-header {
+          display: block;
+        }
+        .count-card {
+          display: inline-block;
+          margin-top: 12px;
+        }
+        .catalog-card,
+        .catalog-card.wide {
+          grid-column: 1 / -1;
+        }
+        .token-table th:nth-child(2),
+        .token-table td:nth-child(2) {
+          display: none;
+        }
+        .ramp-hero {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="variant-switcher" aria-label="Choose a prototype">
+      <button type="button" data-variant="A" aria-pressed="true">A · Table</button>
+      <button type="button" data-variant="B" aria-pressed="false">B · Catalog</button>
+      <button type="button" data-variant="C" aria-pressed="false">C · Explorer</button>
+    </nav>
 
-  <section class="variant active" id="variant-A" aria-label="Reference table prototype">
-    <header class="site-header">
-      <div class="brand"><span class="brand-mark">S</span> Design System</div>
-      <div class="search">Search documentation… <span style="float:right">⌘ K</span></div>
-      <div class="header-links"><a href="#">GitHub</a><a href="#">Theme ◐</a></div>
-    </header>
-    <div class="docs-shell">
-      <nav class="side-nav" aria-label="Documentation">
-        <div class="nav-label">Getting Started</div>
-        <a href="#">Introduction</a><a href="#">Installation</a>
-        <div class="nav-label">Design Tokens</div>
-        <a href="#" class="active">Primitive tokens</a>
-        <a href="#" class="nested">Color</a><a href="#" class="nested">Typography</a>
-        <a href="#" class="nested">Spacing</a><a href="#" class="nested">Shape</a>
-        <a href="#" class="nested">Motion</a>
-      </nav>
-      <main class="page reference-layout">
-        <div>
-          <header class="reference-intro">
-            <p class="eyebrow">Design Tokens / Primitive</p>
-            <h1>Primitive tokens</h1>
-            <p class="lede">The raw values that define the visual language of the system. Use these as the foundation for semantic and component tokens—not directly in product UI.</p>
+    <section class="variant active" id="variant-A" aria-label="Reference table prototype">
+      <header class="site-header">
+        <div class="brand"><span class="brand-mark">S</span> Design System</div>
+        <div class="search">Search documentation… <span style="float: right">⌘ K</span></div>
+        <div class="header-links"><a href="#">GitHub</a><a href="#">Theme ◐</a></div>
+      </header>
+      <div class="docs-shell">
+        <nav class="side-nav" aria-label="Documentation">
+          <div class="nav-label">Getting Started</div>
+          <a href="#">Introduction</a><a href="#">Installation</a>
+          <div class="nav-label">Design Tokens</div>
+          <a href="#" class="active">Primitive tokens</a>
+          <a href="#" class="nested">Color</a><a href="#" class="nested">Typography</a>
+          <a href="#" class="nested">Spacing</a><a href="#" class="nested">Shape</a>
+          <a href="#" class="nested">Motion</a>
+        </nav>
+        <main class="page reference-layout">
+          <div>
+            <header class="reference-intro">
+              <p class="eyebrow">Design Tokens / Primitive</p>
+              <h1>Primitive tokens</h1>
+              <p class="lede">
+                The raw values that define the visual language of the system. Use these as the
+                foundation for semantic tokens—not directly in product UI.
+              </p>
+            </header>
+
+            <section class="category-block" id="a-color">
+              <div class="section-heading">
+                <h2>Color</h2>
+                <span>6 scales · 67 tokens</span>
+              </div>
+              <table class="token-table">
+                <thead>
+                  <tr>
+                    <th>Preview</th>
+                    <th>Token</th>
+                    <th>CSS variable</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="token-preview" style="background: #fdf9ed"></span></td>
+                    <td><code>robRoy.50</code></td>
+                    <td><code>--primitives-color-rob-roy-50</code></td>
+                    <td>#fdf9ed</td>
+                  </tr>
+                  <tr>
+                    <td><span class="token-preview" style="background: #d98f27"></span></td>
+                    <td><code>robRoy.500</code></td>
+                    <td><code>--primitives-color-rob-roy-500</code></td>
+                    <td>#d98f27</td>
+                  </tr>
+                  <tr>
+                    <td><span class="token-preview" style="background: #5b7168"></span></td>
+                    <td><code>blueSmoke.500</code></td>
+                    <td><code>--primitives-color-blue-smoke-500</code></td>
+                    <td>#5b7168</td>
+                  </tr>
+                  <tr>
+                    <td><span class="token-preview" style="background: #b8472a"></span></td>
+                    <td><code>rust.500</code></td>
+                    <td><code>--primitives-color-rust-500</code></td>
+                    <td>#b8472a</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="category-block" id="a-type">
+              <div class="section-heading">
+                <h2>Typography</h2>
+                <span>5 families · 29 tokens</span>
+              </div>
+              <table class="token-table">
+                <thead>
+                  <tr>
+                    <th>Preview</th>
+                    <th>Token</th>
+                    <th>CSS variable</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-family: Georgia, serif; font-size: 22px">Aa</td>
+                    <td><code>font.display</code></td>
+                    <td><code>--primitives-font-display</code></td>
+                    <td>Lora, Georgia</td>
+                  </tr>
+                  <tr>
+                    <td style="font-size: 18px">Aa</td>
+                    <td><code>text.md</code></td>
+                    <td><code>--primitives-text-md</code></td>
+                    <td>18px</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 600">Aa</td>
+                    <td><code>weight.semibold</code></td>
+                    <td><code>--primitives-weight-semibold</code></td>
+                    <td>600</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="category-block" id="a-space">
+              <div class="section-heading">
+                <h2>Spacing</h2>
+                <span>15 tokens</span>
+              </div>
+              <table class="token-table">
+                <thead>
+                  <tr>
+                    <th>Preview</th>
+                    <th>Token</th>
+                    <th>CSS variable</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="token-preview space-preview" style="width: 16px"></span></td>
+                    <td><code>space.4</code></td>
+                    <td><code>--primitives-space-4</code></td>
+                    <td>16px</td>
+                  </tr>
+                  <tr>
+                    <td><span class="token-preview space-preview" style="width: 32px"></span></td>
+                    <td><code>space.8</code></td>
+                    <td><code>--primitives-space-8</code></td>
+                    <td>32px</td>
+                  </tr>
+                  <tr>
+                    <td><span class="token-preview space-preview" style="width: 64px"></span></td>
+                    <td><code>space.16</code></td>
+                    <td><code>--primitives-space-16</code></td>
+                    <td>64px</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+          <aside class="toc">
+            <strong>On this page</strong><a href="#a-color">Color</a><a href="#a-type">Typography</a
+            ><a href="#a-space">Spacing</a><a href="#">Shape</a><a href="#">Motion</a>
+          </aside>
+        </main>
+      </div>
+    </section>
+
+    <section class="variant" id="variant-B" aria-label="Visual catalog prototype">
+      <header class="site-header">
+        <div class="brand"><span class="brand-mark">S</span> Design System</div>
+        <div class="search">Search documentation… <span style="float: right">⌘ K</span></div>
+        <div class="header-links"><a href="#">GitHub</a><a href="#">Theme ◐</a></div>
+      </header>
+      <div class="docs-shell">
+        <nav class="side-nav" aria-label="Documentation">
+          <div class="nav-label">Getting Started</div>
+          <a href="#">Introduction</a><a href="#">Installation</a>
+          <div class="nav-label">Design Tokens</div>
+          <a href="#" class="active">Primitive tokens</a> <a href="#" class="nested">Color</a
+          ><a href="#" class="nested">Typography</a> <a href="#" class="nested">Spacing</a
+          ><a href="#" class="nested">Shape</a><a href="#" class="nested">Motion</a>
+        </nav>
+        <main class="page catalog-page">
+          <header class="catalog-header">
+            <div>
+              <p class="eyebrow">Design Tokens / Primitive</p>
+              <h1>Visual foundations</h1>
+              <p class="lede">
+                Explore the raw scales behind every interface. Each collection feeds the semantic
+                layer of the design system.
+              </p>
+            </div>
+            <div class="count-card">
+              <strong>125</strong><span>primitive tokens in 13 groups</span>
+            </div>
           </header>
+          <div class="catalog-grid">
+            <article class="catalog-card wide">
+              <header>
+                <span class="pill">Color</span>
+                <h2 style="margin: 10px 0 0">Rob Roy</h2>
+                <p>Warm brand and emphasis scale</p>
+              </header>
+              <div class="color-ramp">
+                <div style="background: #fdf9ed"><span style="color: #3d1a0b">50</span></div>
+                <div style="background: #efda98"><span style="color: #3d1a0b">200</span></div>
+                <div style="background: #e1ac3e"><span>400</span></div>
+                <div style="background: #c06d1f"><span>600</span></div>
+                <div style="background: #823f1e"><span>800</span></div>
+                <div style="background: #3d1a0b"><span>950</span></div>
+              </div>
+            </article>
+            <article class="catalog-card">
+              <header>
+                <span class="pill">Typography</span>
+                <h2 style="margin: 10px 0 0">Type scale</h2>
+                <p>From utility labels to display headlines</p>
+              </header>
+              <div class="sample-list">
+                <div class="sample-row">
+                  <span class="type-sample">Aa</span><code>text.2xl · 30px</code>
+                </div>
+                <div class="sample-row">
+                  <span style="font-size: 18px">Body text</span><code>text.md · 18px</code>
+                </div>
+                <div class="sample-row">
+                  <span style="font-size: 12px">CAPTION</span><code>text.xs · 12px</code>
+                </div>
+              </div>
+            </article>
+            <article class="catalog-card">
+              <header>
+                <span class="pill">Spacing</span>
+                <h2 style="margin: 10px 0 0">Space scale</h2>
+                <p>A 4px-based layout rhythm</p>
+              </header>
+              <div class="sample-list">
+                <div class="sample-row">
+                  <span class="space-sample" style="width: 16px"></span><code>space.4 · 16px</code>
+                </div>
+                <div class="sample-row">
+                  <span class="space-sample" style="width: 32px"></span><code>space.8 · 32px</code>
+                </div>
+                <div class="sample-row">
+                  <span class="space-sample" style="width: 64px"></span><code>space.16 · 64px</code>
+                </div>
+              </div>
+            </article>
+            <article class="catalog-card">
+              <header>
+                <span class="pill">Shape</span>
+                <h2 style="margin: 10px 0 0">Radius</h2>
+                <p>Consistent corner character</p>
+              </header>
+              <div class="sample-list">
+                <div class="sample-row">
+                  <span class="token-preview radius-preview" style="border-radius: 3px"></span
+                  ><code>radius.xs · 3px</code>
+                </div>
+                <div class="sample-row">
+                  <span class="token-preview radius-preview" style="border-radius: 10px"></span
+                  ><code>radius.md · 10px</code>
+                </div>
+                <div class="sample-row">
+                  <span class="token-preview radius-preview" style="border-radius: 999px"></span
+                  ><code>radius.full</code>
+                </div>
+              </div>
+            </article>
+            <article class="catalog-card">
+              <header>
+                <span class="pill">Motion</span>
+                <h2 style="margin: 10px 0 0">Duration</h2>
+                <p>Four purposeful timing steps</p>
+              </header>
+              <div class="sample-list">
+                <div class="sample-row">
+                  <div class="motion-track">
+                    <div class="motion-dot" style="margin-left: 18px"></div>
+                  </div>
+                  <code>fast · 140ms</code>
+                </div>
+                <div class="sample-row">
+                  <div class="motion-track">
+                    <div class="motion-dot" style="margin-left: 48px"></div>
+                  </div>
+                  <code>base · 220ms</code>
+                </div>
+                <div class="sample-row">
+                  <div class="motion-track">
+                    <div class="motion-dot" style="margin-left: 84px"></div>
+                  </div>
+                  <code>slow · 360ms</code>
+                </div>
+              </div>
+            </article>
+          </div>
+        </main>
+      </div>
+    </section>
 
-          <section class="category-block" id="a-color">
-            <div class="section-heading"><h2>Color</h2><span>6 scales · 67 tokens</span></div>
-            <table class="token-table">
-              <thead><tr><th>Preview</th><th>Token</th><th>CSS variable</th><th>Value</th></tr></thead>
-              <tbody>
-                <tr><td><span class="token-preview" style="background:#fdf9ed"></span></td><td><code>robRoy.50</code></td><td><code>--primitives-color-rob-roy-50</code></td><td>#fdf9ed</td></tr>
-                <tr><td><span class="token-preview" style="background:#d98f27"></span></td><td><code>robRoy.500</code></td><td><code>--primitives-color-rob-roy-500</code></td><td>#d98f27</td></tr>
-                <tr><td><span class="token-preview" style="background:#5b7168"></span></td><td><code>blueSmoke.500</code></td><td><code>--primitives-color-blue-smoke-500</code></td><td>#5b7168</td></tr>
-                <tr><td><span class="token-preview" style="background:#b8472a"></span></td><td><code>rust.500</code></td><td><code>--primitives-color-rust-500</code></td><td>#b8472a</td></tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section class="category-block" id="a-type">
-            <div class="section-heading"><h2>Typography</h2><span>5 families · 29 tokens</span></div>
-            <table class="token-table">
-              <thead><tr><th>Preview</th><th>Token</th><th>CSS variable</th><th>Value</th></tr></thead>
-              <tbody>
-                <tr><td style="font-family:Georgia,serif;font-size:22px">Aa</td><td><code>font.display</code></td><td><code>--primitives-font-display</code></td><td>Lora, Georgia</td></tr>
-                <tr><td style="font-size:18px">Aa</td><td><code>text.md</code></td><td><code>--primitives-text-md</code></td><td>18px</td></tr>
-                <tr><td style="font-weight:600">Aa</td><td><code>weight.semibold</code></td><td><code>--primitives-weight-semibold</code></td><td>600</td></tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section class="category-block" id="a-space">
-            <div class="section-heading"><h2>Spacing</h2><span>15 tokens</span></div>
-            <table class="token-table">
-              <thead><tr><th>Preview</th><th>Token</th><th>CSS variable</th><th>Value</th></tr></thead>
-              <tbody>
-                <tr><td><span class="token-preview space-preview" style="width:16px"></span></td><td><code>space.4</code></td><td><code>--primitives-space-4</code></td><td>16px</td></tr>
-                <tr><td><span class="token-preview space-preview" style="width:32px"></span></td><td><code>space.8</code></td><td><code>--primitives-space-8</code></td><td>32px</td></tr>
-                <tr><td><span class="token-preview space-preview" style="width:64px"></span></td><td><code>space.16</code></td><td><code>--primitives-space-16</code></td><td>64px</td></tr>
-              </tbody>
-            </table>
-          </section>
-        </div>
-        <aside class="toc"><strong>On this page</strong><a href="#a-color">Color</a><a href="#a-type">Typography</a><a href="#a-space">Spacing</a><a href="#">Shape</a><a href="#">Motion</a></aside>
-      </main>
-    </div>
-  </section>
-
-  <section class="variant" id="variant-B" aria-label="Visual catalog prototype">
-    <header class="site-header">
-      <div class="brand"><span class="brand-mark">S</span> Design System</div>
-      <div class="search">Search documentation… <span style="float:right">⌘ K</span></div>
-      <div class="header-links"><a href="#">GitHub</a><a href="#">Theme ◐</a></div>
-    </header>
-    <div class="docs-shell">
-      <nav class="side-nav" aria-label="Documentation">
-        <div class="nav-label">Getting Started</div><a href="#">Introduction</a><a href="#">Installation</a>
-        <div class="nav-label">Design Tokens</div><a href="#" class="active">Primitive tokens</a>
-        <a href="#" class="nested">Color</a><a href="#" class="nested">Typography</a>
-        <a href="#" class="nested">Spacing</a><a href="#" class="nested">Shape</a><a href="#" class="nested">Motion</a>
-      </nav>
-      <main class="page catalog-page">
-        <header class="catalog-header">
-          <div><p class="eyebrow">Design Tokens / Primitive</p><h1>Visual foundations</h1><p class="lede">Explore the raw scales behind every interface. Each collection feeds the semantic layer of the design system.</p></div>
-          <div class="count-card"><strong>125</strong><span>primitive tokens in 13 groups</span></div>
-        </header>
-        <div class="catalog-grid">
-          <article class="catalog-card wide">
-            <header><span class="pill">Color</span><h2 style="margin:10px 0 0">Rob Roy</h2><p>Warm brand and emphasis scale</p></header>
-            <div class="color-ramp">
-              <div style="background:#fdf9ed"><span style="color:#51432d">50</span></div><div style="background:#efda98"><span style="color:#51432d">200</span></div>
-              <div style="background:#e1ac3e"><span>400</span></div><div style="background:#c06d1f"><span>600</span></div>
-              <div style="background:#823f1e"><span>800</span></div><div style="background:#3d1a0b"><span>950</span></div>
+    <section class="variant" id="variant-C" aria-label="Split explorer prototype">
+      <header class="site-header">
+        <div class="brand"><span class="brand-mark">S</span> Design System</div>
+        <div class="search">Search documentation… <span style="float: right">⌘ K</span></div>
+        <div class="header-links"><a href="#">GitHub</a><a href="#">Theme ◐</a></div>
+      </header>
+      <div class="docs-shell explorer-shell">
+        <nav class="side-nav" aria-label="Documentation">
+          <div class="nav-label">Getting Started</div>
+          <a href="#">Introduction</a><a href="#">Installation</a>
+          <div class="nav-label">Design Tokens</div>
+          <a href="#" class="active">Primitive tokens</a><a href="#">Using tokens</a>
+        </nav>
+        <nav class="category-rail" aria-label="Primitive categories">
+          <h2>Primitive categories</h2>
+          <button type="button">Color <span>67</span></button
+          ><button type="button">Typography <span>29</span></button>
+          <button type="button">Spacing <span>15</span></button
+          ><button type="button">Radius <span>8</span></button>
+          <button type="button">Shadow <span>8</span></button
+          ><button type="button">Motion <span>8</span></button>
+          <button type="button">Layout <span>5</span></button
+          ><button type="button">Border <span>3</span></button>
+        </nav>
+        <main class="page explorer-main">
+          <p class="eyebrow">Primitive / Color</p>
+          <h1>Rob Roy</h1>
+          <p class="lede">
+            A warm gold-to-brown scale used as the raw source for brand accents, interactive
+            emphasis, and warm neutral surfaces.
+          </p>
+          <div class="ramp-hero">
+            <div class="ramp-cell light" style="background: #fdf9ed">
+              <strong>50</strong><code>#fdf9ed</code>
             </div>
-          </article>
-          <article class="catalog-card">
-            <header><span class="pill">Typography</span><h2 style="margin:10px 0 0">Type scale</h2><p>From utility labels to display headlines</p></header>
-            <div class="sample-list">
-              <div class="sample-row"><span class="type-sample">Aa</span><code>text.2xl · 30px</code></div>
-              <div class="sample-row"><span style="font-size:18px">Body text</span><code>text.md · 18px</code></div>
-              <div class="sample-row"><span style="font-size:12px">CAPTION</span><code>text.xs · 12px</code></div>
+            <div class="ramp-cell light" style="background: #efda98">
+              <strong>200</strong><code>#efda98</code>
             </div>
-          </article>
-          <article class="catalog-card">
-            <header><span class="pill">Spacing</span><h2 style="margin:10px 0 0">Space scale</h2><p>A 4px-based layout rhythm</p></header>
-            <div class="sample-list">
-              <div class="sample-row"><span class="space-sample" style="width:16px"></span><code>space.4 · 16px</code></div>
-              <div class="sample-row"><span class="space-sample" style="width:32px"></span><code>space.8 · 32px</code></div>
-              <div class="sample-row"><span class="space-sample" style="width:64px"></span><code>space.16 · 64px</code></div>
+            <div class="ramp-cell" style="background: #e1ac3e">
+              <strong>400</strong><code>#e1ac3e</code>
             </div>
-          </article>
-          <article class="catalog-card">
-            <header><span class="pill">Shape</span><h2 style="margin:10px 0 0">Radius</h2><p>Consistent corner character</p></header>
-            <div class="sample-list">
-              <div class="sample-row"><span class="token-preview radius-preview" style="border-radius:3px"></span><code>radius.xs · 3px</code></div>
-              <div class="sample-row"><span class="token-preview radius-preview" style="border-radius:10px"></span><code>radius.md · 10px</code></div>
-              <div class="sample-row"><span class="token-preview radius-preview" style="border-radius:999px"></span><code>radius.full</code></div>
+            <div class="ramp-cell" style="background: #c06d1f">
+              <strong>600</strong><code>#c06d1f</code>
             </div>
-          </article>
-          <article class="catalog-card">
-            <header><span class="pill">Motion</span><h2 style="margin:10px 0 0">Duration</h2><p>Four purposeful timing steps</p></header>
-            <div class="sample-list">
-              <div class="sample-row"><div class="motion-track"><div class="motion-dot" style="margin-left:18px"></div></div><code>fast · 140ms</code></div>
-              <div class="sample-row"><div class="motion-track"><div class="motion-dot" style="margin-left:48px"></div></div><code>base · 220ms</code></div>
-              <div class="sample-row"><div class="motion-track"><div class="motion-dot" style="margin-left:84px"></div></div><code>slow · 360ms</code></div>
+            <div class="ramp-cell" style="background: #823f1e">
+              <strong>800</strong><code>#823f1e</code>
             </div>
-          </article>
-        </div>
-      </main>
-    </div>
-  </section>
+            <div class="ramp-cell" style="background: #3d1a0b">
+              <strong>950</strong><code>#3d1a0b</code>
+            </div>
+          </div>
+          <div class="section-heading">
+            <h2>Token details</h2>
+            <span>Showing 3 of 13</span>
+          </div>
+          <div class="detail-grid">
+            <article class="detail-card">
+              <div class="swatch" style="background: #fdf9ed"></div>
+              <strong>robRoy.50</strong><code>--primitives-color-rob-roy-50</code>
+            </article>
+            <article class="detail-card">
+              <div class="swatch" style="background: #d98f27"></div>
+              <strong>robRoy.500</strong><code>--primitives-color-rob-roy-500</code>
+            </article>
+            <article class="detail-card">
+              <div class="swatch" style="background: #823f1e"></div>
+              <strong>robRoy.800</strong><code>--primitives-color-rob-roy-800</code>
+            </article>
+          </div>
+          <aside class="guidance">
+            <strong>Primitive usage</strong><br />Primitive tokens describe raw values. Prefer
+            semantic tokens in product code so themes and intent remain explicit.
+          </aside>
+        </main>
+      </div>
+    </section>
 
-  <section class="variant" id="variant-C" aria-label="Split explorer prototype">
-    <header class="site-header">
-      <div class="brand"><span class="brand-mark">S</span> Design System</div>
-      <div class="search">Search documentation… <span style="float:right">⌘ K</span></div>
-      <div class="header-links"><a href="#">GitHub</a><a href="#">Theme ◐</a></div>
-    </header>
-    <div class="docs-shell explorer-shell">
-      <nav class="side-nav" aria-label="Documentation">
-        <div class="nav-label">Getting Started</div><a href="#">Introduction</a><a href="#">Installation</a>
-        <div class="nav-label">Design Tokens</div><a href="#" class="active">Primitive tokens</a><a href="#">Using tokens</a>
-      </nav>
-      <nav class="category-rail" aria-label="Primitive categories">
-        <h2>Primitive categories</h2>
-        <button type="button">Color <span>67</span></button><button type="button">Typography <span>29</span></button>
-        <button type="button">Spacing <span>15</span></button><button type="button">Radius <span>8</span></button>
-        <button type="button">Shadow <span>8</span></button><button type="button">Motion <span>8</span></button>
-        <button type="button">Layout <span>5</span></button><button type="button">Border <span>3</span></button>
-      </nav>
-      <main class="page explorer-main">
-        <p class="eyebrow">Primitive / Color</p>
-        <h1>Rob Roy</h1>
-        <p class="lede">A warm gold-to-brown scale used as the raw source for brand accents, interactive emphasis, and warm neutral surfaces.</p>
-        <div class="ramp-hero">
-          <div class="ramp-cell light" style="background:#fdf9ed"><strong>50</strong><code>#fdf9ed</code></div>
-          <div class="ramp-cell light" style="background:#efda98"><strong>200</strong><code>#efda98</code></div>
-          <div class="ramp-cell" style="background:#e1ac3e"><strong>400</strong><code>#e1ac3e</code></div>
-          <div class="ramp-cell" style="background:#c06d1f"><strong>600</strong><code>#c06d1f</code></div>
-          <div class="ramp-cell" style="background:#823f1e"><strong>800</strong><code>#823f1e</code></div>
-          <div class="ramp-cell" style="background:#3d1a0b"><strong>950</strong><code>#3d1a0b</code></div>
-        </div>
-        <div class="section-heading"><h2>Token details</h2><span>Showing 3 of 13</span></div>
-        <div class="detail-grid">
-          <article class="detail-card"><div class="swatch" style="background:#fdf9ed"></div><strong>robRoy.50</strong><code>--primitives-color-rob-roy-50</code></article>
-          <article class="detail-card"><div class="swatch" style="background:#d98f27"></div><strong>robRoy.500</strong><code>--primitives-color-rob-roy-500</code></article>
-          <article class="detail-card"><div class="swatch" style="background:#823f1e"></div><strong>robRoy.800</strong><code>--primitives-color-rob-roy-800</code></article>
-        </div>
-        <aside class="guidance"><strong>Primitive usage</strong><br>Primitive tokens describe raw values. Prefer semantic or component tokens in product code so themes and intent remain explicit.</aside>
-      </main>
-    </div>
-  </section>
+    <script>
+      const buttons = [...document.querySelectorAll("[data-variant]")];
+      const variants = [...document.querySelectorAll(".variant")];
 
-  <script>
-    const buttons = [...document.querySelectorAll("[data-variant]")];
-    const variants = [...document.querySelectorAll(".variant")];
+      function activateVariant(id) {
+        variants.forEach((variant) =>
+          variant.classList.toggle("active", variant.id === `variant-${id}`),
+        );
+        buttons.forEach((button) =>
+          button.setAttribute("aria-pressed", String(button.dataset.variant === id)),
+        );
+        document.title = `Primitive tokens — Prototype ${id}`;
+      }
 
-    function activateVariant(id) {
-      variants.forEach((variant) => variant.classList.toggle("active", variant.id === `variant-${id}`));
-      buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.variant === id)));
-      document.title = `Primitive tokens — Prototype ${id}`;
-    }
-
-    buttons.forEach((button) => button.addEventListener("click", () => activateVariant(button.dataset.variant)));
-  </script>
-</body>
+      buttons.forEach((button) =>
+        button.addEventListener("click", () => activateVariant(button.dataset.variant)),
+      );
+    </script>
+  </body>
 </html>
