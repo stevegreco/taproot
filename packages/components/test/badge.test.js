@@ -21,7 +21,12 @@ describe("DsBadge", () => {
     const slot = surface.querySelector("slot");
 
     expect(surface).toBeInstanceOf(HTMLSpanElement);
-    expect(slot.assignedNodes().map((node) => node.textContent).join("")).toBe("New");
+    expect(
+      slot
+        .assignedNodes()
+        .map((node) => node.textContent)
+        .join(""),
+    ).toBe("New");
   });
 
   test("reflects its variant through the attribute API", () => {
@@ -41,19 +46,15 @@ describe("DsBadge", () => {
     expect(() => defineBadge(alias)).not.toThrow();
   });
 
-  test("maps every documented variant to its component tokens", () => {
-    for (const variant of [
-      "default",
-      "accent",
-      "success",
-      "danger",
-      "warning",
-      "info",
-    ]) {
-      expect(styles).toContain(`--component-badge-${variant}-background`);
-      expect(styles).toContain(`--component-badge-${variant}-foreground`);
-      expect(styles).toContain(`--component-badge-${variant}-border`);
+  test("maps every documented status variant to semantic tokens", () => {
+    for (const status of ["success", "danger", "warning", "info"]) {
+      for (const application of ["background", "foreground", "border"]) {
+        expect(styles).toContain(`--semantic-color-${application}-status-${status}-default`);
+      }
     }
+
+    expect(styles).toContain("--semantic-color-background-brand-muted");
+    expect(styles).not.toContain("--component-");
   });
 
   test("honors the native hidden attribute", () => {

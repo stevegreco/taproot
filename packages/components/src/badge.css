@@ -5,9 +5,9 @@
  */
 
 :host {
-  --_background: var(--component-badge-default-background);
-  --_foreground: var(--component-badge-default-foreground);
-  --_border: var(--component-badge-default-border);
+  --_background: var(--semantic-color-background-muted);
+  --_foreground: var(--semantic-color-foreground-muted);
+  --_border: var(--semantic-color-border-subtle);
 
   display: inline-block;
   vertical-align: middle;
@@ -18,46 +18,46 @@
 }
 
 :host([variant="accent"]) {
-  --_background: var(--component-badge-accent-background);
-  --_foreground: var(--component-badge-accent-foreground);
-  --_border: var(--component-badge-accent-border);
+  --_background: var(--semantic-color-background-brand-muted);
+  --_foreground: var(--semantic-color-foreground-brand-default);
+  --_border: var(--semantic-color-border-brand-muted);
 }
 
 :host([variant="success"]) {
-  --_background: var(--component-badge-success-background);
-  --_foreground: var(--component-badge-success-foreground);
-  --_border: var(--component-badge-success-border);
+  --_background: var(--semantic-color-background-status-success-default);
+  --_foreground: var(--semantic-color-foreground-status-success-default);
+  --_border: var(--semantic-color-border-status-success-default);
 }
 
 :host([variant="danger"]) {
-  --_background: var(--component-badge-danger-background);
-  --_foreground: var(--component-badge-danger-foreground);
-  --_border: var(--component-badge-danger-border);
+  --_background: var(--semantic-color-background-status-danger-default);
+  --_foreground: var(--semantic-color-foreground-status-danger-default);
+  --_border: var(--semantic-color-border-status-danger-default);
 }
 
 :host([variant="warning"]) {
-  --_background: var(--component-badge-warning-background);
-  --_foreground: var(--component-badge-warning-foreground);
-  --_border: var(--component-badge-warning-border);
+  --_background: var(--semantic-color-background-status-warning-default);
+  --_foreground: var(--semantic-color-foreground-status-warning-default);
+  --_border: var(--semantic-color-border-status-warning-default);
 }
 
 :host([variant="info"]) {
-  --_background: var(--component-badge-info-background);
-  --_foreground: var(--component-badge-info-foreground);
-  --_border: var(--component-badge-info-border);
+  --_background: var(--semantic-color-background-status-info-default);
+  --_foreground: var(--semantic-color-foreground-status-info-default);
+  --_border: var(--semantic-color-border-status-info-default);
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
-  padding: var(--component-badge-padding-y) var(--component-badge-padding-x);
+  padding: var(--primitives-space-1) var(--primitives-space-2);
   border: 1px solid var(--_border);
-  border-radius: var(--component-badge-radius);
+  border-radius: var(--semantic-radius-pill);
   background-color: var(--_background);
   color: var(--_foreground);
-  font-size: var(--component-badge-font-size);
-  font-weight: var(--component-badge-font-weight);
+  font-size: var(--primitives-text-xs);
+  font-weight: var(--primitives-weight-medium);
   line-height: 1.25;
   white-space: nowrap;
 }

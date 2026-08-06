@@ -1,9 +1,9 @@
 // Node-only token loading — reads built dist/ output (and, for staleness
-// checks, the tokens/ source) from disk. Browser consumers (tokens-explorer)
+// checks, the src/tokens/ source) from disk. Browser consumers (tokens-explorer)
 // should import ./flatten.js directly and load token JSON via bundler imports
 // instead, since this module touches fs.
 
-import { readFileSync, statSync, readdirSync } from "fs";
+import { readFileSync, readdirSync, statSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { flatten, inferType } from "./flatten.js";
@@ -17,30 +17,28 @@ export const DIST = {
   primitives: join(ROOT, "dist/tokens/primitives.json"),
   semanticLight: join(ROOT, "dist/tokens/semantic.light.json"),
   semanticDark: join(ROOT, "dist/tokens/semantic.dark.json"),
-  componentsLight: join(ROOT, "dist/tokens/components.light.json"),
-  componentsDark: join(ROOT, "dist/tokens/components.dark.json"),
+  components: join(ROOT, "dist/tokens/components.json"),
 };
 
-// The files backing one theme. Both the semantic and the component tier are
-// theme-specific: `json/nested` resolves aliases to literals, so a component
-// file built against light semantics reports light values no matter what
-// theme was asked for (TOK-06).
+// The files backing one theme. Primitives and component references are fixed;
+// only semantic JSON resolves independently for each theme.
 export function themeFiles(theme = "light") {
   return theme === "dark"
-    ? [DIST.primitives, DIST.semanticDark, DIST.componentsDark]
-    : [DIST.primitives, DIST.semanticLight, DIST.componentsLight];
+    ? [DIST.primitives, DIST.semanticDark, DIST.components]
+    : [DIST.primitives, DIST.semanticLight, DIST.components];
 }
 
 export function sourceFiles() {
   const base = [
-    join(ROOT, "tokens/primitives.tokens.json"),
-    join(ROOT, "tokens/semantic/light.tokens.json"),
-    join(ROOT, "tokens/semantic/dark.tokens.json"),
+    join(ROOT, "src/tokens/primitives.tokens.json"),
+    join(ROOT, "src/tokens/semantic/light.tokens.json"),
+    join(ROOT, "src/tokens/semantic/dark.tokens.json"),
+    join(ROOT, "src/tokens/semantic/shape.tokens.json"),
   ];
   try {
-    const components = readdirSync(join(ROOT, "tokens/components"))
-      .filter((f) => f.endsWith(".tokens.json"))
-      .map((f) => join(ROOT, "tokens/components", f));
+    const components = readdirSync(join(ROOT, "src/tokens/components"))
+      .filter((file) => file.endsWith(".tokens.json"))
+      .map((file) => join(ROOT, "src/tokens/components", file));
     return [...base, ...components];
   } catch {
     return base;
@@ -51,13 +49,21 @@ export function isStale() {
   try {
     const srcMax = Math.max(
       ...sourceFiles().map((f) => {
-        try { return statSync(f).mtimeMs; } catch { return 0; }
-      })
+        try {
+          return statSync(f).mtimeMs;
+        } catch {
+          return 0;
+        }
+      }),
     );
     const distMin = Math.min(
       ...Object.values(DIST).map((f) => {
-        try { return statSync(f).mtimeMs; } catch { return 0; }
-      })
+        try {
+          return statSync(f).mtimeMs;
+        } catch {
+          return 0;
+        }
+      }),
     );
     return srcMax > distMin;
   } catch {

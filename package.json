@@ -3,9 +3,11 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "test": "turbo run test"
   },
   "devDependencies": {
+    "oxfmt": "^0.62.0",
     "turbo": "latest"
   },
   "packageManager": "pnpm@11.1.3"

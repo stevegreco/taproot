@@ -1,0 +1,89 @@
+{
+  "component": {
+    "button": {
+      "radius": {
+        "default": { "$value": "{semantic.radius.control}", "$type": "dimension" },
+        "pill": { "$value": "{semantic.radius.pill}", "$type": "dimension" }
+      },
+      "size": {
+        "medium": {
+          "paddingInline": { "$value": "{primitives.space.4}", "$type": "dimension" },
+          "paddingBlock": { "$value": "{primitives.space.3}", "$type": "dimension" }
+        },
+        "small": {
+          "paddingInline": { "$value": "{primitives.space.3}", "$type": "dimension" },
+          "paddingBlock": { "$value": "{primitives.space.2}", "$type": "dimension" }
+        }
+      },
+      "gap": { "$value": "{primitives.space.2}", "$type": "dimension" },
+      "font": {
+        "family": { "$value": "{primitives.font.sans}", "$type": "fontFamily" },
+        "size": { "$value": "{primitives.text.sm}", "$type": "dimension" },
+        "weight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" }
+      },
+      "motion": {
+        "duration": { "$value": "{primitives.duration.fast}", "$type": "duration" },
+        "easing": { "$value": "{primitives.ease.out}", "$type": "cubicBezier" }
+      },
+      "focus": {
+        "border": { "$value": "{semantic.color.border.focus}", "$type": "color" }
+      },
+      "primary": {
+        "background": {
+          "default": { "$value": "{semantic.color.background.action.primary.default}", "$type": "color" },
+          "hover": { "$value": "{semantic.color.background.action.primary.hover}", "$type": "color" },
+          "pressed": { "$value": "{semantic.color.background.action.primary.pressed}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.background.disabled}", "$type": "color" }
+        },
+        "foreground": {
+          "default": { "$value": "{semantic.color.foreground.on.action.primary}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.foreground.disabled}", "$type": "color" }
+        },
+        "border": {
+          "default": { "$value": "{semantic.color.border.brand.muted}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.border.disabled}", "$type": "color" }
+        }
+      },
+      "secondary": {
+        "background": {
+          "hover": { "$value": "{semantic.color.background.muted}", "$type": "color" },
+          "pressed": { "$value": "{semantic.color.background.sunken}", "$type": "color" }
+        },
+        "foreground": {
+          "default": { "$value": "{semantic.color.foreground.default}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.foreground.disabled}", "$type": "color" }
+        },
+        "border": {
+          "default": { "$value": "{semantic.color.border.default}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.border.disabled}", "$type": "color" }
+        }
+      },
+      "ghost": {
+        "background": {
+          "hover": { "$value": "{semantic.color.background.muted}", "$type": "color" },
+          "pressed": { "$value": "{semantic.color.background.sunken}", "$type": "color" }
+        },
+        "foreground": {
+          "default": { "$value": "{semantic.color.foreground.default}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.foreground.disabled}", "$type": "color" }
+        }
+      },
+      "danger": {
+        "background": {
+          "default": { "$value": "{semantic.color.background.status.danger.default}", "$type": "color" },
+          "hover": { "$value": "{semantic.color.background.status.danger.default}", "$type": "color" },
+          "pressed": { "$value": "{semantic.color.background.status.danger.default}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.background.disabled}", "$type": "color" }
+        },
+        "foreground": {
+          "default": { "$value": "{semantic.color.foreground.status.danger.default}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.foreground.disabled}", "$type": "color" }
+        },
+        "border": {
+          "default": { "$value": "{semantic.color.border.status.danger.default}", "$type": "color" },
+          "disabled": { "$value": "{semantic.color.border.disabled}", "$type": "color" }
+        }
+      }
+    }
+  }
+}

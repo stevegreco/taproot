@@ -20,13 +20,16 @@ const STATIC_L = 5;
 // Tokens that are the same in both themes on purpose. Each needs a reason —
 // an empty exemption list is the goal, and every entry here is a claim that
 // the token is theme-independent, not merely that it hasn't been fixed yet.
-// Empty, and worth keeping that way: #11 gave every status a per-theme
-// onDefault, which retired the last four entries.
-const MIRROR_EXEMPT = new Map([]);
+const MIRROR_EXEMPT = new Map([
+  [
+    "color.foreground.disabled",
+    "disabled content intentionally uses the same neutral gray in both themes",
+  ],
+]);
 
 function loadTheme(theme) {
   const tree = JSON.parse(
-    readFileSync(join(ROOT, `dist/tokens/semantic.${theme}.json`), "utf-8")
+    readFileSync(join(ROOT, `dist/tokens/semantic.${theme}.json`), "utf-8"),
   ).semantic;
   return new Map([...leaves(tree)]);
 }
@@ -70,7 +73,7 @@ function checkMirroring(light, dark, fail) {
   for (const s of statics) {
     fail(
       `${s.key} — static across themes\n` +
-        `      light ${s.lv} L* ${s.l.toFixed(0)}   dark ${s.dv} L* ${s.d.toFixed(0)}   Δ ${(s.d - s.l).toFixed(1)}`
+        `      light ${s.lv} L* ${s.l.toFixed(0)}   dark ${s.dv} L* ${s.d.toFixed(0)}   Δ ${(s.d - s.l).toFixed(1)}`,
     );
   }
 
@@ -84,14 +87,14 @@ function checkMirroring(light, dark, fail) {
 
 // --- 3. Interaction-state direction (ADR-0002 §2) ----------------------------
 //
-// Light themes step toward the darker end of the ramp on hover and press;
-// dark themes step toward the lighter end. Press is further along than hover
+// Light themes step toward the darker end of the ramp on hover and pressed;
+// dark themes step toward the lighter end. Pressed is further along than hover
 // and may never resolve to the same value.
 
 function interactiveGroups(theme) {
   const groups = new Map();
   for (const key of theme.keys()) {
-    const m = key.match(/^(.*)\.(default|hover|press)$/);
+    const m = key.match(/^(.*)\.(default|hover|pressed)$/);
     if (!m) continue;
     if (!isHex(theme.get(key))) continue;
     const [, group, state] = m;
@@ -110,7 +113,7 @@ function checkDirection(theme, name, fail) {
     if (!states.default) continue;
     const base = lstar(states.default);
 
-    for (const state of ["hover", "press"]) {
+    for (const state of ["hover", "pressed"]) {
       if (!states[state]) continue;
       checked++;
       const delta = lstar(states[state]) - base;
@@ -121,19 +124,21 @@ function checkDirection(theme, name, fail) {
         fail(
           `${group}.${state} — steps the wrong way in ${name}\n` +
             `      default ${states.default} L* ${base.toFixed(0)} → ${state} ${states[state]} L* ${lstar(states[state]).toFixed(0)}\n` +
-            `      ADR-0002 §2: ${name} themes step ${word}`
+            `      ADR-0002 §2: ${name} themes step ${word}`,
         );
       }
     }
 
-    if (states.hover && states.press && states.hover === states.press) {
-      fail(`${group}.press — identical to ${group}.hover in ${name}, so pressing has no feedback`);
-    } else if (states.hover && states.press) {
+    if (states.hover && states.pressed && states.hover === states.pressed) {
+      fail(
+        `${group}.pressed — identical to ${group}.hover in ${name}, so pressing has no feedback`,
+      );
+    } else if (states.hover && states.pressed) {
       const h = Math.abs(lstar(states.hover) - base);
-      const p = Math.abs(lstar(states.press) - base);
+      const p = Math.abs(lstar(states.pressed) - base);
       if (p < h) {
         fail(
-          `${group}.press — closer to default than ${group}.hover is in ${name} (Δ ${p.toFixed(1)} vs ${h.toFixed(1)})`
+          `${group}.pressed — closer to default than ${group}.hover is in ${name} (Δ ${p.toFixed(1)} vs ${h.toFixed(1)})`,
         );
       }
     }

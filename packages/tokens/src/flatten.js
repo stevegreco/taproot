@@ -11,7 +11,8 @@ export function inferType(value) {
   // shadows: multi-part strings containing px and spaces, or inset keyword
   if (/^inset /.test(v) || (v.includes(" ") && v.includes("px"))) return "shadow";
   // font families: quoted strings or comma-separated lists (not function calls)
-  if (v.includes("'") || v.includes('"') || (v.includes(",") && !v.includes("("))) return "fontFamily";
+  if (v.includes("'") || v.includes('"') || (v.includes(",") && !v.includes("(")))
+    return "fontFamily";
   if (/^-?\d+(\.\d+)?$/.test(v)) return "number";
   return "string";
 }
@@ -34,9 +35,7 @@ export function flatten(obj, parts = []) {
         value: String(val),
         type: inferType(val),
         tier:
-          root === "primitives" ? "primitive"
-          : root === "semantic" ? "semantic"
-          : "component",
+          root === "primitives" ? "primitive" : root === "semantic" ? "semantic" : "component",
       });
     }
   }

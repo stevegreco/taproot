@@ -1,8 +1,8 @@
 /**
  * <ds-button> styles.
  *
- * Adopted into the shadow root as a single shared CSSStyleSheet. Every value
- * is a design token from @stevegreco/design-system; custom properties are
+ * Adopted into the shadow root as a single shared CSSStyleSheet. Visual values
+ * consume tokens from @stevegreco/design-system; custom properties are
  * inherited, so they cross the shadow boundary and themes apply for free.
  *
  * Built into dist/button.styles.js by build-styles.js — this file is the source.
@@ -10,19 +10,19 @@
 
 :host {
   /* Variant surface. Remapped by the :host([variant=...]) rules below. */
-  --_background: var(--component-button-primary-background);
+  --_background: var(--component-button-primary-background-default);
   --_background-hover: var(--component-button-primary-background-hover);
-  --_background-press: var(--component-button-primary-background-press);
+  --_background-press: var(--component-button-primary-background-pressed);
   --_background-disabled: var(--component-button-primary-background-disabled);
-  --_foreground: var(--component-button-primary-foreground);
+  --_foreground: var(--component-button-primary-foreground-default);
   --_foreground-disabled: var(--component-button-primary-foreground-disabled);
-  --_border: var(--component-button-primary-border);
+  --_border: var(--component-button-primary-border-default);
   --_border-disabled: var(--component-button-primary-border-disabled);
 
   /* Metrics. Remapped by size / pill. */
-  --_padding-x: var(--component-button-padding-x);
-  --_padding-y: var(--component-button-padding-y);
-  --_radius: var(--component-button-radius-md);
+  --_padding-x: var(--component-button-size-medium-padding-inline);
+  --_padding-y: var(--component-button-size-medium-padding-block);
+  --_radius: var(--component-button-radius-default);
 
   display: inline-block;
   vertical-align: middle;
@@ -37,52 +37,52 @@
 }
 
 :host([variant="secondary"]) {
-  --_background: var(--component-button-secondary-background);
+  --_background: transparent;
   --_background-hover: var(--component-button-secondary-background-hover);
-  --_background-press: var(--component-button-secondary-background-press);
-  --_background-disabled: var(--component-button-secondary-background-disabled);
-  --_foreground: var(--component-button-secondary-foreground);
+  --_background-press: var(--component-button-secondary-background-pressed);
+  --_background-disabled: transparent;
+  --_foreground: var(--component-button-secondary-foreground-default);
   --_foreground-disabled: var(--component-button-secondary-foreground-disabled);
-  --_border: var(--component-button-secondary-border);
+  --_border: var(--component-button-secondary-border-default);
   --_border-disabled: var(--component-button-secondary-border-disabled);
 }
 
 :host([variant="ghost"]) {
-  --_background: var(--component-button-ghost-background);
+  --_background: transparent;
   --_background-hover: var(--component-button-ghost-background-hover);
-  --_background-press: var(--component-button-ghost-background-press);
-  --_background-disabled: var(--component-button-ghost-background-disabled);
-  --_foreground: var(--component-button-ghost-foreground);
+  --_background-press: var(--component-button-ghost-background-pressed);
+  --_background-disabled: transparent;
+  --_foreground: var(--component-button-ghost-foreground-default);
   --_foreground-disabled: var(--component-button-ghost-foreground-disabled);
-  --_border: var(--component-button-ghost-border);
-  --_border-disabled: var(--component-button-ghost-border-disabled);
+  --_border: transparent;
+  --_border-disabled: transparent;
 }
 
 :host([variant="danger"]) {
-  --_background: var(--component-button-danger-background);
+  --_background: var(--component-button-danger-background-default);
   --_background-hover: var(--component-button-danger-background-hover);
-  --_background-press: var(--component-button-danger-background-press);
+  --_background-press: var(--component-button-danger-background-pressed);
   --_background-disabled: var(--component-button-danger-background-disabled);
-  --_foreground: var(--component-button-danger-foreground);
+  --_foreground: var(--component-button-danger-foreground-default);
   --_foreground-disabled: var(--component-button-danger-foreground-disabled);
-  --_border: var(--component-button-danger-border);
+  --_border: var(--component-button-danger-border-default);
   --_border-disabled: var(--component-button-danger-border-disabled);
 }
 
 :host([size="sm"]) {
-  --_padding-x: var(--component-button-padding-x-sm);
-  --_padding-y: var(--component-button-padding-y-sm);
+  --_padding-x: var(--component-button-size-small-padding-inline);
+  --_padding-y: var(--component-button-size-small-padding-block);
 }
 
 :host([pill]) {
-  --_radius: var(--component-button-radius-full);
+  --_radius: var(--component-button-radius-pill);
 }
 
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--primitives-space-2);
+  gap: var(--component-button-gap);
   box-sizing: border-box;
   margin: 0;
   padding: var(--_padding-y) var(--_padding-x);
@@ -101,9 +101,9 @@
   -webkit-appearance: none;
   user-select: none;
   transition:
-    background-color var(--component-button-transition) ease,
-    border-color var(--component-button-transition) ease,
-    color var(--component-button-transition) ease;
+    background-color var(--component-button-motion-duration) var(--component-button-motion-easing),
+    border-color var(--component-button-motion-duration) var(--component-button-motion-easing),
+    color var(--component-button-motion-duration) var(--component-button-motion-easing);
 }
 
 :host([full-width]) .button {
@@ -133,7 +133,7 @@ slot {
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--semantic-color-focus-ring);
+  outline: 2px solid var(--component-button-focus-border);
   outline-offset: 2px;
 }
 

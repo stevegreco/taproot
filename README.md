@@ -26,15 +26,15 @@ Then use tokens in your CSS:
 
 ```css
 .card {
-  background: var(--semantic-color-background-raised);
+  background: var(--semantic-color-background-surface);
   border: 1px solid var(--semantic-color-border-default);
   color: var(--semantic-color-foreground-default);
 }
 
 .btn-primary {
-  background: var(--component-button-primary-background);
-  color: var(--component-button-primary-foreground);
-  border-radius: var(--component-button-radius-md);
+  background: var(--semantic-color-background-action-primary-default);
+  color: var(--semantic-color-foreground-on-action-primary);
+  border-radius: var(--semantic-radius-control);
 }
 ```
 
@@ -42,18 +42,21 @@ Then use tokens in your CSS:
 
 The design system uses three typefaces, each mapped to a font token:
 
-| Token | Family | Role |
-|---|---|---|
-| `--primitives-font-display` | Lora | Headings, card titles, logotype |
-| `--primitives-font-sans` | Source Sans 3 | Body text, UI labels, buttons |
-| `--primitives-font-mono` | JetBrains Mono | Code, token values, numeric data |
+| Token                       | Family         | Role                             |
+| --------------------------- | -------------- | -------------------------------- |
+| `--primitives-font-display` | Lora           | Headings, card titles, logotype  |
+| `--primitives-font-sans`    | Source Sans 3  | Body text, UI labels, buttons    |
+| `--primitives-font-mono`    | JetBrains Mono | Code, token values, numeric data |
 
 Each token includes a system fallback stack, so the UI remains readable if Google Fonts fails to load. To use the intended typefaces, add the following `<link>` tags to your document `<head>` **before** the tokens stylesheet:
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link
+  href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 The `display=swap` parameter ensures text renders immediately in the fallback font while the custom fonts load, avoiding invisible text during page load.
@@ -62,36 +65,38 @@ If you are using a bundler with a `<head>` injection plugin (e.g. Vite's `vite-p
 
 ## Token architecture
 
-Tokens are organized in three tiers. Always prefer the highest applicable tier.
+Primitive and semantic tokens form the shared foundation. A component tier is
+available only where a published component contract adds a useful customization boundary.
 
 ```
-Primitives  →  Semantic  →  Component
-  (scale)       (intent)     (component-specific)
+Primitives  →  Semantic  →  Component (optional)
+  (scale)       (intent)       (scoped API)
 ```
 
-| Tier | Prefix | Use when |
-|---|---|---|
-| **Primitive** | `--primitives-*` | Never in product code — these are raw scale values |
-| **Semantic** | `--semantic-*` | Building new UI — surfaces, text, borders, status |
-| **Component** | `--component-*` | Implementing a specific named component (button, card, input) |
+| Tier          | Prefix           | Use when                                            |
+| ------------- | ---------------- | --------------------------------------------------- |
+| **Primitive** | `--primitives-*` | No semantic role expresses the raw scale choice     |
+| **Semantic**  | `--semantic-*`   | Styling components and product interfaces by intent |
+| **Component** | `--component-*`  | Styling or customizing a component with a published contract |
 
 ### Semantic token groups
 
-| Group | Example | Purpose |
-|---|---|---|
-| `background` | `--semantic-color-background-default` | Page and surface fills |
-| `foreground` | `--semantic-color-foreground-muted` | Text and icon colors |
-| `border` | `--semantic-color-border-default` | Dividers and outlines |
-| `accent` | `--semantic-color-accent-default` | Primary brand interactions |
-| `secondary` | `--semantic-color-secondary-default` | Supporting interactions |
-| `status.*` | `--semantic-color-status-success-background` | Feedback states |
+| Group                       | Example                                              | Purpose                                 |
+| --------------------------- | ---------------------------------------------------- | --------------------------------------- |
+| `background`                | `--semantic-color-background-default`                | Page and surface fills                  |
+| `foreground`                | `--semantic-color-foreground-muted`                  | Text and icon colors                    |
+| `border`                    | `--semantic-color-border-default`                    | Dividers and outlines                   |
+| `background.action.primary` | `--semantic-color-background-action-primary-default` | Primary interactions                    |
+| `background.brand`          | `--semantic-color-background-brand-muted`            | Brand surfaces                          |
+| `foreground.on`             | `--semantic-color-foreground-on-action-primary`      | Content paired with a specific fill     |
+| `*.status.*`                | `--semantic-color-background-status-success-default` | Feedback surfaces, content, and borders |
 
 ## Theming (dark mode)
 
-Set `data-theme="dark"` on the `<html>` element to activate the dark theme. All semantic and component tokens resolve to their dark values automatically — no class changes needed anywhere else.
+Set `data-theme="dark"` on the `<html>` element to activate the dark theme. All semantic tokens resolve to their dark values automatically — no class changes needed anywhere else.
 
 ```html
-<html data-theme="dark">
+<html data-theme="dark"></html>
 ```
 
 ```js
@@ -106,30 +111,29 @@ The sidebar and other always-dark surfaces should define their own local aliases
 Resolved token values are also available as JSON for use in design tooling, style pipelines, or non-CSS targets.
 
 ```js
-import primitives  from "@stevegreco/design-system/tokens/primitives";
-import semantic    from "@stevegreco/design-system/tokens/semantic-light";
-import components  from "@stevegreco/design-system/tokens/components-light";
+import primitives from "@stevegreco/design-system/tokens/primitives";
+import semantic from "@stevegreco/design-system/tokens/semantic-light";
+import components from "@stevegreco/design-system/tokens/components";
 ```
 
-The semantic *and* component tiers are both theme-specific. Component tokens are aliases into the semantic tier, and JSON has no equivalent of CSS's `var()` indirection, so each theme gets its own resolved file — pair `semantic-light` with `components-light`, `semantic-dark` with `components-dark`.
+The semantic tier is theme-specific. Import the semantic file that matches the
+theme whose resolved values you need.
 
 ```js
-import semantic   from "@stevegreco/design-system/tokens/semantic-dark";
-import components from "@stevegreco/design-system/tokens/components-dark";
+import semantic from "@stevegreco/design-system/tokens/semantic-dark";
 ```
 
 The CSS build needs no such split: `dist/css/tokens.css` carries both themes and swaps at runtime.
 
 ## Build outputs
 
-| File | Contents |
-|---|---|
-| `dist/css/tokens.css` | All tiers concatenated — primitives, semantic light, semantic dark, components |
-| `dist/tokens/primitives.json` | Raw primitive scale values |
-| `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme |
-| `dist/tokens/semantic.dark.json` | Resolved semantic tokens for dark theme |
-| `dist/tokens/components.light.json` | Resolved component tokens for light theme |
-| `dist/tokens/components.dark.json` | Resolved component tokens for dark theme |
+| File                              | Contents                                             |
+| --------------------------------- | ---------------------------------------------------- |
+| `dist/css/tokens.css`             | Primitive, semantic light/dark, and component aliases |
+| `dist/tokens/primitives.json`     | Raw primitive scale values                           |
+| `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme             |
+| `dist/tokens/semantic.dark.json`  | Resolved semantic tokens for dark theme              |
+| `dist/tokens/components.json`       | Theme-independent references to shared tokens       |
 
 ## Building from source
 
@@ -138,37 +142,7 @@ pnpm install
 pnpm run build
 ```
 
-Source tokens live in `tokens/`. Never edit `dist/` files directly — they are regenerated on every build.
-
-## MCP token server
-
-A local [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI assistants search and look up tokens directly.
-
-```bash
-pnpm run mcp
-```
-
-Add to your MCP client config (e.g. `claude_desktop_config.json`):
-
-```json
-{
-  "mcpServers": {
-    "design-system-tokens": {
-      "command": "node",
-      "args": ["/absolute/path/to/design-system/mcp/index.js"]
-    }
-  }
-}
-```
-
-| Tool | Description |
-|---|---|
-| `search_tokens` | Substring search across paths and values. Supports `tier`, `type`, `theme` filters. |
-| `get_token` | Exact lookup by token path — e.g. `component.button.primary.background`. |
-
-## Visual reference
-
-Open `docs/token-docs.html` in a browser for a full visual reference of all resolved token values across all tiers and both themes.
+Source tokens live in `src/tokens/`. Never edit `dist/` files directly — they are regenerated on every build.
 
 ## Publish checklist
 

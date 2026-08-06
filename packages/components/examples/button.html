@@ -14,56 +14,56 @@
     <style>
       body {
         margin: 0;
-        padding: var(--primitives-space-8);
+        padding: 2rem;
         background-color: var(--semantic-color-background-default);
         color: var(--semantic-color-foreground-default);
-        font-family: var(--primitives-font-sans);
-        transition: background-color var(--primitives-duration-base) ease;
+        font-family: system-ui, sans-serif;
+        transition: background-color 220ms ease;
       }
       h1 {
-        margin: 0 0 var(--primitives-space-2);
-        font-size: var(--primitives-text-2xl);
+        margin: 0 0 0.5rem;
+        font-size: 1.875rem;
       }
       h2 {
-        margin: var(--primitives-space-8) 0 var(--primitives-space-3);
-        font-size: var(--primitives-text-sm);
+        margin: 2rem 0 0.75rem;
+        font-size: 0.875rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: var(--semantic-color-foreground-subtle);
+        color: var(--semantic-color-foreground-muted);
       }
       p {
         margin: 0;
         color: var(--semantic-color-foreground-muted);
-        font-size: var(--primitives-text-sm);
+        font-size: 0.875rem;
       }
       .row {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: var(--primitives-space-3);
+        gap: 0.75rem;
       }
       form {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: var(--primitives-space-3);
-        padding: var(--component-card-padding);
-        background-color: var(--component-card-background);
-        border: 1px solid var(--component-card-border);
-        border-radius: var(--component-card-radius);
+        gap: 0.75rem;
+        padding: 1.5rem;
+        background-color: var(--semantic-color-background-surface);
+        border: 1px solid var(--semantic-color-border-subtle);
+        border-radius: 0.875rem;
       }
       input {
-        padding: var(--component-input-padding-y) var(--component-input-padding-x);
-        background-color: var(--component-input-background);
-        border: 1px solid var(--component-input-border);
-        border-radius: var(--component-input-radius);
-        color: var(--component-input-foreground);
-        font-family: var(--component-input-font-family);
-        font-size: var(--component-input-font-size);
+        padding: 0.75rem 1rem;
+        background-color: var(--semantic-color-background-surface);
+        border: 1px solid var(--semantic-color-border-default);
+        border-radius: 0.625rem;
+        color: var(--semantic-color-foreground-default);
+        font: inherit;
+        font-size: 0.875rem;
       }
       output {
-        color: var(--semantic-color-foreground-subtle);
-        font-size: var(--primitives-text-sm);
+        color: var(--semantic-color-foreground-muted);
+        font-size: 0.875rem;
       }
     </style>
   </head>
@@ -101,15 +101,29 @@
     <h2>With an icon</h2>
     <div class="row">
       <ds-button>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
           <path d="M5 12h14M12 5l7 7-7 7" />
         </svg>
         Continue
       </ds-button>
       <ds-button variant="ghost" aria-label="Next step">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
           <path d="M5 12h14M12 5l7 7-7 7" />
         </svg>
       </ds-button>

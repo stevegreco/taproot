@@ -41,9 +41,9 @@ or Bun.
 
   </Step>
   <Step title="Load the CSS tokens">
-    The CSS entry point includes all three tiers: primitives, semantic aliases,
-    and component tokens. Load it from your main stylesheet or application
-    entry point.
+    The CSS entry point includes primitive values, semantic aliases, and
+    published component aliases. Load it from your main stylesheet or
+    application entry point.
 
     <Tabs>
       <Tab title="CSS">
@@ -63,8 +63,8 @@ or Bun.
   </Step>
   <Step title="Choose a color theme">
     Light values are applied to `:root` by default. Set
-    `data-theme="dark"` on the root element to use the dark semantic and
-    component values. Primitive tokens do not change between themes.
+    `data-theme="dark"` on the root element to use the dark semantic values.
+    Primitive tokens do not change between themes.
 
     <Tabs>
       <Tab title="HTML">
@@ -88,7 +88,8 @@ For most applications, the CSS entry point is all you need.
 ## Use tokens programmatically
 
 Import individual token tiers as structured JSON for design tools, build
-scripts, or Style Dictionary pipelines.
+scripts, or Style Dictionary pipelines. Component JSON preserves references to
+shared tokens; select a semantic theme when resolving those references.
 
 <CodeBlock
   lang="ts"
@@ -100,10 +101,6 @@ import components from "@stevegreco/design-system/tokens/components";`}
 
 ## Next step
 
-<Card
-  title="Explore primitive color tokens"
-  href="/design-tokens/primitives/color"
-  icon="palette"
->
+<Card title="Explore primitive color tokens" href="/design-tokens/primitives/color" icon="palette">
   Browse the primitive palette and copy color values.
 </Card>

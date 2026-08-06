@@ -41,9 +41,7 @@ describe("DsButton", () => {
   });
 
   test("keeps an explicitly disabled button disabled after its fieldset is enabled", () => {
-    const fieldset = render(
-      `<fieldset disabled><${tagName} disabled>Save</${tagName}></fieldset>`,
-    );
+    const fieldset = render(`<fieldset disabled><${tagName} disabled>Save</${tagName}></fieldset>`);
     const control = fieldset.querySelector(tagName).shadowRoot.querySelector("button");
 
     fieldset.disabled = false;
@@ -115,12 +113,13 @@ describe("DsButton", () => {
     expect(control.hasAttribute("aria-label")).toBe(false);
   });
 
-  test("uses the dedicated pressed-state tokens", () => {
+  test("uses the Button component token contract", () => {
     expect(styles).toContain(
-      "--_background-press: var(--component-button-ghost-background-press)",
+      "--_background-press: var(--component-button-primary-background-pressed)",
     );
-    expect(styles).toContain(
-      "--_background-press: var(--component-button-danger-background-press)",
-    );
+    expect(styles).toContain("var(--component-button-danger-background-default)");
+    expect(styles).toContain("var(--component-button-size-small-padding-inline)");
+    expect(styles).not.toContain("var(--semantic-");
+    expect(styles).not.toContain("var(--primitives-");
   });
 });

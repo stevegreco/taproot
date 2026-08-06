@@ -4,65 +4,56 @@
 
 ## Context
 
-The system has primitive, semantic, and component token tiers, but the presence of three tiers does
-not mean every component value should pass through all three. Treating the component tier as
-mandatory creates aliases that merely rename semantic or primitive tokens without adding meaning.
-At the other extreme, reaching for primitives when a semantic role already exists discards intent
-and theme behavior.
-
-The system needs a clear default for component styling and a narrow criterion for when a component
-token earns its place.
+The system publishes primitive and semantic tokens as its shared foundation. Some components also
+need a stable customization boundary that can compose several shared token decisions without
+exposing their internal CSS variables.
 
 ## Decision
 
-### Semantic tokens are the normal component styling API
+### Semantic tokens remain the default styling API
 
-Components may consume semantic tokens directly. When a semantic token expresses the intended
-role, use it; the existence of a component does not require a component-scoped alias.
+Components consume semantic tokens directly whenever a semantic contract expresses the intended
+role. Background tokens style fills, foreground tokens style visible content, and border tokens
+style boundaries and focus indicators.
 
-### Component tokens are selective contracts
+### A component tier is optional and scoped
 
-Create a component token only when it adds at least one of:
+A component may publish component-scoped aliases when the alias creates a useful public contract
+for that component. Component tokens must reference current semantic or primitive tokens. They do
+not introduce independent values, replace semantic intent, or require every component to have a
+component namespace.
 
-- an intentional customization point that consumers can override independently;
-- a component-specific decision shared by multiple implementations;
-- a stable contract for a named component variant or state that combines semantic roles; or
-- insulation from an implementation detail likely to change without affecting consumers.
-
-Component tokens generally alias semantic tokens. A component token may alias a primitive when the
-value is an intentional part of the component's public contract and no semantic role fits.
-
-Do not create a component token when it merely renames a semantic token without adding a useful
-contract, or merely wraps a primitive to satisfy layering.
+Button is currently the only component with a published component contract. Badge continues to use
+semantic tokens directly.
 
 ### Primitive use is allowed when it is honest
 
-A component may consume a primitive directly when no semantic intent fits and a component token
-would add no useful customization, reuse, or stability boundary. Never reference a primitive when
-a semantic or component token already expresses the same intent.
+A component may consume a primitive directly when the semantic vocabulary has no matching role,
+such as spacing, typography, or motion scale choices. Never reference a primitive when a semantic
+token already expresses the same intent.
 
-Do not invent semantic or component aliases solely to force a value through every tier.
-
-## Examples
+## Example
 
 ```css
-/* Shared UI intent: semantic token directly in component CSS. */
-color: var(--semantic-color-foreground-default);
+background: var(--component-button-primary-background-default);
+color: var(--component-button-primary-foreground-default);
+gap: var(--component-button-gap);
+```
 
-/* Stable, independently customizable component variant. */
-background: var(--component-button-primary-background);
+The component source definitions alias those contracts to shared tokens:
 
-/* Raw scale choice with no semantic role or useful component contract. */
-gap: var(--primitives-space-2);
+```json
+{
+  "$value": "{semantic.color.background.action.primary.default}",
+  "$type": "color"
+}
 ```
 
 ## Consequences
 
-- The semantic tier remains the default vocabulary for UI intent and theming.
-- The component tier stays small and purposeful rather than mirroring every CSS property.
-- Primitive references in component code are acceptable only where no semantic role fits.
-- Reviews must judge whether a component token adds a real contract, not merely whether one could be
-  created.
-- Automated checks may flag primitives that bypass an existing semantic/component token and
-  component tokens that are redundant wrappers, but must not prohibit direct semantic or primitive
-  consumption categorically.
+- Primitive and semantic tokens remain the shared public vocabulary.
+- A component tier may expose a deliberately scoped customization API.
+- Component aliases inherit theme changes through semantic references.
+- `components.json` preserves those references and is not split by theme; semantic artifacts own theme resolution.
+- Adding a component contract requires a current consumer and tests that verify every alias resolves.
+- Reviews verify that a token matches the CSS property and intent rather than merely matching a value.

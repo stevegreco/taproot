@@ -33,7 +33,7 @@ To register selectively, or under a different tag name:
 ```js
 import { defineButton } from "@stevegreco/design-system-components/button";
 
-defineButton();              // <ds-button>
+defineButton(); // <ds-button>
 defineButton("acme-button"); // <acme-button>
 ```
 
@@ -50,8 +50,8 @@ from the default slot:
 
 The `variant` attribute accepts `default`, `accent`, `success`, `danger`,
 `warning`, or `info`, and defaults to `default`. The rendered surface is exposed
-as `::part(badge)`. Its visual values come from the published
-`--component-badge-*` tokens.
+as `::part(badge)`. Its visual values come directly from published semantic
+background, foreground, and border tokens.
 
 Badge deliberately provides no button behavior or live-region role. Use a
 button for actions, and add an appropriate ARIA role only when a changing badge
@@ -61,15 +61,15 @@ needs to be announced.
 
 ### Attributes
 
-| Attribute    | Values                                        | Default     | Notes |
-| ------------ | --------------------------------------------- | ----------- | ----- |
-| `variant`    | `primary`, `secondary`, `ghost`, `danger`      | `primary`   | |
-| `size`       | `md`, `sm`                                     | `md`        | |
-| `pill`       | boolean                                        | off         | Fully rounded ends |
-| `full-width` | boolean                                        | off         | Fills its container |
-| `disabled`   | boolean                                        | off         | Blocks activation and focus; also follows an ancestor disabled fieldset |
-| `type`       | `button`, `submit`, `reset`                    | `button`    | Works inside a `<form>` |
-| `aria-label` | string                                         | —           | Mirrored onto the inner control; use for icon-only buttons |
+| Attribute    | Values                                    | Default   | Notes                                                                   |
+| ------------ | ----------------------------------------- | --------- | ----------------------------------------------------------------------- |
+| `variant`    | `primary`, `secondary`, `ghost`, `danger` | `primary` |                                                                         |
+| `size`       | `md`, `sm`                                | `md`      |                                                                         |
+| `pill`       | boolean                                   | off       | Fully rounded ends                                                      |
+| `full-width` | boolean                                   | off       | Fills its container                                                     |
+| `disabled`   | boolean                                   | off       | Blocks activation and focus; also follows an ancestor disabled fieldset |
+| `type`       | `button`, `submit`, `reset`               | `button`  | Works inside a `<form>`                                                 |
+| `aria-label` | string                                    | —         | Mirrored onto the inner control; use for icon-only buttons              |
 
 Each attribute has a matching property (`el.variant`, `el.disabled`, …). The
 read-only `el.form` property resolves the containing `<form>`.
@@ -114,9 +114,11 @@ ds-button::part(button) {
 
 ## Tokens consumed
 
-`--component-button-*` for everything variant- and metric-specific, plus
-`--semantic-color-focus-ring` and `--semantic-color-disabled-*` for focus and
-disabled states. Change a token, and every button updates.
+Button consumes its published `--component-button-*` contract. Every Button
+token aliases a current semantic or primitive token, so themes still flow
+through the semantic layer while consumers gain a stable Button customization
+boundary. Badge deliberately has no component token contract and consumes
+`--semantic-*` tokens directly.
 
 ## Styles are authored as real CSS
 
@@ -146,7 +148,7 @@ The component contract runs in real Chromium through Vitest Browser Mode:
 pnpm test
 ```
 
-The suite covers Badge content, variants, aliases and token mappings, plus
+The suite covers Badge content, variants, aliases and semantic token mappings, plus
 Button registration, disabled fieldsets, form behavior, accessible labels,
 focus forwarding and token wiring.
 

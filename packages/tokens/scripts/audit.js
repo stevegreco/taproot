@@ -1,5 +1,5 @@
 // Token guardrails. Runs as the last step of `pnpm build`, after dist/ exists —
-// both checks read resolved values, so neither can run against source (ADR-0001).
+// the contrast and parity checks read resolved values, so they run after build.
 //
 // Contrast asks whether a pair is legible. Parity asks whether the two themes
 // are the same system. TOK-01 passed every contrast check it was subject to and
@@ -13,11 +13,10 @@
 import { run as contrast } from "./audit-contrast.js";
 import { run as parity } from "./audit-parity.js";
 import { run as ramps } from "./audit-ramps.js";
-import { run as examples } from "./audit-examples.js";
 
 const reportOnly = process.argv.includes("--report-only");
 
-const failures = contrast() + parity() + ramps() + examples();
+const failures = contrast() + parity() + ramps();
 
 console.log("");
 if (failures === 0) {

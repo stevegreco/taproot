@@ -1,0 +1,76 @@
+{
+  "semantic": {
+    "color": {
+      "background": {
+        "default": { "$value": "{primitives.color.blueSmoke.950}", "$type": "color" },
+        "surface": { "$value": "{primitives.color.blueSmoke.900}", "$type": "color" },
+        "sunken": { "$value": "{primitives.color.blueSmoke.975}", "$type": "color" },
+        "muted": { "$value": "{primitives.color.blueSmoke.800}", "$type": "color" },
+        "disabled": { "$value": "{primitives.color.gray.900}", "$type": "color" },
+        "brand": {
+          "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
+          "muted": { "$value": "{primitives.color.robRoy.950}", "$type": "color" }
+        },
+        "action": {
+          "primary": {
+            "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
+            "hover": { "$value": "{primitives.color.robRoy.300}", "$type": "color" },
+            "pressed": { "$value": "{primitives.color.robRoy.200}", "$type": "color" }
+          }
+        },
+        "status": {
+          "success": { "default": { "$value": "{primitives.color.moss.900}", "$type": "color" } },
+          "warning": { "default": { "$value": "{primitives.color.amber.900}", "$type": "color" } },
+          "info": { "default": { "$value": "{primitives.color.sky.800}", "$type": "color" } },
+          "danger": { "default": { "$value": "{primitives.color.rust.800}", "$type": "color" } }
+        }
+      },
+      "foreground": {
+        "default": { "$value": "{primitives.color.gray.25}", "$type": "color" },
+        "muted": { "$value": "{primitives.color.gray.300}", "$type": "color" },
+        "disabled": { "$value": "{primitives.color.gray.500}", "$type": "color" },
+        "brand": {
+          "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" }
+        },
+        "on": {
+          "brand": {
+            "default": { "$value": "{primitives.color.gray.950}", "$type": "color" }
+          },
+          "action": {
+            "primary": { "$value": "{primitives.color.gray.950}", "$type": "color" }
+          }
+        },
+        "status": {
+          "success": { "default": { "$value": "{primitives.color.moss.100}", "$type": "color" } },
+          "warning": { "default": { "$value": "{primitives.color.amber.100}", "$type": "color" } },
+          "info": { "default": { "$value": "{primitives.color.sky.100}", "$type": "color" } },
+          "danger": { "default": { "$value": "{primitives.color.rust.100}", "$type": "color" } }
+        }
+      },
+      "border": {
+        "default": { "$value": "{primitives.color.gray.400}", "$type": "color" },
+        "strong": { "$value": "{primitives.color.gray.300}", "$type": "color" },
+        "subtle": { "$value": "{primitives.color.gray.800}", "$type": "color" },
+        "disabled": { "$value": "{primitives.color.gray.700}", "$type": "color" },
+        "focus": { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
+        "brand": {
+          "muted": { "$value": "{primitives.color.robRoy.800}", "$type": "color" }
+        },
+        "status": {
+          "success": { "default": { "$value": "{primitives.color.moss.300}", "$type": "color" } },
+          "warning": { "default": { "$value": "{primitives.color.amber.300}", "$type": "color" } },
+          "info": { "default": { "$value": "{primitives.color.sky.300}", "$type": "color" } },
+          "danger": { "default": { "$value": "{primitives.color.rust.300}", "$type": "color" } }
+        }
+      }
+    },
+    "elevation": {
+      "xs": { "$value": "{primitives.shadowInk.xs}", "$type": "shadow" },
+      "sm": { "$value": "{primitives.shadowInk.sm}", "$type": "shadow" },
+      "md": { "$value": "{primitives.shadowInk.md}", "$type": "shadow" },
+      "lg": { "$value": "{primitives.shadowInk.lg}", "$type": "shadow" },
+      "xl": { "$value": "{primitives.shadowInk.xl}", "$type": "shadow" },
+      "inset": { "$value": "{primitives.shadowInk.inset}", "$type": "shadow" }
+    }
+  }
+}

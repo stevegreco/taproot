@@ -2,62 +2,43 @@
   "name": "@stevegreco/design-system",
   "version": "0.0.4",
   "description": "Design tokens distributed as CSS and JSON artifacts.",
+  "keywords": [
+    "css-variables",
+    "design-system",
+    "design-tokens"
+  ],
+  "license": "ISC",
+  "author": "Steve Greco",
+  "style": "./dist/css/tokens.css",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/tokens/primitives.json",
-  "style": "./dist/css/tokens.css",
   "exports": {
     ".": "./dist/tokens/primitives.json",
     "./css": "./dist/css/tokens.css",
     "./tokens/primitives": "./dist/tokens/primitives.json",
     "./tokens/semantic-light": "./dist/tokens/semantic.light.json",
     "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
-    "./tokens/components": "./dist/tokens/components.light.json",
-    "./tokens/components-light": "./dist/tokens/components.light.json",
-    "./tokens/components-dark": "./dist/tokens/components.dark.json",
-    "./read-tokens": "./src/read-tokens.js",
-    "./flatten": "./src/flatten.js"
+    "./tokens/components": "./dist/tokens/components.json",
+    "./read-tokens": "./dist/read-tokens.js",
+    "./flatten": "./dist/flatten.js"
   },
-  "bin": {
-    "design-system-mcp": "mcp/index.js"
-  },
-  "files": [
-    "dist",
-    "mcp",
-    "src"
-  ],
-  "scripts": {
-    "clean": "rm -rf dist",
-    "build": "pnpm run clean && node build-tokens.js && node build-css.js && node generate-showcase.js && pnpm run audit",
-    "audit": "node scripts/audit.js",
-    "watch": "chokidar \"tokens/**/*.json\" -c \"pnpm run build\" --initial",
-    "serve": "live-server --port=4400 --open=examples/dashboard.html --ignore=tokens,src,mcp,docs .",
-    "dev": "concurrently -n build,serve -c blue,green \"pnpm run watch\" \"pnpm run serve\"",
-    "showcase": "node generate-showcase.js",
-    "dashboard": "open examples/dashboard.html",
-    "food": "open examples/food-order.html",
-    "test": "node --test test/*.test.js",
-    "prepack": "pnpm run build",
-    "mcp": "node mcp/index.js"
-  },
-  "keywords": [
-    "design-system",
-    "design-tokens",
-    "css-variables"
-  ],
-  "author": "Steve Greco",
-  "license": "ISC",
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm run clean && node build-tokens.js && node build-css.js && pnpm run audit",
+    "audit": "node scripts/audit.js",
+    "watch": "chokidar \"src/tokens/**/*.json\" -c \"pnpm run build\" --initial",
+    "test": "node --test test/*.test.js",
+    "prepack": "pnpm run build"
+  },
   "devDependencies": {
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^9.1.0",
-    "live-server": "^1.2.2",
     "style-dictionary": "^5.5.0"
   },
-  "packageManager": "pnpm@10.33.4",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "zod": "^4.4.3"
-  }
+  "packageManager": "pnpm@10.33.4"
 }

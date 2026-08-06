@@ -1,8 +1,7 @@
 // WCAG 2.1 contrast audit over the semantic tier, both themes.
 //
-// Reads resolved values from dist/tokens/semantic.*.json — source files hold
-// unresolved aliases, so this must run after the build (see ADR-0001 for the
-// same reasoning applied to the MCP server).
+// Reads resolved values from dist/tokens/semantic.*.json because source files
+// contain unresolved aliases. Run it after the token build.
 //
 // Report-only by default — see scripts/audit.js for how that is applied.
 
@@ -23,45 +22,57 @@ const NON_TEXT = 3.0; // WCAG 1.4.11 Non-text Contrast, UI boundaries and states
 // disabled state that is *too* faint in one theme and not the other is still
 // a bug worth seeing, just not one that blocks a release.
 const PAIRS = [
-  // Body text on each surface
+  // Foundation content on supported surfaces
   ["color.foreground.default", "color.background.default", TEXT, "body text on page"],
-  ["color.foreground.default", "color.background.raised", TEXT, "body text on raised"],
+  ["color.foreground.default", "color.background.surface", TEXT, "body text on surface"],
   ["color.foreground.default", "color.background.sunken", TEXT, "body text on sunken"],
   ["color.foreground.default", "color.background.muted", TEXT, "body text on muted"],
   ["color.foreground.muted", "color.background.default", TEXT, "muted text on page"],
-  ["color.foreground.muted", "color.background.raised", TEXT, "muted text on raised"],
-  ["color.foreground.subtle", "color.background.default", TEXT, "subtle text on page"],
-  ["color.foreground.subtle", "color.background.raised", TEXT, "subtle text on raised"],
-  ["color.foreground.faint", "color.background.default", TEXT, "faint text on page"],
-  ["color.foreground.faint", "color.background.raised", TEXT, "faint text on raised"],
+  ["color.foreground.muted", "color.background.surface", TEXT, "muted text on surface"],
 
-  // Accent as a solid surface carrying its own label
-  ["color.accent.foreground", "color.accent.default", TEXT, "label on accent"],
-  ["color.accent.foreground", "color.accent.hover", TEXT, "label on accent hover"],
-  ["color.accent.foreground", "color.accent.press", TEXT, "label on accent press"],
-  ["color.accent.default", "color.background.default", NON_TEXT, "accent surface vs page"],
-
-  // Secondary reads as text and as a border, never as a solid fill
-  ["color.secondary.default", "color.background.default", TEXT, "secondary text on page"],
-
-  // UI boundaries — the 1.4.11 cases
-  ["color.border.default", "color.background.default", NON_TEXT, "border vs page"],
-  ["color.border.default", "color.background.raised", NON_TEXT, "border vs raised"],
-  ["color.border.strong", "color.background.default", NON_TEXT, "strong border vs page"],
-  ["color.focus.ring", "color.background.default", NON_TEXT, "focus ring vs page"],
-
-  // Status indicators and tinted callout variants
-  ...["success", "danger", "warning", "info"].flatMap((s) => [
-    [`color.status.${s}.default`, "color.background.default", NON_TEXT, `${s} surface vs page`],
-    [`color.status.${s}.foreground`, `color.status.${s}.background`, TEXT, `${s} callout text`],
+  // Explicit solid-fill pairings
+  ["color.foreground.on.brand.default", "color.background.brand.default", TEXT, "content on brand"],
+  ...["default", "hover", "pressed"].map((state) => [
+    "color.foreground.on.action.primary",
+    `color.background.action.primary.${state}`,
+    TEXT,
+    `content on primary action ${state}`,
   ]),
 
-  // Danger additionally backs the shipped solid button variant.
-  ["color.status.danger.onDefault", "color.status.danger.default", TEXT, "label on danger"],
+  // Brand content on a foundation background
+  ["color.foreground.brand.default", "color.background.default", TEXT, "brand content on page"],
+
+  // Functional UI boundaries
+  ["color.border.default", "color.background.default", NON_TEXT, "border vs page"],
+  ["color.border.default", "color.background.surface", NON_TEXT, "border vs surface"],
+  ["color.border.strong", "color.background.default", NON_TEXT, "strong border vs page"],
+  ["color.border.focus", "color.background.default", NON_TEXT, "focus border vs page"],
+
+  // Quiet status surfaces and their explicit content/border roles
+  ...["success", "danger", "warning", "info"].flatMap((s) => [
+    [
+      `color.foreground.status.${s}.default`,
+      `color.background.status.${s}.default`,
+      TEXT,
+      `${s} content on quiet status surface`,
+    ],
+    [
+      `color.border.status.${s}.default`,
+      `color.background.status.${s}.default`,
+      NON_TEXT,
+      `${s} border on quiet status surface`,
+    ],
+  ]),
 
   // Disabled — reported, never blocking
-  ["color.disabled.foreground", "color.disabled.background", TEXT, "disabled label", "exempt"],
-  ["color.disabled.border", "color.background.default", NON_TEXT, "disabled border vs page", "exempt"],
+  ["color.foreground.disabled", "color.background.disabled", TEXT, "disabled label", "exempt"],
+  [
+    "color.border.disabled",
+    "color.background.default",
+    NON_TEXT,
+    "disabled border vs page",
+    "exempt",
+  ],
 ];
 
 function get(tree, path) {
@@ -70,7 +81,7 @@ function get(tree, path) {
 
 function auditTheme(theme) {
   const tree = JSON.parse(
-    readFileSync(join(ROOT, `dist/tokens/semantic.${theme}.json`), "utf-8")
+    readFileSync(join(ROOT, `dist/tokens/semantic.${theme}.json`), "utf-8"),
   ).semantic;
 
   const results = [];
@@ -115,7 +126,7 @@ function report(theme, results) {
     console.log(
       `  ✘ ${r.label}\n` +
         `      ${r.fgPath} ${r.fg}  on  ${r.bgPath} ${r.bg}\n` +
-        `      ${r.value.toFixed(2)}:1 — needs ${r.required}:1`
+        `      ${r.value.toFixed(2)}:1 — needs ${r.required}:1`,
     );
   }
 
@@ -125,7 +136,7 @@ function report(theme, results) {
 
   for (const r of exempt) {
     console.log(
-      `  ~ ${r.label} — ${r.value.toFixed(2)}:1, below ${r.required}:1 but exempt (disabled state)`
+      `  ~ ${r.label} — ${r.value.toFixed(2)}:1, below ${r.required}:1 but exempt (disabled state)`,
     );
   }
 
