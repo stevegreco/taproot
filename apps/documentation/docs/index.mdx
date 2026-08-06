@@ -11,22 +11,11 @@ tools, and automation.
 ## Start here
 
 <CardGroup cols={2}>
-  <Card title="Quick Start" href="/getting-started/quick-start" icon="rocket">
-    Install the package and use your first semantic token.
-  </Card>
-  <Card
-    title="Installation"
-    href="/getting-started/installation"
-    icon="download"
-  >
+  <Card title="Installation" href="/getting-started/installation" icon="download">
     Add the token package and start using it in CSS, JSON, or build tools.
   </Card>
-  <Card
-    title="Primitive tokens"
-    href="/design-tokens/primitives/overview"
-    icon="palette"
-  >
-    Explore the raw color, typography, spacing, shape, motion, and layout scales.
+  <Card title="Primitive colors" href="/design-tokens/primitives/color" icon="palette">
+    Explore the raw color scales used to author semantic tokens.
   </Card>
 </CardGroup>
 
@@ -34,20 +23,16 @@ tools, and automation.
 
 <Steps>
   <Step title="Primitives">
-    Raw scales such as color ramps, spacing values, and type sizes. They define
-    the available palette but carry no UI intent.
+    Raw scales such as color ramps, spacing values, and type sizes. They define the available
+    palette but carry no UI intent.
   </Step>
   <Step title="Semantic tokens">
-    Intent-based aliases such as background, foreground, border, and status.
-    Use these for patterns that do not have a component token.
-  </Step>
-  <Step title="Component tokens">
-    Decisions scoped to a component and variant. Prefer these when styling an
-    existing component such as a button, input, card, badge, or alert.
+    Intent-based aliases such as background, foreground, border, and status. Use these for component
+    and product styling.
   </Step>
 </Steps>
 
 :::tip[Selection rule]
-Choose the most specific token available: component first, semantic second,
-primitive only when defining or extending the token system.
+Use semantic tokens whenever they express the intended role. Use a primitive
+only when no semantic contract fits.
 :::
