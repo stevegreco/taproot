@@ -7,63 +7,63 @@
 
     <!-- The only stylesheet the component needs. Every value it paints with
          comes from here, including the [data-theme="dark"] overrides. -->
-    <link rel="stylesheet" href="../node_modules/@stevegreco/design-system/dist/css/tokens.css" />
+    <link rel="stylesheet" href="/node_modules/@stevegreco/design-system/dist/css/tokens.css" />
 
     <script type="module" src="../src/index.js"></script>
 
     <style>
       body {
         margin: 0;
-        padding: 2rem;
+        padding: var(--primitives-space-8);
         background-color: var(--semantic-color-background-default);
         color: var(--semantic-color-foreground-default);
-        font-family: system-ui, sans-serif;
-        transition: background-color 220ms ease;
+        font-family: var(--primitives-font-sans);
+        transition: background-color var(--primitives-duration-base) var(--primitives-ease-out);
       }
       h1 {
-        margin: 0 0 0.5rem;
-        font-size: 1.875rem;
+        margin: 0 0 var(--primitives-space-2);
+        font-size: var(--primitives-text-2xl);
       }
       h2 {
-        margin: 2rem 0 0.75rem;
-        font-size: 0.875rem;
+        margin: var(--primitives-space-8) 0 var(--primitives-space-3);
+        font-size: var(--primitives-text-sm);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
+        letter-spacing: var(--primitives-tracking-caps);
         color: var(--semantic-color-foreground-muted);
       }
       p {
         margin: 0;
         color: var(--semantic-color-foreground-muted);
-        font-size: 0.875rem;
+        font-size: var(--primitives-text-sm);
       }
       .row {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 0.75rem;
+        gap: var(--primitives-space-3);
       }
       form {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 0.75rem;
-        padding: 1.5rem;
+        gap: var(--primitives-space-3);
+        padding: var(--primitives-space-6);
         background-color: var(--semantic-color-background-surface);
         border: 1px solid var(--semantic-color-border-subtle);
-        border-radius: 0.875rem;
+        border-radius: var(--semantic-radius-surface);
       }
       input {
-        padding: 0.75rem 1rem;
+        padding: var(--primitives-space-3) var(--primitives-space-4);
         background-color: var(--semantic-color-background-surface);
         border: 1px solid var(--semantic-color-border-default);
-        border-radius: 0.625rem;
+        border-radius: var(--semantic-radius-control);
         color: var(--semantic-color-foreground-default);
-        font: inherit;
-        font-size: 0.875rem;
+        font-family: var(--primitives-font-sans);
+        font-size: var(--primitives-text-sm);
       }
       output {
         color: var(--semantic-color-foreground-muted);
-        font-size: 0.875rem;
+        font-size: var(--primitives-text-sm);
       }
     </style>
   </head>
