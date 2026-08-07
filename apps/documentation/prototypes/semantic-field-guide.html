@@ -1,11 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <title>Semantic color field guide prototype</title>
+    <title>Semantic token field guide prototype</title>
+    <link rel="stylesheet" href="../../../packages/tokens/dist/css/tokens.css" />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Lora:wght@400;500&family=Source+Sans+3:wght@400;500&display=swap");
+
       :root {
         --page: #f6f7f7;
         --surface: #ffffff;
@@ -1293,6 +1296,211 @@
         line-height: 1.5;
       }
 
+      /* Typography lab */
+      .typography-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+      .typography-mode-note {
+        margin: 0;
+        color: var(--ink-faint);
+        font-size: 11px;
+      }
+      .typography-board {
+        padding: clamp(20px, 4vw, 42px);
+        border: var(--primitives-border-thin) solid var(--semantic-color-border-subtle);
+        border-radius: var(--semantic-radius-surface);
+        color: var(--semantic-color-foreground-default);
+        background: var(--semantic-color-background-default);
+        box-shadow: var(--semantic-elevation-md);
+        transition:
+          color var(--primitives-duration-base) var(--primitives-ease-soft),
+          background-color var(--primitives-duration-base) var(--primitives-ease-soft),
+          border-color var(--primitives-duration-base) var(--primitives-ease-soft);
+      }
+      .typography-specimen {
+        margin: 0;
+        color: inherit;
+      }
+      .type-heading-large {
+        font-family: var(--semantic-typography-heading-large-font-family);
+        font-size: var(--semantic-typography-heading-large-font-size);
+        font-weight: var(--semantic-typography-heading-large-font-weight);
+        line-height: var(--semantic-typography-heading-large-line-height);
+        letter-spacing: var(--semantic-typography-heading-large-letter-spacing);
+      }
+      .type-heading-default {
+        font-family: var(--semantic-typography-heading-default-font-family);
+        font-size: var(--semantic-typography-heading-default-font-size);
+        font-weight: var(--semantic-typography-heading-default-font-weight);
+        line-height: var(--semantic-typography-heading-default-line-height);
+        letter-spacing: var(--semantic-typography-heading-default-letter-spacing);
+      }
+      .type-heading-small {
+        font-family: var(--semantic-typography-heading-small-font-family);
+        font-size: var(--semantic-typography-heading-small-font-size);
+        font-weight: var(--semantic-typography-heading-small-font-weight);
+        line-height: var(--semantic-typography-heading-small-line-height);
+        letter-spacing: var(--semantic-typography-heading-small-letter-spacing);
+      }
+      .type-body-default {
+        font-family: var(--semantic-typography-body-default-font-family);
+        font-size: var(--semantic-typography-body-default-font-size);
+        font-weight: var(--semantic-typography-body-default-font-weight);
+        line-height: var(--semantic-typography-body-default-line-height);
+        letter-spacing: var(--semantic-typography-body-default-letter-spacing);
+      }
+      .type-body-small {
+        font-family: var(--semantic-typography-body-small-font-family);
+        font-size: var(--semantic-typography-body-small-font-size);
+        font-weight: var(--semantic-typography-body-small-font-weight);
+        line-height: var(--semantic-typography-body-small-line-height);
+        letter-spacing: var(--semantic-typography-body-small-letter-spacing);
+      }
+      .type-label-default {
+        font-family: var(--semantic-typography-label-default-font-family);
+        font-size: var(--semantic-typography-label-default-font-size);
+        font-weight: var(--semantic-typography-label-default-font-weight);
+        line-height: var(--semantic-typography-label-default-line-height);
+        letter-spacing: var(--semantic-typography-label-default-letter-spacing);
+      }
+      .type-label-small {
+        font-family: var(--semantic-typography-label-small-font-family);
+        font-size: var(--semantic-typography-label-small-font-size);
+        font-weight: var(--semantic-typography-label-small-font-weight);
+        line-height: var(--semantic-typography-label-small-line-height);
+        letter-spacing: var(--semantic-typography-label-small-letter-spacing);
+      }
+      .type-semantic-eyebrow {
+        font-family: var(--semantic-typography-eyebrow-font-family);
+        font-size: var(--semantic-typography-eyebrow-font-size);
+        font-weight: var(--semantic-typography-eyebrow-font-weight);
+        line-height: var(--semantic-typography-eyebrow-line-height);
+        letter-spacing: var(--semantic-typography-eyebrow-letter-spacing);
+        text-transform: uppercase;
+      }
+      .type-code-default {
+        font-family: var(--semantic-typography-code-default-font-family);
+        font-size: var(--semantic-typography-code-default-font-size);
+        font-weight: var(--semantic-typography-code-default-font-weight);
+        line-height: var(--semantic-typography-code-default-line-height);
+        letter-spacing: var(--semantic-typography-code-default-letter-spacing);
+      }
+      .type-code-small {
+        font-family: var(--semantic-typography-code-small-font-family);
+        font-size: var(--semantic-typography-code-small-font-size);
+        font-weight: var(--semantic-typography-code-small-font-weight);
+        line-height: var(--semantic-typography-code-small-line-height);
+        letter-spacing: var(--semantic-typography-code-small-letter-spacing);
+      }
+      .typography-context-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
+        gap: 18px;
+      }
+      .typography-context-card {
+        display: grid;
+        align-content: start;
+        gap: 14px;
+        padding: clamp(18px, 3vw, 30px);
+        border: var(--primitives-border-thin) solid var(--semantic-color-border-subtle);
+        border-radius: var(--semantic-radius-surface);
+        background: var(--semantic-color-background-surface);
+      }
+      .typography-context-card > * {
+        margin: 0;
+      }
+      .typography-context-card pre {
+        padding: 14px;
+        overflow: auto;
+        border: var(--primitives-border-thin) solid var(--semantic-color-border-subtle);
+        border-radius: var(--semantic-radius-control);
+        color: var(--semantic-color-foreground-default);
+        background: var(--semantic-color-background-sunken);
+      }
+      .typography-context-label {
+        color: var(--semantic-color-foreground-brand-default);
+      }
+      .typography-context-muted {
+        color: var(--semantic-color-foreground-muted);
+      }
+      .typography-action-row {
+        display: flex;
+        align-items: center;
+        gap: var(--primitives-space-3);
+        flex-wrap: wrap;
+      }
+      .typography-action {
+        padding: var(--primitives-space-2) var(--primitives-space-4);
+        border: var(--primitives-border-thin) solid var(--semantic-color-border-brand-muted);
+        border-radius: var(--semantic-radius-control);
+        color: var(--semantic-color-foreground-on-action-primary);
+        background: var(--semantic-color-background-action-primary-default);
+        cursor: pointer;
+      }
+      .typography-action:hover {
+        background: var(--semantic-color-background-action-primary-hover);
+      }
+      .typography-action:active {
+        background: var(--semantic-color-background-action-primary-pressed);
+      }
+      .typography-action:focus-visible {
+        outline-color: var(--semantic-color-border-focus);
+      }
+      .typography-reference {
+        margin-top: var(--primitives-space-8);
+        padding: clamp(18px, 3vw, 30px);
+        border: var(--primitives-border-thin) solid var(--semantic-color-border-subtle);
+        border-radius: var(--semantic-radius-surface);
+        background: var(--semantic-color-background-surface);
+      }
+      .typography-reference-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: var(--primitives-space-4);
+        margin-bottom: var(--primitives-space-6);
+      }
+      .typography-reference-header > * {
+        margin: 0;
+      }
+      .typography-recipe-list {
+        display: grid;
+        gap: 20px;
+      }
+      .typography-recipe {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.7fr) minmax(260px, 1.7fr);
+        align-items: baseline;
+        gap: 24px;
+        min-width: 0;
+      }
+      .typography-recipe-name {
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+      }
+      .typography-recipe-name b {
+        color: var(--semantic-color-foreground-default);
+        font-family: var(--semantic-typography-code-small-font-family);
+        font-size: var(--semantic-typography-code-small-font-size);
+        font-weight: var(--semantic-typography-code-small-font-weight);
+        line-height: var(--semantic-typography-code-small-line-height);
+        letter-spacing: var(--semantic-typography-code-small-letter-spacing);
+        overflow-wrap: anywhere;
+      }
+      .typography-recipe-name span {
+        color: var(--semantic-color-foreground-muted);
+        font-family: var(--semantic-typography-body-small-font-family);
+        font-size: var(--semantic-typography-body-small-font-size);
+        font-weight: var(--semantic-typography-body-small-font-weight);
+        line-height: var(--semantic-typography-body-small-line-height);
+        letter-spacing: var(--semantic-typography-body-small-letter-spacing);
+      }
+
       @media (max-width: 860px) {
         .tools {
           top: 8px;
@@ -1308,6 +1516,9 @@
         }
         .background-map {
           min-height: 0;
+        }
+        .typography-context-grid {
+          grid-template-columns: 1fr;
         }
       }
 
@@ -1410,6 +1621,24 @@
         .status-border-grid {
           grid-template-columns: 1fr;
         }
+        .typography-recipe {
+          grid-template-columns: 1fr;
+        }
+        .typography-recipe {
+          gap: 7px;
+        }
+        .typography-toolbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+        .typography-toolbar .segmented button {
+          flex: 1;
+          font-size: 11px;
+        }
+        .typography-reference-header {
+          align-items: start;
+          flex-direction: column;
+        }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -1438,6 +1667,9 @@
       <button type="button" data-prototype-button="border" aria-pressed="false">
         D · Border lab
       </button>
+      <button type="button" data-prototype-button="typography" aria-pressed="false">
+        E · Typography lab
+      </button>
     </nav>
 
     <section class="prototype active" data-prototype="guide" aria-label="Semantic color role guide">
@@ -1453,8 +1685,9 @@
           <p class="eyebrow">Semantic color field guide</p>
           <h1>Build the vocabulary one layer at a time.</h1>
           <p class="lede">
-            This prototype shows the accepted background, foreground, and border vocabulary. The
-            three labs put those colors into fills, readable content, and visible boundaries.
+            This prototype shows the accepted color vocabulary alongside the published typography
+            vocabulary. The four labs exercise fills, readable content, visible boundaries, and text
+            hierarchy.
           </p>
         </header>
 
@@ -1638,6 +1871,198 @@
           <section class="theme-column">
             <div class="theme-label"><b>Dark theme</b><span>accepted border values</span></div>
             <div class="border-board dark" data-border-board="dark"></div>
+          </section>
+        </div>
+      </main>
+    </section>
+
+    <section
+      class="prototype typography-lab"
+      data-prototype="typography"
+      aria-label="Semantic typography lab"
+    >
+      <main class="main lab-main">
+        <div class="topline">
+          <div class="breadcrumb">
+            Design tokens&nbsp; / &nbsp;Semantic&nbsp; / &nbsp;<b>Typography lab</b>
+          </div>
+          <div class="status">50 published tokens</div>
+        </div>
+
+        <header class="hero lab-hero">
+          <div>
+            <p class="eyebrow">Typography lab</p>
+            <h1>A cohesive voice in every mode.</h1>
+          </div>
+          <div>
+            <p class="lede">
+              Review all ten published recipes in product context and inspect the complete token
+              vocabulary beneath them.
+            </p>
+            <div class="lab-note">
+              Typography mappings are theme-independent. Switching modes changes semantic surfaces,
+              foregrounds, and elevation while every typographic role remains stable.
+            </div>
+          </div>
+        </header>
+
+        <div class="typography-toolbar">
+          <div class="segmented" role="group" aria-label="Preview typography color mode">
+            <button type="button" data-typography-theme-button="light" aria-pressed="true">
+              Light
+            </button>
+            <button type="button" data-typography-theme-button="dark" aria-pressed="false">
+              Dark
+            </button>
+          </div>
+          <p class="typography-mode-note" data-typography-mode-note aria-live="polite">
+            Light mode · typography mappings unchanged
+          </p>
+        </div>
+
+        <div class="typography-board">
+          <section class="typography-context-grid" aria-label="Typography in product context">
+            <article class="typography-context-card">
+              <p class="typography-context-label type-semantic-eyebrow">Design tokens</p>
+              <h2 class="typography-specimen type-heading-large">
+                A system should make the right choice feel natural.
+              </h2>
+              <p class="type-body-default">
+                Semantic typography gives recurring text roles a stable contract while allowing the
+                underlying scale to evolve. Consumers can use individual properties, but the recipe
+                remains the cohesive unit.
+              </p>
+              <div class="typography-action-row">
+                <button class="typography-action type-label-default" type="button">
+                  Explore tokens
+                </button>
+                <span class="typography-context-muted type-label-small"
+                  >Published in CSS and JSON</span
+                >
+              </div>
+              <p class="typography-context-muted type-body-small">
+                Updated August 2026 · 4 minute read
+              </p>
+            </article>
+            <aside class="typography-context-card">
+              <h2 class="typography-specimen type-heading-small">Token anatomy</h2>
+              <p class="type-body-small">
+                Each recipe publishes five independently consumable leaves.
+              </p>
+              <pre class="type-code-small"><code>semantic.typography
+  .body.default
+  .fontFamily
+  .fontSize
+  .fontWeight
+  .lineHeight
+  .letterSpacing</code></pre>
+              <p class="type-label-default">Cohesive by default</p>
+              <p class="type-body-small">
+                Mixing leaves is possible, but the consumer owns the visual risk.
+              </p>
+              <p class="type-body-default">
+                Use <code class="type-code-small">body.default</code> for ordinary product copy.
+              </p>
+            </aside>
+          </section>
+
+          <section class="typography-reference" aria-label="All published typography recipes">
+            <header class="typography-reference-header">
+              <h2 class="type-heading-default">Published recipes</h2>
+              <p class="typography-context-muted type-label-small">10 recipes · 50 leaf tokens</p>
+            </header>
+            <div class="typography-recipe-list">
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.heading.large.*</b
+                  ><span>Lora · 30 / tight · medium · tight</span>
+                </div>
+                <p class="typography-specimen type-heading-large" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.heading.default.*</b
+                  ><span>Lora · 24 / snug · medium · snug</span>
+                </div>
+                <p class="typography-specimen type-heading-default" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.heading.small.*</b
+                  ><span>Lora · 20 / snug · medium · snug</span>
+                </div>
+                <p class="typography-specimen type-heading-small" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.body.default.*</b
+                  ><span>Source Sans 3 · 16 / normal · regular · normal</span>
+                </div>
+                <p class="typography-specimen type-body-default" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.body.small.*</b
+                  ><span>Source Sans 3 · 14 / normal · regular · normal</span>
+                </div>
+                <p class="typography-specimen type-body-small" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.label.default.*</b
+                  ><span>Source Sans 3 · 14 / snug · medium · normal</span>
+                </div>
+                <p class="typography-specimen type-label-default" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.label.small.*</b
+                  ><span>Source Sans 3 · 12 / snug · medium · normal</span>
+                </div>
+                <p class="typography-specimen type-label-small" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.eyebrow.*</b
+                  ><span>Source Sans 3 · 12 / snug · medium · caps</span>
+                </div>
+                <p class="typography-specimen type-semantic-eyebrow" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.code.default.*</b
+                  ><span>JetBrains Mono · 14 / normal · regular · normal</span>
+                </div>
+                <p class="typography-specimen type-code-default" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+              <div class="typography-recipe">
+                <div class="typography-recipe-name">
+                  <b>semantic.typography.code.small.*</b
+                  ><span>JetBrains Mono · 12 / normal · regular · normal</span>
+                </div>
+                <p class="typography-specimen type-code-small" data-typography-sample>
+                  Make structure visible without shouting.
+                </p>
+              </div>
+            </div>
           </section>
         </div>
       </main>
@@ -2075,6 +2500,18 @@
           document
             .querySelectorAll("[data-border-size-button]")
             .forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+        });
+      });
+
+      const typographyModeNote = document.querySelector("[data-typography-mode-note]");
+      document.querySelectorAll("[data-typography-theme-button]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const theme = button.dataset.typographyThemeButton;
+          document.documentElement.dataset.theme = theme;
+          document
+            .querySelectorAll("[data-typography-theme-button]")
+            .forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+          typographyModeNote.textContent = `${theme === "light" ? "Light" : "Dark"} mode · typography mappings unchanged`;
         });
       });
 
