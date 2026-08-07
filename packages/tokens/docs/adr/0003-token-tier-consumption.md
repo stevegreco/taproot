@@ -29,8 +29,8 @@ semantic tokens directly.
 ### Primitive use is allowed when it is honest
 
 A component may consume a primitive directly when the semantic vocabulary has no matching role,
-such as spacing, typography, or motion scale choices. Never reference a primitive when a semantic
-token already expresses the same intent.
+such as spacing or motion scale choices. Never reference a primitive when a semantic token already
+expresses the same intent.
 
 ## Example
 

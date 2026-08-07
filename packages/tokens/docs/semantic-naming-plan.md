@@ -174,7 +174,7 @@ not be inferred from the current foreground roles.
 ## Border
 
 Border tokens are used for visible boundaries: borders, dividers, outlines, and focus indicators.
-The working vocabulary contains ten roles. It distinguishes functional boundaries, which must remain
+The working vocabulary contains thirteen roles. It distinguishes functional boundaries, which must remain
 perceivable, from decorative boundaries, which may be quieter but cannot be the only visual cue.
 
 ### Foundation
@@ -210,6 +210,21 @@ strong, subtle, and disabled in the light theme; the dark theme uses `gray.400`,
 serves. It is decorative and must not be the sole boundary of an interactive control. The light
 theme maps it to `robRoy.200`; the dark theme maps it to `robRoy.800`.
 
+### Actions
+
+| Proposed token                                 | Purpose                              |
+| ---------------------------------------------- | ------------------------------------ |
+| `semantic.color.border.action.primary.default` | Primary action boundary at rest      |
+| `semantic.color.border.action.primary.hover`   | Primary action boundary on hover     |
+| `semantic.color.border.action.primary.pressed` | Primary action boundary when pressed |
+
+Primary action borders match their corresponding `background.action.primary` values so a filled
+control has one visually unified surface. The light theme maps default, hover, and pressed to
+`robRoy.700`, `robRoy.800`, and `robRoy.900`; the dark theme maps them to `robRoy.400`,
+`robRoy.300`, and `robRoy.200`. Separate border contracts preserve the application boundary while
+allowing the border role to evolve independently later. Each state must retain 3:1 non-text
+contrast against every supported foundation background.
+
 ### Status
 
 Status borders communicate an outcome or condition through the boundary itself. Their default roles
@@ -229,8 +244,8 @@ foundation backgrounds.
 
 ### Deferred border roles
 
-- Action-specific borders, including primary and secondary action families.
-- Interaction states such as hover and pressed. Add a state only when the border itself changes.
+- Secondary action borders.
+- Additional interaction states. Add a state only when the border itself changes.
 - Additional brand or status variants.
 - Separate divider, outline, inverse, or selected roles. The accepted foundation and intent roles
   cover the current vocabulary.
@@ -244,7 +259,130 @@ literal implementation value rather than a semantic color role.
 
 ## Typography
 
-**WIP:** To discuss.
+Typography tokens describe complete, reusable text roles rather than independent public property
+scales:
+
+```text
+semantic.typography.<role>[.<variant>].<property>
+```
+
+The published vocabulary contains ten recipes across `heading`, `body`, `label`, `eyebrow`, and
+`code`. A role uses `large`, `default`, or `small` only when it needs more than one supported
+expression. `default` is explicit whenever siblings exist; a single-expression role such as
+`eyebrow` has no redundant variant segment.
+
+### Recipe contract
+
+Every recipe publishes five atomic leaf tokens beneath the same path:
+
+- `fontFamily`;
+- `fontSize`;
+- `fontWeight`;
+- `lineHeight`; and
+- `letterSpacing`.
+
+For example, the `body.default` contract is:
+
+```text
+semantic.typography.body.default.fontFamily
+semantic.typography.body.default.fontSize
+semantic.typography.body.default.fontWeight
+semantic.typography.body.default.lineHeight
+semantic.typography.body.default.letterSpacing
+```
+
+The shared `body.default` path is the recipe; the five leaves are the published tokens. Consumers
+can address a leaf individually, and future composite tokens, utilities, or components may apply a
+complete recipe as a convenience. System cohesion is guaranteed only when all five properties come
+from the same recipe. A consumer that mixes leaves from different recipes owns the risk that later
+remapping causes those values to drift apart.
+
+Recipes remain complete even when values repeat. Every `body.*` recipe publishes its own
+`fontFamily` leaf rather than inheriting a shared family token. This keeps each recipe portable and
+allows its five properties to evolve as one contract.
+
+Primitive typography values are implementation inputs, not the intended public API. The target
+distribution will keep primitives private while semantic leaves alias them internally. A missing
+recurring use case should produce a deliberate semantic recipe or component contract rather than
+requiring consumers to depend on a primitive path.
+
+### Published vocabulary
+
+| Semantic recipe                       | Purpose                                                   | Family    | Size   | Weight    | Line height | Tracking |
+| ------------------------------------- | --------------------------------------------------------- | --------- | ------ | --------- | ----------- | -------- |
+| `semantic.typography.heading.large`   | Primary page and major region headings                    | `display` | `2xl`  | `medium`  | `tight`     | `tight`  |
+| `semantic.typography.heading.default` | Standard section and card headings                        | `display` | `xl`   | `medium`  | `snug`      | `snug`   |
+| `semantic.typography.heading.small`   | Compact headings within dense surfaces                    | `display` | `lg`   | `medium`  | `snug`      | `snug`   |
+| `semantic.typography.body.default`    | Default interface copy and prose                          | `sans`    | `base` | `regular` | `normal`    | `normal` |
+| `semantic.typography.body.small`      | Supporting copy, descriptions, and compact interface text | `sans`    | `sm`   | `regular` | `normal`    | `normal` |
+| `semantic.typography.label.default`   | Control labels, buttons, tabs, and prominent metadata     | `sans`    | `sm`   | `medium`  | `snug`      | `normal` |
+| `semantic.typography.label.small`     | Badges, compact metadata, and space-constrained labels    | `sans`    | `xs`   | `medium`  | `snug`      | `normal` |
+| `semantic.typography.eyebrow`         | Short contextual text that introduces a following heading | `sans`    | `xs`   | `medium`  | `snug`      | `caps`   |
+| `semantic.typography.code.default`    | Code blocks and technical values                          | `mono`    | `sm`   | `regular` | `normal`    | `normal` |
+| `semantic.typography.code.small`      | Inline code and compact technical metadata                | `mono`    | `xs`   | `regular` | `normal`    | `normal` |
+
+The values in the table are primitive suffixes. For example, the complete `eyebrow` recipe maps to
+`primitives.font.sans`, `primitives.text.xs`, `primitives.weight.medium`,
+`primitives.leading.snug`, and `primitives.tracking.caps` internally.
+
+All heading recipes use the display family, currently Lora. Family is part of their semantic
+distinction, so a compact heading does not switch to the sans family merely because its size is
+closer to body text. Body and label use Source Sans 3; code uses JetBrains Mono.
+
+### Typography and foreground composition
+
+Color is not part of a typography recipe. Typographic role and content color are independent axes,
+and combining them at the semantic leaf level would multiply the vocabulary for every muted,
+disabled, brand, status, and explicit background-pairing case. Components and higher-level text
+styles may combine the two contracts:
+
+```text
+semantic.typography.body.small + semantic.color.foreground.muted
+semantic.typography.body.small + semantic.color.foreground.status.danger.default
+semantic.typography.label.default + semantic.color.foreground.on.action.primary
+semantic.typography.eyebrow + semantic.color.foreground.brand.default
+```
+
+Foreground semantics continue to own contrast requirements and supported background pairings.
+Typography recipes are theme-independent and keep identical mappings in light and dark themes.
+
+### Fixed text behavior
+
+The five-leaf recipe does not include `text-transform`, text decoration, alignment, wrapping, or
+truncation. These are application behaviors rather than independently customizable typography
+values. A composite eyebrow style is expected to apply `text-transform: uppercase` alongside the
+five `typography.eyebrow.*` leaves; source text can remain normally capitalized. Link underlines and
+other decorations belong to the relevant style or component, while native elements such as `del`
+continue to carry content semantics.
+
+`eyebrow` names contextual text that precedes and introduces a heading. It does not participate in
+the HTML heading hierarchy itself. The following heading remains an appropriate `h1`–`h6`, and its
+visual recipe is chosen independently from its document level.
+
+### Application rules
+
+- Choose a recipe from the text's purpose, not from the primitive value it currently resolves to.
+- Use all five leaves from one recipe for the cohesive, supported result. Individual leaves remain
+  available for intentional composition, with the compatibility risk owned by the consumer.
+- HTML heading levels express document structure; `heading.large`, `.default`, and `.small` express
+  visual hierarchy and do not map directly to `h1`, `h2`, and `h3`.
+- Responsive typography is a consumer composition concern. A consumer may switch from one complete
+  semantic recipe to another at a breakpoint, but responsive behavior is not encoded in token
+  names.
+- Component names such as `button` and `badge` belong in the component tier, not the semantic
+  typography vocabulary.
+
+### Deferred typography roles
+
+- Display or hero typography beyond the accepted heading hierarchy.
+- Additional heading, body, label, eyebrow, or code variants.
+- Link, quote, numeric, and data-visualization roles.
+- Emphasized body or label variants. Use native emphasis semantics and inheritance unless a repeated
+  visual contract emerges.
+- Component-specific typography outside a component's published contract.
+
+Add a role or variant only when a shipped consumer demonstrates that its typography must move as a
+stable unit across the system.
 
 ## Size
 
