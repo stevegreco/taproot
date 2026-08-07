@@ -54,6 +54,15 @@ describe("DsBadge", () => {
     }
 
     expect(styles).toContain("--semantic-color-background-brand-muted");
+    for (const property of [
+      "font-family",
+      "font-size",
+      "font-weight",
+      "line-height",
+      "letter-spacing",
+    ]) {
+      expect(styles).toContain(`--semantic-typography-label-small-${property}`);
+    }
     expect(styles).not.toContain("--component-");
   });
 

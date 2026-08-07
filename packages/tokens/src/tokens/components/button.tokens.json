@@ -17,9 +17,23 @@
       },
       "gap": { "$value": "{primitives.space.2}", "$type": "dimension" },
       "font": {
-        "family": { "$value": "{primitives.font.sans}", "$type": "fontFamily" },
-        "size": { "$value": "{primitives.text.sm}", "$type": "dimension" },
-        "weight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" }
+        "family": {
+          "$value": "{semantic.typography.label.default.fontFamily}",
+          "$type": "fontFamily"
+        },
+        "size": { "$value": "{semantic.typography.label.default.fontSize}", "$type": "dimension" },
+        "weight": {
+          "$value": "{semantic.typography.label.default.fontWeight}",
+          "$type": "fontWeight"
+        },
+        "lineHeight": {
+          "$value": "{semantic.typography.label.default.lineHeight}",
+          "$type": "number"
+        },
+        "letterSpacing": {
+          "$value": "{semantic.typography.label.default.letterSpacing}",
+          "$type": "dimension"
+        }
       },
       "motion": {
         "duration": { "$value": "{primitives.duration.fast}", "$type": "duration" },
@@ -30,17 +44,40 @@
       },
       "primary": {
         "background": {
-          "default": { "$value": "{semantic.color.background.action.primary.default}", "$type": "color" },
-          "hover": { "$value": "{semantic.color.background.action.primary.hover}", "$type": "color" },
-          "pressed": { "$value": "{semantic.color.background.action.primary.pressed}", "$type": "color" },
+          "default": {
+            "$value": "{semantic.color.background.action.primary.default}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{semantic.color.background.action.primary.hover}",
+            "$type": "color"
+          },
+          "pressed": {
+            "$value": "{semantic.color.background.action.primary.pressed}",
+            "$type": "color"
+          },
           "disabled": { "$value": "{semantic.color.background.disabled}", "$type": "color" }
         },
         "foreground": {
-          "default": { "$value": "{semantic.color.foreground.on.action.primary}", "$type": "color" },
+          "default": {
+            "$value": "{semantic.color.foreground.on.action.primary}",
+            "$type": "color"
+          },
           "disabled": { "$value": "{semantic.color.foreground.disabled}", "$type": "color" }
         },
         "border": {
-          "default": { "$value": "{semantic.color.border.brand.muted}", "$type": "color" },
+          "default": {
+            "$value": "{semantic.color.border.action.primary.default}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{semantic.color.border.action.primary.hover}",
+            "$type": "color"
+          },
+          "pressed": {
+            "$value": "{semantic.color.border.action.primary.pressed}",
+            "$type": "color"
+          },
           "disabled": { "$value": "{semantic.color.border.disabled}", "$type": "color" }
         }
       },
@@ -70,17 +107,32 @@
       },
       "danger": {
         "background": {
-          "default": { "$value": "{semantic.color.background.status.danger.default}", "$type": "color" },
-          "hover": { "$value": "{semantic.color.background.status.danger.default}", "$type": "color" },
-          "pressed": { "$value": "{semantic.color.background.status.danger.default}", "$type": "color" },
+          "default": {
+            "$value": "{semantic.color.background.status.danger.default}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{semantic.color.background.status.danger.default}",
+            "$type": "color"
+          },
+          "pressed": {
+            "$value": "{semantic.color.background.status.danger.default}",
+            "$type": "color"
+          },
           "disabled": { "$value": "{semantic.color.background.disabled}", "$type": "color" }
         },
         "foreground": {
-          "default": { "$value": "{semantic.color.foreground.status.danger.default}", "$type": "color" },
+          "default": {
+            "$value": "{semantic.color.foreground.status.danger.default}",
+            "$type": "color"
+          },
           "disabled": { "$value": "{semantic.color.foreground.disabled}", "$type": "color" }
         },
         "border": {
-          "default": { "$value": "{semantic.color.border.status.danger.default}", "$type": "color" },
+          "default": {
+            "$value": "{semantic.color.border.status.danger.default}",
+            "$type": "color"
+          },
           "disabled": { "$value": "{semantic.color.border.disabled}", "$type": "color" }
         }
       }

@@ -36,6 +36,7 @@ export function semanticConfig(theme) {
       "src/tokens/primitives.tokens.json",
       `src/tokens/semantic/${theme}.tokens.json`,
       "src/tokens/semantic/shape.tokens.json",
+      "src/tokens/semantic/typography.tokens.json",
     ],
     platforms: {
       css: {
@@ -71,6 +72,7 @@ const componentSources = [
   "src/tokens/primitives.tokens.json",
   "src/tokens/semantic/light.tokens.json",
   "src/tokens/semantic/shape.tokens.json",
+  "src/tokens/semantic/typography.tokens.json",
   "src/tokens/components/*.tokens.json",
 ];
 

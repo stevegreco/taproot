@@ -34,6 +34,7 @@ export function sourceFiles() {
     join(ROOT, "src/tokens/semantic/light.tokens.json"),
     join(ROOT, "src/tokens/semantic/dark.tokens.json"),
     join(ROOT, "src/tokens/semantic/shape.tokens.json"),
+    join(ROOT, "src/tokens/semantic/typography.tokens.json"),
   ];
   try {
     const components = readdirSync(join(ROOT, "src/tokens/components"))

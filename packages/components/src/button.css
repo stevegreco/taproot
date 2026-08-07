@@ -17,6 +17,8 @@
   --_foreground: var(--component-button-primary-foreground-default);
   --_foreground-disabled: var(--component-button-primary-foreground-disabled);
   --_border: var(--component-button-primary-border-default);
+  --_border-hover: var(--component-button-primary-border-hover);
+  --_border-press: var(--component-button-primary-border-pressed);
   --_border-disabled: var(--component-button-primary-border-disabled);
 
   /* Metrics. Remapped by size / pill. */
@@ -44,6 +46,8 @@
   --_foreground: var(--component-button-secondary-foreground-default);
   --_foreground-disabled: var(--component-button-secondary-foreground-disabled);
   --_border: var(--component-button-secondary-border-default);
+  --_border-hover: var(--component-button-secondary-border-default);
+  --_border-press: var(--component-button-secondary-border-default);
   --_border-disabled: var(--component-button-secondary-border-disabled);
 }
 
@@ -55,6 +59,8 @@
   --_foreground: var(--component-button-ghost-foreground-default);
   --_foreground-disabled: var(--component-button-ghost-foreground-disabled);
   --_border: transparent;
+  --_border-hover: transparent;
+  --_border-press: transparent;
   --_border-disabled: transparent;
 }
 
@@ -66,6 +72,8 @@
   --_foreground: var(--component-button-danger-foreground-default);
   --_foreground-disabled: var(--component-button-danger-foreground-disabled);
   --_border: var(--component-button-danger-border-default);
+  --_border-hover: var(--component-button-danger-border-default);
+  --_border-press: var(--component-button-danger-border-default);
   --_border-disabled: var(--component-button-danger-border-disabled);
 }
 
@@ -93,7 +101,8 @@
   font-family: var(--component-button-font-family);
   font-size: var(--component-button-font-size);
   font-weight: var(--component-button-font-weight);
-  line-height: 1.25;
+  line-height: var(--component-button-font-line-height);
+  letter-spacing: var(--component-button-font-letter-spacing);
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
@@ -126,10 +135,12 @@ slot {
 
 .button:hover:not(:disabled) {
   background-color: var(--_background-hover);
+  border-color: var(--_border-hover);
 }
 
 .button:active:not(:disabled) {
   background-color: var(--_background-press);
+  border-color: var(--_border-press);
 }
 
 .button:focus-visible {

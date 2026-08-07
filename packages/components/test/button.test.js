@@ -122,4 +122,11 @@ describe("DsButton", () => {
     expect(styles).not.toContain("var(--semantic-");
     expect(styles).not.toContain("var(--primitives-");
   });
+
+  test("keeps primary borders aligned with interactive backgrounds", () => {
+    expect(styles).toContain("--_border-hover: var(--component-button-primary-border-hover)");
+    expect(styles).toContain("--_border-press: var(--component-button-primary-border-pressed)");
+    expect(styles).toContain("border-color: var(--_border-hover)");
+    expect(styles).toContain("border-color: var(--_border-press)");
+  });
 });

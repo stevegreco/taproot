@@ -53,6 +53,13 @@
         "subtle": { "$value": "{primitives.color.gray.200}", "$type": "color" },
         "disabled": { "$value": "{primitives.color.gray.300}", "$type": "color" },
         "focus": { "$value": "{primitives.color.robRoy.700}", "$type": "color" },
+        "action": {
+          "primary": {
+            "default": { "$value": "{primitives.color.robRoy.700}", "$type": "color" },
+            "hover": { "$value": "{primitives.color.robRoy.800}", "$type": "color" },
+            "pressed": { "$value": "{primitives.color.robRoy.900}", "$type": "color" }
+          }
+        },
         "brand": {
           "muted": { "$value": "{primitives.color.robRoy.200}", "$type": "color" }
         },

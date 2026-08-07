@@ -47,6 +47,20 @@ const PAIRS = [
   ["color.border.default", "color.background.surface", NON_TEXT, "border vs surface"],
   ["color.border.strong", "color.background.default", NON_TEXT, "strong border vs page"],
   ["color.border.focus", "color.background.default", NON_TEXT, "focus border vs page"],
+  ...["default", "hover", "pressed"].flatMap((state) => [
+    [
+      `color.border.action.primary.${state}`,
+      "color.background.default",
+      NON_TEXT,
+      `primary action ${state} border vs page`,
+    ],
+    [
+      `color.border.action.primary.${state}`,
+      "color.background.surface",
+      NON_TEXT,
+      `primary action ${state} border vs surface`,
+    ],
+  ]),
 
   // Quiet status surfaces and their explicit content/border roles
   ...["success", "danger", "warning", "info"].flatMap((s) => [
