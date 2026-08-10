@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Tertiary action state prototypes</title>
+    <link rel="stylesheet" href="../../../packages/tokens/dist/css/tokens.css" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600&display=swap");
+
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        font-family: var(--semantic-typography-body-default-font-family, "Source Sans 3", sans-serif);
+        color: var(--semantic-color-foreground-default);
+        background: var(--semantic-color-background-default);
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .prototype-toolbar {
+        position: fixed;
+        z-index: 100;
+        top: 16px;
+        left: 50%;
+        display: flex;
+        gap: 4px;
+        padding: 5px;
+        border: 1px solid var(--semantic-color-border-subtle);
+        border-radius: var(--semantic-radius-pill);
+        background: color-mix(
+          in srgb,
+          var(--semantic-color-background-surface) 92%,
+          transparent
+        );
+        box-shadow: var(--semantic-elevation-md);
+        backdrop-filter: blur(14px);
+        transform: translateX(-50%);
+      }
+
+      .prototype-toolbar button {
+        min-height: 34px;
+        padding: 0 13px;
+        border: 0;
+        border-radius: var(--semantic-radius-pill);
+        color: var(--semantic-color-foreground-muted);
+        background: transparent;
+        font-family: var(--semantic-typography-label-small-font-family);
+        font-size: var(--semantic-typography-label-small-font-size);
+        font-weight: var(--semantic-typography-label-small-font-weight);
+        cursor: pointer;
+      }
+
+      .prototype-toolbar button[aria-pressed="true"] {
+        color: var(--semantic-color-foreground-on-action-primary);
+        background: var(--semantic-color-background-action-primary-default);
+      }
+
+      .toolbar-divider {
+        width: 1px;
+        margin: 6px 2px;
+        background: var(--semantic-color-border-subtle);
+      }
+
+      .variant {
+        display: none;
+        min-height: 100vh;
+        padding: 92px clamp(18px, 4vw, 64px) 48px;
+      }
+
+      .variant[data-active="true"] {
+        display: block;
+      }
+
+      .variant-a {
+        --option-hover: color-mix(
+          in srgb,
+          var(--primitives-color-gray-950) 5%,
+          transparent
+        );
+        --option-pressed: color-mix(
+          in srgb,
+          var(--primitives-color-gray-950) 9%,
+          transparent
+        );
+      }
+
+      .variant-b {
+        --option-hover: var(--primitives-color-gray-25);
+        --option-pressed: var(--primitives-color-gray-50);
+      }
+
+      .variant-c {
+        --option-hover: color-mix(
+          in srgb,
+          var(--primitives-color-rob-roy-700) 8%,
+          transparent
+        );
+        --option-pressed: color-mix(
+          in srgb,
+          var(--primitives-color-rob-roy-700) 14%,
+          transparent
+        );
+      }
+
+      :root[data-theme="dark"] .variant-a {
+        --option-hover: color-mix(
+          in srgb,
+          var(--primitives-color-gray-25) 6%,
+          transparent
+        );
+        --option-pressed: color-mix(
+          in srgb,
+          var(--primitives-color-gray-25) 10%,
+          transparent
+        );
+      }
+
+      :root[data-theme="dark"] .variant-b {
+        --option-hover: var(--primitives-color-gray-900);
+        --option-pressed: var(--primitives-color-gray-800);
+      }
+
+      :root[data-theme="dark"] .variant-c {
+        --option-hover: color-mix(
+          in srgb,
+          var(--primitives-color-rob-roy-400) 10%,
+          transparent
+        );
+        --option-pressed: color-mix(
+          in srgb,
+          var(--primitives-color-rob-roy-400) 16%,
+          transparent
+        );
+      }
+
+      .intro {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 0.6fr);
+        gap: clamp(24px, 5vw, 72px);
+        align-items: end;
+        max-width: 1280px;
+        margin: 0 auto 36px;
+      }
+
+      .kicker,
+      .state-label,
+      .surface-token {
+        font-family: var(--semantic-typography-code-small-font-family);
+        font-size: var(--semantic-typography-code-small-font-size);
+        letter-spacing: var(--semantic-typography-code-small-letter-spacing);
+      }
+
+      .kicker {
+        margin: 0 0 8px;
+        color: var(--semantic-color-foreground-brand-default);
+      }
+
+      h1 {
+        max-width: 760px;
+        margin: 0;
+        font-family: var(--semantic-typography-heading-large-font-family);
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: var(--semantic-typography-heading-large-font-weight);
+        line-height: 1.05;
+        letter-spacing: var(--semantic-typography-heading-large-letter-spacing);
+      }
+
+      .summary {
+        margin: 0;
+        color: var(--semantic-color-foreground-muted);
+        font-size: var(--semantic-typography-body-small-font-size);
+        line-height: var(--semantic-typography-body-small-line-height);
+      }
+
+      .surface-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+        gap: 14px;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      .surface {
+        min-width: 0;
+        padding: 22px;
+        border: 1px solid var(--semantic-color-border-subtle);
+        border-radius: var(--semantic-radius-surface);
+        color: var(--semantic-color-foreground-default);
+      }
+
+      .surface-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .surface h2 {
+        margin: 0;
+        font-family: var(--semantic-typography-heading-small-font-family);
+        font-size: var(--semantic-typography-heading-small-font-size);
+        font-weight: var(--semantic-typography-heading-small-font-weight);
+        line-height: var(--semantic-typography-heading-small-line-height);
+      }
+
+      .surface-token {
+        color: var(--semantic-color-foreground-muted);
+        overflow-wrap: anywhere;
+        text-align: right;
+      }
+
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 12px;
+      }
+
+      .state {
+        display: grid;
+        gap: 7px;
+        justify-items: start;
+      }
+
+      .state-label {
+        color: var(--semantic-color-foreground-muted);
+      }
+
+      .tertiary-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--component-button-gap);
+        margin: 0;
+        padding: var(--component-button-size-medium-padding-block)
+          var(--component-button-size-medium-padding-inline);
+        border: 1px solid transparent;
+        border-radius: var(--component-button-radius);
+        color: var(--component-button-ghost-foreground-default);
+        background: transparent;
+        font-family: var(--component-button-font-family);
+        font-size: var(--component-button-font-size);
+        font-weight: var(--component-button-font-weight);
+        line-height: var(--component-button-font-line-height);
+        letter-spacing: var(--component-button-font-letter-spacing);
+        white-space: nowrap;
+        cursor: pointer;
+        appearance: none;
+        transition: background-color var(--component-button-motion-duration)
+          var(--component-button-motion-easing);
+      }
+
+      .tertiary-button.force-hover,
+      .tertiary-button.interactive:hover {
+        background-color: var(--option-hover);
+      }
+
+      .tertiary-button.force-pressed,
+      .tertiary-button.interactive:active {
+        background-color: var(--option-pressed);
+      }
+
+      .tertiary-button:focus-visible {
+        outline: 2px solid var(--component-button-focus-border);
+        outline-offset: 2px;
+      }
+
+      .surface-default {
+        background: var(--semantic-color-background-default);
+      }
+
+      .surface-surface {
+        background: var(--semantic-color-background-surface);
+      }
+
+      .surface-sunken {
+        background: var(--semantic-color-background-sunken);
+      }
+
+      .surface-muted {
+        background: var(--semantic-color-background-muted);
+      }
+
+      .surface-brand {
+        background: var(--semantic-color-background-brand-muted);
+      }
+
+      .surface-success {
+        background: var(--semantic-color-background-status-success-default);
+      }
+
+      .surface-warning {
+        background: var(--semantic-color-background-status-warning-default);
+      }
+
+      .surface-info {
+        background: var(--semantic-color-background-status-info-default);
+      }
+
+      .surface-danger {
+        background: var(--semantic-color-background-status-danger-default);
+      }
+
+      @media (max-width: 720px) {
+        .prototype-toolbar {
+          top: 8px;
+          max-width: calc(100vw - 16px);
+          overflow-x: auto;
+        }
+
+        .prototype-toolbar button {
+          flex: none;
+        }
+
+        .variant {
+          padding-top: 78px;
+        }
+
+        .intro {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+
+        .surface-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="prototype-toolbar" aria-label="Prototype options">
+      <button type="button" data-variant-button="a" aria-pressed="true">A · Neutral</button>
+      <button type="button" data-variant-button="b" aria-pressed="false">B · Opaque</button>
+      <button type="button" data-variant-button="c" aria-pressed="false">C · Brand</button>
+      <span class="toolbar-divider" aria-hidden="true"></span>
+      <button type="button" data-theme-button="light" aria-pressed="true">Light</button>
+      <button type="button" data-theme-button="dark" aria-pressed="false">Dark</button>
+    </nav>
+
+    <main id="prototype-root"></main>
+
+    <script>
+      const variants = [
+        {
+          id: "a",
+          name: "Neutral overlay",
+          summary:
+            "Keep the resting state transparent, then overlay gray.950 at 5% and 9% in light mode or gray.25 at 6% and 10% in dark mode. This preserves the character of every underlying surface.",
+        },
+        {
+          id: "b",
+          name: "Opaque gray states",
+          summary:
+            "Keep the resting state transparent, then use solid gray.25 and gray.50 in light mode or gray.900 and gray.800 in dark mode. This shares the secondary palette but introduces it only during interaction.",
+        },
+        {
+          id: "c",
+          name: "Brand overlay",
+          summary:
+            "Keep the resting state transparent, then tint interaction with low-opacity Rob Roy primitives. This makes tertiary controls feel actionable without giving them primary emphasis.",
+        },
+      ];
+
+      const surfaces = [
+        ["Default", "background.default", "surface-default"],
+        ["Surface", "background.surface", "surface-surface"],
+        ["Sunken", "background.sunken", "surface-sunken"],
+        ["Muted", "background.muted", "surface-muted"],
+        ["Brand muted", "background.brand.muted", "surface-brand"],
+        ["Success", "background.status.success.default", "surface-success"],
+        ["Warning", "background.status.warning.default", "surface-warning"],
+        ["Info", "background.status.info.default", "surface-info"],
+        ["Danger", "background.status.danger.default", "surface-danger"],
+      ];
+
+      const stateMarkup = `
+        <div class="state">
+          <span class="state-label">Default</span>
+          <button class="tertiary-button" type="button">Tertiary</button>
+        </div>
+        <div class="state">
+          <span class="state-label">Hover</span>
+          <button class="tertiary-button force-hover" type="button">Tertiary</button>
+        </div>
+        <div class="state">
+          <span class="state-label">Pressed</span>
+          <button class="tertiary-button force-pressed" type="button">Tertiary</button>
+        </div>
+        <div class="state">
+          <span class="state-label">Interactive</span>
+          <button class="tertiary-button interactive" type="button">Try it</button>
+        </div>
+      `;
+
+      document.querySelector("#prototype-root").innerHTML = variants
+        .map(
+          (variant, index) => `
+            <section class="variant variant-${variant.id}" data-variant="${variant.id}" data-active="${index === 0}">
+              <header class="intro">
+                <div>
+                  <p class="kicker">Option ${variant.id.toUpperCase()} · Tertiary action</p>
+                  <h1>${variant.name}</h1>
+                </div>
+                <p class="summary">${variant.summary}</p>
+              </header>
+              <div class="surface-grid">
+                ${surfaces
+                  .map(
+                    ([name, token, className]) => `
+                      <article class="surface ${className}">
+                        <div class="surface-header">
+                          <h2>${name}</h2>
+                          <span class="surface-token">${token}</span>
+                        </div>
+                        <div class="state-grid">${stateMarkup}</div>
+                      </article>
+                    `,
+                  )
+                  .join("")}
+              </div>
+            </section>
+          `,
+        )
+        .join("");
+
+      document.querySelectorAll("[data-variant-button]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.variantButton;
+          document
+            .querySelectorAll("[data-variant-button]")
+            .forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+          document
+            .querySelectorAll("[data-variant]")
+            .forEach((variant) => (variant.dataset.active = String(variant.dataset.variant === id)));
+        });
+      });
+
+      document.querySelectorAll("[data-theme-button]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const theme = button.dataset.themeButton;
+          document.documentElement.dataset.theme = theme;
+          document
+            .querySelectorAll("[data-theme-button]")
+            .forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+        });
+      });
+    </script>
+  </body>
+</html>
