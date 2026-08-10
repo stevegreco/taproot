@@ -36,7 +36,7 @@ vocabulary only when its contract is deliberately accepted.
 
 ## Background
 
-Background tokens are used only for fills. The working vocabulary currently contains 14 roles.
+Background tokens are used only for fills. The working vocabulary currently contains 19 roles.
 
 ### Foundation
 
@@ -72,7 +72,31 @@ theme and `gray.900` in the dark theme.
 
 ### Secondary actions
 
-To discuss. No secondary-action background names are proposed yet.
+| Proposed token                                       | Purpose                       | Replaces                              |
+| ---------------------------------------------------- | ----------------------------- | ------------------------------------- |
+| `semantic.color.background.action.secondary.default` | Resting secondary-action fill | New role; previously transparent      |
+| `semantic.color.background.action.secondary.hover`   | Hovered secondary-action fill | `semantic.color.background.muted`     |
+| `semantic.color.background.action.secondary.pressed` | Pressed secondary-action fill | `semantic.color.background.sunken`    |
+
+Secondary actions use an opaque achromatic surface so the control remains visually stable across
+foundation, brand, and quiet status backgrounds. The light theme maps default, hover, and pressed
+to `gray.25`, `gray.50`, and `gray.100`; the dark theme maps them to `gray.900`, `gray.800`, and
+`gray.700`. These are action-specific roles rather than aliases to foundation backgrounds because
+their state progression belongs to the interaction contract.
+
+### Tertiary actions
+
+| Proposed token                                      | Purpose                         | Replaces                           |
+| --------------------------------------------------- | ------------------------------- | ---------------------------------- |
+| `semantic.color.background.action.tertiary.hover`   | Hovered tertiary-action overlay | `semantic.color.background.muted`  |
+| `semantic.color.background.action.tertiary.pressed` | Pressed tertiary-action overlay | `semantic.color.background.sunken` |
+
+Tertiary actions are transparent at rest, so no `.default` background token is published.
+`transparent` remains a literal implementation value rather than a semantic color role. Hover and
+pressed use neutral translucent overlays so the underlying semantic background remains visible.
+The light theme uses `gray.950` at 5% and 9% opacity; the dark theme uses `gray.25` at 6% and 10%
+opacity. These mappings require dedicated neutral-alpha primitives before the semantic contracts
+can be implemented; semantic tokens must alias those primitives rather than embed alpha literals.
 
 ### Status
 
@@ -255,7 +279,28 @@ literal implementation value rather than a semantic color role.
 
 ## Secondary actions
 
-**WIP:** To discuss.
+An outlined secondary action combines the complete `background.action.secondary` state family with
+`foreground.default` and `border.default`. Its resting fill is intentionally opaque rather than
+transparent, allowing the control to retain a consistent neutral surface when placed on any
+supported semantic background. The persistent border remains responsible for communicating the
+control boundary when the default fill matches or closely approaches its surrounding surface.
+
+Ghost actions remain transparent at rest and continue to use foundation `background.muted` and
+`background.sunken` roles for hover and pressed states until the tertiary action contract is
+implemented.
+
+## Tertiary actions
+
+A tertiary action combines a literal transparent resting background with
+`background.action.tertiary.hover`, `background.action.tertiary.pressed`, `foreground.default`, and
+a literal transparent border. The translucent state overlays preserve the character of the
+underlying semantic surface and keep tertiary actions visually below opaque secondary actions.
+
+`tertiary` names the semantic hierarchy and may support text buttons, icon buttons, toolbar
+actions, and other low-emphasis controls. A component may retain a visual variant name such as
+`ghost`; its component background tokens should alias the shared tertiary semantic roles. The
+semantic vocabulary does not publish a `ghost` family because that name describes one component
+appearance rather than a reusable action intent.
 
 ## Typography
 
