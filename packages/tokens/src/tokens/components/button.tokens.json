@@ -83,8 +83,18 @@
       },
       "secondary": {
         "background": {
-          "hover": { "$value": "{semantic.color.background.muted}", "$type": "color" },
-          "pressed": { "$value": "{semantic.color.background.sunken}", "$type": "color" }
+          "default": {
+            "$value": "{semantic.color.background.action.secondary.default}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{semantic.color.background.action.secondary.hover}",
+            "$type": "color"
+          },
+          "pressed": {
+            "$value": "{semantic.color.background.action.secondary.pressed}",
+            "$type": "color"
+          }
         },
         "foreground": {
           "default": { "$value": "{semantic.color.foreground.default}", "$type": "color" },

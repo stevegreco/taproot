@@ -39,7 +39,7 @@
 }
 
 :host([variant="secondary"]) {
-  --_background: transparent;
+  --_background: var(--component-button-secondary-background-default);
   --_background-hover: var(--component-button-secondary-background-hover);
   --_background-press: var(--component-button-secondary-background-pressed);
   --_background-disabled: transparent;

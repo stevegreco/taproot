@@ -38,6 +38,12 @@ const PAIRS = [
     TEXT,
     `content on primary action ${state}`,
   ]),
+  ...["default", "hover", "pressed"].map((state) => [
+    "color.foreground.default",
+    `color.background.action.secondary.${state}`,
+    TEXT,
+    `content on secondary action ${state}`,
+  ]),
 
   // Brand content on a foundation background
   ["color.foreground.brand.default", "color.background.default", TEXT, "brand content on page"],

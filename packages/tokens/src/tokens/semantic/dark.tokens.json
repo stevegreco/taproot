@@ -16,6 +16,11 @@
             "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
             "hover": { "$value": "{primitives.color.robRoy.300}", "$type": "color" },
             "pressed": { "$value": "{primitives.color.robRoy.200}", "$type": "color" }
+          },
+          "secondary": {
+            "default": { "$value": "{primitives.color.gray.900}", "$type": "color" },
+            "hover": { "$value": "{primitives.color.gray.800}", "$type": "color" },
+            "pressed": { "$value": "{primitives.color.gray.700}", "$type": "color" }
           }
         },
         "status": {

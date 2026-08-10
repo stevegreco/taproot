@@ -178,6 +178,104 @@ test("status colors expose only the accepted application contracts", () => {
   }
 });
 
+// ─── Secondary action background contracts ──────────────────────────────────
+
+test("secondary action background semantic contracts exist in both themes", () => {
+  for (const theme of ["light", "dark"]) {
+    const tokens = byPath(loadTokens(theme));
+    for (const state of ["default", "hover", "pressed"]) {
+      const path = `semantic.color.background.action.secondary.${state}`;
+      assert.ok(tokens.has(path), `${theme}: missing ${path}`);
+    }
+  }
+});
+
+test("light theme secondary action backgrounds alias gray.25 / gray.50 / gray.100", () => {
+  const semantic = readJson(new URL("../src/tokens/semantic/light.tokens.json", import.meta.url));
+  const values = new Map(sourceLeaves(semantic));
+
+  assert.equal(
+    values.get("semantic.color.background.action.secondary.default"),
+    "{primitives.color.gray.25}",
+    "light default must alias gray.25",
+  );
+  assert.equal(
+    values.get("semantic.color.background.action.secondary.hover"),
+    "{primitives.color.gray.50}",
+    "light hover must alias gray.50",
+  );
+  assert.equal(
+    values.get("semantic.color.background.action.secondary.pressed"),
+    "{primitives.color.gray.100}",
+    "light pressed must alias gray.100",
+  );
+});
+
+test("dark theme secondary action backgrounds alias gray.900 / gray.800 / gray.700", () => {
+  const semantic = readJson(new URL("../src/tokens/semantic/dark.tokens.json", import.meta.url));
+  const values = new Map(sourceLeaves(semantic));
+
+  assert.equal(
+    values.get("semantic.color.background.action.secondary.default"),
+    "{primitives.color.gray.900}",
+    "dark default must alias gray.900",
+  );
+  assert.equal(
+    values.get("semantic.color.background.action.secondary.hover"),
+    "{primitives.color.gray.800}",
+    "dark hover must alias gray.800",
+  );
+  assert.equal(
+    values.get("semantic.color.background.action.secondary.pressed"),
+    "{primitives.color.gray.700}",
+    "dark pressed must alias gray.700",
+  );
+});
+
+test("secondary action background aliases differ between light and dark themes", () => {
+  for (const state of ["default", "hover", "pressed"]) {
+    const light = readJson(
+      new URL("../src/tokens/semantic/light.tokens.json", import.meta.url),
+    );
+    const dark = readJson(
+      new URL("../src/tokens/semantic/dark.tokens.json", import.meta.url),
+    );
+    const lightValues = new Map(sourceLeaves(light));
+    const darkValues = new Map(sourceLeaves(dark));
+    const path = `semantic.color.background.action.secondary.${state}`;
+    assert.notEqual(
+      lightValues.get(path),
+      darkValues.get(path),
+      `${path} must resolve to different primitives across themes`,
+    );
+  }
+});
+
+test("Button secondary background component tokens alias the semantic action.secondary contracts", () => {
+  const light = byPath(loadTokens("light"));
+  const dark = byPath(loadTokens("dark"));
+
+  for (const [component, reference] of [
+    [
+      "component.button.secondary.background.default",
+      "{semantic.color.background.action.secondary.default}",
+    ],
+    [
+      "component.button.secondary.background.hover",
+      "{semantic.color.background.action.secondary.hover}",
+    ],
+    [
+      "component.button.secondary.background.pressed",
+      "{semantic.color.background.action.secondary.pressed}",
+    ],
+  ]) {
+    assert.equal(light.get(component), reference, `${component} must alias ${reference}`);
+    assert.equal(dark.get(component), reference, `${component} must be theme-independent`);
+  }
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+
 test("semantic typography publishes ten complete, theme-independent recipes", () => {
   const recipes = [
     "heading.large",

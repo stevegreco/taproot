@@ -117,6 +117,9 @@ describe("DsButton", () => {
     expect(styles).toContain(
       "--_background-press: var(--component-button-primary-background-pressed)",
     );
+    expect(styles).toContain(
+      "--_background: var(--component-button-secondary-background-default)",
+    );
     expect(styles).toContain("var(--component-button-danger-background-default)");
     expect(styles).toContain("var(--component-button-size-small-padding-inline)");
     expect(styles).not.toContain("var(--semantic-");
