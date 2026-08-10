@@ -8,7 +8,6 @@ type DsButtonAttributes = DetailedHTMLProps<
 > & {
   disabled?: boolean;
   "full-width"?: boolean;
-  pill?: boolean;
   size?: "sm" | "md";
   type?: "button" | "submit" | "reset";
   variant?: "primary" | "secondary" | "ghost" | "danger";

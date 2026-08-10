@@ -65,7 +65,6 @@ needs to be announced.
 | ------------ | ----------------------------------------- | --------- | ----------------------------------------------------------------------- |
 | `variant`    | `primary`, `secondary`, `ghost`, `danger` | `primary` |                                                                         |
 | `size`       | `md`, `sm`                                | `md`      |                                                                         |
-| `pill`       | boolean                                   | off       | Fully rounded ends                                                      |
 | `full-width` | boolean                                   | off       | Fills its container                                                     |
 | `disabled`   | boolean                                   | off       | Blocks activation and focus; also follows an ancestor disabled fieldset |
 | `type`       | `button`, `submit`, `reset`               | `button`  | Works inside a `<form>`                                                 |

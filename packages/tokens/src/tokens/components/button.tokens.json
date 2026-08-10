@@ -1,10 +1,7 @@
 {
   "component": {
     "button": {
-      "radius": {
-        "default": { "$value": "{semantic.radius.control}", "$type": "dimension" },
-        "pill": { "$value": "{semantic.radius.pill}", "$type": "dimension" }
-      },
+      "radius": { "$value": "{semantic.radius.control}", "$type": "dimension" },
       "size": {
         "medium": {
           "paddingInline": { "$value": "{primitives.space.4}", "$type": "dimension" },

@@ -21,10 +21,10 @@
   --_border-press: var(--component-button-primary-border-pressed);
   --_border-disabled: var(--component-button-primary-border-disabled);
 
-  /* Metrics. Remapped by size / pill. */
+  /* Metrics. Remapped by size. */
   --_padding-x: var(--component-button-size-medium-padding-inline);
   --_padding-y: var(--component-button-size-medium-padding-block);
-  --_radius: var(--component-button-radius-default);
+  --_radius: var(--component-button-radius);
 
   display: inline-block;
   vertical-align: middle;
@@ -80,10 +80,6 @@
 :host([size="sm"]) {
   --_padding-x: var(--component-button-size-small-padding-inline);
   --_padding-y: var(--component-button-size-small-padding-block);
-}
-
-:host([pill]) {
-  --_radius: var(--component-button-radius-pill);
 }
 
 .button {
