@@ -17,6 +17,16 @@
         "900": { "$value": "#2b2b2b", "$type": "color" },
         "950": { "$value": "#171717", "$type": "color" }
       },
+      "grayAlpha": {
+        "25": {
+          "6": { "$value": "rgba(252, 252, 252, 0.06)", "$type": "color" },
+          "10": { "$value": "rgba(252, 252, 252, 0.10)", "$type": "color" }
+        },
+        "950": {
+          "5": { "$value": "rgba(23, 23, 23, 0.05)", "$type": "color" },
+          "9": { "$value": "rgba(23, 23, 23, 0.09)", "$type": "color" }
+        }
+      },
       "robRoy": {
         "50": { "$value": "#fdf9ed", "$type": "color" },
         "100": { "$value": "#f7edce", "$type": "color" },

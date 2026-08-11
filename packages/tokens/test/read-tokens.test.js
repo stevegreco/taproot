@@ -234,12 +234,8 @@ test("dark theme secondary action backgrounds alias gray.900 / gray.800 / gray.7
 
 test("secondary action background aliases differ between light and dark themes", () => {
   for (const state of ["default", "hover", "pressed"]) {
-    const light = readJson(
-      new URL("../src/tokens/semantic/light.tokens.json", import.meta.url),
-    );
-    const dark = readJson(
-      new URL("../src/tokens/semantic/dark.tokens.json", import.meta.url),
-    );
+    const light = readJson(new URL("../src/tokens/semantic/light.tokens.json", import.meta.url));
+    const dark = readJson(new URL("../src/tokens/semantic/dark.tokens.json", import.meta.url));
     const lightValues = new Map(sourceLeaves(light));
     const darkValues = new Map(sourceLeaves(dark));
     const path = `semantic.color.background.action.secondary.${state}`;
@@ -248,6 +244,39 @@ test("secondary action background aliases differ between light and dark themes",
       darkValues.get(path),
       `${path} must resolve to different primitives across themes`,
     );
+  }
+});
+
+test("tertiary action backgrounds publish only hover and pressed alpha overlays", () => {
+  const expected = {
+    light: {
+      hover: "{primitives.color.grayAlpha.950.5}",
+      pressed: "{primitives.color.grayAlpha.950.9}",
+    },
+    dark: {
+      hover: "{primitives.color.grayAlpha.25.6}",
+      pressed: "{primitives.color.grayAlpha.25.10}",
+    },
+  };
+
+  for (const theme of ["light", "dark"]) {
+    const semantic = readJson(
+      new URL(`../src/tokens/semantic/${theme}.tokens.json`, import.meta.url),
+    );
+    const values = new Map(sourceLeaves(semantic));
+    const tokens = byPath(loadTokens(theme));
+    const base = "semantic.color.background.action.tertiary";
+
+    assert.equal(values.get(`${base}.hover`), expected[theme].hover);
+    assert.equal(values.get(`${base}.pressed`), expected[theme].pressed);
+    assert.equal(
+      values.has(`${base}.default`),
+      false,
+      `${theme}: tertiary default is literal transparent`,
+    );
+    assert.ok(tokens.has(`${base}.hover`), `${theme}: missing published tertiary hover token`);
+    assert.ok(tokens.has(`${base}.pressed`), `${theme}: missing published tertiary pressed token`);
+    assert.equal(tokens.has(`${base}.default`), false);
   }
 });
 

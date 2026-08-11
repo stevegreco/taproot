@@ -20,10 +20,29 @@ import "./labs.css";
         <span>background.muted</span>
         <span>Supporting region</span>
       </div>
-      <div class="action-row">
-        <div class="action-state default">primary.default</div>
-        <div class="action-state hover">primary.hover</div>
-        <div class="action-state pressed">primary.pressed</div>
+      <div class="action-family primary">
+        <b>background.action.primary</b>
+        <div class="action-row">
+          <div class="action-state default">default</div>
+          <div class="action-state hover">hover</div>
+          <div class="action-state pressed">pressed</div>
+        </div>
+      </div>
+      <div class="action-family secondary">
+        <b>background.action.secondary</b>
+        <div class="action-row">
+          <div class="action-state default">default</div>
+          <div class="action-state hover">hover</div>
+          <div class="action-state pressed">pressed</div>
+        </div>
+      </div>
+      <div class="action-family tertiary">
+        <b>background.action.tertiary</b>
+        <div class="action-row">
+          <div class="action-state default">transparent</div>
+          <div class="action-state hover">hover</div>
+          <div class="action-state pressed">pressed</div>
+        </div>
       </div>
       <div class="disabled-sample">background.disabled</div>
       <div class="status-row">
@@ -33,11 +52,5 @@ import "./labs.css";
         <div class="status-fill danger">danger</div>
       </div>
     </section>
-  </div>
-
-  <div class="lab-deferred">
-    <div>
-      <b>Secondary actions</b>Not represented until the naming discussion is complete.
-    </div>
   </div>
 </section>

@@ -1,0 +1,44 @@
+---
+import "./labs.css";
+
+const shapes = [
+  {
+    name: "control",
+    token: "semantic.radius.control",
+    primitive: "primitives.radius.md",
+    className: "shape-control",
+  },
+  {
+    name: "surface",
+    token: "semantic.radius.surface",
+    primitive: "primitives.radius.lg",
+    className: "shape-surface",
+  },
+  {
+    name: "pill",
+    token: "semantic.radius.pill",
+    primitive: "primitives.radius.full",
+    className: "shape-pill",
+  },
+] as const;
+---
+
+<section class="ds-lab not-prose shape-lab" aria-label="Semantic shape lab">
+  <div class="shape-board">
+    <span class="map-label">semantic.radius</span>
+    <div class="shape-grid">
+      {
+        shapes.map((shape) => (
+          <article class={`shape-sample ${shape.className}`}>
+            <div class="shape-specimen" aria-hidden="true" />
+            <div>
+              <b>{shape.name}</b>
+              <code>{shape.token}</code>
+              <span>Aliases {shape.primitive}</span>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,28 @@
+---
+import "./labs.css";
+
+const elevations = ["xs", "sm", "md", "lg", "xl"] as const;
+---
+
+<section class="ds-lab not-prose elevation-lab" aria-label="Semantic elevation lab">
+  <div class="elevation-board">
+    <span class="map-label">semantic.elevation</span>
+    <section class="elevation-grid" aria-label="Raised elevation tokens">
+      {
+        elevations.map((name) => (
+          <article class={`elevation-sample elevation-${name}`}>
+            <b>{name}</b>
+            <code>semantic.elevation.{name}</code>
+          </article>
+        ))
+      }
+    </section>
+    <section class="elevation-inset">
+      <div>
+        <b>inset</b>
+        <code>semantic.elevation.inset</code>
+      </div>
+      <span>Recessed content region</span>
+    </section>
+  </div>
+</section>
