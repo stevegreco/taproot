@@ -1,0 +1,53 @@
+---
+import { renderBorderBoard } from "../../lib/labs/border";
+import "./labs.css";
+
+const lightBoard = renderBorderBoard("light");
+const darkBoard = renderBorderBoard("dark");
+
+const styleObject = (style: Record<string, string>) =>
+  Object.entries(style)
+    .map(([key, value]) => `${key}:${value}`)
+    .join(";");
+---
+
+<section class="ds-lab not-prose" aria-label="Semantic border lab" data-border-lab>
+  <div class="border-lab-controls">
+    <span>Border width</span>
+    <div class="segmented border-size-toggle" role="group" aria-label="Preview border width">
+      <button type="button" data-border-size-button="thin" aria-pressed="false">Thin · 1px</button>
+      <button type="button" data-border-size-button="thick" aria-pressed="true">Thick · 2px</button>
+    </div>
+  </div>
+
+  <div class="border-stage" data-border-stage data-border-size="thick">
+    <div
+      class="border-board"
+      data-lab-theme="light"
+      style={styleObject(lightBoard.style)}
+      set:html={lightBoard.html}
+    />
+    <div
+      class="border-board dark"
+      data-lab-theme="dark"
+      style={styleObject(darkBoard.style)}
+      set:html={darkBoard.html}
+    />
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector("[data-border-lab]");
+  if (root) {
+    const stage = root.querySelector("[data-border-stage]");
+    root.querySelectorAll("[data-border-size-button]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!(button instanceof HTMLButtonElement) || !(stage instanceof HTMLElement)) return;
+        stage.dataset.borderSize = button.dataset.borderSizeButton;
+        root
+          .querySelectorAll("[data-border-size-button]")
+          .forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      });
+    });
+  }
+</script>

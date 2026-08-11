@@ -1,0 +1,119 @@
+---
+import "./labs.css";
+
+const recipes = [
+  {
+    name: "semantic.typography.heading.large.*",
+    meta: "Lora · 30 / tight · medium · tight",
+    className: "type-heading-large",
+  },
+  {
+    name: "semantic.typography.heading.default.*",
+    meta: "Lora · 24 / snug · medium · snug",
+    className: "type-heading-default",
+  },
+  {
+    name: "semantic.typography.heading.small.*",
+    meta: "Lora · 20 / snug · medium · snug",
+    className: "type-heading-small",
+  },
+  {
+    name: "semantic.typography.body.default.*",
+    meta: "Source Sans 3 · 16 / normal · regular · normal",
+    className: "type-body-default",
+  },
+  {
+    name: "semantic.typography.body.small.*",
+    meta: "Source Sans 3 · 14 / normal · regular · normal",
+    className: "type-body-small",
+  },
+  {
+    name: "semantic.typography.label.default.*",
+    meta: "Source Sans 3 · 14 / snug · medium · normal",
+    className: "type-label-default",
+  },
+  {
+    name: "semantic.typography.label.small.*",
+    meta: "Source Sans 3 · 12 / snug · medium · normal",
+    className: "type-label-small",
+  },
+  {
+    name: "semantic.typography.eyebrow.*",
+    meta: "Source Sans 3 · 12 / snug · medium · caps",
+    className: "type-semantic-eyebrow",
+  },
+  {
+    name: "semantic.typography.code.default.*",
+    meta: "JetBrains Mono · 14 / normal · regular · normal",
+    className: "type-code-default",
+  },
+  {
+    name: "semantic.typography.code.small.*",
+    meta: "JetBrains Mono · 12 / normal · regular · normal",
+    className: "type-code-small",
+  },
+] as const;
+---
+
+<section class="ds-lab not-prose typography-lab" aria-label="Semantic typography lab">
+  <div class="typography-board">
+    <section class="typography-context-grid" aria-label="Typography in product context">
+      <article class="typography-context-card">
+        <p class="typography-context-label type-semantic-eyebrow">Design tokens</p>
+        <h2 class="typography-specimen type-heading-large">
+          A system should make the right choice feel natural.
+        </h2>
+        <p class="type-body-default">
+          Semantic typography gives recurring text roles a stable contract while allowing the
+          underlying scale to evolve. Consumers can use individual properties, but the recipe
+          remains the cohesive unit.
+        </p>
+        <div class="typography-action-row">
+          <button class="typography-action type-label-default" type="button">Explore tokens</button>
+          <span class="typography-context-muted type-label-small">Published in CSS and JSON</span>
+        </div>
+        <p class="typography-context-muted type-body-small">Updated August 2026 · 4 minute read</p>
+      </article>
+      <aside class="typography-context-card">
+        <h2 class="typography-specimen type-heading-small">Token anatomy</h2>
+        <p class="type-body-small">Each recipe publishes five independently consumable leaves.</p>
+        <pre class="type-code-small"><code>semantic.typography
+  .body.default
+  .fontFamily
+  .fontSize
+  .fontWeight
+  .lineHeight
+  .letterSpacing</code></pre>
+        <p class="type-label-default">Cohesive by default</p>
+        <p class="type-body-small">
+          Mixing leaves is possible, but the consumer owns the visual risk.
+        </p>
+        <p class="type-body-default">
+          Use <code class="type-code-small">body.default</code> for ordinary product copy.
+        </p>
+      </aside>
+    </section>
+
+    <section class="typography-reference" aria-label="All published typography recipes">
+      <header class="typography-reference-header">
+        <h2 class="type-heading-default">Published recipes</h2>
+        <p class="typography-context-muted type-label-small">10 recipes · 50 leaf tokens</p>
+      </header>
+      <div class="typography-recipe-list">
+        {
+          recipes.map((recipe) => (
+            <div class="typography-recipe">
+              <div class="typography-recipe-name">
+                <b>{recipe.name}</b>
+                <span>{recipe.meta}</span>
+              </div>
+              <p class={`typography-specimen ${recipe.className}`} data-typography-sample>
+                Make structure visible without shouting.
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</section>

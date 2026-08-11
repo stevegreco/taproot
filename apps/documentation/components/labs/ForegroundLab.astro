@@ -1,0 +1,12 @@
+---
+import { renderForegroundBoard } from "../../lib/labs/foreground";
+import "./labs.css";
+
+const lightBoard = renderForegroundBoard("light");
+const darkBoard = renderForegroundBoard("dark");
+---
+
+<section class="ds-lab not-prose" aria-label="Semantic foreground lab">
+  <div class="foreground-board" data-lab-theme="light" set:html={lightBoard} />
+  <div class="foreground-board dark" data-lab-theme="dark" set:html={darkBoard} />
+</section>

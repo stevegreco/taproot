@@ -1,0 +1,1214 @@
+.ds-lab {
+  --lab-page: var(--semantic-color-background-default);
+  --lab-surface: var(--semantic-color-background-surface);
+  --lab-ink: var(--semantic-color-foreground-default);
+  --lab-ink-muted: var(--semantic-color-foreground-muted);
+  --lab-ink-faint: var(--semantic-color-foreground-muted);
+  --lab-line: var(--semantic-color-border-subtle);
+  --lab-line-strong: var(--semantic-color-border-default);
+  --lab-accent: var(--semantic-color-foreground-brand-default);
+  --lab-accent-soft: var(--semantic-color-background-brand-muted);
+  --lab-focus: var(--semantic-color-border-focus);
+  --lab-radius-md: var(--semantic-radius-surface);
+  --lab-radius-lg: var(--semantic-radius-surface);
+  --lab-shadow: var(--semantic-elevation-md);
+  width: 100%;
+  margin-top: var(--primitives-space-6);
+  color: var(--lab-ink);
+  font-family: var(--primitives-font-sans);
+}
+
+.ds-lab *,
+.ds-lab *::before,
+.ds-lab *::after {
+  box-sizing: border-box;
+}
+
+.ds-lab button {
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ds-lab code,
+.ds-lab .mono {
+  font-family: var(--primitives-font-mono);
+}
+
+.ds-lab :focus-visible {
+  outline: var(--primitives-border-thick) solid var(--lab-focus);
+  outline-offset: 3px;
+}
+
+.ds-lab .segmented {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--lab-page);
+}
+
+.ds-lab .segmented button {
+  min-width: 70px;
+  border: 0;
+  border-radius: 7px;
+  padding: 7px 11px;
+  color: var(--lab-ink-muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 680;
+}
+
+.ds-lab .segmented button[aria-pressed="true"] {
+  color: var(--lab-ink);
+  background: var(--lab-surface);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--lab-ink) 12%, transparent);
+}
+
+.ds-lab [data-lab-theme="dark"] {
+  display: none;
+}
+
+:root[data-theme="dark"] .ds-lab [data-lab-theme="light"] {
+  display: none;
+}
+
+:root[data-theme="dark"] .ds-lab [data-lab-theme="dark"] {
+  display: block;
+}
+
+.ds-lab .border-stage {
+  display: block;
+}
+
+.ds-lab .map-label {
+  display: inline-flex;
+  margin-bottom: 20px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: var(--map-muted-ink, var(--lab-ink-muted));
+  background: var(--bg-muted, color-mix(in srgb, var(--lab-ink) 8%, transparent));
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ds-lab .board-section-label {
+  margin: 20px 2px 8px;
+  color: var(--fg-muted, var(--lab-ink-muted));
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ds-lab .lab-deferred {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.ds-lab .lab-deferred div {
+  padding: 14px;
+  border: 1px dashed var(--lab-line-strong);
+  border-radius: 10px;
+  color: var(--lab-ink-muted);
+  background: var(--lab-surface);
+  font-size: 11px;
+}
+
+.ds-lab .lab-deferred b {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--lab-ink);
+}
+
+/* Background lab */
+.ds-lab .background-map {
+  --bg-default: #faf6f0;
+  --bg-surface: #fcfcfc;
+  --bg-sunken: #f2ebdf;
+  --bg-muted: #e0e7e3;
+  --bg-disabled: #e7e7e7;
+  --bg-brand: #a0501d;
+  --bg-brand-muted: #f7edce;
+  --bg-action: #a0501d;
+  --bg-action-hover: #823f1e;
+  --bg-action-pressed: #6b341c;
+  --bg-status-success: #e3ecd9;
+  --bg-status-warning: #f4f0b3;
+  --bg-status-info: #d6e1ea;
+  --bg-status-danger: #f5dbd0;
+  --map-ink: #171c1a;
+  --map-muted-ink: #475a52;
+  min-height: 620px;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--map-ink) 12%, transparent);
+  border-radius: var(--lab-radius-lg);
+  color: var(--map-ink);
+  background: var(--bg-default);
+  box-shadow: var(--lab-shadow);
+}
+
+:root[data-theme="dark"] .ds-lab .background-map {
+  --bg-default: #171c1a;
+  --bg-surface: #2c3531;
+  --bg-sunken: #0e1211;
+  --bg-muted: #323d38;
+  --bg-disabled: #2b2b2b;
+  --bg-brand: #e1ac3e;
+  --bg-brand-muted: #3d1a0b;
+  --bg-action: #e1ac3e;
+  --bg-action-hover: #e8c468;
+  --bg-action-pressed: #efda98;
+  --bg-status-success: #2c4623;
+  --bg-status-warning: #554015;
+  --bg-status-info: #244960;
+  --bg-status-danger: #6b2616;
+  --map-ink: #faf6f0;
+  --map-muted-ink: #c1cec7;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.ds-lab .brand-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ds-lab .brand-block div {
+  min-height: 72px;
+  padding: 13px;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.ds-lab .brand-block .solid {
+  color: var(--bg-default);
+  background: var(--bg-brand);
+}
+
+:root[data-theme="dark"] .ds-lab .background-map .brand-block .solid {
+  color: #171c1a;
+}
+
+.ds-lab .brand-block .muted {
+  color: var(--map-ink);
+  background: var(--bg-brand-muted);
+}
+
+.ds-lab .surface-card {
+  padding: 18px;
+  border-radius: 12px;
+  background: var(--bg-surface);
+  box-shadow: 0 8px 24px rgba(23, 28, 26, 0.08);
+}
+
+:root[data-theme="dark"] .ds-lab .background-map .surface-card {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+.ds-lab .surface-card h2 {
+  margin: 0 0 5px;
+  font-size: 20px;
+  letter-spacing: -0.035em;
+}
+
+.ds-lab .surface-card p {
+  margin: 0 0 16px;
+  color: var(--map-muted-ink);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ds-lab .sunken-well {
+  padding: 14px;
+  border-radius: 9px;
+  background: var(--bg-sunken);
+}
+
+.ds-lab .sunken-well b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.ds-lab .sunken-well span {
+  color: var(--map-muted-ink);
+  font-size: 11px;
+}
+
+.ds-lab .muted-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 9px;
+  background: var(--bg-muted);
+  font-size: 11px;
+}
+
+.ds-lab .action-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.ds-lab .action-state {
+  min-width: 0;
+  padding: 12px 7px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--bg-default);
+  text-align: center;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+:root[data-theme="dark"] .ds-lab .background-map .action-state {
+  color: #171c1a;
+}
+
+.ds-lab .action-state.default {
+  background: var(--bg-action);
+}
+
+.ds-lab .action-state.hover {
+  background: var(--bg-action-hover);
+}
+
+.ds-lab .action-state.pressed {
+  background: var(--bg-action-pressed);
+}
+
+.ds-lab .disabled-sample {
+  margin-top: 10px;
+  padding: 11px;
+  border-radius: 8px;
+  color: var(--map-muted-ink);
+  background: var(--bg-disabled);
+  font-size: 11px;
+  text-align: center;
+  opacity: 0.72;
+}
+
+.ds-lab .status-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.ds-lab .status-fill {
+  min-width: 0;
+  padding: 12px 5px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.ds-lab .status-fill.success {
+  background: var(--bg-status-success);
+}
+
+.ds-lab .status-fill.warning {
+  background: var(--bg-status-warning);
+}
+
+.ds-lab .status-fill.info {
+  background: var(--bg-status-info);
+}
+
+.ds-lab .status-fill.danger {
+  background: var(--bg-status-danger);
+}
+
+/* Foreground lab */
+.ds-lab .foreground-board {
+  --fg-default: #171717;
+  --fg-muted: #5f5f5f;
+  --fg-disabled: #777777;
+  --fg-brand: #a0501d;
+  --fg-on-fill: #fcfcfc;
+  --fg-page: #faf6f0;
+  --fg-surface: #fcfcfc;
+  --fg-sunken: #f2ebdf;
+  --fg-muted-bg: #e0e7e3;
+  --fg-disabled-bg: #e7e7e7;
+  --fg-brand-bg: #a0501d;
+  --fg-action-default: #a0501d;
+  --fg-action-hover: #823f1e;
+  --fg-action-pressed: #6b341c;
+  min-height: 680px;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, #171c1a 12%, transparent);
+  border-radius: var(--lab-radius-lg);
+  color: var(--fg-default);
+  background: var(--fg-page);
+  box-shadow: var(--lab-shadow);
+}
+
+.ds-lab .foreground-board.dark {
+  --fg-default: #fcfcfc;
+  --fg-muted: #b9b9b9;
+  --fg-disabled: #777777;
+  --fg-brand: #e1ac3e;
+  --fg-on-fill: #171717;
+  --fg-page: #171c1a;
+  --fg-surface: #2c3531;
+  --fg-sunken: #0e1211;
+  --fg-muted-bg: #323d38;
+  --fg-disabled-bg: #2b2b2b;
+  --fg-brand-bg: #e1ac3e;
+  --fg-action-default: #e1ac3e;
+  --fg-action-hover: #e8c468;
+  --fg-action-pressed: #efda98;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.ds-lab .foreground-board .map-label {
+  color: var(--fg-muted);
+  background: var(--fg-muted-bg);
+}
+
+.ds-lab .type-sheet {
+  padding: clamp(20px, 4vw, 30px);
+  border-radius: 14px;
+  background: var(--fg-surface);
+}
+
+.ds-lab .type-eyebrow {
+  margin: 0 0 13px;
+  color: var(--fg-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ds-lab .type-sheet h2 {
+  max-width: 14ch;
+  margin: 0 0 12px;
+  color: var(--fg-default);
+  font-size: clamp(28px, 4vw, 38px);
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+.ds-lab .type-sheet > p {
+  max-width: 48ch;
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ds-lab .foreground-roles {
+  display: grid;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.ds-lab .foreground-role {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 13px 14px;
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: 9px;
+}
+
+.ds-lab .foreground-role b {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 13px;
+}
+
+.ds-lab .foreground-role span {
+  font-size: 11px;
+}
+
+.ds-lab .foreground-role code {
+  color: inherit;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.ds-lab .foreground-role.default {
+  color: var(--fg-default);
+}
+
+.ds-lab .foreground-role.muted {
+  color: var(--fg-muted);
+}
+
+.ds-lab .foreground-role.disabled {
+  color: var(--fg-disabled);
+  background: var(--fg-disabled-bg);
+}
+
+.ds-lab .foreground-role.brand {
+  color: var(--fg-brand);
+}
+
+.ds-lab .surface-tests {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ds-lab .surface-test {
+  min-height: 118px;
+  padding: 14px;
+  border-radius: 9px;
+}
+
+.ds-lab .surface-test.default {
+  background: var(--fg-page);
+}
+
+.ds-lab .surface-test.surface {
+  background: var(--fg-surface);
+}
+
+.ds-lab .surface-test.sunken {
+  background: var(--fg-sunken);
+}
+
+.ds-lab .surface-test.muted {
+  background: var(--fg-muted-bg);
+}
+
+.ds-lab .surface-name {
+  display: block;
+  margin-bottom: 15px;
+  color: var(--fg-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ds-lab .surface-primary {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--fg-default);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.ds-lab .surface-secondary {
+  display: block;
+  color: var(--fg-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ds-lab .surface-brand {
+  display: block;
+  margin-top: 8px;
+  color: var(--fg-brand);
+  font-size: 11px;
+  font-weight: 720;
+}
+
+.ds-lab .contrast-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.ds-lab .contrast-pill {
+  padding: 3px 6px;
+  border-radius: 999px;
+  color: var(--fg-muted);
+  background: color-mix(in srgb, var(--fg-default) 7%, transparent);
+  font-size: 9px;
+}
+
+.ds-lab .contrast-pill.pass::before {
+  content: "✓ ";
+  color: var(--fg-default);
+  font-weight: 900;
+}
+
+.ds-lab .paired-tests {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ds-lab .paired-card {
+  padding: 16px;
+  border-radius: 10px;
+  color: var(--fg-on-fill);
+  background: var(--fg-brand-bg);
+}
+
+.ds-lab .paired-card h3 {
+  margin: 0 0 5px;
+  font-size: 15px;
+}
+
+.ds-lab .paired-card p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.ds-lab .paired-card .contrast-pill {
+  color: inherit;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.ds-lab .paired-card .contrast-pill.pass::before {
+  color: inherit;
+}
+
+.ds-lab .action-pair {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.ds-lab .action-pair-state {
+  min-width: 0;
+  padding: 14px 10px;
+  color: var(--fg-on-fill);
+}
+
+.ds-lab .action-pair-state.default {
+  background: var(--fg-action-default);
+}
+
+.ds-lab .action-pair-state.hover {
+  background: var(--fg-action-hover);
+}
+
+.ds-lab .action-pair-state.pressed {
+  background: var(--fg-action-pressed);
+}
+
+.ds-lab .action-pair-state b {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 10px;
+}
+
+.ds-lab .action-pair-state span {
+  display: block;
+  font-size: 9px;
+}
+
+.ds-lab .status-foreground-tests {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ds-lab .status-foreground-card {
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--fg-surface);
+}
+
+.ds-lab .status-direct {
+  padding: 5px 4px 13px;
+  color: var(--status-fg);
+}
+
+.ds-lab .status-direct b,
+.ds-lab .status-pair b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.ds-lab .status-direct code,
+.ds-lab .status-pair code {
+  color: inherit;
+  font-size: 8px;
+}
+
+.ds-lab .status-pair {
+  padding: 13px;
+  border-radius: 8px;
+  color: var(--status-on);
+  background: var(--status-bg);
+}
+
+.ds-lab .status-pair .contrast-pill {
+  color: inherit;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.ds-lab .status-pair .contrast-pill.pass::before {
+  color: inherit;
+}
+
+.ds-lab .foreground-footnote {
+  margin: 14px 2px 0;
+  color: var(--fg-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* Border lab */
+.ds-lab .border-lab-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ds-lab .border-lab-controls > span {
+  color: var(--lab-ink-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ds-lab .border-size-toggle {
+  background: var(--lab-surface);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--lab-ink) 8%, transparent);
+}
+
+.ds-lab .border-size-toggle button {
+  min-width: 92px;
+}
+
+.ds-lab .border-stage {
+  --lab-border-width: 2px;
+}
+
+.ds-lab .border-stage[data-border-size="thin"] {
+  --lab-border-width: 1px;
+}
+
+.ds-lab .border-board {
+  --fg-default: #171717;
+  --fg-muted: #5f5f5f;
+  min-height: 760px;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, #171c1a 12%, transparent);
+  border-radius: var(--lab-radius-lg);
+  color: var(--fg-default);
+  background: #faf6f0;
+  box-shadow: var(--lab-shadow);
+}
+
+.ds-lab .border-board.dark {
+  --fg-default: #fcfcfc;
+  --fg-muted: #b9b9b9;
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #171c1a;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.ds-lab .border-board .map-label {
+  color: var(--fg-muted);
+  background: color-mix(in srgb, var(--fg-default) 7%, transparent);
+}
+
+.ds-lab .border-foundation {
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--border-surface);
+}
+
+.ds-lab .border-foundation h2 {
+  margin: 0 0 5px;
+  font-size: 20px;
+  letter-spacing: -0.035em;
+}
+
+.ds-lab .border-foundation > p {
+  margin: 0 0 16px;
+  color: var(--fg-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ds-lab .border-role-list {
+  display: grid;
+  gap: 9px;
+}
+
+.ds-lab .border-role-row {
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--border-page);
+}
+
+.ds-lab .border-role-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.ds-lab .border-role-head b {
+  font-size: 11px;
+}
+
+.ds-lab .border-role-head code {
+  color: var(--fg-muted);
+  font-size: 9px;
+}
+
+.ds-lab .border-surface-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.ds-lab .border-surface-sample {
+  display: grid;
+  min-height: 48px;
+  place-items: center;
+  border: var(--lab-border-width) solid var(--border-value);
+  border-radius: 7px;
+  color: var(--sample-ink);
+  background: var(--sample-bg);
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.ds-lab .border-contract {
+  display: inline-flex;
+  margin-top: 8px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  color: var(--fg-muted);
+  background: color-mix(in srgb, var(--fg-default) 7%, transparent);
+  font-size: 9px;
+}
+
+.ds-lab .border-contract.pass::before {
+  content: "✓ ";
+  margin-right: 3px;
+  color: var(--fg-default);
+  font-weight: 900;
+}
+
+.ds-lab .border-special-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ds-lab .border-special-card {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 10px;
+  color: var(--fg-default);
+  background: var(--special-bg);
+}
+
+.ds-lab .border-special-card h3 {
+  margin: 0 0 4px;
+  font-size: 11px;
+}
+
+.ds-lab .border-special-card code {
+  display: block;
+  overflow: hidden;
+  color: var(--fg-muted);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-lab .focus-specimen {
+  display: grid;
+  min-height: 58px;
+  margin-top: 14px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--focus-bg);
+}
+
+.ds-lab .focus-specimen span {
+  padding: 8px 12px;
+  outline: var(--lab-border-width) solid var(--focus-border);
+  outline-offset: 3px;
+  border-radius: 6px;
+  background: var(--focus-control);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.ds-lab .disabled-specimen {
+  min-height: 58px;
+  margin-top: 14px;
+  padding: 14px;
+  border: var(--lab-border-width) solid var(--disabled-border);
+  border-radius: 8px;
+  color: var(--fg-muted);
+  background: var(--disabled-bg);
+  font-size: 10px;
+}
+
+.ds-lab .brand-border-card {
+  padding: 16px;
+  border: var(--lab-border-width) solid var(--brand-border);
+  border-radius: 10px;
+  background: var(--brand-bg);
+}
+
+.ds-lab .brand-border-card b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.ds-lab .brand-border-card code {
+  color: var(--fg-muted);
+  font-size: 8px;
+}
+
+.ds-lab .status-border-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ds-lab .status-border-card {
+  min-width: 0;
+  padding: 13px;
+  border: var(--lab-border-width) solid var(--status-border);
+  border-radius: 10px;
+  color: var(--fg-default);
+  background: var(--status-bg);
+}
+
+.ds-lab .status-border-card b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+}
+
+.ds-lab .status-border-card code {
+  display: block;
+  overflow: hidden;
+  color: inherit;
+  font-size: 8px;
+  opacity: 0.78;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-lab .status-border-card .border-contract {
+  color: inherit;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.ds-lab .status-border-card .border-contract.pass::before {
+  color: inherit;
+}
+
+.ds-lab .border-footnote {
+  margin: 14px 2px 0;
+  color: var(--fg-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* Typography lab */
+.ds-lab .typography-board {
+  padding: clamp(20px, 4vw, 42px);
+  border: var(--primitives-border-thin) solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  color: var(--semantic-color-foreground-default);
+  background: var(--semantic-color-background-default);
+  box-shadow: var(--semantic-elevation-md);
+  transition:
+    color var(--primitives-duration-base) var(--primitives-ease-soft),
+    background-color var(--primitives-duration-base) var(--primitives-ease-soft),
+    border-color var(--primitives-duration-base) var(--primitives-ease-soft);
+}
+
+.ds-lab .typography-specimen {
+  margin: 0;
+  color: inherit;
+}
+
+.ds-lab .type-heading-large {
+  font-family: var(--semantic-typography-heading-large-font-family);
+  font-size: var(--semantic-typography-heading-large-font-size);
+  font-weight: var(--semantic-typography-heading-large-font-weight);
+  line-height: var(--semantic-typography-heading-large-line-height);
+  letter-spacing: var(--semantic-typography-heading-large-letter-spacing);
+}
+
+.ds-lab .type-heading-default {
+  font-family: var(--semantic-typography-heading-default-font-family);
+  font-size: var(--semantic-typography-heading-default-font-size);
+  font-weight: var(--semantic-typography-heading-default-font-weight);
+  line-height: var(--semantic-typography-heading-default-line-height);
+  letter-spacing: var(--semantic-typography-heading-default-letter-spacing);
+}
+
+.ds-lab .type-heading-small {
+  font-family: var(--semantic-typography-heading-small-font-family);
+  font-size: var(--semantic-typography-heading-small-font-size);
+  font-weight: var(--semantic-typography-heading-small-font-weight);
+  line-height: var(--semantic-typography-heading-small-line-height);
+  letter-spacing: var(--semantic-typography-heading-small-letter-spacing);
+}
+
+.ds-lab .type-body-default {
+  font-family: var(--semantic-typography-body-default-font-family);
+  font-size: var(--semantic-typography-body-default-font-size);
+  font-weight: var(--semantic-typography-body-default-font-weight);
+  line-height: var(--semantic-typography-body-default-line-height);
+  letter-spacing: var(--semantic-typography-body-default-letter-spacing);
+}
+
+.ds-lab .type-body-small {
+  font-family: var(--semantic-typography-body-small-font-family);
+  font-size: var(--semantic-typography-body-small-font-size);
+  font-weight: var(--semantic-typography-body-small-font-weight);
+  line-height: var(--semantic-typography-body-small-line-height);
+  letter-spacing: var(--semantic-typography-body-small-letter-spacing);
+}
+
+.ds-lab .type-label-default {
+  font-family: var(--semantic-typography-label-default-font-family);
+  font-size: var(--semantic-typography-label-default-font-size);
+  font-weight: var(--semantic-typography-label-default-font-weight);
+  line-height: var(--semantic-typography-label-default-line-height);
+  letter-spacing: var(--semantic-typography-label-default-letter-spacing);
+}
+
+.ds-lab .type-label-small {
+  font-family: var(--semantic-typography-label-small-font-family);
+  font-size: var(--semantic-typography-label-small-font-size);
+  font-weight: var(--semantic-typography-label-small-font-weight);
+  line-height: var(--semantic-typography-label-small-line-height);
+  letter-spacing: var(--semantic-typography-label-small-letter-spacing);
+}
+
+.ds-lab .type-semantic-eyebrow {
+  font-family: var(--semantic-typography-eyebrow-font-family);
+  font-size: var(--semantic-typography-eyebrow-font-size);
+  font-weight: var(--semantic-typography-eyebrow-font-weight);
+  line-height: var(--semantic-typography-eyebrow-line-height);
+  letter-spacing: var(--semantic-typography-eyebrow-letter-spacing);
+  text-transform: uppercase;
+}
+
+.ds-lab .type-code-default {
+  font-family: var(--semantic-typography-code-default-font-family);
+  font-size: var(--semantic-typography-code-default-font-size);
+  font-weight: var(--semantic-typography-code-default-font-weight);
+  line-height: var(--semantic-typography-code-default-line-height);
+  letter-spacing: var(--semantic-typography-code-default-letter-spacing);
+}
+
+.ds-lab .type-code-small {
+  font-family: var(--semantic-typography-code-small-font-family);
+  font-size: var(--semantic-typography-code-small-font-size);
+  font-weight: var(--semantic-typography-code-small-font-weight);
+  line-height: var(--semantic-typography-code-small-line-height);
+  letter-spacing: var(--semantic-typography-code-small-letter-spacing);
+}
+
+.ds-lab .typography-context-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
+  gap: 18px;
+}
+
+.ds-lab .typography-context-card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: clamp(18px, 3vw, 30px);
+  border: var(--primitives-border-thin) solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  background: var(--semantic-color-background-surface);
+}
+
+.ds-lab .typography-context-card > * {
+  margin: 0;
+}
+
+.ds-lab .typography-context-card pre {
+  padding: 14px;
+  overflow: auto;
+  border: var(--primitives-border-thin) solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-control);
+  color: var(--semantic-color-foreground-default);
+  background: var(--semantic-color-background-sunken);
+}
+
+.ds-lab .typography-context-label {
+  color: var(--semantic-color-foreground-brand-default);
+}
+
+.ds-lab .typography-context-muted {
+  color: var(--semantic-color-foreground-muted);
+}
+
+.ds-lab .typography-action-row {
+  display: flex;
+  align-items: center;
+  gap: var(--primitives-space-3);
+  flex-wrap: wrap;
+}
+
+.ds-lab .typography-action {
+  padding: var(--primitives-space-2) var(--primitives-space-4);
+  border: var(--primitives-border-thin) solid var(--semantic-color-border-brand-muted);
+  border-radius: var(--semantic-radius-control);
+  color: var(--semantic-color-foreground-on-action-primary);
+  background: var(--semantic-color-background-action-primary-default);
+  cursor: pointer;
+}
+
+.ds-lab .typography-action:hover {
+  background: var(--semantic-color-background-action-primary-hover);
+}
+
+.ds-lab .typography-action:active {
+  background: var(--semantic-color-background-action-primary-pressed);
+}
+
+.ds-lab .typography-action:focus-visible {
+  outline-color: var(--semantic-color-border-focus);
+}
+
+.ds-lab .typography-reference {
+  margin-top: var(--primitives-space-8);
+  padding: clamp(18px, 3vw, 30px);
+  border: var(--primitives-border-thin) solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  background: var(--semantic-color-background-surface);
+}
+
+.ds-lab .typography-reference-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--primitives-space-4);
+  margin-bottom: var(--primitives-space-6);
+}
+
+.ds-lab .typography-reference-header > * {
+  margin: 0;
+}
+
+.ds-lab .typography-recipe-list {
+  display: grid;
+  gap: 20px;
+}
+
+.ds-lab .typography-recipe {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) minmax(260px, 1.7fr);
+  align-items: baseline;
+  gap: 24px;
+  min-width: 0;
+}
+
+.ds-lab .typography-recipe-name {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ds-lab .typography-recipe-name b {
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--semantic-typography-code-small-font-family);
+  font-size: var(--semantic-typography-code-small-font-size);
+  font-weight: var(--semantic-typography-code-small-font-weight);
+  line-height: var(--semantic-typography-code-small-line-height);
+  letter-spacing: var(--semantic-typography-code-small-letter-spacing);
+  overflow-wrap: anywhere;
+}
+
+.ds-lab .typography-recipe-name span {
+  color: var(--semantic-color-foreground-muted);
+  font-family: var(--semantic-typography-body-small-font-family);
+  font-size: var(--semantic-typography-body-small-font-size);
+  font-weight: var(--semantic-typography-body-small-font-weight);
+  line-height: var(--semantic-typography-body-small-line-height);
+  letter-spacing: var(--semantic-typography-body-small-letter-spacing);
+}
+
+@media (max-width: 860px) {
+  .ds-lab .background-map {
+    min-height: 0;
+  }
+
+  .ds-lab .typography-context-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .ds-lab .segmented button {
+    min-width: 34px;
+    padding-inline: 8px;
+  }
+
+  .ds-lab .foreground-board,
+  .ds-lab .border-board {
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .ds-lab .foreground-role {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .ds-lab .action-pair,
+  .ds-lab .surface-tests,
+  .ds-lab .status-foreground-tests,
+  .ds-lab .border-special-grid,
+  .ds-lab .status-border-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ds-lab .border-lab-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ds-lab .border-size-toggle button {
+    flex: 1;
+    min-width: 0;
+    font-size: 11px;
+  }
+
+  .ds-lab .border-surface-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ds-lab .typography-recipe {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .ds-lab .typography-reference-header {
+    align-items: start;
+    flex-direction: column;
+  }
+}
