@@ -72,8 +72,8 @@
   --_foreground: var(--component-button-danger-foreground-default);
   --_foreground-disabled: var(--component-button-danger-foreground-disabled);
   --_border: var(--component-button-danger-border-default);
-  --_border-hover: var(--component-button-danger-border-default);
-  --_border-press: var(--component-button-danger-border-default);
+  --_border-hover: var(--component-button-danger-border-hover);
+  --_border-press: var(--component-button-danger-border-pressed);
   --_border-disabled: var(--component-button-danger-border-disabled);
 }
 
