@@ -25,6 +25,11 @@
           "tertiary": {
             "hover": { "$value": "{primitives.color.grayAlpha.950.5}", "$type": "color" },
             "pressed": { "$value": "{primitives.color.grayAlpha.950.9}", "$type": "color" }
+          },
+          "destructive": {
+            "default": { "$value": "{primitives.color.rust.700}", "$type": "color" },
+            "hover": { "$value": "{primitives.color.rust.800}", "$type": "color" },
+            "pressed": { "$value": "{primitives.color.rust.900}", "$type": "color" }
           }
         },
         "status": {
@@ -46,7 +51,8 @@
             "default": { "$value": "{primitives.color.gray.25}", "$type": "color" }
           },
           "action": {
-            "primary": { "$value": "{primitives.color.gray.25}", "$type": "color" }
+            "primary": { "$value": "{primitives.color.gray.25}", "$type": "color" },
+            "destructive": { "$value": "{primitives.color.gray.25}", "$type": "color" }
           }
         },
         "status": {
@@ -67,6 +73,11 @@
             "default": { "$value": "{primitives.color.robRoy.700}", "$type": "color" },
             "hover": { "$value": "{primitives.color.robRoy.800}", "$type": "color" },
             "pressed": { "$value": "{primitives.color.robRoy.900}", "$type": "color" }
+          },
+          "destructive": {
+            "default": { "$value": "{primitives.color.rust.700}", "$type": "color" },
+            "hover": { "$value": "{primitives.color.rust.800}", "$type": "color" },
+            "pressed": { "$value": "{primitives.color.rust.900}", "$type": "color" }
           }
         },
         "brand": {

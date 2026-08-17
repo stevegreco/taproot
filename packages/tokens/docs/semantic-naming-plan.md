@@ -26,6 +26,8 @@ The naming strategy is intentionally minimal:
 - Use `default` for an application's canonical baseline or the resting value in a stateful family.
 - Use `brand` for identity and non-interactive emphasis.
 - Use `action.primary` for the primary interaction hierarchy.
+- Use `action.destructive` for controls that perform destructive or difficult-to-reverse actions;
+  reserve `status.danger` for communicating a condition or outcome.
 - Do not make one semantic contract alias another merely because their current values match.
 - Use a genuinely neutral, theme-independent gray primitive scale for achromatic roles. The scale
   runs from near-white to near-black ink without inheriting a palette hue; light and dark semantics
@@ -36,7 +38,7 @@ vocabulary only when its contract is deliberately accepted.
 
 ## Background
 
-Background tokens are used only for fills. The working vocabulary currently contains 19 roles.
+Background tokens are used only for fills. The working vocabulary currently contains 20 roles.
 
 ### Foundation
 
@@ -51,9 +53,9 @@ Background tokens are used only for fills. The working vocabulary currently cont
 In the light theme, `background.surface` uses `gray.25` to provide a near-white neutral containing layer
 against the warm `background.default`. It does not imply elevation.
 
-`background.disabled` uses the proposed neutral gray scale so it does not inherit the warm cast of
-`clay` or the green cast of `blueSmoke`. The prototype currently maps it to `gray.100` in the light
-theme and `gray.900` in the dark theme.
+`background.disabled` uses the neutral gray scale so it does not inherit the warm cast of `clay` or
+the green cast of `blueSmoke`. It maps to `gray.100` in the light theme and `gray.900` in the dark
+theme.
 
 ### Brand
 
@@ -70,42 +72,53 @@ theme and `gray.900` in the dark theme.
 | `semantic.color.background.action.primary.hover`   | Hovered primary-action fill | `semantic.color.accent.hover`                      |
 | `semantic.color.background.action.primary.pressed` | Pressed primary-action fill | `semantic.color.accent.press`                      |
 
+### Destructive actions
+
+| Proposed token                                         | Purpose                         | Replaces                                                  |
+| ------------------------------------------------------ | ------------------------------- | --------------------------------------------------------- |
+| `semantic.color.background.action.destructive.default` | Resting destructive-action fill | Uses of `semantic.color.background.status.danger.default` |
+| `semantic.color.background.action.destructive.hover`   | Hovered destructive-action fill | Repeated danger-status fill in the Button component tier  |
+| `semantic.color.background.action.destructive.pressed` | Pressed destructive-action fill | Repeated danger-status fill in the Button component tier  |
+
+Destructive action fills are interactive contracts, not status surfaces. The light theme maps
+default, hover, and pressed to `rust.700`, `rust.800`, and `rust.900`; the dark theme maps them to
+`rust.400`, `rust.300`, and `rust.200`. A component may retain a public variant name such as
+`danger` while aliasing the shared destructive-action intent.
+
 ### Secondary actions
 
-| Proposed token                                       | Purpose                       | Replaces                              |
-| ---------------------------------------------------- | ----------------------------- | ------------------------------------- |
-| `semantic.color.background.action.secondary.default` | Resting secondary-action fill | New role; previously transparent      |
-| `semantic.color.background.action.secondary.hover`   | Hovered secondary-action fill | `semantic.color.background.muted`     |
-| `semantic.color.background.action.secondary.pressed` | Pressed secondary-action fill | `semantic.color.background.sunken`    |
+| Proposed token                                       | Purpose                       | Replaces                         |
+| ---------------------------------------------------- | ----------------------------- | -------------------------------- |
+| `semantic.color.background.action.secondary.default` | Resting secondary-action fill | New role; previously transparent |
+| `semantic.color.background.action.secondary.hover`   | Hovered secondary-action fill | Shared state-layer composition   |
+| `semantic.color.background.action.secondary.pressed` | Pressed secondary-action fill | Shared state-layer composition   |
 
-Secondary actions use an opaque achromatic surface so the control remains visually stable across
+Secondary actions use an opaque achromatic ramp so the control remains visually stable across
 foundation, brand, and quiet status backgrounds. The light theme maps default, hover, and pressed
 to `gray.25`, `gray.50`, and `gray.100`; the dark theme maps them to `gray.900`, `gray.800`, and
-`gray.700`. These are action-specific roles rather than aliases to foundation backgrounds because
-their state progression belongs to the interaction contract.
+`gray.700`.
 
 ### Tertiary actions
 
-| Proposed token                                      | Purpose                         | Replaces                           |
-| --------------------------------------------------- | ------------------------------- | ---------------------------------- |
-| `semantic.color.background.action.tertiary.hover`   | Hovered tertiary-action overlay | `semantic.color.background.muted`  |
-| `semantic.color.background.action.tertiary.pressed` | Pressed tertiary-action overlay | `semantic.color.background.sunken` |
+| Proposed token                                      | Purpose                          | Replaces                           |
+| --------------------------------------------------- | -------------------------------- | ---------------------------------- |
+| `semantic.color.background.action.tertiary.hover`   | Hovered low-emphasis action fill | `semantic.color.background.muted`  |
+| `semantic.color.background.action.tertiary.pressed` | Pressed low-emphasis action fill | `semantic.color.background.sunken` |
 
-Tertiary actions are transparent at rest, so no `.default` background token is published.
-`transparent` remains a literal implementation value rather than a semantic color role. Hover and
-pressed use neutral translucent overlays so the underlying semantic background remains visible.
-The light theme uses `gray.950` at 5% and 9% opacity; the dark theme uses `gray.25` at 6% and 10%
-opacity. These mappings require dedicated neutral-alpha primitives before the semantic contracts
-can be implemented; semantic tokens must alias those primitives rather than embed alpha literals.
+Tertiary actions remain transparent at rest and publish one semantic token for each interactive
+state. The light theme uses `gray.950` at 5% and 9% opacity; the dark theme uses `gray.25` at 6% and
+10% opacity. These mappings resolve through dedicated neutral-alpha primitives rather than
+embedding alpha literals in the semantic tier. There is no `.default` token because the resting
+background is literally transparent.
 
 ### Status
 
-| Proposed token                                     | Purpose                                      | Replaces                                   |
-| -------------------------------------------------- | -------------------------------------------- | ------------------------------------------ |
-| `semantic.color.background.status.success.default` | Positive outcome or confirmation fill        | `semantic.color.status.success.background` |
-| `semantic.color.background.status.warning.default` | Caution or attention-required fill           | `semantic.color.status.warning.background` |
-| `semantic.color.background.status.info.default`    | Informational or guidance fill               | `semantic.color.status.info.background`    |
-| `semantic.color.background.status.danger.default`  | Negative, error, or destructive-outcome fill | `semantic.color.status.danger.background`  |
+| Proposed token                                     | Purpose                                  | Replaces                                   |
+| -------------------------------------------------- | ---------------------------------------- | ------------------------------------------ |
+| `semantic.color.background.status.success.default` | Positive outcome or confirmation fill    | `semantic.color.status.success.background` |
+| `semantic.color.background.status.warning.default` | Caution or attention-required fill       | `semantic.color.status.warning.background` |
+| `semantic.color.background.status.info.default`    | Informational or guidance fill           | `semantic.color.status.info.background`    |
+| `semantic.color.background.status.danger.default`  | Negative condition or error-outcome fill | `semantic.color.status.danger.background`  |
 
 Only the default quiet fill is accepted. Lighter and stronger status-background variants remain
 deferred until a shipped consumer needs them. The light theme uses each hue's `100` stop. The dark
@@ -137,9 +150,9 @@ same foreground token can serve either kind of content. Disabled content is exem
 contrast requirements, but its value should still be recognisable and visibly distinct from enabled
 content.
 
-The achromatic foundation roles should resolve through the neutral `gray` scale. Exact primitive
-selections remain to be tested across `background.default`, `.surface`, `.sunken`, and `.muted` in
-both themes before they are accepted.
+The achromatic foundation roles resolve through the neutral `gray` scale. The light theme uses
+`gray.950` for default and `gray.600` for muted; the dark theme uses `gray.25` for default and
+`gray.300` for muted. These selections meet the supported background-pairing requirements.
 
 ### Brand
 
@@ -158,15 +171,16 @@ Foregrounds intended for a specific background contract use an explicit `on` seg
 semantic.color.foreground.on.<background-intent>[.<variant>][.<state>]
 ```
 
-| Proposed token                                | Purpose                                       | Supported background pair                                     |
-| --------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------- |
-| `semantic.color.foreground.on.brand.default`  | Text and icons placed on the solid brand fill | `background.brand.default`                                    |
-| `semantic.color.foreground.on.action.primary` | Text and icons placed on primary-action fills | `background.action.primary.default`, `.hover`, and `.pressed` |
+| Proposed token                                    | Purpose                                           | Supported background pair                                         |
+| ------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------- |
+| `semantic.color.foreground.on.brand.default`      | Text and icons placed on the solid brand fill     | `background.brand.default`                                        |
+| `semantic.color.foreground.on.action.primary`     | Text and icons placed on primary-action fills     | `background.action.primary.default`, `.hover`, and `.pressed`     |
+| `semantic.color.foreground.on.action.destructive` | Text and icons placed on destructive-action fills | `background.action.destructive.default`, `.hover`, and `.pressed` |
 
-`foreground.on.action.primary` has no state suffix because one foreground value is expected to meet
-contrast requirements across all three background states. Add foreground states only if the
-foreground itself must change. A generic role such as `foreground.inverse` is not proposed because
-it cannot identify or guarantee a compatible background.
+The `foreground.on.action.*` roles have no state suffix because one foreground value meets contrast
+requirements across all three states of its paired background family. Add foreground states only if
+the foreground itself must change. A generic role such as `foreground.inverse` is not proposed
+because it cannot identify or guarantee a compatible background.
 
 ### Status
 
@@ -198,7 +212,7 @@ not be inferred from the current foreground roles.
 ## Border
 
 Border tokens are used for visible boundaries: borders, dividers, outlines, and focus indicators.
-The working vocabulary contains thirteen roles. It distinguishes functional boundaries, which must remain
+The working vocabulary contains sixteen roles. It distinguishes functional boundaries, which must remain
 perceivable, from decorative boundaries, which may be quieter but cannot be the only visual cue.
 
 ### Foundation
@@ -236,11 +250,14 @@ theme maps it to `robRoy.200`; the dark theme maps it to `robRoy.800`.
 
 ### Actions
 
-| Proposed token                                 | Purpose                              |
-| ---------------------------------------------- | ------------------------------------ |
-| `semantic.color.border.action.primary.default` | Primary action boundary at rest      |
-| `semantic.color.border.action.primary.hover`   | Primary action boundary on hover     |
-| `semantic.color.border.action.primary.pressed` | Primary action boundary when pressed |
+| Proposed token                                     | Purpose                                  |
+| -------------------------------------------------- | ---------------------------------------- |
+| `semantic.color.border.action.primary.default`     | Primary action boundary at rest          |
+| `semantic.color.border.action.primary.hover`       | Primary action boundary on hover         |
+| `semantic.color.border.action.primary.pressed`     | Primary action boundary when pressed     |
+| `semantic.color.border.action.destructive.default` | Destructive action boundary at rest      |
+| `semantic.color.border.action.destructive.hover`   | Destructive action boundary on hover     |
+| `semantic.color.border.action.destructive.pressed` | Destructive action boundary when pressed |
 
 Primary action borders match their corresponding `background.action.primary` values so a filled
 control has one visually unified surface. The light theme maps default, hover, and pressed to
@@ -249,18 +266,24 @@ control has one visually unified surface. The light theme maps default, hover, a
 allowing the border role to evolve independently later. Each state must retain 3:1 non-text
 contrast against every supported foundation background.
 
+Destructive action borders likewise match their corresponding
+`background.action.destructive` values. The light theme maps default, hover, and pressed to
+`rust.700`, `rust.800`, and `rust.900`; the dark theme maps them to `rust.400`, `rust.300`, and
+`rust.200`. Each state must retain 3:1 non-text contrast against every supported foundation
+background.
+
 ### Status
 
 Status borders communicate an outcome or condition through the boundary itself. Their default roles
 must meet 3:1 against their paired quiet status background and against supported foundation
 backgrounds.
 
-| Proposed token                                 | Purpose                                 |
-| ---------------------------------------------- | --------------------------------------- |
-| `semantic.color.border.status.success.default` | Positive or confirmed boundary          |
-| `semantic.color.border.status.warning.default` | Caution or attention-required boundary  |
-| `semantic.color.border.status.info.default`    | Informational or guidance boundary      |
-| `semantic.color.border.status.danger.default`  | Error, invalid, or destructive boundary |
+| Proposed token                                 | Purpose                                   |
+| ---------------------------------------------- | ----------------------------------------- |
+| `semantic.color.border.status.success.default` | Positive or confirmed boundary            |
+| `semantic.color.border.status.warning.default` | Caution or attention-required boundary    |
+| `semantic.color.border.status.info.default`    | Informational or guidance boundary        |
+| `semantic.color.border.status.danger.default`  | Error, invalid, or danger-status boundary |
 
 Status borders use each hue's `700` stop in the light theme and `300` stop in the dark theme. This
 keeps every status boundary comfortably above 3:1 on both its quiet status fill and all supported
@@ -279,28 +302,26 @@ literal implementation value rather than a semantic color role.
 
 ## Secondary actions
 
-An outlined secondary action combines the complete `background.action.secondary` state family with
-`foreground.default` and `border.default`. Its resting fill is intentionally opaque rather than
-transparent, allowing the control to retain a consistent neutral surface when placed on any
-supported semantic background. The persistent border remains responsible for communicating the
-control boundary when the default fill matches or closely approaches its surrounding surface.
+An outlined secondary action combines the direct `background.action.secondary` state tokens,
+`foreground.default`, and `border.default`.
+Its resting fill is intentionally opaque rather than transparent, allowing the control to retain a
+consistent neutral surface when placed on any supported semantic background. The persistent border
+remains responsible for communicating the control boundary when the default fill matches or closely
+approaches its surrounding surface.
 
-Ghost actions remain transparent at rest and continue to use foundation `background.muted` and
-`background.sunken` roles for hover and pressed states until the tertiary action contract is
-implemented.
+Ghost actions remain transparent at rest and alias the direct tertiary hover and pressed tokens.
 
 ## Tertiary actions
 
 A tertiary action combines a literal transparent resting background with
-`background.action.tertiary.hover`, `background.action.tertiary.pressed`, `foreground.default`, and
-a literal transparent border. The translucent state overlays preserve the character of the
-underlying semantic surface and keep tertiary actions visually below opaque secondary actions.
+`background.action.tertiary.hover`, `background.action.tertiary.pressed`,
+`foreground.default`, and a literal transparent border. The translucent state overlays preserve
+the character of the underlying semantic surface and keep tertiary actions visually below opaque
+secondary actions.
 
 `tertiary` names the semantic hierarchy and may support text buttons, icon buttons, toolbar
 actions, and other low-emphasis controls. A component may retain a visual variant name such as
-`ghost`; its component background tokens should alias the shared tertiary semantic roles. The
-semantic vocabulary does not publish a `ghost` family because that name describes one component
-appearance rather than a reusable action intent.
+`ghost` while aliasing the shared tertiary-action contract.
 
 ## Typography
 

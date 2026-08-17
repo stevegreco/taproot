@@ -104,8 +104,14 @@
       },
       "ghost": {
         "background": {
-          "hover": { "$value": "{semantic.color.background.muted}", "$type": "color" },
-          "pressed": { "$value": "{semantic.color.background.sunken}", "$type": "color" }
+          "hover": {
+            "$value": "{semantic.color.background.action.tertiary.hover}",
+            "$type": "color"
+          },
+          "pressed": {
+            "$value": "{semantic.color.background.action.tertiary.pressed}",
+            "$type": "color"
+          }
         },
         "foreground": {
           "default": { "$value": "{semantic.color.foreground.default}", "$type": "color" },
@@ -115,29 +121,37 @@
       "danger": {
         "background": {
           "default": {
-            "$value": "{semantic.color.background.status.danger.default}",
+            "$value": "{semantic.color.background.action.destructive.default}",
             "$type": "color"
           },
           "hover": {
-            "$value": "{semantic.color.background.status.danger.default}",
+            "$value": "{semantic.color.background.action.destructive.hover}",
             "$type": "color"
           },
           "pressed": {
-            "$value": "{semantic.color.background.status.danger.default}",
+            "$value": "{semantic.color.background.action.destructive.pressed}",
             "$type": "color"
           },
           "disabled": { "$value": "{semantic.color.background.disabled}", "$type": "color" }
         },
         "foreground": {
           "default": {
-            "$value": "{semantic.color.foreground.status.danger.default}",
+            "$value": "{semantic.color.foreground.on.action.destructive}",
             "$type": "color"
           },
           "disabled": { "$value": "{semantic.color.foreground.disabled}", "$type": "color" }
         },
         "border": {
           "default": {
-            "$value": "{semantic.color.border.status.danger.default}",
+            "$value": "{semantic.color.border.action.destructive.default}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{semantic.color.border.action.destructive.hover}",
+            "$type": "color"
+          },
+          "pressed": {
+            "$value": "{semantic.color.border.action.destructive.pressed}",
             "$type": "color"
           },
           "disabled": { "$value": "{semantic.color.border.disabled}", "$type": "color" }

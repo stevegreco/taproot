@@ -23,6 +23,18 @@ function sourceLeaves(object, parts = []) {
   return leaves;
 }
 
+function hueDegrees(hex) {
+  const [r, g, b] = [1, 3, 5].map((index) => parseInt(hex.slice(index, index + 2), 16) / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  if (delta === 0) return 0;
+  const sector =
+    max === r ? ((g - b) / delta) % 6 : max === g ? (b - r) / delta + 2 : (r - g) / delta + 4;
+  return (sector * 60 + 360) % 360;
+}
+
 test("loadTokens returns tokens for both themes", () => {
   for (const theme of ["light", "dark"]) {
     const tokens = loadTokens(theme);
@@ -67,7 +79,7 @@ test("Button component tokens preserve their shared-token references", () => {
     ["component.button.secondary.border.default", "{semantic.color.border.default}"],
     [
       "component.button.danger.background.default",
-      "{semantic.color.background.status.danger.default}",
+      "{semantic.color.background.action.destructive.default}",
     ],
     ["component.button.font.lineHeight", "{semantic.typography.label.default.lineHeight}"],
     ["component.button.font.letterSpacing", "{semantic.typography.label.default.letterSpacing}"],
@@ -180,74 +192,47 @@ test("status colors expose only the accepted application contracts", () => {
 
 // ─── Secondary action background contracts ──────────────────────────────────
 
-test("secondary action background semantic contracts exist in both themes", () => {
+test("neutral actions publish one semantic token per interaction state", () => {
   for (const theme of ["light", "dark"]) {
     const tokens = byPath(loadTokens(theme));
     for (const state of ["default", "hover", "pressed"]) {
       const path = `semantic.color.background.action.secondary.${state}`;
       assert.ok(tokens.has(path), `${theme}: missing ${path}`);
     }
-  }
-});
-
-test("light theme secondary action backgrounds alias gray.25 / gray.50 / gray.100", () => {
-  const semantic = readJson(new URL("../src/tokens/semantic/light.tokens.json", import.meta.url));
-  const values = new Map(sourceLeaves(semantic));
-
-  assert.equal(
-    values.get("semantic.color.background.action.secondary.default"),
-    "{primitives.color.gray.25}",
-    "light default must alias gray.25",
-  );
-  assert.equal(
-    values.get("semantic.color.background.action.secondary.hover"),
-    "{primitives.color.gray.50}",
-    "light hover must alias gray.50",
-  );
-  assert.equal(
-    values.get("semantic.color.background.action.secondary.pressed"),
-    "{primitives.color.gray.100}",
-    "light pressed must alias gray.100",
-  );
-});
-
-test("dark theme secondary action backgrounds alias gray.900 / gray.800 / gray.700", () => {
-  const semantic = readJson(new URL("../src/tokens/semantic/dark.tokens.json", import.meta.url));
-  const values = new Map(sourceLeaves(semantic));
-
-  assert.equal(
-    values.get("semantic.color.background.action.secondary.default"),
-    "{primitives.color.gray.900}",
-    "dark default must alias gray.900",
-  );
-  assert.equal(
-    values.get("semantic.color.background.action.secondary.hover"),
-    "{primitives.color.gray.800}",
-    "dark hover must alias gray.800",
-  );
-  assert.equal(
-    values.get("semantic.color.background.action.secondary.pressed"),
-    "{primitives.color.gray.700}",
-    "dark pressed must alias gray.700",
-  );
-});
-
-test("secondary action background aliases differ between light and dark themes", () => {
-  for (const state of ["default", "hover", "pressed"]) {
-    const light = readJson(new URL("../src/tokens/semantic/light.tokens.json", import.meta.url));
-    const dark = readJson(new URL("../src/tokens/semantic/dark.tokens.json", import.meta.url));
-    const lightValues = new Map(sourceLeaves(light));
-    const darkValues = new Map(sourceLeaves(dark));
-    const path = `semantic.color.background.action.secondary.${state}`;
-    assert.notEqual(
-      lightValues.get(path),
-      darkValues.get(path),
-      `${path} must resolve to different primitives across themes`,
+    for (const state of ["hover", "pressed"]) {
+      const path = `semantic.color.background.action.tertiary.${state}`;
+      assert.ok(tokens.has(path), `${theme}: missing ${path}`);
+    }
+    assert.equal(tokens.has("semantic.color.background.action.tertiary.default"), false);
+    assert.equal(
+      [...tokens.keys()].some((path) =>
+        path.startsWith("semantic.color.background.action.stateLayer"),
+      ),
+      false,
+      `${theme}: state layers must not leak into the semantic consumer API`,
     );
   }
 });
 
-test("tertiary action backgrounds publish only hover and pressed alpha overlays", () => {
+test("secondary action bases use stable opaque neutral surfaces", () => {
+  const semantic = readJson(new URL("../src/tokens/semantic/light.tokens.json", import.meta.url));
+  const darkSemantic = readJson(
+    new URL("../src/tokens/semantic/dark.tokens.json", import.meta.url),
+  );
+  const lightValues = new Map(sourceLeaves(semantic));
+  const darkValues = new Map(sourceLeaves(darkSemantic));
+
+  assert.equal(
+    lightValues.get("semantic.color.background.action.secondary.default"),
+    "{primitives.color.gray.25}",
+  );
+  assert.equal(
+    darkValues.get("semantic.color.background.action.secondary.default"),
+    "{primitives.color.gray.900}",
+  );
+});
+
+test("tertiary actions publish direct hover and pressed tokens", () => {
   const expected = {
     light: {
       hover: "{primitives.color.grayAlpha.950.5}",
@@ -269,35 +254,113 @@ test("tertiary action backgrounds publish only hover and pressed alpha overlays"
 
     assert.equal(values.get(`${base}.hover`), expected[theme].hover);
     assert.equal(values.get(`${base}.pressed`), expected[theme].pressed);
-    assert.equal(
-      values.has(`${base}.default`),
-      false,
-      `${theme}: tertiary default is literal transparent`,
-    );
-    assert.ok(tokens.has(`${base}.hover`), `${theme}: missing published tertiary hover token`);
-    assert.ok(tokens.has(`${base}.pressed`), `${theme}: missing published tertiary pressed token`);
+    assert.equal(values.has(`${base}.default`), false, `${theme}: tertiary rests transparent`);
+    assert.ok(tokens.has(`${base}.hover`), `${theme}: missing tertiary hover token`);
+    assert.ok(tokens.has(`${base}.pressed`), `${theme}: missing tertiary pressed token`);
     assert.equal(tokens.has(`${base}.default`), false);
   }
 });
 
-test("Button secondary background component tokens alias the semantic action.secondary contracts", () => {
+test("Button neutral variants alias one semantic background per state", () => {
   const light = byPath(loadTokens("light"));
   const dark = byPath(loadTokens("dark"));
-
-  for (const [component, reference] of [
-    [
-      "component.button.secondary.background.default",
-      "{semantic.color.background.action.secondary.default}",
-    ],
-    [
-      "component.button.secondary.background.hover",
-      "{semantic.color.background.action.secondary.hover}",
-    ],
-    [
-      "component.button.secondary.background.pressed",
-      "{semantic.color.background.action.secondary.pressed}",
-    ],
+  for (const [variant, semanticFamily, states] of [
+    ["secondary", "secondary", ["default", "hover", "pressed"]],
+    ["ghost", "tertiary", ["hover", "pressed"]],
   ]) {
+    for (const state of states) {
+      const component = `component.button.${variant}.background.${state}`;
+      const reference = `{semantic.color.background.action.${semanticFamily}.${state}}`;
+      assert.equal(light.get(component), reference, `${component} must alias ${reference}`);
+      assert.equal(dark.get(component), reference, `${component} must be theme-independent`);
+    }
+  }
+  assert.equal(
+    [...light.keys()].some((path) => path.startsWith("component.button.stateLayer")),
+    false,
+  );
+});
+
+test("destructive action contracts are distinct from danger status contracts", () => {
+  const expected = {
+    light: {
+      background: ["rust.700", "rust.800", "rust.900"],
+      foreground: "gray.25",
+    },
+    dark: {
+      background: ["rust.400", "rust.300", "rust.200"],
+      foreground: "gray.950",
+    },
+  };
+
+  for (const theme of ["light", "dark"]) {
+    const semantic = readJson(
+      new URL(`../src/tokens/semantic/${theme}.tokens.json`, import.meta.url),
+    );
+    const values = new Map(sourceLeaves(semantic));
+    const states = ["default", "hover", "pressed"];
+
+    for (const [index, state] of states.entries()) {
+      const background = `semantic.color.background.action.destructive.${state}`;
+      const border = `semantic.color.border.action.destructive.${state}`;
+      const reference = `{primitives.color.${expected[theme].background[index]}}`;
+
+      assert.equal(
+        values.get(background),
+        reference,
+        `${theme}: ${background} must alias ${reference}`,
+      );
+      assert.equal(values.get(border), reference, `${theme}: ${border} must track its background`);
+    }
+
+    assert.equal(
+      values.get("semantic.color.foreground.on.action.destructive"),
+      `{primitives.color.${expected[theme].foreground}}`,
+    );
+    assert.notEqual(
+      values.get("semantic.color.background.action.destructive.default"),
+      values.get("semantic.color.background.status.danger.default"),
+      `${theme}: destructive actions must not reuse a danger status fill`,
+    );
+  }
+});
+
+test("Rust stays categorically redder than the warm brand ramp", () => {
+  const primitives = readJson(new URL("../src/tokens/primitives.tokens.json", import.meta.url));
+  const colors = primitives.primitives.color;
+
+  for (const stop of [400, 700]) {
+    const brandHue = hueDegrees(colors.robRoy[stop].$value);
+    const dangerHue = hueDegrees(colors.rust[stop].$value);
+    assert.ok(
+      brandHue - dangerHue >= 15,
+      `rust.${stop} must stay at least 15° redder than robRoy.${stop}`,
+    );
+  }
+});
+
+test("Button danger tokens alias destructive action contracts", () => {
+  const light = byPath(loadTokens("light"));
+  const dark = byPath(loadTokens("dark"));
+  const aliases = [
+    [
+      "component.button.danger.foreground.default",
+      "{semantic.color.foreground.on.action.destructive}",
+    ],
+  ];
+
+  for (const state of ["default", "hover", "pressed"]) {
+    aliases.push([
+      `component.button.danger.background.${state}`,
+      `{semantic.color.background.action.destructive.${state}}`,
+    ]);
+    aliases.push([
+      `component.button.danger.border.${state}`,
+      `{semantic.color.border.action.destructive.${state}}`,
+    ]);
+  }
+
+  for (const [component, reference] of aliases) {
     assert.equal(light.get(component), reference, `${component} must alias ${reference}`);
     assert.equal(dark.get(component), reference, `${component} must be theme-independent`);
   }

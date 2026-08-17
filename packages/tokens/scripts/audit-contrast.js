@@ -39,11 +39,17 @@ const PAIRS = [
     `content on primary action ${state}`,
   ]),
   ...["default", "hover", "pressed"].map((state) => [
-    "color.foreground.default",
-    `color.background.action.secondary.${state}`,
+    "color.foreground.on.action.destructive",
+    `color.background.action.destructive.${state}`,
     TEXT,
-    `content on secondary action ${state}`,
+    `content on destructive action ${state}`,
   ]),
+  [
+    "color.foreground.default",
+    "color.background.action.secondary.default",
+    TEXT,
+    "content on secondary action base",
+  ],
 
   // Brand content on a foundation background
   ["color.foreground.brand.default", "color.background.default", TEXT, "brand content on page"],
@@ -65,6 +71,20 @@ const PAIRS = [
       "color.background.surface",
       NON_TEXT,
       `primary action ${state} border vs surface`,
+    ],
+  ]),
+  ...["default", "hover", "pressed"].flatMap((state) => [
+    [
+      `color.border.action.destructive.${state}`,
+      "color.background.default",
+      NON_TEXT,
+      `destructive action ${state} border vs page`,
+    ],
+    [
+      `color.border.action.destructive.${state}`,
+      "color.background.surface",
+      NON_TEXT,
+      `destructive action ${state} border vs surface`,
     ],
   ]),
 
