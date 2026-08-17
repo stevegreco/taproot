@@ -16,7 +16,7 @@
     "@stevegreco/design-system-components": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.1.3",
-    "blume": "^1.3.1",
+    "blume": "^1.5.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

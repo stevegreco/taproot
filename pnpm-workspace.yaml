@@ -2,9 +2,11 @@ packages:
   - "packages/*"
   - "apps/*"
 allowBuilds:
+  '@scarf/scarf': false
   esbuild: true
   fsevents: false
   sharp: true
 minimumReleaseAgeExclude:
   - astro@6.3.7
   - blume@1.0.4
+  - blume@1.5.1
