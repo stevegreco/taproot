@@ -141,6 +141,9 @@
   --bg-action-secondary-pressed: var(--semantic-color-background-action-secondary-pressed);
   --bg-action-tertiary-hover: var(--semantic-color-background-action-tertiary-hover);
   --bg-action-tertiary-pressed: var(--semantic-color-background-action-tertiary-pressed);
+  --bg-action-destructive: var(--semantic-color-background-action-destructive-default);
+  --bg-action-destructive-hover: var(--semantic-color-background-action-destructive-hover);
+  --bg-action-destructive-pressed: var(--semantic-color-background-action-destructive-pressed);
   --bg-status-success: var(--semantic-color-background-status-success-default);
   --bg-status-warning: var(--semantic-color-background-status-warning-default);
   --bg-status-info: var(--semantic-color-background-status-info-default);
@@ -149,6 +152,7 @@
   --map-muted-ink: var(--semantic-color-foreground-muted);
   --map-on-brand: var(--semantic-color-foreground-on-brand-default);
   --map-on-primary: var(--semantic-color-foreground-on-action-primary);
+  --map-on-destructive: var(--semantic-color-foreground-on-action-destructive);
   min-height: 620px;
   padding: 24px;
   border: 1px solid color-mix(in srgb, var(--map-ink) 12%, transparent);
@@ -315,6 +319,22 @@
   background: var(--bg-action-tertiary-pressed);
 }
 
+.ds-lab .action-family.destructive .action-state {
+  color: var(--map-on-destructive);
+}
+
+.ds-lab .action-family.destructive .action-state.default {
+  background: var(--bg-action-destructive);
+}
+
+.ds-lab .action-family.destructive .action-state.hover {
+  background: var(--bg-action-destructive-hover);
+}
+
+.ds-lab .action-family.destructive .action-state.pressed {
+  background: var(--bg-action-destructive-pressed);
+}
+
 .ds-lab .disabled-sample {
   margin-top: 10px;
   padding: 11px;
@@ -360,23 +380,9 @@
 
 /* Foreground lab */
 .ds-lab .foreground-board {
-  --fg-default: #171717;
-  --fg-muted: #5f5f5f;
-  --fg-disabled: #777777;
-  --fg-brand: #a0501d;
-  --fg-on-fill: #fcfcfc;
-  --fg-page: #faf6f0;
-  --fg-surface: #fcfcfc;
-  --fg-sunken: #f2ebdf;
-  --fg-muted-bg: #e0e7e3;
-  --fg-disabled-bg: #e7e7e7;
-  --fg-brand-bg: #a0501d;
-  --fg-action-default: #a0501d;
-  --fg-action-hover: #823f1e;
-  --fg-action-pressed: #6b341c;
   min-height: 680px;
   padding: 24px;
-  border: 1px solid color-mix(in srgb, #171c1a 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-default) 12%, transparent);
   border-radius: var(--lab-radius-lg);
   color: var(--fg-default);
   background: var(--fg-page);
@@ -384,20 +390,6 @@
 }
 
 .ds-lab .foreground-board.dark {
-  --fg-default: #fcfcfc;
-  --fg-muted: #b9b9b9;
-  --fg-disabled: #777777;
-  --fg-brand: #e1ac3e;
-  --fg-on-fill: #171717;
-  --fg-page: #171c1a;
-  --fg-surface: #2c3531;
-  --fg-sunken: #0e1211;
-  --fg-muted-bg: #323d38;
-  --fg-disabled-bg: #2b2b2b;
-  --fg-brand-bg: #e1ac3e;
-  --fg-action-default: #e1ac3e;
-  --fg-action-hover: #e8c468;
-  --fg-action-pressed: #efda98;
   border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
 }
@@ -580,7 +572,7 @@
 .ds-lab .paired-card {
   padding: 16px;
   border-radius: 10px;
-  color: var(--fg-on-fill);
+  color: var(--fg-on-brand);
   background: var(--fg-brand-bg);
 }
 
@@ -615,19 +607,19 @@
 .ds-lab .action-pair-state {
   min-width: 0;
   padding: 14px 10px;
-  color: var(--fg-on-fill);
+  color: var(--action-on);
 }
 
 .ds-lab .action-pair-state.default {
-  background: var(--fg-action-default);
+  background: var(--action-default);
 }
 
 .ds-lab .action-pair-state.hover {
-  background: var(--fg-action-hover);
+  background: var(--action-hover);
 }
 
 .ds-lab .action-pair-state.pressed {
-  background: var(--fg-action-pressed);
+  background: var(--action-pressed);
 }
 
 .ds-lab .action-pair-state b {
@@ -728,22 +720,17 @@
 }
 
 .ds-lab .border-board {
-  --fg-default: #171717;
-  --fg-muted: #5f5f5f;
   min-height: 760px;
   padding: 24px;
-  border: 1px solid color-mix(in srgb, #171c1a 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-default) 12%, transparent);
   border-radius: var(--lab-radius-lg);
   color: var(--fg-default);
-  background: #faf6f0;
+  background: var(--border-page);
   box-shadow: var(--lab-shadow);
 }
 
 .ds-lab .border-board.dark {
-  --fg-default: #fcfcfc;
-  --fg-muted: #b9b9b9;
   border-color: rgba(255, 255, 255, 0.12);
-  background: #171c1a;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
 }
 
@@ -832,6 +819,52 @@
   margin-right: 3px;
   color: var(--fg-default);
   font-weight: 900;
+}
+
+.ds-lab .action-border-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ds-lab .action-border-family {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--border-surface);
+}
+
+.ds-lab .action-border-family h3 {
+  margin: 0 0 10px;
+  font-size: 11px;
+}
+
+.ds-lab .action-border-states {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.ds-lab .action-border-state {
+  min-width: 0;
+  padding: 10px 8px;
+  border: var(--lab-border-width) solid var(--action-border);
+  border-radius: 8px;
+  background: var(--action-surface);
+}
+
+.ds-lab .action-border-state b,
+.ds-lab .action-border-state code {
+  display: block;
+  overflow: hidden;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-lab .action-border-state code {
+  margin-top: 3px;
+  color: var(--fg-muted);
 }
 
 .ds-lab .border-special-grid {
@@ -1337,6 +1370,7 @@
   .ds-lab .action-pair,
   .ds-lab .surface-tests,
   .ds-lab .status-foreground-tests,
+  .ds-lab .action-border-grid,
   .ds-lab .border-special-grid,
   .ds-lab .status-border-grid {
     grid-template-columns: 1fr;

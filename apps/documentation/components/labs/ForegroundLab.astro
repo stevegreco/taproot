@@ -4,9 +4,24 @@ import "./labs.css";
 
 const lightBoard = renderForegroundBoard("light");
 const darkBoard = renderForegroundBoard("dark");
+
+const styleObject = (style: Record<string, string>) =>
+  Object.entries(style)
+    .map(([key, value]) => `${key}:${value}`)
+    .join(";");
 ---
 
 <section class="ds-lab not-prose" aria-label="Semantic foreground lab">
-  <div class="foreground-board" data-lab-theme="light" set:html={lightBoard} />
-  <div class="foreground-board dark" data-lab-theme="dark" set:html={darkBoard} />
+  <div
+    class="foreground-board"
+    data-lab-theme="light"
+    style={styleObject(lightBoard.style)}
+    set:html={lightBoard.html}
+  />
+  <div
+    class="foreground-board dark"
+    data-lab-theme="dark"
+    style={styleObject(darkBoard.style)}
+    set:html={darkBoard.html}
+  />
 </section>
