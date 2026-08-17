@@ -1,5 +1,6 @@
 import { defineConfig, type ComponentMarkdown } from "blume";
 import { palettes } from "./lib/color-palettes";
+import { semanticReferenceMarkdown, type SemanticReferenceKind } from "./lib/semantic-reference";
 
 const colorFieldGuideMarkdown: ComponentMarkdown = () =>
   [
@@ -20,6 +21,12 @@ const colorFieldGuideMarkdown: ComponentMarkdown = () =>
     ),
   ].join("\n\n");
 
+const semanticTokenReferenceMarkdown: ComponentMarkdown = ({ props }) => {
+  const kind = props.kind;
+  if (typeof kind !== "string") return null;
+  return semanticReferenceMarkdown(kind as SemanticReferenceKind);
+};
+
 export default defineConfig({
   title: "Design System",
   description: "A token-first design system for consistent, themeable interfaces.",
@@ -29,6 +36,7 @@ export default defineConfig({
   ai: {
     markdownComponents: {
       ColorFieldGuide: colorFieldGuideMarkdown,
+      SemanticTokenReference: semanticTokenReferenceMarkdown,
     },
   },
   theme: {

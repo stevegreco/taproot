@@ -1,0 +1,249 @@
+---
+import {
+  elevationReference,
+  groupedColorReference,
+  shapeReference,
+  statusPairingReference,
+  typographyReference,
+  type SemanticReferenceKind,
+} from "../lib/semantic-reference";
+import "./semantic-token-reference.css";
+
+interface Props {
+  kind: SemanticReferenceKind;
+}
+
+const { kind } = Astro.props;
+const colorKind =
+  kind === "background" || kind === "foreground" || kind === "border"
+    ? kind
+    : undefined;
+const colorGroups = colorKind ? groupedColorReference(colorKind) : undefined;
+const colorBlocks = colorGroups
+  ? [
+      ...colorGroups.sections
+        .filter((section) => section.key === "foundation" || section.key === "brand")
+        .map((section) => ({ type: "list" as const, section })),
+      ...(colorGroups.actions.length > 0 ? [{ type: "actions" as const }] : []),
+      ...colorGroups.sections
+        .filter((section) => section.key !== "foundation" && section.key !== "brand")
+        .map((section) => ({ type: "list" as const, section })),
+    ]
+  : [];
+const statusPairings = kind === "status-pairings" ? statusPairingReference() : [];
+const typographyRecipes = kind === "typography" ? typographyReference() : [];
+const elevations = kind === "elevation" ? elevationReference() : [];
+const shapes = kind === "shape" ? shapeReference() : [];
+---
+
+{
+  colorGroups && colorKind && (
+    <div class="semantic-reference semantic-reference--grouped not-prose">
+      {colorBlocks.map((block) =>
+        block.type === "list" ? (
+          <section class="semantic-reference__group">
+            <h4>{block.section.title}</h4>
+            <div class="semantic-reference__list">
+              {block.section.tokens.map((token) => (
+                <div class="semantic-reference__row">
+                  <span
+                    class={`semantic-reference__color semantic-reference__color--${colorKind}`}
+                    style={`--reference-token: var(${token.cssVariable})`}
+                    aria-hidden="true"
+                  >
+                    {colorKind === "foreground" ? "Aa" : ""}
+                  </span>
+                  <div class="semantic-reference__row-content">
+                    <strong>{token.sectionRole}</strong>
+                    <code>{token.cssVariable}</code>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <section class="semantic-reference__group">
+            <h4>Actions</h4>
+            <div class="semantic-reference__actions">
+              {colorGroups.actions.map((action) => (
+                <article class="semantic-reference__action">
+                  <header>
+                    <h5>{action.family}</h5>
+                    <span>{action.cells.size} states</span>
+                  </header>
+                  <div class="semantic-reference__action-states">
+                    {colorGroups.states.flatMap((state) => {
+                      const cell = action.cells.get(state);
+                      if (!cell) return [];
+                      const token = cell.tokens[0];
+                      return (
+                        <div class="semantic-reference__action-state">
+                          {token ? (
+                            <span
+                              class={`semantic-reference__color semantic-reference__color--${colorKind}`}
+                              style={`--reference-token: var(${token.cssVariable})`}
+                              aria-hidden="true"
+                            >
+                              {colorKind === "foreground" ? "Aa" : ""}
+                            </span>
+                          ) : (
+                            <span class="semantic-reference__transparent" aria-hidden="true" />
+                          )}
+                          <div class="semantic-reference__row-content">
+                            <strong>{state[0].toUpperCase() + state.slice(1)}</strong>
+                            {token ? <code>{token.cssVariable}</code> : <span>Transparent</span>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        ),
+      )}
+    </div>
+  )
+}
+
+{
+  statusPairings.length > 0 && (
+    <div class="semantic-reference semantic-reference__pairings not-prose">
+      {statusPairings.map((row) => (
+        <article class="semantic-reference__pairing">
+          <h4>{row.intent}</h4>
+          {(["background", "foreground", "border"] as const).map((group) => {
+            const token = row.tokens.get(group);
+            return token ? (
+              <div class="semantic-reference__row">
+                <span
+                  class={`semantic-reference__color semantic-reference__color--${group}`}
+                  style={`--reference-token: var(${token.cssVariable})`}
+                  aria-hidden="true"
+                >
+                  {group === "foreground" ? "Aa" : ""}
+                </span>
+                <div class="semantic-reference__row-content">
+                  <strong>{group[0].toUpperCase() + group.slice(1)}</strong>
+                  <code>{token.cssVariable}</code>
+                </div>
+              </div>
+            ) : null;
+          })}
+        </article>
+      ))}
+    </div>
+  )
+}
+
+{
+  typographyRecipes.length > 0 && (
+    <div class="semantic-reference semantic-reference--recipes not-prose">
+      {typographyRecipes.map((recipe) => {
+        const variables = new Map(
+          recipe.tokens.map((token) => [token.path.split(".").at(-1), token.cssVariable]),
+        );
+        const style = [
+          `font-family: var(${variables.get("fontFamily")})`,
+          `font-size: var(${variables.get("fontSize")})`,
+          `font-weight: var(${variables.get("fontWeight")})`,
+          `line-height: var(${variables.get("lineHeight")})`,
+          `letter-spacing: var(${variables.get("letterSpacing")})`,
+        ].join(";");
+
+        return (
+          <article class="semantic-reference__recipe">
+            <header>
+              <strong>{recipe.label}</strong>
+              <code>{recipe.path}.*</code>
+            </header>
+            <p style={style}>Make structure visible without shouting.</p>
+            <details>
+              <summary>Show the five CSS variables</summary>
+              <ul>
+                {recipe.tokens.map((token) => (
+                  <li>
+                    <code>{token.cssVariable}</code>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </article>
+        );
+      })}
+    </div>
+  )
+}
+
+{
+  elevations.length > 0 && (
+    <div class="semantic-reference semantic-reference--specimens not-prose">
+      {elevations.map((token) => (
+        <article class="semantic-reference__specimen">
+          <span
+            class="semantic-reference__elevation"
+            style={`box-shadow: var(${token.cssVariable})`}
+            aria-hidden="true"
+          />
+          <strong>{token.role}</strong>
+          <code>{token.cssVariable}</code>
+        </article>
+      ))}
+    </div>
+  )
+}
+
+{
+  shapes.length > 0 && (
+    <div class="semantic-reference semantic-reference--specimens not-prose">
+      {shapes.map((token) => (
+        <article class="semantic-reference__specimen">
+          <span
+            class="semantic-reference__shape"
+            style={`border-radius: var(${token.cssVariable})`}
+            aria-hidden="true"
+          />
+          <strong>{token.role}</strong>
+          <code>{token.cssVariable}</code>
+        </article>
+      ))}
+    </div>
+  )
+}
+
+{
+  kind === "example" && (
+    <div class="semantic-example not-prose">
+      <article class="semantic-example__card">
+        <div class="semantic-example__eyebrow">Account security</div>
+        <h3>Protect your recovery options</h3>
+        <p>
+          Add a second recovery method so you can regain access if your primary device is
+          unavailable.
+        </p>
+        <div class="semantic-example__status">
+          <span aria-hidden="true">✓</span>
+          Email recovery is active
+        </div>
+        <div class="semantic-example__actions">
+          <span class="semantic-example__primary">Add recovery method</span>
+          <span class="semantic-example__secondary">Not now</span>
+        </div>
+      </article>
+      <div class="semantic-example__key">
+        <strong>Tokens in this example</strong>
+        <ul>
+          <li><code>--semantic-color-background-surface</code></li>
+          <li><code>--semantic-color-foreground-default</code></li>
+          <li><code>--semantic-color-foreground-muted</code></li>
+          <li><code>--semantic-color-border-subtle</code></li>
+          <li><code>--semantic-color-background-status-success-default</code></li>
+          <li><code>--semantic-color-foreground-status-success-default</code></li>
+          <li><code>--semantic-radius-surface</code></li>
+          <li><code>--semantic-elevation-sm</code></li>
+        </ul>
+      </div>
+    </div>
+  )
+}

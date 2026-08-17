@@ -1,0 +1,322 @@
+.semantic-reference,
+.semantic-example {
+  margin-block: 1.25rem 2rem;
+}
+
+.semantic-reference--grouped {
+  display: grid;
+  gap: 2rem;
+}
+
+.semantic-reference__group h4,
+.semantic-reference__pairing h4 {
+  margin-block: 0 0.65rem;
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--semantic-typography-heading-small-font-family);
+  font-size: var(--semantic-typography-heading-small-font-size);
+  font-weight: var(--semantic-typography-heading-small-font-weight);
+  line-height: var(--semantic-typography-heading-small-line-height);
+  letter-spacing: var(--semantic-typography-heading-small-letter-spacing);
+}
+
+.semantic-reference__list,
+.semantic-reference__action,
+.semantic-reference__pairing {
+  overflow: hidden;
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  background: var(--semantic-color-background-surface);
+}
+
+.semantic-reference__row,
+.semantic-reference__action-state {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: center;
+  min-width: 0;
+  padding: 0.75rem 0.9rem;
+  border-block-end: 1px solid var(--semantic-color-border-subtle);
+}
+
+.semantic-reference__row:last-child,
+.semantic-reference__action-state:last-child {
+  border-block-end: 0;
+}
+
+.semantic-reference__row-content {
+  display: grid;
+  min-width: 0;
+  gap: 0.18rem;
+}
+
+.semantic-reference__row-content strong {
+  color: var(--semantic-color-foreground-muted);
+  font-size: var(--semantic-typography-label-small-font-size);
+  font-weight: var(--semantic-typography-label-small-font-weight);
+  line-height: var(--semantic-typography-label-small-line-height);
+}
+
+.semantic-reference code,
+.semantic-example code {
+  display: block;
+  min-width: 0;
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--semantic-typography-code-small-font-family);
+  font-size: var(--semantic-typography-code-small-font-size);
+  line-height: var(--semantic-typography-code-small-line-height);
+  overflow-wrap: anywhere;
+}
+
+.semantic-reference__color {
+  display: inline-grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: var(--semantic-radius-control);
+  background-color: var(--semantic-color-background-default);
+  background-image:
+    linear-gradient(45deg, rgb(127 127 127 / 10%) 25%, transparent 25%),
+    linear-gradient(-45deg, rgb(127 127 127 / 10%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgb(127 127 127 / 10%) 75%),
+    linear-gradient(-45deg, transparent 75%, rgb(127 127 127 / 10%) 75%);
+  background-position:
+    0 0,
+    0 0.25rem,
+    0.25rem -0.25rem,
+    -0.25rem 0;
+  background-size: 0.5rem 0.5rem;
+}
+
+.semantic-reference__color--background {
+  background: var(--reference-token);
+  box-shadow: inset 0 0 0 1px var(--semantic-color-border-subtle);
+}
+
+.semantic-reference__color--foreground {
+  color: var(--reference-token);
+  font-weight: 700;
+}
+
+.semantic-reference__color--border {
+  border: 3px solid var(--reference-token);
+}
+
+.semantic-reference__actions,
+.semantic-reference__pairings {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.semantic-reference__action header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-block-end: 1px solid var(--semantic-color-border-subtle);
+  background: var(--semantic-color-background-muted);
+}
+
+.semantic-reference__action h5,
+.semantic-reference__pairing h4 {
+  margin: 0;
+  color: var(--semantic-color-foreground-default);
+}
+
+.semantic-reference__action header > span {
+  color: var(--semantic-color-foreground-muted);
+  font-size: var(--semantic-typography-label-small-font-size);
+}
+
+.semantic-reference__transparent {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px dashed var(--semantic-color-border-default);
+  border-radius: var(--semantic-radius-control);
+  background:
+    linear-gradient(45deg, rgb(127 127 127 / 10%) 25%, transparent 25%),
+    linear-gradient(-45deg, rgb(127 127 127 / 10%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgb(127 127 127 / 10%) 75%),
+    linear-gradient(-45deg, transparent 75%, rgb(127 127 127 / 10%) 75%);
+  background-position:
+    0 0,
+    0 0.25rem,
+    0.25rem -0.25rem,
+    -0.25rem 0;
+  background-size: 0.5rem 0.5rem;
+}
+
+.semantic-reference__pairing h4 {
+  padding: 0.75rem 0.9rem;
+  border-block-end: 1px solid var(--semantic-color-border-subtle);
+  background: var(--semantic-color-background-muted);
+}
+
+.semantic-reference--recipes {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.semantic-reference__recipe {
+  padding: 1rem;
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  background: var(--semantic-color-background-surface);
+}
+
+.semantic-reference__recipe header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.semantic-reference__recipe p {
+  margin-block: 1rem;
+  color: var(--semantic-color-foreground-default);
+}
+
+.semantic-reference__recipe details,
+.semantic-reference__recipe ul {
+  margin: 0;
+}
+
+.semantic-reference__recipe summary {
+  color: var(--semantic-color-foreground-muted);
+  cursor: pointer;
+  font-size: var(--semantic-typography-label-small-font-size);
+}
+
+.semantic-reference__recipe ul {
+  padding-block-start: 0.75rem;
+}
+
+.semantic-reference--specimens {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.75rem;
+}
+
+.semantic-reference__specimen {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  background: var(--semantic-color-background-surface);
+}
+
+.semantic-reference__elevation,
+.semantic-reference__shape {
+  display: block;
+  width: 4rem;
+  height: 4rem;
+  margin: 0.5rem auto 1rem;
+  background: var(--semantic-color-background-default);
+}
+
+.semantic-reference__shape {
+  border: 2px solid var(--semantic-color-border-strong);
+  background: var(--semantic-color-background-muted);
+}
+
+.semantic-example {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(13rem, 0.65fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.semantic-example__card,
+.semantic-example__key {
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  background: var(--semantic-color-background-surface);
+}
+
+.semantic-example__card {
+  padding: 1.5rem;
+  box-shadow: var(--semantic-elevation-sm);
+  color: var(--semantic-color-foreground-default);
+}
+
+.semantic-example__eyebrow {
+  color: var(--semantic-color-foreground-brand-default);
+  font-family: var(--semantic-typography-eyebrow-font-family);
+  font-size: var(--semantic-typography-eyebrow-font-size);
+  font-weight: var(--semantic-typography-eyebrow-font-weight);
+  line-height: var(--semantic-typography-eyebrow-line-height);
+  letter-spacing: var(--semantic-typography-eyebrow-letter-spacing);
+  text-transform: uppercase;
+}
+
+.semantic-example__card h3 {
+  margin-block: 0.5rem;
+  font-family: var(--semantic-typography-heading-small-font-family);
+  font-size: var(--semantic-typography-heading-small-font-size);
+  font-weight: var(--semantic-typography-heading-small-font-weight);
+  line-height: var(--semantic-typography-heading-small-line-height);
+  letter-spacing: var(--semantic-typography-heading-small-letter-spacing);
+}
+
+.semantic-example__card p {
+  margin-block: 0 1rem;
+  color: var(--semantic-color-foreground-muted);
+}
+
+.semantic-example__status {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: var(--semantic-radius-control);
+  background: var(--semantic-color-background-status-success-default);
+  color: var(--semantic-color-foreground-status-success-default);
+}
+
+.semantic-example__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block-start: 1rem;
+}
+
+.semantic-example__primary,
+.semantic-example__secondary {
+  padding: 0.55rem 0.85rem;
+  border: 1px solid;
+  border-radius: var(--semantic-radius-control);
+  font-weight: var(--semantic-typography-label-default-font-weight);
+}
+
+.semantic-example__primary {
+  border-color: var(--semantic-color-border-action-primary-default);
+  background: var(--semantic-color-background-action-primary-default);
+  color: var(--semantic-color-foreground-on-action-primary);
+}
+
+.semantic-example__secondary {
+  border-color: var(--semantic-color-border-default);
+  background: var(--semantic-color-background-action-secondary-default);
+  color: var(--semantic-color-foreground-default);
+}
+
+.semantic-example__key {
+  padding: 1rem;
+}
+
+.semantic-example__key ul {
+  display: grid;
+  gap: 0.45rem;
+  margin-block: 0.75rem 0;
+  padding-inline-start: 1.1rem;
+}
+
+@media (max-width: 48rem) {
+  .semantic-example {
+    grid-template-columns: 1fr;
+  }
+}

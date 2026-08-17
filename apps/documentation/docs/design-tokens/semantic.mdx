@@ -1,0 +1,225 @@
+---
+title: Semantic Tokens
+description: Choose intent-based color, typography, elevation, and shape roles for product interfaces.
+---
+
+Semantic tokens describe what a visual decision is **for**. They are the normal styling API for
+components and product interfaces because their intent remains stable when themes or primitive
+values change.
+
+:::note
+Choose a token because its name matches the role, not because its current value looks right.
+:::
+
+## Choose a semantic token
+
+1. Identify the CSS property you need to style.
+2. Name the role that property serves in the interface.
+3. Choose from the matching semantic group.
+4. Use a primitive only when no semantic contract expresses that role.
+
+Keep application groups separate: backgrounds style fills, foregrounds style visible content, and
+borders style boundaries.
+
+```css
+.card {
+  background: var(--semantic-color-background-surface);
+  border: 1px solid var(--semantic-color-border-subtle);
+  color: var(--semantic-color-foreground-default);
+  border-radius: var(--semantic-radius-surface);
+  box-shadow: var(--semantic-elevation-sm);
+}
+```
+
+## Color
+
+Semantic colors are organized by the property they style and the intent they communicate.
+
+| Group      | Use for                                           | Example                               |
+| ---------- | ------------------------------------------------- | ------------------------------------- |
+| Background | Fills behind content                              | `--semantic-color-background-surface` |
+| Foreground | Text, icons, and SVG content                      | `--semantic-color-foreground-muted`   |
+| Border     | Borders, dividers, outlines, and focus indicators | `--semantic-color-border-focus`       |
+
+### Background
+
+Background roles describe the purpose of a fill. Foundation roles establish page structure; brand,
+action, and status roles communicate more specific intent.
+
+| Family             | Roles                                               | Use for                                                                |
+| ------------------ | --------------------------------------------------- | ---------------------------------------------------------------------- |
+| Foundation         | `default`, `surface`, `sunken`, `muted`, `disabled` | Page hierarchy, containers, recessed regions, and unavailable controls |
+| Brand              | `default`, `muted`                                  | Prominent and quiet branded surfaces                                   |
+| Primary action     | `default`, `hover`, `pressed`                       | The strongest action in a context                                      |
+| Secondary action   | `default`, `hover`, `pressed`                       | Opaque supporting actions                                              |
+| Tertiary action    | `hover`, `pressed`                                  | Low-emphasis actions that are transparent at rest                      |
+| Destructive action | `default`, `hover`, `pressed`                       | Actions that delete or cause irreversible change                       |
+| Status             | `success`, `warning`, `info`, `danger`              | Quiet feedback and messaging surfaces                                  |
+
+Every interactive state has one semantic token. Secondary actions publish opaque default, hover,
+and pressed fills. Tertiary actions remain transparent at rest and publish direct hover and pressed
+fills. Destructive action fills and danger-status fills are separate contracts: one signals an
+action, while the other communicates a condition.
+
+<SemanticTokenReference kind="background" />
+
+```css
+.primary-action {
+  background: var(--semantic-color-background-action-primary-default);
+}
+
+.primary-action:hover {
+  background: var(--semantic-color-background-action-primary-hover);
+}
+```
+
+[Explore background roles in the lab](/labs/background).
+
+### Foreground
+
+Foreground roles style visible content. Use an explicit `on` token when content sits on a strong
+brand or action fill.
+
+| Family     | Roles                                  | Use for                                              |
+| ---------- | -------------------------------------- | ---------------------------------------------------- |
+| Foundation | `default`, `muted`, `disabled`         | Primary, supporting, and unavailable content         |
+| Brand      | `default`                              | Branded text or icons on compatible neutral surfaces |
+| On brand   | `default`                              | Content placed on the default brand background       |
+| On action  | `primary`, `destructive`               | Content placed on strong action fills                |
+| Status     | `success`, `warning`, `info`, `danger` | Status-colored text and icons                        |
+
+Do not choose a foreground by contrast alone. Its name must identify the background family it
+supports.
+
+<SemanticTokenReference kind="foreground" />
+
+```css
+.primary-action {
+  color: var(--semantic-color-foreground-on-action-primary);
+}
+```
+
+[Review supported foreground pairings in the lab](/labs/foreground).
+
+### Border
+
+Border roles style visible boundaries. Functional boundaries must remain distinguishable from
+their supported surfaces; decorative boundaries must not be the only visual cue.
+
+| Family             | Roles                                              | Use for                                                                  |
+| ------------------ | -------------------------------------------------- | ------------------------------------------------------------------------ |
+| Foundation         | `default`, `strong`, `subtle`, `disabled`, `focus` | Controls, emphasis, decoration, unavailable states, and focus indication |
+| Primary action     | `default`, `hover`, `pressed`                      | Primary action boundaries                                                |
+| Destructive action | `default`, `hover`, `pressed`                      | Destructive action boundaries                                            |
+| Brand              | `muted`                                            | Decorative brand boundaries                                              |
+| Status             | `success`, `warning`, `info`, `danger`             | Feedback and messaging boundaries                                        |
+
+<SemanticTokenReference kind="border" />
+
+[Compare border roles against supported surfaces](/labs/border).
+
+### Supported status pairings
+
+Each status publishes a background, foreground, and border contract. Use tokens from the same
+status family when composing feedback surfaces; the shared intent communicates the pairing rather
+than the tokens' current resolved values.
+
+<SemanticTokenReference kind="status-pairings" />
+
+## Typography
+
+Typography tokens are complete recipes. Each recipe publishes `font-family`, `font-size`,
+`font-weight`, `line-height`, and `letter-spacing` leaves beneath the same semantic path.
+
+| Recipe  | Variants                    | Use for                                 |
+| ------- | --------------------------- | --------------------------------------- |
+| Heading | `large`, `default`, `small` | Page and section hierarchy              |
+| Body    | `default`, `small`          | Reading and supporting copy             |
+| Label   | `default`, `small`          | Controls, metadata, and compact UI text |
+| Eyebrow | —                           | Short overlines and category labels     |
+| Code    | `default`, `small`          | Code and machine-readable values        |
+
+Apply all five leaves when adopting a recipe. Swap the whole recipe when the text role changes.
+
+<SemanticTokenReference kind="typography" />
+
+```css
+.card-title {
+  font-family: var(--semantic-typography-heading-small-font-family);
+  font-size: var(--semantic-typography-heading-small-font-size);
+  font-weight: var(--semantic-typography-heading-small-font-weight);
+  line-height: var(--semantic-typography-heading-small-line-height);
+  letter-spacing: var(--semantic-typography-heading-small-letter-spacing);
+}
+```
+
+[Review every typography recipe in context](/labs/typography).
+
+## Elevation
+
+Elevation tokens describe depth rather than a particular shadow value. Theme-specific mappings
+keep raised and inset surfaces legible without consumers changing tokens.
+
+<SemanticTokenReference kind="elevation" />
+
+[Compare elevation roles in both themes](/labs/elevation).
+
+## Shape
+
+Shape tokens describe the kind of object being rounded, keeping usage stable if the radius scale
+changes.
+
+<SemanticTokenReference kind="shape" />
+
+[Review the shape vocabulary](/labs/shape).
+
+## Theming
+
+Semantic color and elevation tokens resolve to the active theme. Consumers keep the same token
+names when switching between light and dark.
+
+```html
+<html data-theme="dark"></html>
+```
+
+```js
+document.documentElement.setAttribute("data-theme", "dark");
+document.documentElement.removeAttribute("data-theme"); // Light theme
+```
+
+Typography and shape mappings are theme-independent. For an intentionally always-dark region,
+define local aliases with known contrast relationships instead of relying on the global theme
+switch.
+
+## Composed example
+
+This card uses semantic contracts across color, typography, elevation, and shape. Its token names
+remain unchanged when the site theme changes.
+
+<SemanticTokenReference kind="example" />
+
+## Explore the labs
+
+The labs show the current token values in context. Use them to compare themes, interaction states,
+and supported contrast pairings; use this page as the consumption contract.
+
+<CardGroup cols={2}>
+  <Card title="Background" href="/labs/background" icon="layers">
+    Compare foundation, brand, action, and status fills.
+  </Card>
+  <Card title="Foreground" href="/labs/foreground" icon="type">
+    Review visible content and supported background pairings.
+  </Card>
+  <Card title="Border" href="/labs/border" icon="square">
+    Compare functional and decorative boundaries.
+  </Card>
+  <Card title="Typography" href="/labs/typography" icon="text">
+    Review complete type recipes in product context.
+  </Card>
+  <Card title="Elevation" href="/labs/elevation" icon="gallery-vertical-end">
+    Compare raised and inset depth roles.
+  </Card>
+  <Card title="Shape" href="/labs/shape" icon="shapes">
+    Review control, surface, and pill radii.
+  </Card>
+</CardGroup>
