@@ -37,6 +37,16 @@ Every published semantic color must respond meaningfully to theme selection unle
 documented exemption is added to the parity audit. `foreground.disabled` is currently exempt: the
 same neutral gray remains recognizable and appropriately de-emphasized in both themes.
 
+### Explicit themes override the system preference
+
+When the root element has no `data-theme` attribute, CSS selects the light or dark semantic theme
+from `prefers-color-scheme`. Light remains the default when the browser does not expose a
+preference.
+
+`data-theme="light"` and `data-theme="dark"` override the system preference. Removing the
+attribute restores automatic selection. The CSS also publishes the matching `color-scheme` value
+so browser-controlled interface elements follow the active theme.
+
 ### Interaction states move away from the page background
 
 For an accepted stateful family such as
@@ -70,6 +80,7 @@ Disabled colors remain recognizable but are exempt from WCAG minimum contrast re
 ## Consequences
 
 - Light and dark semantic files maintain structural parity.
+- CSS consumers follow the system color preference until the product sets an explicit root theme.
 - Component aliases inherit theme changes by referencing semantic variables; components without a published component contract consume semantic variables directly.
 - The contrast audit encodes supported foreground/background and border/background pairings.
 - The parity audit enforces theme response and interaction-state direction.

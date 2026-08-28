@@ -91,18 +91,28 @@ Primitives  →  Semantic  →  Component (optional)
 | `foreground.on`             | `--semantic-color-foreground-on-action-primary`      | Content paired with a specific fill     |
 | `*.status.*`                | `--semantic-color-background-status-success-default` | Feedback surfaces, content, and borders |
 
-## Theming (dark mode)
+## Theming
 
-Set `data-theme="dark"` on the `<html>` element to activate the dark theme. All semantic tokens resolve to their dark values automatically — no class changes needed anywhere else.
+With no `data-theme` attribute on `<html>`, semantic tokens follow the user's system preference. A
+dark system preference activates the dark theme through `prefers-color-scheme`; light is the
+default.
+
+Set `data-theme` to override the system preference. The attribute always takes priority.
 
 ```html
+<html data-theme="light"></html>
 <html data-theme="dark"></html>
 ```
 
 ```js
 document.documentElement.setAttribute("data-theme", "dark");
-document.documentElement.removeAttribute("data-theme"); // back to light
+document.documentElement.setAttribute("data-theme", "light");
+document.documentElement.removeAttribute("data-theme"); // follow the system preference
 ```
+
+When the attribute is absent, changes to the system preference apply without JavaScript or a page
+refresh. The stylesheet also sets `color-scheme`, so supported browser controls and scrollbars
+match the active theme.
 
 The sidebar and other always-dark surfaces should define their own local aliases referencing primitive tokens, since they are not affected by the semantic theme switch.
 
@@ -133,7 +143,7 @@ The CSS build needs no such split: `dist/css/tokens.css` carries both themes and
 | `dist/tokens/primitives.json`     | Raw primitive scale values                           |
 | `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme             |
 | `dist/tokens/semantic.dark.json`  | Resolved semantic tokens for dark theme              |
-| `dist/tokens/components.json`       | Theme-independent references to shared tokens       |
+| `dist/tokens/components.json`     | Theme-independent references to shared tokens        |
 
 ## Building from source
 

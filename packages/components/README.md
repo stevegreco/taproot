@@ -25,8 +25,9 @@ Load the token stylesheet once, then import the components.
 
 The stylesheet is required: every colour, space and radius the button paints with
 is a CSS custom property published by the tokens package. Because custom
-properties are inherited, they cross the shadow boundary on their own — switching
-`<html data-theme="dark">` re-themes the button with no JavaScript.
+properties are inherited, they cross the shadow boundary on their own. With no
+`data-theme`, components follow the system color preference. Setting
+`<html data-theme="light">` or `<html data-theme="dark">` overrides it.
 
 To register selectively, or under a different tag name:
 

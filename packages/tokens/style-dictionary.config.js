@@ -31,6 +31,28 @@ export const primitivesConfig = {
 };
 
 export function semanticConfig(theme) {
+  const cssFiles = [
+    {
+      destination: `semantic.${theme}.css`,
+      format: "css/variables",
+      filter: (token) => token.path[0] === "semantic",
+      options: {
+        selector: theme === "light" ? ":root" : `:root[data-theme="${theme}"]`,
+      },
+    },
+  ];
+
+  if (theme === "dark") {
+    cssFiles.push({
+      destination: "semantic.dark.system.css",
+      format: "css/variables",
+      filter: (token) => token.path[0] === "semantic",
+      options: {
+        selector: ":root:not([data-theme])",
+      },
+    });
+  }
+
   return {
     source: [
       "src/tokens/primitives.tokens.json",
@@ -42,16 +64,7 @@ export function semanticConfig(theme) {
       css: {
         transformGroup: "css",
         buildPath: "dist/css/",
-        files: [
-          {
-            destination: `semantic.${theme}.css`,
-            format: "css/variables",
-            filter: (token) => token.path[0] === "semantic",
-            options: {
-              selector: theme === "light" ? ":root" : `:root[data-theme="${theme}"]`,
-            },
-          },
-        ],
+        files: cssFiles,
       },
       tokensJson: {
         transformGroup: "js",
