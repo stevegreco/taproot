@@ -27,7 +27,7 @@ for (const file of stylesheets) {
     target,
     `// Generated from src/${file}. Do not edit.\n` +
       `export const styles = ${JSON.stringify(css)};\n`,
-    "utf8"
+    "utf8",
   );
 
   console.log(`src/${file} → ${target}`);

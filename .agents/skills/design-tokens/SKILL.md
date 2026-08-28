@@ -13,11 +13,11 @@ description: >
 Primitive and semantic tokens form the shared foundation. A component tier is optional and exists
 only where a published component contract adds a useful customization boundary.
 
-| Tier | Prefix | Purpose | When to use |
-| --- | --- | --- | --- |
-| Primitive | `primitives.*` | Raw scale values such as color, spacing, and type | Use only when no published semantic token fits. |
-| Semantic | `semantic.*` | Intent-named aliases such as background, foreground, border, and status | The normal styling API for components and product interfaces. |
-| Component | `component.*` | Component-scoped aliases over current primitive and semantic contracts | Use when styling or customizing a component with a published component contract. |
+| Tier      | Prefix         | Purpose                                                                 | When to use                                                                      |
+| --------- | -------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Primitive | `primitives.*` | Raw scale values such as color, spacing, and type                       | Use only when no published semantic token fits.                                  |
+| Semantic  | `semantic.*`   | Intent-named aliases such as background, foreground, border, and status | The normal styling API for components and product interfaces.                    |
+| Component | `component.*`  | Component-scoped aliases over current primitive and semantic contracts  | Use when styling or customizing a component with a published component contract. |
 
 ## Rules
 

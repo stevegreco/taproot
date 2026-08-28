@@ -34,8 +34,7 @@ export function flatten(obj, parts = []) {
         cssVariable: "--" + path.map(kebabCase).join("-"),
         value: String(val),
         type: inferType(val),
-        tier:
-          root === "primitives" ? "primitive" : root === "semantic" ? "semantic" : "component",
+        tier: root === "primitives" ? "primitive" : root === "semantic" ? "semantic" : "component",
       });
     }
   }

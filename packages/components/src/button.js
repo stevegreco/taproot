@@ -10,7 +10,6 @@
 // Generated from src/button.css by build-styles.js (run `pnpm run build`).
 import { styles } from "../dist/button.styles.js";
 
-
 /** Shared across every instance; built lazily so importing this module is safe on a server. */
 let sheet;
 

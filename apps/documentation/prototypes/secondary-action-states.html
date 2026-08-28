@@ -14,7 +14,11 @@
       }
 
       :root {
-        font-family: var(--semantic-typography-body-default-font-family, "Source Sans 3", sans-serif);
+        font-family: var(
+          --semantic-typography-body-default-font-family,
+          "Source Sans 3",
+          sans-serif
+        );
         color: var(--semantic-color-foreground-default);
         background: var(--semantic-color-background-default);
       }
@@ -39,11 +43,7 @@
         padding: 5px;
         border: 1px solid var(--semantic-color-border-subtle);
         border-radius: var(--semantic-radius-pill);
-        background: color-mix(
-          in srgb,
-          var(--semantic-color-background-surface) 92%,
-          transparent
-        );
+        background: color-mix(in srgb, var(--semantic-color-background-surface) 92%, transparent);
         box-shadow: var(--semantic-elevation-md);
         backdrop-filter: blur(14px);
         transform: translateX(-50%);
@@ -241,8 +241,7 @@
         transition:
           background-color var(--component-button-motion-duration)
             var(--component-button-motion-easing),
-          border-color var(--component-button-motion-duration)
-            var(--component-button-motion-easing);
+          border-color var(--component-button-motion-duration) var(--component-button-motion-easing);
       }
 
       .secondary-button.force-hover,
@@ -428,7 +427,9 @@
             .forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
           document
             .querySelectorAll("[data-variant]")
-            .forEach((variant) => (variant.dataset.active = String(variant.dataset.variant === id)));
+            .forEach(
+              (variant) => (variant.dataset.active = String(variant.dataset.variant === id)),
+            );
         });
       });
 

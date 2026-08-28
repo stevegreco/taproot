@@ -1,10 +1,4 @@
-export type BadgeVariant =
-  | "default"
-  | "accent"
-  | "success"
-  | "danger"
-  | "warning"
-  | "info";
+export type BadgeVariant = "default" | "accent" | "success" | "danger" | "warning" | "info";
 
 export declare class DsBadge extends HTMLElement {
   /** Reflects the `variant` attribute. Defaults to `"default"`. */

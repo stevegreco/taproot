@@ -73,10 +73,10 @@ Primitives  →  Semantic  →  Component (optional)
   (scale)       (intent)       (scoped API)
 ```
 
-| Tier          | Prefix           | Use when                                            |
-| ------------- | ---------------- | --------------------------------------------------- |
-| **Primitive** | `--primitives-*` | No semantic role expresses the raw scale choice     |
-| **Semantic**  | `--semantic-*`   | Styling components and product interfaces by intent |
+| Tier          | Prefix           | Use when                                                     |
+| ------------- | ---------------- | ------------------------------------------------------------ |
+| **Primitive** | `--primitives-*` | No semantic role expresses the raw scale choice              |
+| **Semantic**  | `--semantic-*`   | Styling components and product interfaces by intent          |
 | **Component** | `--component-*`  | Styling or customizing a component with a published contract |
 
 ### Semantic token groups
@@ -137,13 +137,13 @@ The CSS build needs no such split: `dist/css/tokens.css` carries both themes and
 
 ## Build outputs
 
-| File                              | Contents                                             |
-| --------------------------------- | ---------------------------------------------------- |
+| File                              | Contents                                              |
+| --------------------------------- | ----------------------------------------------------- |
 | `dist/css/tokens.css`             | Primitive, semantic light/dark, and component aliases |
-| `dist/tokens/primitives.json`     | Raw primitive scale values                           |
-| `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme             |
-| `dist/tokens/semantic.dark.json`  | Resolved semantic tokens for dark theme              |
-| `dist/tokens/components.json`     | Theme-independent references to shared tokens        |
+| `dist/tokens/primitives.json`     | Raw primitive scale values                            |
+| `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme              |
+| `dist/tokens/semantic.dark.json`  | Resolved semantic tokens for dark theme               |
+| `dist/tokens/components.json`     | Theme-independent references to shared tokens         |
 
 ## Building from source
 

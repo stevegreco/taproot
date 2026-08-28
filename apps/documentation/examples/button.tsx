@@ -7,9 +7,7 @@ export default function ButtonExample() {
   return (
     <div className="flex flex-col gap-6 p-6 text-slate-900 dark:text-white">
       <div className="flex flex-wrap items-center gap-3">
-        <ds-button onClick={() => setClicks((count) => count + 1)}>
-          Primary
-        </ds-button>
+        <ds-button onClick={() => setClicks((count) => count + 1)}>Primary</ds-button>
         <ds-button variant="secondary">Secondary</ds-button>
         <ds-button variant="ghost">Ghost</ds-button>
         <ds-button variant="danger">Delete</ds-button>

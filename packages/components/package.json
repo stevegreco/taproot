@@ -2,7 +2,24 @@
   "name": "@stevegreco/design-system-components",
   "version": "0.0.1",
   "description": "Framework-agnostic web components styled entirely with design system tokens.",
+  "keywords": [
+    "badge",
+    "button",
+    "custom-elements",
+    "design-system",
+    "web-components"
+  ],
+  "license": "ISC",
+  "author": "Steve Greco",
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
   "type": "module",
+  "sideEffects": [
+    "./src/index.js"
+  ],
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "exports": {
@@ -19,14 +36,9 @@
       "default": "./src/button.js"
     }
   },
-  "sideEffects": [
-    "./src/index.js"
-  ],
-  "files": [
-    "src",
-    "dist",
-    "README.md"
-  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf dist",
     "build": "node build-styles.js",
@@ -37,23 +49,10 @@
     "dev": "concurrently -n build,serve -c blue,green \"pnpm run watch\" \"pnpm run serve\"",
     "prepack": "pnpm run build"
   },
-  "keywords": [
-    "design-system",
-    "web-components",
-    "custom-elements",
-    "badge",
-    "button"
-  ],
-  "author": "Steve Greco",
-  "license": "ISC",
-  "publishConfig": {
-    "access": "public"
-  },
-  "peerDependencies": {
-    "@stevegreco/design-system": ">=0.0.4"
+  "dependencies": {
+    "@stevegreco/design-system": "workspace:*"
   },
   "devDependencies": {
-    "@stevegreco/design-system": "workspace:*",
     "@vitest/browser-playwright": "^4.1.10",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.1.0",

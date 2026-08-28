@@ -2,10 +2,7 @@ import type { DsBadge } from "@stevegreco/design-system-components/badge";
 import type { DsButton } from "@stevegreco/design-system-components/button";
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
 
-type DsButtonAttributes = DetailedHTMLProps<
-  HTMLAttributes<DsButton>,
-  DsButton
-> & {
+type DsButtonAttributes = DetailedHTMLProps<HTMLAttributes<DsButton>, DsButton> & {
   disabled?: boolean;
   "full-width"?: boolean;
   size?: "sm" | "md";
@@ -21,9 +18,6 @@ declare module "react" {
     }
   }
 }
-type DsBadgeAttributes = DetailedHTMLProps<
-  HTMLAttributes<DsBadge>,
-  DsBadge
-> & {
+type DsBadgeAttributes = DetailedHTMLProps<HTMLAttributes<DsBadge>, DsBadge> & {
   variant?: "default" | "accent" | "success" | "danger" | "warning" | "info";
 };

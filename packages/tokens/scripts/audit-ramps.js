@@ -38,9 +38,12 @@ function hsl(hex) {
   const d = mx - mn;
   let h = 0;
   if (d) {
-    h = mx === r ? 60 * (((g - b) / d) % 6)
-      : mx === g ? 60 * ((b - r) / d + 2)
-      : 60 * ((r - g) / d + 4);
+    h =
+      mx === r
+        ? 60 * (((g - b) / d) % 6)
+        : mx === g
+          ? 60 * ((b - r) / d + 2)
+          : 60 * ((r - g) / d + 4);
   }
   if (h < 0) h += 360;
   const l = (mx + mn) / 2;
@@ -51,9 +54,8 @@ function hsl(hex) {
 // surface group, which is keyed by hue name — surfaces are not ramps and are
 // deliberately not subject to these bounds.
 function ramps() {
-  const colors = JSON.parse(
-    readFileSync(join(ROOT, "dist/tokens/primitives.json"), "utf-8")
-  ).primitives.color;
+  const colors = JSON.parse(readFileSync(join(ROOT, "dist/tokens/primitives.json"), "utf-8"))
+    .primitives.color;
 
   return Object.entries(colors).filter(
     ([, group]) =>
@@ -61,7 +63,7 @@ function ramps() {
       typeof group === "object" &&
       Object.keys(group).length > 2 &&
       Object.keys(group).every((k) => /^\d+$/.test(k)) &&
-      Object.values(group).every(isHex)
+      Object.values(group).every(isHex),
   );
 }
 
@@ -76,12 +78,20 @@ export function run() {
     const stops = Object.keys(group)
       .map(Number)
       .sort((a, b) => a - b)
-      .map((n) => ({ stop: n, hex: group[String(n)], ...hsl(group[String(n)]), l: lstar(group[String(n)]) }));
+      .map((n) => ({
+        stop: n,
+        hex: group[String(n)],
+        ...hsl(group[String(n)]),
+        l: lstar(group[String(n)]),
+      }));
 
     // Hue direction is whatever the ramp does overall; a stop may not fight
     // it. Taken as the median step so one unstable near-white stop cannot
     // invert the reading for the whole ramp.
-    const steps = stops.slice(1).map((s, i) => s.h - stops[i].h).sort((a, b) => a - b);
+    const steps = stops
+      .slice(1)
+      .map((s, i) => s.h - stops[i].h)
+      .sort((a, b) => a - b);
     const drift = Math.sign(steps[Math.floor(steps.length / 2)]) || 1;
 
     for (let i = 1; i < stops.length; i++) {
@@ -90,7 +100,7 @@ export function run() {
 
       if (b.l >= a.l) {
         failures.push(
-          `${name}.${b.stop} — lightness not monotonic: ${a.stop} is L* ${a.l.toFixed(1)}, ${b.stop} is L* ${b.l.toFixed(1)}`
+          `${name}.${b.stop} — lightness not monotonic: ${a.stop} is L* ${a.l.toFixed(1)}, ${b.stop} is L* ${b.l.toFixed(1)}`,
         );
       }
 
@@ -100,7 +110,7 @@ export function run() {
         failures.push(
           `${name}.${b.stop} ${b.hex} — saturation ${ds < 0 ? "collapses" : "jumps"} ${Math.abs(ds).toFixed(1)} points ` +
             `from ${name}.${a.stop} (${a.s.toFixed(1)} → ${b.s.toFixed(1)}), over the ${bound}-point bound.` +
-            (ds < 0 ? " This is the surface-fill signature." : "")
+            (ds < 0 ? " This is the surface-fill signature." : ""),
         );
       }
 
@@ -110,7 +120,7 @@ export function run() {
       if (dh < -HUE_WOBBLE) {
         failures.push(
           `${name}.${b.stop} ${b.hex} — hue reverses ${Math.abs(dh).toFixed(1)}° against the ramp ` +
-            `(${a.h.toFixed(1)}° → ${b.h.toFixed(1)}°, ramp drifts ${drift > 0 ? "up" : "down"})`
+            `(${a.h.toFixed(1)}° → ${b.h.toFixed(1)}°, ramp drifts ${drift > 0 ? "up" : "down"})`,
         );
       }
     }
