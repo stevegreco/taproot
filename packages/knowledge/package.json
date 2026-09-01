@@ -1,0 +1,30 @@
+{
+  "name": "@stevegreco/design-system-knowledge",
+  "version": "0.0.1",
+  "description": "Portable, validated knowledge records for the Ember & Sage design system.",
+  "license": "ISC",
+  "author": "Steve Greco",
+  "files": [
+    "content",
+    "src"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./schema": "./src/schema/index.js",
+    "./schema/knowledge-record.json": "./src/schema/knowledge-record.schema.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "gray-matter": "^4.0.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
