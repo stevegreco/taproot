@@ -5,8 +5,8 @@ The knowledge system is independent of any one agent product or delivery protoco
 
 ## Status
 
-The system is in design. No package, compiler, or MCP adapter described here has been implemented
-yet.
+The knowledge package defines an executable record schema and parses authored Markdown records.
+The compiler, retrieval interface, and MCP adapters are not implemented.
 
 ## Reading order
 
@@ -24,8 +24,7 @@ Existing domain decisions remain authoritative:
 
 ## First content slice
 
-Draft records under `packages/knowledge/content/` test the content model before the compiler schema
-is fixed:
+The executable schema and authored Markdown parser validate these draft records:
 
 - [Button](../../packages/knowledge/content/components/button.md)
 - [Action hierarchy](../../packages/knowledge/content/patterns/action-hierarchy.md)

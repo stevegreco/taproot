@@ -1,6 +1,6 @@
 # ADR 0001: Portable design system knowledge
 
-**Status:** Proposed
+**Status:** Accepted
 
 ## Context
 

@@ -77,6 +77,20 @@ accessibility contracts, while example records can include assets and annotation
 Guidelines intended for review can add structured `checks`. Each check has a stable ID, a level,
 and one verifiable requirement. Example records can add structured `assets` and `annotations`.
 
+## Executable contract
+
+`packages/knowledge/src/schema/knowledge-record.schema.json` is the canonical authored-record
+schema. It uses JSON Schema 2020-12 so non-JavaScript consumers can validate the same records.
+Schema version `1` fixes the current field vocabulary and dotted ID format.
+
+The package exports `parseRecord(markdown, { sourcePath })`. It parses YAML frontmatter, adds the
+trimmed Markdown body, validates the complete authored record, and returns one flat object. Invalid
+input throws a path-aware `KnowledgeRecordError`.
+
+Authored records must include an `authored` source. They cannot declare the compiler-only
+`generated` source kind. Unknown fields fail validation rather than passing through to compiled
+output.
+
 ## Proposed authored format
 
 Cross-cutting knowledge uses Markdown with YAML frontmatter:
