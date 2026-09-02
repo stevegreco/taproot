@@ -10,7 +10,7 @@ import { repoRoot } from "./helpers/workspace.js";
 
 const contentRoot = join(dirname(fileURLToPath(import.meta.url)), "../content");
 
-test("the five-record slice compiles with contracts, ghost tokens, rewritten links, and assets", async () => {
+test("the authored slice compiles with contracts, ghost tokens, rewritten links, and assets", async () => {
   const authoredCount = globSync("**/*.md", { cwd: contentRoot }).length;
   const outDir = await mkdtemp(join(tmpdir(), "knowledge-slice-"));
   const result = await compile({
@@ -31,6 +31,12 @@ test("the five-record slice compiles with contracts, ghost tokens, rewritten lin
   assert.ok(button.contract.api.attributes.variant.values.primary);
   const ghost = button.tokens.entries.filter((entry) => entry.group === "ghost");
   assert.ok(ghost.length > 0);
+
+  const badge = records.find((record) => record.id === "component.badge");
+  assert.equal(badge.contract.tagName, "ds-badge");
+  assert.equal(Object.hasOwn(badge, "tokens"), false);
+  assert.equal(badge.decisions.length, 1);
+  assert.match(badge.decisions[0].title, /ADR 0003/);
 
   const buttonMarkdown = await readFile(join(outDir, "public/markdown/component.button.md"), "utf8");
   assert.match(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);

@@ -144,6 +144,10 @@ namespaces:
 - the spec `tokens` block fills `tokens.tier`, `tokens.namespace`, and `tokens.description`;
 - `adr` fills `decisions[]` with title, status, path, and revision.
 
+The pairing is both halves or neither. A component with no published component-token namespace
+omits the spec `tokens:` block and omits `kind: token-source` (ADR 0003). The compiler fills
+`contract` and leaves `tokens` absent. There is no semantic-token source kind.
+
 The compiler does not generate `type: decision` records in this slice. KNOW-005 is satisfied by
 enriched `sources[]` plus `decisions[]`. KNOW-024 constrains generated records rather than requiring
 them.

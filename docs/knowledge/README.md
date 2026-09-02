@@ -34,8 +34,9 @@ Existing domain decisions remain authoritative:
 `packages/knowledge/content/` is the input. Extra files are included only when a record lists them
 in `sources[]`.
 
-Button is the only first-slice record that does that. The other four Markdown files compile as
-authored narrative plus their own frontmatter.
+Button and Badge are the first-slice records that do that. Button also names
+`button.tokens.json`. Badge omits token-source because it has no component-token namespace. The
+other four Markdown files compile as authored narrative plus their own frontmatter.
 
 ```mermaid
 flowchart TB
@@ -85,10 +86,11 @@ flowchart TB
 
 The other Markdown files are siblings, not outputs of `button.md`. They attach through relation
 IDs. After the corpus exists, Button gains `backlinks.usedBy` and `backlinks.reviewedBy`. Their
-bodies are not copied into Button.
+bodies are not copied into Button. The diagram traces Button. Badge follows the same path without
+a token-source. Button and Badge point at each other with `related`.
 
-`dist/internal/` uses the same layout. Today it holds the same five public records. An extra
-internal root would add records there only.
+`dist/internal/` uses the same layout. Today it holds the same public records as `dist/public/`. An
+extra internal root would add records there only.
 
 ## Retrieval
 
@@ -111,6 +113,7 @@ The executable schema, authored Markdown parser, and knowledge compiler validate
 records:
 
 - [Button](../../packages/knowledge/content/components/button.md)
+- [Badge](../../packages/knowledge/content/components/badge.md)
 - [Action hierarchy](../../packages/knowledge/content/patterns/action-hierarchy.md)
 - [Button implementation](../../packages/knowledge/content/guidelines/button-implementation.md)
 - [Button review](../../packages/knowledge/content/guidelines/button-review.md)

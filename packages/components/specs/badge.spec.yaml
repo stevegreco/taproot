@@ -1,0 +1,81 @@
+specVersion: 1
+
+name: Badge
+status: draft
+description: Labels status or metadata. Not a control.
+tagName: ds-badge
+
+usage:
+  do:
+    - situation: Display status, category, or supporting metadata.
+  avoid:
+    - situation: Trigger an action in the current view.
+      instead: Button
+      why: Badge is not interactive and does not communicate an available action.
+    - situation: Navigate to another location.
+      instead: Link
+      why: Links provide native navigation semantics.
+    - situation: Announce a live status change by itself.
+      instead: Host live-region semantics
+      why: Badge sets no live-region role.
+
+anatomy:
+  - name: surface
+    element: span
+    part: badge
+    description: Non-interactive label surface.
+  - name: content
+    slot: default
+    description: Short status or metadata text.
+
+api:
+  attributes:
+    variant:
+      property: variant
+      type: enum
+      values:
+        default: Neutral metadata or categorization.
+        accent: Brand emphasis without implying status.
+        success: Successful or active state.
+        danger: Failed or blocked status, not a destructive action.
+        warning: Condition that needs attention.
+        info: Informational state or feature label.
+      default: default
+
+    hidden:
+      type: boolean
+      default: false
+      description: Hides the badge with the native hidden attribute.
+
+  slots:
+    default:
+      required: true
+      accepts:
+        - text
+
+  parts:
+    badge:
+      description: The inner label surface.
+
+states:
+  - default
+
+behavior:
+  - Badge is not focusable and does not activate.
+  - The native hidden attribute hides the host.
+
+accessibility:
+  semantics: Non-interactive text.
+  name: Visible text is the accessible name.
+  keyboard: []
+  requirements:
+    - The text communicates the state. Meaning does not depend on color alone.
+    - Badge is not used as a control.
+    - Badge does not set a live-region role.
+    - Changing status that must be announced is the surrounding UI's job.
+
+decisions:
+  - decision: Badge consumes semantic tokens directly.
+    rationale: ADR 0003. No component-token namespace.
+  - decision: Badge is non-interactive and sets no live-region role.
+    rationale: Status that must be announced belongs to the surrounding UI.
