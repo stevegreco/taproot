@@ -5,16 +5,12 @@
   "type": "object",
   "required": [
     "id",
-    "schemaVersion",
     "type",
     "title",
     "summary",
     "status",
-    "visibility",
     "jobs",
     "tags",
-    "relations",
-    "sources",
     "body"
   ],
   "properties": {

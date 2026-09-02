@@ -1,4 +1,11 @@
-export const COMPILED_REQUIRED = Object.freeze(["compiledSchemaVersion", "backlinks"]);
+export const COMPILED_REQUIRED = Object.freeze([
+  "schemaVersion",
+  "visibility",
+  "relations",
+  "sources",
+  "compiledSchemaVersion",
+  "backlinks",
+]);
 
 export const COMPILED_PROPERTIES = Object.freeze({
   compiledSchemaVersion: { const: 2 },

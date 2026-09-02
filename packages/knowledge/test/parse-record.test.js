@@ -131,7 +131,39 @@ test("parseRecord accepts an authored source that is not first", () => {
   assert.equal(record.sources[1].kind, "authored");
 });
 
-test("parseRecord requires at least one authored source", () => {
+test("parseRecord fills compiler-known authored fields", () => {
+  const markdown = `---
+id: component.test-button
+type: component
+title: Test button
+summary: Triggers a test action.
+status: draft
+jobs:
+  - implement
+tags:
+  - button
+---
+
+Use this component to trigger a test action.
+`;
+  const record = parseRecord(markdown, {
+    sourcePath: "packages/knowledge/content/components/test-button.md",
+  });
+
+  assert.equal(record.schemaVersion, 1);
+  assert.deepEqual(record.relations, {});
+  assert.deepEqual(record.sources, [
+    { kind: "authored", path: "packages/knowledge/content/components/test-button.md" },
+  ]);
+  assert.equal(Object.hasOwn(record, "visibility"), false);
+});
+
+test("parseRecord still requires jobs", () => {
+  const markdown = validComponent.replace("\njobs:\n  - implement\n", "\n");
+  assertIssuePath(markdown, "test-button.md", "/jobs");
+});
+
+test("parseRecord injects an authored source when only an adr source is declared", () => {
   const markdown = validComponent.replace(
     `sources:
   - kind: authored
@@ -141,22 +173,9 @@ test("parseRecord requires at least one authored source", () => {
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md`,
   );
 
-  assert.throws(
-    () => parseRecord(markdown, { sourcePath: "test-button.md" }),
-    (error) => {
-      assert.equal(error instanceof KnowledgeRecordError, true);
-      assert.ok(
-        error.issues.some((issue) => issue.path === "/sources" && issue.keyword === "contains"),
-        `expected a contains issue at /sources, got ${JSON.stringify(error.issues)}`,
-      );
-      assert.equal(
-        error.issues.some((issue) => issue.path === "/sources/0/kind"),
-        false,
-        "contains evaluation must not report a legal source kind as invalid",
-      );
-      return true;
-    },
-  );
+  const record = parseRecord(markdown, { sourcePath: "test-button.md" });
+  assert.equal(record.sources[0].kind, "adr");
+  assert.deepEqual(record.sources[1], { kind: "authored", path: "test-button.md" });
 });
 
 test("parseRecord rejects a frontmatter body key", () => {

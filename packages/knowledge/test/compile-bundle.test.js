@@ -70,6 +70,29 @@ test("COMPILED_INVALID fires when emitted records fail the derived schema", () =
   assert.match(problems[0].message, /compiler bug/);
 });
 
+test("compiled schema still requires visibility after authored defaults", () => {
+  const compiledSchema = deriveCompiledSchema(authoredSchema);
+  const almost = {
+    id: "component.almost",
+    schemaVersion: 1,
+    type: "component",
+    title: "Almost",
+    summary: "Almost valid.",
+    status: "draft",
+    jobs: ["design"],
+    tags: [],
+    relations: {},
+    sources: [{ kind: "authored", path: "content/almost.md", revision: "abc123456789abcd" }],
+    body: "Body.",
+    compiledSchemaVersion: 2,
+    backlinks: {},
+  };
+  const missing = findCompiledIssues(compiledSchema, [almost]);
+  assert.ok(missing.some((item) => item.code === PROBLEM.COMPILED_INVALID));
+  const complete = findCompiledIssues(compiledSchema, [{ ...almost, visibility: "public" }]);
+  assert.equal(complete.length, 0);
+});
+
 test("compiled schema forbids host on a component record", async () => {
   const corpus = await buildCorpus(
     createFsReader(repoRoot),
