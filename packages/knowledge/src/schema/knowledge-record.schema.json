@@ -24,7 +24,6 @@
         "example",
         "foundation",
         "decision",
-        "spec",
         "binding"
       ]
     },
@@ -96,18 +95,6 @@
     },
     {
       "if": {
-        "properties": { "type": { "const": "spec" } },
-        "required": ["type"]
-      },
-      "then": {
-        "required": ["contract"],
-        "properties": {
-          "contract": { "$ref": "#/$defs/portableContract" }
-        }
-      }
-    },
-    {
-      "if": {
         "properties": { "type": { "const": "binding" } },
         "required": ["type"]
       },
@@ -125,7 +112,8 @@
       },
       "then": {
         "properties": {
-          "tokenRef": { "$ref": "#/$defs/tokenRef" }
+          "tokenRef": { "$ref": "#/$defs/tokenRef" },
+          "contract": { "$ref": "#/$defs/portableContract" }
         }
       }
     }

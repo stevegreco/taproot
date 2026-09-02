@@ -86,7 +86,7 @@ test("compiled contract host and checks are searchable", async () => {
   const tagIds = catalog.search("ds-button").map((hit) => hit.record.id);
 
   assert.equal(fullWidthIds.includes("component.button"), true);
-  assert.equal(fullWidthIds.includes("spec.button"), true);
+  assert.equal(fullWidthIds.includes("spec.button"), false);
   assert.equal(accessibleNameIds.includes("component.button"), true);
   assert.equal(pressedIds.includes("component.button"), true);
   assert.equal(tagIds.includes("binding.button.web-component"), true);

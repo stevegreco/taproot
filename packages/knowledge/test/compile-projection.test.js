@@ -5,9 +5,12 @@ import { test } from "node:test";
 import { buildCorpus } from "../src/compile/corpus.js";
 import { createFsReader, repoRoot } from "./helpers/workspace.js";
 
-test("baseline Button contract projects onto portable spec and web-component binding", async () => {
+test("baseline Button contract projects onto the authored component and web-component binding", async () => {
   const baseline = JSON.parse(
     await readFile(join(repoRoot, "packages/knowledge/test/fixtures/baseline-button-contract.json"), "utf8"),
+  );
+  const authoredContract = JSON.parse(
+    await readFile(join(repoRoot, "packages/knowledge/test/fixtures/button-portable-contract.json"), "utf8"),
   );
   const corpus = await buildCorpus(
     createFsReader(repoRoot),
@@ -21,13 +24,17 @@ test("baseline Button contract projects onto portable spec and web-component bin
   );
 
   const button = corpus.records.get("component.button");
-  const spec = corpus.records.get("spec.button");
   const binding = corpus.records.get("binding.button.web-component");
   const portable = button.contract;
   const host = binding.host;
   const old = baseline.contract;
 
-  assert.equal(portable, spec.contract);
+  assert.equal(corpus.records.has("spec.button"), false);
+  assert.deepEqual(portable, authoredContract);
+  assert.equal(
+    button.sources.some((source) => source.path === "packages/knowledge/content/components/button.md"),
+    true,
+  );
   assert.equal(Object.hasOwn(portable, "tagName"), false);
   assert.equal(Object.hasOwn(portable, "api"), false);
   assert.equal(host.defaultTagName, old.tagName);

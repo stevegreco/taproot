@@ -12,28 +12,21 @@ The model favors small records connected by explicit relationships over one larg
 consumer can retrieve a focused answer and follow its relationships when it needs more context.
 
 A compiled record can combine an authored Markdown record with structured domain sources. For
-example, `component.button` gets its narrative guidance from the knowledge package and its
-parameters, events, states, behavior, and accessibility contract from the spec it `uses`. The
-compiler copies authored fields verbatim and composes each source kind into a reserved namespace.
-It does not flat-merge source fields into `title`, `summary`, or `status` (KNOW-002, KNOW-008).
+example, `component.button` authors its narrative guidance and, when it publishes one, its
+host-neutral `contract` in the same Markdown file. The compiler copies authored fields verbatim
+and composes each source kind into a reserved namespace. It does not flat-merge source fields into
+`title`, `summary`, or `status` (KNOW-002, KNOW-008).
 
 ## Record types
 
 ### Component
 
 The narrative hub for a design system component. When a portable contract exists, the component
-`uses` exactly one spec. The compiler copies that spec's `contract` onto the compiled component.
-Host identity is not authored here.
+authors it as `contract`. That object has usage, anatomy, parameters, events, states, behavior,
+accessibility, and rationale. It has no `tagName`, slots, parts, attribute spellings, or DOM types.
+Host identity is not authored here. A later component may omit `contract`.
 
 Examples: Button, Badge.
-
-### Spec
-
-The authored home of a host-neutral component contract. A spec's `contract` has usage, anatomy,
-parameters, events, states, behavior, accessibility, and rationale. It has no `tagName`, slots,
-parts, attribute spellings, or DOM types.
-
-Examples: `spec.button`, `spec.badge`.
 
 ### Binding
 
@@ -88,9 +81,9 @@ Each compiled record has these fields:
 - `sources` contains authored or generated provenance.
 - `body` contains the Markdown guidance.
 
-Record types can add validated fields. For example, spec records include a portable `contract`,
-binding records include a `host` mapping, component records can include a copied `contract` plus
-`tokenRef`, and example records can include assets and annotations.
+Record types can add validated fields. For example, component records can include a portable
+`contract` plus `tokenRef`, binding records include a `host` mapping, and example records can
+include assets and annotations.
 
 Guidelines intended for review can add structured `checks`. Each check has a stable ID, a level,
 and one verifiable requirement. Example records can add structured `assets` and `annotations`.
@@ -154,7 +147,7 @@ The Markdown record owns agent-facing narrative, discovery metadata, and relatio
 fields are never overwritten by a domain source. Entries in `sources` compose into disjoint
 namespaces:
 
-- a `type: spec` record authors `contract`;
+- a component that publishes a portable contract authors `contract`;
 - a `type: binding` record authors `host`;
 - `token-source` fills `tokens.entries` with flattened DTCG leaves from the declared source path,
   never from `packages/tokens/dist/`;
@@ -162,13 +155,9 @@ namespaces:
   `tokens.description`;
 - `adr` fills `decisions[]` with title, status, path, and revision.
 
-After every record is assembled, the compiler copies `spec.contract` onto each component that
-`uses` exactly one spec. It does not copy the spec's `title`, `summary`, or `status`. Among a
-component's `uses` targets, at most one may be a spec. Other `uses` targets stay legal.
-
 The pairing is both halves or neither. A component with no published component-token namespace
-omits `tokenRef` and omits `kind: token-source` (ADR 0003). The compiler still copies `contract`
-from the spec it uses and leaves `tokens` absent. There is no semantic-token source kind.
+omits `tokenRef` and omits `kind: token-source` (token ADR 0003). It may still author `contract`
+and leave `tokens` absent. There is no semantic-token source kind.
 
 A binding `implements` exactly one component, and that component must already have `contract`.
 Host anatomy names, parameters, and events are a bijection with the portable contract. An enum
@@ -177,19 +166,18 @@ Host anatomy names, parameters, and events are a bijection with the portable con
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
 namespace must exist in the token file. When `tokens.tier` is `component`, every contract
 `parameters.variant` value must have at least one token entry, and a token group that names no
-spec variant is a conflict. Spec size values and token `size.*` keys must appear in the frozen
+contract variant is a conflict. Contract size values and token `size.*` keys must appear in the frozen
 `sm`/`small` and `md`/`medium` bridge. Unknown keys fail the build. A mapped size with no token
 leaves is allowed, as is a sparse variant such as `ghost` with no rest background.
 
 These are not conflicts, because they are different facts with different owners:
 
-- record `summary` versus spec `contract.description`
-- record `title` versus spec `title`
+- record `summary` versus `contract.description`
+- record `title` versus a host or token title
 - record `status` versus ADR status
 
-The compiler rejects a missing source, an unreadable source, two specs on one component, a binding
-that is not a bijection, or one of those token assertions (`source/conflict`) instead of choosing a
-value silently (KNOW-023).
+The compiler rejects a missing source, an unreadable source, a binding that is not a bijection, or
+one of those token assertions (`source/conflict`) instead of choosing a value silently (KNOW-023).
 
 The compiler does not generate `type: decision` records in this slice. KNOW-005 is satisfied by
 enriched `sources[]` plus `decisions[]`. KNOW-024 constrains generated records rather than requiring
@@ -199,7 +187,7 @@ them.
 
 Relationship names express why records connect. The initial vocabulary is:
 
-- `uses` means the record depends on another component, pattern, foundation, or spec.
+- `uses` means the record depends on another component, pattern, or foundation.
 - `demonstrates` links an example to the guidance or component it illustrates.
 - `guides` links a pattern or guideline to the record it guides.
 - `implements` links a binding to the component it implements, or a record to a decision it
@@ -310,7 +298,8 @@ names. The search index tokenizes `title`, `summary`, `tags`, `body`, and type-s
 ## Source ownership
 
 - `packages/tokens/` owns token values, token policy, and token ADRs.
-- `packages/knowledge/content/specs/` owns portable component contracts.
+- `packages/knowledge/content/components/` owns portable component contracts when a component
+  publishes one.
 - `packages/knowledge/content/bindings/` owns host bindings.
 - `packages/components/` owns component runtime.
 - `packages/knowledge/content/` owns cross-cutting patterns, guidelines, examples, and annotations.

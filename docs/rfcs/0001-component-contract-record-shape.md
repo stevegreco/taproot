@@ -1,8 +1,9 @@
 # RFC 0001: Component contract record shape
 
-**Status:** Proposed
+**Status:** Accepted
 **Created:** 2026-09-02
-**Discussion:** Not yet opened
+**Accepted in:** [ADR 0003](../adr/0003-component-owned-portable-contracts.md)
+**Discussion:** [#46](https://github.com/stevegreco/design-system/issues/46)
 
 ## Summary
 

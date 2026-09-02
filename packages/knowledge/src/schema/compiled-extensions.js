@@ -8,7 +8,7 @@ export const COMPILED_REQUIRED = Object.freeze([
 ]);
 
 export const COMPILED_PROPERTIES = Object.freeze({
-  compiledSchemaVersion: { const: 2 },
+  compiledSchemaVersion: { const: 3 },
   backlinks: { $ref: "#/$defs/backlinks" },
   contract: { $ref: "#/$defs/portableContract" },
   host: { $ref: "#/$defs/hostBinding" },

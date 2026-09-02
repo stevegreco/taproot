@@ -15,8 +15,6 @@ tags:
   - button
   - form
 relations:
-  uses:
-    - spec.button
   related:
     - component.badge
 sources:
@@ -30,6 +28,87 @@ tokenRef:
   tier: component
   namespace: component.button
   description: All visual values consume the published Button component-token contract.
+contract:
+  specVersion: 2
+  description: Triggers an action or submits or resets a form.
+  usage:
+    do:
+      - situation: Trigger an action in the current view.
+      - situation: Submit or reset a form.
+    avoid:
+      - situation: Navigate to another location.
+        instead: Link
+        why: Links provide native navigation semantics.
+      - situation: Display status or metadata.
+        instead: Badge
+        why: Button communicates an available action.
+  anatomy:
+    - name: control
+      role: interactive-surface
+      description: Interactive control.
+    - name: content
+      role: label
+      description: Action label with an optional decorative icon.
+  parameters:
+    variant:
+      kind: enum
+      values:
+        primary: Highest-emphasis action.
+        secondary: Supporting action.
+        ghost: Low-emphasis action.
+        danger: Destructive or difficult-to-reverse action.
+      default: primary
+    size:
+      kind: enum
+      values:
+        sm: Small button.
+        md: Medium button.
+      default: md
+    action:
+      kind: enum
+      values:
+        activate: Triggers an action.
+        submit: Submits the associated form.
+        reset: Resets the associated form.
+      default: activate
+    disabled:
+      kind: boolean
+      default: false
+    fullWidth:
+      kind: boolean
+      default: false
+      description: Fills the available inline size.
+    accessibleName:
+      kind: string
+      description: Accessible name when visible content is insufficient.
+  events:
+    activate:
+      description: Requests the action represented by the button.
+  states:
+    - default
+    - hover
+    - pressed
+    - focus-visible
+    - disabled
+  behavior:
+    - Disabled prevents activation.
+    - Submit and reset participate in a form when the host supports form association.
+  accessibility:
+    semantics: Button.
+    name: Required from visible content or accessibleName.
+    keyboard:
+      - key: Enter
+        action: Activate.
+      - key: Space
+        action: Activate.
+    requirements:
+      - Keyboard focus remains visibly indicated.
+      - Icon-only buttons have an accessible name.
+      - The label describes the resulting action.
+      - Meaning does not depend on color alone.
+  rationale:
+    - decision: Button has a published component-token namespace.
+      rationale: Consumers need a stable customization boundary for variants and states.
 ---
 
 Button lets a person trigger an action in the current view. Use a link for navigation and Badge for
@@ -37,11 +116,8 @@ status or metadata.
 
 ## Choose a variant
 
-- `primary` marks the highest-emphasis action in an action group.
-- `secondary` keeps a supporting action visible without competing with the primary action.
-- `ghost` provides low-emphasis access to an action and remains transparent at rest.
-- `danger` identifies an action that is destructive or difficult to reverse. It communicates risk,
-  not general importance.
+Use `primary` for the highest-emphasis action in a group, `secondary` for a supporting action,
+`ghost` for low-emphasis access, and `danger` for destructive or difficult-to-reverse work.
 
 Apply the [action hierarchy pattern](../patterns/action-hierarchy.md) when several actions appear
 together.
@@ -50,22 +126,3 @@ together.
 
 Use a concise label that describes the result, such as "Save changes" or "Delete account." Do not
 use generic labels such as "Click here."
-
-## Preserve native behavior
-
-Button is a form-associated custom element. Set `type="submit"` to submit its associated form and
-`type="reset"` to reset it. The default type is `button`.
-
-The component forwards focus to its inner native button and follows a disabled ancestor
-`fieldset`. It suppresses activation while effectively disabled.
-
-## Accessibility
-
-- Provide visible label text or an accessible name for an icon-only control.
-- Keep the focus indicator visible.
-- Do not communicate meaning through color alone.
-- Explain nearby why an action is disabled when the reason is not already clear.
-
-The [Button contract](../specs/button.md) is authoritative for usage, anatomy, parameters, events,
-states, behavior, and accessibility. Host tag names, slots, parts, and form association live on the
-binding that implements this component.

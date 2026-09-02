@@ -88,7 +88,7 @@ export function projectBundle(corpus, visibility, meta) {
 
   const content = {
     schemaVersion: 1,
-    compiledSchemaVersion: 2,
+    compiledSchemaVersion: 3,
     knowledgeVersion: meta.knowledgeVersion,
     designSystemVersion: meta.designSystemVersion,
     recordCount: records.length,

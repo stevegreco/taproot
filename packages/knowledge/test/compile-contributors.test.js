@@ -16,17 +16,16 @@ const publicContent = {
   visibility: "public",
 };
 
-test("Button composes spec, tokens, and ADR 0003 into disjoint namespaces", async () => {
+test("Button composes authored contract, tokens, and ADR 0003 into disjoint namespaces", async () => {
   const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent], {
     workspaceRoot: repoRoot,
   });
   const button = corpus.records.get("component.button");
-  const spec = corpus.records.get("spec.button");
   const binding = corpus.records.get("binding.button.web-component");
 
   assert.ok(button);
-  assert.ok(spec);
   assert.ok(binding);
+  assert.equal(corpus.records.has("spec.button"), false);
   assert.equal(
     corpus.problems.filter((item) => item.severity === "error").length,
     0,
@@ -40,8 +39,6 @@ test("Button composes spec, tokens, and ADR 0003 into disjoint namespaces", asyn
   assert.notEqual(button.summary, button.contract.description);
   assert.equal(button.title, "Button");
   assert.equal(button.status, "draft");
-  assert.notEqual(button.title, spec.title);
-  assert.equal(button.contract, spec.contract);
   assert.equal(binding.host.defaultTagName, "ds-button");
   assert.equal(binding.host.parameters.action.values.activate, "button");
   assert.equal(
@@ -73,28 +70,22 @@ test("Button composes spec, tokens, and ADR 0003 into disjoint namespaces", asyn
     button.sources.some((source) => source.kind === "component-spec"),
     false,
   );
-  assert.equal(spec.sources[0].kind, "authored");
+  assert.equal(button.sources[0].kind, "authored");
+  assert.equal(button.sources[0].path, "packages/knowledge/content/components/button.md");
   assert.equal(Object.hasOwn(button.sources[0], "contributes"), false);
   assert.equal(Object.hasOwn(button, "backlinks"), false);
 });
 
-test("a spec with no tokenRef and no token-source composes contract only", async () => {
-  const specPath = "content/specs/no-tokens.md";
+test("a component with no tokenRef and no token-source composes contract only", async () => {
   const componentPath = "content/components/no-tokens.md";
   const reader = createMemoryReader({
-    [specPath]: recordMarkdown({
-      id: "spec.no-tokens",
-      type: "spec",
-      sources: [{ kind: "authored", path: specPath }],
-      contract: portableContract({
-        description: "Spec without a tokenRef.",
-        parameters: { disabled: { kind: "boolean", default: false } },
-      }),
-    }),
     [componentPath]: recordMarkdown({
       id: "component.no-tokens",
       sources: [{ kind: "authored", path: componentPath }],
-      relations: { uses: ["spec.no-tokens"] },
+      contract: portableContract({
+        description: "Component without a tokenRef.",
+        parameters: { disabled: { kind: "boolean", default: false } },
+      }),
     }),
   });
 
@@ -102,7 +93,7 @@ test("a spec with no tokenRef and no token-source composes contract only", async
   const record = corpus.records.get("component.no-tokens");
 
   assert.ok(record);
-  assert.equal(record.contract.description, "Spec without a tokenRef.");
+  assert.equal(record.contract.description, "Component without a tokenRef.");
   assert.equal(Object.hasOwn(record.contract, "tagName"), false);
   assert.equal(Object.hasOwn(record, "tokens"), false);
   assert.equal(
@@ -111,7 +102,7 @@ test("a spec with no tokenRef and no token-source composes contract only", async
   );
 });
 
-test("Badge composes spec and ADR 0003 without a token contract", async () => {
+test("Badge composes authored contract and ADR 0003 without a token contract", async () => {
   const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent], {
     workspaceRoot: repoRoot,
   });
@@ -126,6 +117,10 @@ test("Badge composes spec and ADR 0003 without a token contract", async () => {
   );
   assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
   assert.equal(badge.contract.parameters.variant.default, "default");
+  assert.equal(
+    badge.sources.some((source) => source.path === "packages/knowledge/content/components/badge.md"),
+    true,
+  );
   assert.equal(binding.host.defaultTagName, "ds-badge");
   assert.equal(Object.hasOwn(badge, "tokens"), false);
   assert.equal(badge.decisions.length, 1);
@@ -137,29 +132,22 @@ test("Badge composes spec and ADR 0003 without a token contract", async () => {
   );
 });
 
-test("SIZE_BRIDGE rejects an unknown spec size", async () => {
-  const specPath = "content/specs/size.md";
+test("SIZE_BRIDGE rejects an unknown contract size", async () => {
   const componentPath = "content/size.md";
   const reader = createMemoryReader({
-    [specPath]: recordMarkdown({
-      id: "spec.size-unknown",
-      type: "spec",
-      sources: [{ kind: "authored", path: specPath }],
-      contract: portableContract({
-        description: "Unknown spec size.",
-        parameters: {
-          variant: { kind: "enum", values: { primary: "Primary." } },
-          size: { kind: "enum", values: { lg: "Large." } },
-        },
-      }),
-    }),
     [componentPath]: recordMarkdown({
       id: "component.size-unknown",
       sources: [
         { kind: "authored", path: componentPath },
         { kind: "token-source", path: "packages/tokens/size.json" },
       ],
-      relations: { uses: ["spec.size-unknown"] },
+      contract: portableContract({
+        description: "Unknown contract size.",
+        parameters: {
+          variant: { kind: "enum", values: { primary: "Primary." } },
+          size: { kind: "enum", values: { lg: "Large." } },
+        },
+      }),
       tokenRef: {
         tier: "component",
         namespace: "component.size",
@@ -182,13 +170,14 @@ test("SIZE_BRIDGE rejects an unknown spec size", async () => {
 });
 
 test("SIZE_BRIDGE rejects an unknown token size key", async () => {
-  const specPath = "content/specs/token-size.md";
   const componentPath = "content/token-size.md";
   const reader = createMemoryReader({
-    [specPath]: recordMarkdown({
-      id: "spec.token-size",
-      type: "spec",
-      sources: [{ kind: "authored", path: specPath }],
+    [componentPath]: recordMarkdown({
+      id: "component.token-size",
+      sources: [
+        { kind: "authored", path: componentPath },
+        { kind: "token-source", path: "packages/tokens/token-size.json" },
+      ],
       contract: portableContract({
         description: "Unknown token size key.",
         parameters: {
@@ -196,14 +185,6 @@ test("SIZE_BRIDGE rejects an unknown token size key", async () => {
           size: { kind: "enum", values: { sm: "Small.", md: "Medium." } },
         },
       }),
-    }),
-    [componentPath]: recordMarkdown({
-      id: "component.token-size",
-      sources: [
-        { kind: "authored", path: componentPath },
-        { kind: "token-source", path: "packages/tokens/token-size.json" },
-      ],
-      relations: { uses: ["spec.token-size"] },
       tokenRef: {
         tier: "component",
         namespace: "component.token-size",
