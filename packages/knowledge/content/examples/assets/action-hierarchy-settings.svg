@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-labelledby="title description">
+  <title id="title">Account settings action hierarchy</title>
+  <desc id="description">A profile form uses secondary Cancel and primary Save changes buttons. A separate danger zone contains a Delete account button.</desc>
+
+  <rect width="960" height="640" fill="#faf6f0"/>
+  <rect x="0" y="0" width="220" height="640" fill="#171c1a"/>
+
+  <text x="32" y="52" fill="#fcfcfc" font-family="Georgia, serif" font-size="24" font-weight="600">Ember &amp; Sage</text>
+  <text x="32" y="108" fill="#b9b9b9" font-family="system-ui, sans-serif" font-size="12" font-weight="600" letter-spacing="1.2">WORKSPACE</text>
+  <text x="32" y="146" fill="#b9b9b9" font-family="system-ui, sans-serif" font-size="15">Overview</text>
+  <text x="32" y="184" fill="#b9b9b9" font-family="system-ui, sans-serif" font-size="15">Projects</text>
+  <rect x="16" y="204" width="188" height="42" rx="10" fill="#323d38"/>
+  <text x="32" y="231" fill="#fcfcfc" font-family="system-ui, sans-serif" font-size="15" font-weight="600">Settings</text>
+
+  <text x="268" y="64" fill="#171717" font-family="Georgia, serif" font-size="30" font-weight="500">Account settings</text>
+  <text x="268" y="94" fill="#5f5f5f" font-family="system-ui, sans-serif" font-size="15">Manage your profile and account.</text>
+
+  <rect x="268" y="126" width="644" height="280" rx="14" fill="#fcfcfc" stroke="#d5d5d5"/>
+  <text x="300" y="170" fill="#171717" font-family="Georgia, serif" font-size="20" font-weight="500">Profile</text>
+
+  <text x="300" y="209" fill="#171717" font-family="system-ui, sans-serif" font-size="14" font-weight="600">Name</text>
+  <rect x="300" y="222" width="580" height="44" rx="10" fill="#fcfcfc" stroke="#777777"/>
+  <text x="316" y="250" fill="#171717" font-family="system-ui, sans-serif" font-size="15">Avery Morgan</text>
+
+  <text x="300" y="299" fill="#171717" font-family="system-ui, sans-serif" font-size="14" font-weight="600">Email</text>
+  <rect x="300" y="312" width="580" height="44" rx="10" fill="#fcfcfc" stroke="#777777"/>
+  <text x="316" y="340" fill="#171717" font-family="system-ui, sans-serif" font-size="15">avery@example.com</text>
+
+  <rect x="681" y="366" width="82" height="40" rx="10" fill="#fcfcfc" stroke="#777777"/>
+  <text x="722" y="391" fill="#171717" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Cancel</text>
+  <rect x="775" y="366" width="137" height="40" rx="10" fill="#a0501d" stroke="#a0501d"/>
+  <text x="843.5" y="391" fill="#fcfcfc" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Save changes</text>
+
+  <rect x="268" y="438" width="644" height="154" rx="14" fill="#fcfcfc" stroke="#d5d5d5"/>
+  <text x="300" y="481" fill="#711f19" font-family="Georgia, serif" font-size="20" font-weight="500">Danger zone</text>
+  <text x="300" y="511" fill="#171717" font-family="system-ui, sans-serif" font-size="15">Delete your account and all associated data.</text>
+  <text x="300" y="536" fill="#5f5f5f" font-family="system-ui, sans-serif" font-size="14">This action cannot be undone.</text>
+
+  <rect x="772" y="522" width="140" height="40" rx="10" fill="#8c241d" stroke="#8c241d"/>
+  <text x="842" y="547" fill="#fcfcfc" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Delete account</text>
+</svg>

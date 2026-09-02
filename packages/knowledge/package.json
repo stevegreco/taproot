@@ -1,0 +1,43 @@
+{
+  "name": "@stevegreco/design-system-knowledge",
+  "version": "0.0.1",
+  "description": "Portable, validated knowledge records for the Ember & Sage design system.",
+  "license": "ISC",
+  "author": "Steve Greco",
+  "files": [
+    "dist/public",
+    "src"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./compile": "./src/compile/index.js",
+    "./retrieve": "./src/retrieve/index.js",
+    "./schema": "./src/schema/index.js",
+    "./schema/knowledge-record.json": "./src/schema/knowledge-record.schema.json",
+    "./manifest": "./dist/public/manifest.json",
+    "./records": "./dist/public/records.json",
+    "./search-index": "./dist/public/search-index.json",
+    "./schema/compiled-knowledge-record.json": "./dist/public/schema/compiled-knowledge-record.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "node build-knowledge.js",
+    "pretest": "pnpm run build",
+    "test": "node --test test/*.test.js",
+    "prepack": "pnpm run build"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.3.1",
+    "mdast-util-from-markdown": "^2.0.3",
+    "unist-util-visit": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
