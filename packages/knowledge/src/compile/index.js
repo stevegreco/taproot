@@ -1,10 +1,12 @@
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { mkdir, readFile, readdir, rename, rm } from "node:fs/promises";
-import { basename, dirname, join, relative, sep } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { buildCorpus } from "./corpus.js";
 import { projectBundle, writeBundle } from "./bundle.js";
-import { safeJoinWorkspace } from "./paths.js";
+import { createWorkspaceReader } from "./reader.js";
+
+export { createWorkspaceReader } from "./reader.js";
 
 /**
  * @typedef {"public"|"internal"} Visibility
@@ -15,7 +17,9 @@ import { safeJoinWorkspace } from "./paths.js";
  *
  * @typedef {object} WorkspaceReader
  * @property {(root: AuthoredRoot) => Promise<readonly string[]>} listRecords
+ *   Rejects when the configured root or a nested directory cannot be read.
  * @property {(repoPath: string) => Promise<string|null>} readText
+ *   Resolves null when the file is missing. Rejects on other read failures.
  * @property {(repoPath: string) => Promise<Uint8Array|null>} readBytes
  */
 
@@ -100,54 +104,6 @@ export async function compile(options) {
     }
     await rm(lockDir, { recursive: true, force: true });
   }
-}
-
-function createWorkspaceReader(workspaceRoot) {
-  return {
-    async listRecords(root) {
-      const paths = [];
-
-      async function walk(dir) {
-        let entries;
-        try {
-          entries = await readdir(dir, { withFileTypes: true });
-        } catch {
-          return;
-        }
-        for (const entry of entries) {
-          const absolute = join(dir, entry.name);
-          if (entry.isDirectory()) {
-            await walk(absolute);
-            continue;
-          }
-          if (entry.name.endsWith(".md")) {
-            paths.push(relative(workspaceRoot, absolute).split(sep).join("/"));
-          }
-        }
-      }
-
-      await walk(root.root);
-      return paths.sort((left, right) => left.localeCompare(right));
-    },
-    async readText(repoPath) {
-      const absolute = safeJoinWorkspace(workspaceRoot, repoPath);
-      if (!absolute) return null;
-      try {
-        return await readFile(absolute, "utf8");
-      } catch {
-        return null;
-      }
-    },
-    async readBytes(repoPath) {
-      const absolute = safeJoinWorkspace(workspaceRoot, repoPath);
-      if (!absolute) return null;
-      try {
-        return new Uint8Array(await readFile(absolute));
-      } catch {
-        return null;
-      }
-    },
-  };
 }
 
 async function readPackageVersion(packageJsonPath) {
