@@ -396,14 +396,15 @@ test("SOURCE_UNREADABLE fires when a token source is not JSON", async () => {
   assert.equal(problems[0].path, "packages/tokens/bad.json");
 });
 
-test("SOURCE_CONFLICT fires when the spec namespace is missing from the token file", async () => {
-  const specPath = "content/specs/namespace.md";
+test("SOURCE_CONFLICT fires when the contract namespace is missing from the token file", async () => {
   const path = "content/namespace.md";
   const reader = createMemoryReader({
-    [specPath]: recordMarkdown({
-      id: "spec.namespace",
-      type: "spec",
-      sources: [{ kind: "authored", path: specPath }],
+    [path]: recordMarkdown({
+      id: "component.namespace",
+      sources: [
+        { kind: "authored", path },
+        { kind: "token-source", path: "packages/tokens/other.json" },
+      ],
       contract: portableContract({
         description: "Has a namespace the token file does not define.",
         parameters: {
@@ -411,14 +412,6 @@ test("SOURCE_CONFLICT fires when the spec namespace is missing from the token fi
           size: { kind: "enum", values: { sm: "Small.", md: "Medium." } },
         },
       }),
-    }),
-    [path]: recordMarkdown({
-      id: "component.namespace",
-      sources: [
-        { kind: "authored", path },
-        { kind: "token-source", path: "packages/tokens/other.json" },
-      ],
-      relations: { uses: ["spec.namespace"] },
       tokenRef: {
         tier: "component",
         namespace: "component.namespace",
@@ -437,50 +430,17 @@ test("SOURCE_CONFLICT fires when the spec namespace is missing from the token fi
   assert.ok(problems.some((problem) => /component\.namespace/.test(problem.message)));
 });
 
-test("SOURCE_CONFLICT fires when a component uses two specs", async () => {
-  const reader = createMemoryReader({
-    "content/specs/a.md": recordMarkdown({
-      id: "spec.two-a",
-      type: "spec",
-      sources: [{ kind: "authored", path: "content/specs/a.md" }],
-      contract: portableContract({ description: "First spec." }),
-    }),
-    "content/specs/b.md": recordMarkdown({
-      id: "spec.two-b",
-      type: "spec",
-      sources: [{ kind: "authored", path: "content/specs/b.md" }],
-      contract: portableContract({ description: "Second spec." }),
-    }),
-    "content/two.md": recordMarkdown({
-      id: "component.two-specs",
-      sources: [{ kind: "authored", path: "content/two.md" }],
-      relations: { uses: ["spec.two-a", "spec.two-b"] },
-    }),
-  });
-
-  const corpus = await buildCorpus(reader, [publicRoot]);
-  assert.ok(
-    codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) => /more than one spec/.test(item.message)),
-  );
-});
-
 test("SOURCE_CONFLICT fires when a binding parameter is not a bijection", async () => {
   const reader = createMemoryReader({
-    "content/specs/bound.md": recordMarkdown({
-      id: "spec.bound",
-      type: "spec",
-      sources: [{ kind: "authored", path: "content/specs/bound.md" }],
+    "content/bound.md": recordMarkdown({
+      id: "component.bound",
+      sources: [{ kind: "authored", path: "content/bound.md" }],
       contract: portableContract({
         description: "Needs a matching host parameter.",
         anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
         parameters: { disabled: { kind: "boolean", default: false } },
         events: { activate: { description: "Activate." } },
       }),
-    }),
-    "content/bound.md": recordMarkdown({
-      id: "component.bound",
-      sources: [{ kind: "authored", path: "content/bound.md" }],
-      relations: { uses: ["spec.bound"] },
     }),
     "content/bindings/bound.md": recordMarkdown({
       id: "binding.bound.web-component",

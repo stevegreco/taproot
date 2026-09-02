@@ -234,7 +234,6 @@ export async function buildCorpus(reader, roots, options = {}) {
     mergedById.set(id, assembleRecord(authored, contribution, assets));
   }
 
-  problems.push(...attachContractFromUses(mergedById));
   for (const record of mergedById.values()) {
     applyTokenGroups(record);
     problems.push(...checkSourceAgreement(record));
@@ -411,7 +410,7 @@ function assembleRecord(authored, contribution, assets) {
   const record = {
     id: authored.id,
     schemaVersion: authored.schemaVersion,
-    compiledSchemaVersion: 2,
+    compiledSchemaVersion: 3,
     type: authored.type,
     title: authored.title,
     summary: authored.summary,
@@ -434,45 +433,6 @@ function assembleRecord(authored, contribution, assets) {
   if (contribution.fields.decisions) record.decisions = contribution.fields.decisions;
 
   return record;
-}
-
-function attachContractFromUses(records) {
-  const problems = [];
-
-  for (const record of records.values()) {
-    if (record.type !== "component") continue;
-    const uses = record.relations?.uses ?? [];
-    const specIds = uses.filter((id) => records.get(id)?.type === "spec");
-    if (specIds.length === 0) continue;
-    if (specIds.length > 1) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `${record.id} uses more than one spec`,
-          recordId: record.id,
-          path: "/relations/uses",
-        }),
-      );
-      continue;
-    }
-
-    const spec = records.get(specIds[0]);
-    if (!spec?.contract) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `${record.id} uses ${specIds[0]} which has no contract`,
-          recordId: record.id,
-          path: "/relations/uses",
-        }),
-      );
-      continue;
-    }
-
-    record.contract = spec.contract;
-  }
-
-  return problems;
 }
 
 function checkBindingAgreement(records) {

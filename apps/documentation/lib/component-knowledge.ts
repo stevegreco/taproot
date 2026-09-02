@@ -560,15 +560,21 @@ function projectReview(record: Record<string, unknown>): ReviewSection {
   };
 }
 
-function projectIntro(body: string, digest: string): { introMarkdown: string; behaviorMarkdown: string } {
+function projectIntro(
+  body: string,
+  implementationBody: string,
+  digest: string,
+): { introMarkdown: string; behaviorMarkdown: string } {
   const { preamble, sections } = markdownByHeading(rewriteBundleUrls(body, digest));
   const label = sections.get("write the label");
-  const behavior = sections.get("preserve native behavior");
+  const form = markdownByHeading(rewriteBundleUrls(implementationBody, digest)).sections.get(
+    "set form behavior deliberately",
+  );
   return {
     introMarkdown: preamble,
     behaviorMarkdown: [
       label ? `### Write the label\n\n${label}` : "",
-      behavior ? `### Forms\n\n${behavior}` : "",
+      form ? `### Forms\n\n${form}` : "",
     ]
       .filter((part) => part.length > 0)
       .join("\n\n"),
@@ -604,6 +610,7 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   let patternTitle = "";
   let patternSummary = "";
   let patternBody = "";
+  let implementationBody = "";
   let example: ExampleFigure | undefined;
   let review: ReviewSection | undefined;
 
@@ -621,14 +628,25 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
       example = projectExample(related, digest);
     } else if (type === "guideline") {
       const checks = related.checks;
-      if (!Array.isArray(checks) || checks.length === 0) continue;
-      if (review) fail("unexpected-slice", `${id} has more than one related review guideline`);
-      review = projectReview(related);
+      if (Array.isArray(checks) && checks.length > 0) {
+        if (review) fail("unexpected-slice", `${id} has more than one related review guideline`);
+        review = projectReview(related);
+        continue;
+      }
+      const jobs = Array.isArray(related.jobs) ? related.jobs : [];
+      if (jobs.includes("implement")) {
+        if (implementationBody) fail("unexpected-slice", `${id} has more than one related implementation guideline`);
+        implementationBody = asString(related.body);
+      }
     }
   }
 
   const variants = projectVariants(tagName, parameters, patternGuidanceByVariant(patternBody));
-  const { introMarkdown, behaviorMarkdown } = projectIntro(asString(record.body), digest);
+  const { introMarkdown, behaviorMarkdown } = projectIntro(
+    asString(record.body),
+    implementationBody,
+    digest,
+  );
   const avoid = bulletItems(markdownByHeading(patternBody).sections.get("avoid") ?? "");
 
   const together =

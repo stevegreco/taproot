@@ -57,7 +57,7 @@ test("projectBundle emits sorted records, hashed files, and reduced markdown fro
     written.map((record) => record.id),
     ids,
   );
-  assert.equal(written[0].compiledSchemaVersion, 2);
+  assert.equal(written[0].compiledSchemaVersion, 3);
   assert.ok(written.find((record) => record.id === "component.button").backlinks);
 });
 
@@ -84,13 +84,28 @@ test("compiled schema still requires visibility after authored defaults", () => 
     relations: {},
     sources: [{ kind: "authored", path: "content/almost.md", revision: "abc123456789abcd" }],
     body: "Body.",
-    compiledSchemaVersion: 2,
+    compiledSchemaVersion: 3,
     backlinks: {},
   };
   const missing = findCompiledIssues(compiledSchema, [almost]);
   assert.ok(missing.some((item) => item.code === PROBLEM.COMPILED_INVALID));
   const complete = findCompiledIssues(compiledSchema, [{ ...almost, visibility: "public" }]);
   assert.equal(complete.length, 0);
+});
+
+test("compiled schema forbids contract on a binding record", async () => {
+  const corpus = await buildCorpus(
+    createFsReader(repoRoot),
+    [{ root: join(repoRoot, "packages/knowledge/content"), visibility: "public" }],
+    { workspaceRoot: repoRoot },
+  );
+  const button = corpus.records.get("component.button");
+  const binding = corpus.records.get("binding.button.web-component");
+  const compiledSchema = deriveCompiledSchema(authoredSchema);
+  const problems = findCompiledIssues(compiledSchema, [
+    { ...binding, contract: button.contract },
+  ]);
+  assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
 });
 
 test("compiled schema forbids host on a component record", async () => {

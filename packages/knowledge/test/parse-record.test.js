@@ -264,11 +264,11 @@ const validHost = `
       event: click
 `;
 
-const validSpec = `---
-id: spec.test-button
+const validComponentWithContract = `---
+id: component.test-button
 schemaVersion: 1
-type: spec
-title: Test button contract
+type: component
+title: Test button
 summary: Trigger a test action.
 status: draft
 visibility: public
@@ -280,11 +280,11 @@ tags:
 relations: {}
 sources:
   - kind: authored
-    path: packages/knowledge/content/specs/test-button.md
+    path: packages/knowledge/content/components/test-button.md
 contract:${validContract}
 ---
 
-Portable contract for the test button.
+Use this component to trigger a test action.
 `;
 
 const validBinding = `---
@@ -311,29 +311,35 @@ host:${validHost}
 Register with defineButton().
 `;
 
-test("parseRecord accepts a spec with a portable contract", () => {
-  const record = parseRecord(validSpec, {
-    sourcePath: "packages/knowledge/content/specs/test-button.md",
+test("parseRecord accepts a component with a portable contract", () => {
+  const record = parseRecord(validComponentWithContract, {
+    sourcePath: "packages/knowledge/content/components/test-button.md",
   });
-  assert.equal(record.type, "spec");
+  assert.equal(record.type, "component");
   assert.equal(record.contract.specVersion, 2);
   assert.equal(record.contract.parameters.disabled.kind, "boolean");
   assert.equal(Object.hasOwn(record.contract, "tagName"), false);
 });
 
-test("parseRecord rejects a spec without contract", () => {
-  const markdown = validSpec.replace(/\ncontract:[\s\S]*?\n---\n/, "\n---\n");
-  assertIssuePath(markdown, "packages/knowledge/content/specs/test-button.md", "/contract");
+test("parseRecord accepts a component without a contract", () => {
+  const record = parseRecord(validComponent, { sourcePath: "test-button.md" });
+  assert.equal(record.type, "component");
+  assert.equal(Object.hasOwn(record, "contract"), false);
 });
 
-test("parseRecord rejects tagName on an authored spec contract", () => {
-  const markdown = validSpec.replace(
+test("parseRecord rejects type spec", () => {
+  const markdown = validComponentWithContract.replace("type: component", "type: spec");
+  assertIssuePath(markdown, "packages/knowledge/content/components/test-button.md", "/type");
+});
+
+test("parseRecord rejects tagName on an authored component contract", () => {
+  const markdown = validComponentWithContract.replace(
     "  specVersion: 2\n",
     "  specVersion: 2\n  tagName: ds-button\n",
   );
   assertIssuePath(
     markdown,
-    "packages/knowledge/content/specs/test-button.md",
+    "packages/knowledge/content/components/test-button.md",
     "/contract/tagName",
   );
 });
@@ -356,8 +362,8 @@ test("parseRecord rejects a binding without host", () => {
   );
 });
 
-test("parseRecord rejects contract on an authored component", () => {
-  const markdown = validComponent.replace(
+test("parseRecord rejects contract on an authored pattern", () => {
+  const markdown = validComponent.replace("type: component", "type: pattern").replace(
     "\n---\n\n",
     `\ncontract:${validContract}---\n\n`,
   );

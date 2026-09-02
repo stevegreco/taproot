@@ -2,7 +2,7 @@ import { PROBLEM, problem } from "../compile/tables.js";
 import { createKnowledgeAjv } from "./ajv.js";
 import { COMPILED_DEFS, COMPILED_PROPERTIES, COMPILED_REQUIRED } from "./compiled-extensions.js";
 
-const COMPILED_ID = "urn:stevegreco:design-system:compiled-knowledge-record:2";
+const COMPILED_ID = "urn:stevegreco:design-system:compiled-knowledge-record:3";
 
 const TYPE_HOST_RULES = Object.freeze([
   {
@@ -10,11 +10,14 @@ const TYPE_HOST_RULES = Object.freeze([
     then: { not: { required: ["host"] } },
   },
   {
-    if: { properties: { type: { const: "spec" } }, required: ["type"] },
-    then: { not: { required: ["host"] } },
-  },
-  {
-    if: { properties: { type: { const: "binding" } }, required: ["type"] },
+    if: {
+      properties: {
+        type: {
+          enum: ["pattern", "guideline", "example", "foundation", "decision", "binding"],
+        },
+      },
+      required: ["type"],
+    },
     then: { not: { required: ["contract"] } },
   },
 ]);

@@ -21,14 +21,15 @@ adapters are not implemented (KNOW-028).
    non-goals.
 2. [Content model](content-model.md) defines the records that make knowledge portable and
    retrievable.
-3. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md) records knowledge ownership of
-   portable contracts. [ADR 0001](../adr/0001-portable-design-system-knowledge.md) is superseded.
+3. [ADR 0003](../adr/0003-component-owned-portable-contracts.md) records that portable contracts
+   are authored on component records. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md)
+   remains the host-neutrality decision. [ADR 0001](../adr/0001-portable-design-system-knowledge.md)
+   is superseded.
 
-## Open proposals
+## Accepted proposals
 
 - [RFC 0001: Component contract record shape](../rfcs/0001-component-contract-record-shape.md)
-  reviews whether portable contracts should remain separate spec records or move onto component
-  records. ADR 0002 remains authoritative while the RFC is proposed.
+  accepted Option B. Portable contracts live on component records. Host bindings stay separate.
 
 Existing domain decisions remain authoritative:
 
@@ -43,14 +44,15 @@ in `sources[]`.
 
 Button and Badge are the first-slice records that do that. Button also names
 `button.tokens.json`. Badge omits token-source because it has no component-token namespace. The
-portable contract is a `type: spec` record. The web-component mapping is a `type: binding` record.
+portable contract is authored on the component record. The web-component mapping is a
+`type: binding` record.
 The other Markdown files compile as authored narrative plus their own frontmatter.
 
 ```mermaid
 flowchart TB
   subgraph authored["button.md owns"]
-    FM["Frontmatter: id, title, summary, status, jobs, tags, relations"]
-    BODY["Body: agent-facing prose"]
+    FM["Frontmatter: id, title, summary, status, jobs, tags, relations, contract"]
+    BODY["Body: host-neutral when/why"]
     SRC["sources[]: pointers, not content"]
   end
 
@@ -60,7 +62,6 @@ flowchart TB
   end
 
   subgraph siblings["Other content/*.md files"]
-    SPEC["spec.button → contract"]
     BIND["binding.button.web-component → host"]
     PAT["pattern.action-hierarchy"]
     GL["two guidelines + example"]
@@ -81,7 +82,6 @@ flowchart TB
   BODY --> R
   SRC --> TOK
   SRC --> ADR
-  SPEC -->|"uses"| R
   BIND -->|"implements"| R
   TOK --> R
   ADR --> R
@@ -125,10 +125,8 @@ The executable schema, authored Markdown parser, and knowledge compiler validate
 records:
 
 - [Button](../../packages/knowledge/content/components/button.md)
-- [Button contract](../../packages/knowledge/content/specs/button.md)
 - [Button web-component binding](../../packages/knowledge/content/bindings/button.web-component.md)
 - [Badge](../../packages/knowledge/content/components/badge.md)
-- [Badge contract](../../packages/knowledge/content/specs/badge.md)
 - [Badge web-component binding](../../packages/knowledge/content/bindings/badge.web-component.md)
 - [Action hierarchy](../../packages/knowledge/content/patterns/action-hierarchy.md)
 - [Button implementation](../../packages/knowledge/content/guidelines/button-implementation.md)

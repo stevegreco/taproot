@@ -12,9 +12,14 @@ test("get returns a hit, undefined for a miss, and malformed-id for button", asy
   const catalog = await openCatalog();
   assert.equal(catalog.get("component.button").id, "component.button");
   assert.equal(catalog.get("component.badge").id, "component.badge");
+  assert.equal(catalog.get("spec.button"), undefined);
   assert.equal(
     catalog.related("component.badge").some((neighbor) => neighbor.record.id === "component.button"),
     true,
+  );
+  assert.equal(
+    catalog.related("component.button").some((neighbor) => neighbor.record.id === "spec.button"),
+    false,
   );
   assert.equal(catalog.get("component.missing"), undefined);
   assert.throws(() => catalog.get("button"), (error) => {
@@ -110,6 +115,10 @@ test("list filters AND across keys and OR within a key", async () => {
 
   assert.throws(() => catalog.list({ typo: "x" }), (error) => {
     assert.equal(error.code, "unknown-filter");
+    return true;
+  });
+  assert.throws(() => catalog.list({ type: "spec" }), (error) => {
+    assert.equal(error.code, "unknown-filter-value");
     return true;
   });
   assert.throws(() => catalog.list({ type: "widget" }), (error) => {

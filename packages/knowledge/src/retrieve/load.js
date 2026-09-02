@@ -234,9 +234,9 @@ function validateContract(records, searchIndex, manifest, label) {
   if (!Object.hasOwn(content, "schemaVersion") || !Object.hasOwn(content, "compiledSchemaVersion")) {
     throw fail("bundle-invalid", label, ["manifest.content schema versions are missing"]);
   }
-  if (content.schemaVersion !== 1 || content.compiledSchemaVersion !== 2) {
+  if (content.schemaVersion !== 1 || content.compiledSchemaVersion !== 3) {
     throw fail("unsupported-schema-version", label, [
-      `schemaVersion ${content.schemaVersion} compiledSchemaVersion ${content.compiledSchemaVersion} are not 1 and 2`,
+      `schemaVersion ${content.schemaVersion} compiledSchemaVersion ${content.compiledSchemaVersion} are not 1 and 3`,
     ]);
   }
 
