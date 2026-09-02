@@ -44,7 +44,6 @@ test("Button guidance uses guides and reviews, not related", async () => {
       "guideline.button-implementation",
       "guideline.button-review",
       "pattern.action-hierarchy",
-      "spec.button",
     ],
   );
 
@@ -66,6 +65,9 @@ test("Button guidance uses guides and reviews, not related", async () => {
   ]);
   assert.deepEqual(byId["binding.button.web-component"].via, [
     { relation: "implements", direction: "inbound" },
+  ]);
+  assert.deepEqual(byId["example.action-hierarchy.settings"].via, [
+    { relation: "uses", direction: "inbound" },
   ]);
 
   const pattern = catalog.get("pattern.action-hierarchy");
