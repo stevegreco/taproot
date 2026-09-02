@@ -1,0 +1,203 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import yaml from "js-yaml";
+import authoredSchema from "../schema/index.js";
+import { deriveCompiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
+import { sha256Hex } from "./corpus.js";
+import { buildSearchIndex } from "./search-index.js";
+import { PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
+
+export function projectBundle(corpus, visibility, meta) {
+  const includedIds = [...corpus.records.keys()].filter((id) => {
+    const record = corpus.records.get(id);
+    return visibility === "internal" || record.visibility === "public";
+  });
+  const included = new Set(includedIds);
+
+  const problems = [];
+  if (visibility === "public") {
+    for (const id of includedIds) {
+      problems.push(...visibilityLeaks(corpus.records.get(id), included, corpus));
+    }
+  }
+
+  const backlinksById = new Map(includedIds.map((id) => [id, {}]));
+  for (const edge of corpus.edges) {
+    if (!included.has(edge.from) || !included.has(edge.to)) continue;
+    const key = REVERSE_RELATION[edge.relation];
+    if (!key) continue;
+    const bucket = backlinksById.get(edge.to);
+    if (!bucket[key]) bucket[key] = new Set();
+    bucket[key].add(edge.from);
+  }
+
+  const records = includedIds
+    .sort((left, right) => left.localeCompare(right))
+    .map((id) => {
+      const record = corpus.records.get(id);
+      const backlinks = {};
+      for (const [key, values] of Object.entries(backlinksById.get(id))) {
+        backlinks[key] = [...values].sort((left, right) => left.localeCompare(right));
+      }
+      return { ...record, backlinks };
+    });
+
+  const compiledSchema = deriveCompiledSchema(authoredSchema);
+  problems.push(...findCompiledIssues(compiledSchema, records));
+
+  const searchIndex = buildSearchIndex(records);
+  const markdown = new Map();
+  const assets = new Map();
+
+  for (const record of records) {
+    markdown.set(`markdown/${record.id}.md`, emitMarkdown(record));
+    for (const asset of record.assets ?? []) {
+      const bytes = corpus.assetBytes.get(asset.bundlePath);
+      if (bytes) assets.set(asset.bundlePath, bytes);
+    }
+  }
+
+  const files = new Map();
+  putText(files, "records.json", `${JSON.stringify(records, null, 2)}\n`);
+  putText(
+    files,
+    "records.jsonl",
+    `${records.map((record) => JSON.stringify(record)).join("\n")}${records.length ? "\n" : ""}`,
+  );
+  putText(files, "search-index.json", `${JSON.stringify(searchIndex, null, 2)}\n`);
+  putText(files, "schema/knowledge-record.json", `${JSON.stringify(authoredSchema, null, 2)}\n`);
+  putText(
+    files,
+    "schema/compiled-knowledge-record.json",
+    `${JSON.stringify(compiledSchema, null, 2)}\n`,
+  );
+
+  for (const [path, text] of markdown) {
+    putText(files, path, text);
+  }
+  for (const [path, bytes] of assets) {
+    files.set(path, bytes);
+  }
+
+  const listed = [...files.keys()]
+    .sort((left, right) => left.localeCompare(right))
+    .map((path) => {
+      const bytes = files.get(path);
+      return { path, sha256: sha256Hex(bytes), bytes: bytes.byteLength };
+    });
+
+  const content = {
+    schemaVersion: 1,
+    compiledSchemaVersion: 1,
+    knowledgeVersion: meta.knowledgeVersion,
+    designSystemVersion: meta.designSystemVersion,
+    recordCount: records.length,
+    files: listed,
+  };
+  const digest = `sha256:${sha256Hex(canonicalJson(content))}`;
+  const manifest = {
+    content,
+    build: {
+      time: meta.buildTime.toISOString(),
+      revision: meta.revision,
+      tool: {
+        name: "@stevegreco/design-system-knowledge",
+        version: meta.knowledgeVersion,
+      },
+    },
+    digest,
+  };
+  putText(files, "manifest.json", `${JSON.stringify(manifest, null, 2)}\n`);
+
+  return {
+    visibility,
+    records,
+    searchIndex,
+    compiledSchema,
+    markdown,
+    assets,
+    manifest,
+    files,
+    problems: Object.freeze(problems),
+  };
+}
+
+export async function writeBundle(dir, bundle) {
+  const paths = [...bundle.files.keys()].sort((left, right) => left.localeCompare(right));
+  for (const relative of paths) {
+    const absolute = join(dir, relative);
+    await mkdir(dirname(absolute), { recursive: true });
+    await writeFile(absolute, bundle.files.get(relative));
+  }
+
+  return {
+    visibility: bundle.visibility,
+    dir,
+    recordCount: bundle.records.length,
+    digest: bundle.manifest.digest,
+  };
+}
+
+function visibilityLeaks(record, included, corpus) {
+  const problems = [];
+
+  function leak(target, path) {
+    if (!corpus.records.has(target) || included.has(target)) return;
+    problems.push(
+      problem({
+        code: PROBLEM.VISIBILITY_LEAK,
+        message: `${record.id} references internal ${target}`,
+        recordId: record.id,
+        path,
+      }),
+    );
+  }
+
+  for (const [relation, targets] of Object.entries(record.relations ?? {})) {
+    for (const to of targets ?? []) leak(to, `/relations/${relation}`);
+  }
+  for (const annotation of record.annotations ?? []) {
+    for (const to of annotation.relatesTo ?? []) {
+      leak(to, `/annotations/${annotation.id}/relatesTo`);
+    }
+  }
+  for (const match of record.body.matchAll(/markdown\/([a-z0-9][a-z0-9.-]*)\.md/g)) {
+    leak(match[1], record.sources.find((source) => source.kind === "authored")?.path ?? null);
+  }
+
+  return problems;
+}
+
+function emitMarkdown(record) {
+  const frontmatter = {
+    id: record.id,
+    jobs: record.jobs,
+    status: record.status,
+    summary: record.summary,
+    tags: record.tags,
+    title: record.title,
+    type: record.type,
+    visibility: record.visibility,
+  };
+  return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${record.body}\n`;
+}
+
+function putText(files, path, text) {
+  files.set(path, new TextEncoder().encode(text));
+}
+
+function canonicalJson(value) {
+  return JSON.stringify(sortKeys(value));
+}
+
+function sortKeys(value) {
+  if (Array.isArray(value)) return value.map(sortKeys);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, sortKeys(value[key])]),
+    );
+  }
+  return value;
+}
