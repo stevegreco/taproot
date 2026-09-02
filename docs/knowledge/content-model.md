@@ -301,7 +301,8 @@ in `manifest.build` and are not part of the digest (KNOW-014, KNOW-018, KNOW-024
 Consumers query a compiled bundle through `openCatalog` in
 `@stevegreco/design-system-knowledge/retrieve`. `search`, `get`, `list`, and `related` read
 `records.json`, `search-index.json`, and `manifest.json`. They do not change these authored field
-names.
+names. The search index tokenizes `title`, `summary`, `tags`, `body`, and type-specific facts from
+`contract`, `host`, and `checks`. It does not index `id`, `type`, or `jobs`.
 
 ## Source ownership
 

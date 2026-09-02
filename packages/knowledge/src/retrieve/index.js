@@ -6,7 +6,7 @@
  * | Entry | `openCatalog(source?, options?)`. Omitted source → this package's `dist/public`. String or `URL` → bundle directory. Object → `{ records, searchIndex, manifest }` already parsed. Always returns `Promise<Catalog>`. |
  * | Missing `get(id)` | `undefined`. Malformed id → `KnowledgeQueryError` `malformed-id`. Non-string → `TypeError`. |
  * | `list` | Filters `type`, `status`, `visibility`, `jobs`, `tags`. String means one-element array. AND across keys, OR within a key. Always id order (UTF-16 code unit). No paging. Unknown key/enum → `KnowledgeQueryError`. |
- * | `search` | Shared `tokenize`. Index membership only. OR across query terms. Rank: term coverage desc, field weight desc (title 8, tags 4, summary 2, body 1), id asc. Return `SearchHit[]` `{ record, terms }`. No public `score`. Empty/stopword query → `[]`. No scan of `id`/`type`/`jobs`. |
+ * | `search` | Shared `tokenize`. Index membership only. OR across query terms. Rank: term coverage desc, field weight desc (title 8, tags 4, summary 2, body 1), id asc. Return `SearchHit[]` `{ record, terms }`. No public `score`. Empty/stopword query → `[]`. No scan of `id`/`type`/`jobs`. Structured facts from `contract`, `host`, and `checks` are indexed with body weight. |
  * | `related(id)` | Full neighborhood, grouped by neighbor. `{ record, via: [{ relation, direction }] }`. `relation` is always the forward name. `direction` is `"outbound"` \| `"inbound"` \| `"symmetric"`. Missing seed → `KnowledgeQueryError` `unknown-record`. Isolated record → `[]`. |
  * | Export | `./retrieve` only. `.` stays `parseRecord`. |
  * | Tokenizer | `export function tokenize` from `src/compile/search-index.js`. In-package import only. Not on the package `exports` map. |

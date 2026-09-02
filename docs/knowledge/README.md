@@ -73,7 +73,7 @@ flowchart TB
   subgraph dist["dist/public/  (same record, different views)"]
     JSON["records.json / records.jsonl<br/>full object"]
     MD["markdown/component.button.md<br/>short frontmatter + rewritten body"]
-    IDX["search-index.json<br/>words from title, summary, tags, body"]
+    IDX["search-index.json<br/>words from title, summary, tags, body,<br/>contract, host, checks"]
     MAN["manifest.json<br/>path + hash only"]
   end
 
@@ -114,6 +114,8 @@ Directory opens verify SHA-256 and byte length for `records.json` and `search-in
 
 `get` returns the compiled record or `undefined`. `list` filters `type`, `status`, `visibility`,
 `jobs`, and `tags`. `search` uses the compiled index and the same tokenizer the compiler used.
+The index also tokenizes type-specific facts from `contract`, `host`, and `checks`. It does not
+index `id`, `type`, or `jobs`.
 `related` returns each neighbor once, with `via` edges named by the forward relation (KNOW-015).
 
 ## First content slice
