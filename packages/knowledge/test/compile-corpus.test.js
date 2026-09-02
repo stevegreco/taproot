@@ -174,7 +174,7 @@ test("SOURCE_MISSING fires when a declared source file is absent", async () => {
       id: "component.missing-source",
       sources: [
         { kind: "authored", path },
-        { kind: "token-source", path: "tokens/absent.json" },
+        { kind: "token-source", path: "packages/tokens/absent.json" },
       ],
       tokenRef: {
         tier: "component",
@@ -188,7 +188,7 @@ test("SOURCE_MISSING fires when a declared source file is absent", async () => {
   const problems = codes(corpus, PROBLEM.SOURCE_MISSING);
 
   assert.equal(problems.length, 1);
-  assert.equal(problems[0].path, "tokens/absent.json");
+  assert.equal(problems[0].path, "packages/tokens/absent.json");
 });
 
 test("SOURCE_UNREADABLE fires when a token source is not JSON", async () => {
@@ -198,7 +198,7 @@ test("SOURCE_UNREADABLE fires when a token source is not JSON", async () => {
       id: "component.bad-tokens",
       sources: [
         { kind: "authored", path },
-        { kind: "token-source", path: "tokens/bad.json" },
+        { kind: "token-source", path: "packages/tokens/bad.json" },
       ],
       tokenRef: {
         tier: "component",
@@ -206,14 +206,14 @@ test("SOURCE_UNREADABLE fires when a token source is not JSON", async () => {
         description: "Unreadable token file.",
       },
     }),
-    "tokens/bad.json": "{ not json",
+    "packages/tokens/bad.json": "{ not json",
   });
 
   const corpus = await buildCorpus(reader, [publicRoot]);
   const problems = codes(corpus, PROBLEM.SOURCE_UNREADABLE);
 
   assert.equal(problems.length, 1);
-  assert.equal(problems[0].path, "tokens/bad.json");
+  assert.equal(problems[0].path, "packages/tokens/bad.json");
 });
 
 test("SOURCE_CONFLICT fires when the spec namespace is missing from the token file", async () => {
@@ -236,7 +236,7 @@ test("SOURCE_CONFLICT fires when the spec namespace is missing from the token fi
       id: "component.namespace",
       sources: [
         { kind: "authored", path },
-        { kind: "token-source", path: "tokens/other.json" },
+        { kind: "token-source", path: "packages/tokens/other.json" },
       ],
       relations: { uses: ["spec.namespace"] },
       tokenRef: {
@@ -245,7 +245,7 @@ test("SOURCE_CONFLICT fires when the spec namespace is missing from the token fi
         description: "Missing from the token file.",
       },
     }),
-    "tokens/other.json": JSON.stringify({
+    "packages/tokens/other.json": JSON.stringify({
       component: { other: { radius: { $value: "4px", $type: "dimension" } } },
     }),
   });
@@ -397,6 +397,115 @@ test("BODY_UNRESOLVED_LINK fires for a relative Markdown link with no bundle tar
 
   assert.equal(problems.length, 1);
   assert.equal(problems[0].recordId, "component.links");
+});
+
+test("PATH_OUTSIDE_ROOT fires when a public asset leaves allowed roots", async () => {
+  const path = "content/escape.md";
+  const reader = createMemoryReader({
+    [path]: authored(path, {
+      id: "example.escape",
+      type: "example",
+      assets: [
+        {
+          id: "example.escape.frame",
+          path: "internal/secret.svg",
+          mediaType: "image/svg+xml",
+          width: 10,
+          height: 10,
+          alt: "Secret.",
+        },
+      ],
+      annotations: [{ id: "note", label: "Note", description: "Must not publish." }],
+    }),
+    "internal/secret.svg": tinySvg,
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot, internalRoot]);
+  const problems = codes(corpus, PROBLEM.PATH_OUTSIDE_ROOT);
+
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].recordId, "example.escape");
+  assert.equal(problems[0].path, "internal/secret.svg");
+  assert.equal(corpus.assetBytes.size, 0);
+});
+
+test("PATH_OUTSIDE_ROOT fires when a public source leaves allowed roots", async () => {
+  const path = "content/escape-source.md";
+  const reader = createMemoryReader({
+    [path]: recordMarkdown({
+      id: "component.escape-source",
+      sources: [
+        { kind: "authored", path },
+        { kind: "token-source", path: "packages/other/secret.json" },
+      ],
+    }),
+    "packages/other/secret.json": JSON.stringify({ component: {} }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.PATH_OUTSIDE_ROOT);
+
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].recordId, "component.escape-source");
+  assert.equal(problems[0].path, "packages/other/secret.json");
+});
+
+test("internal records may read their private root", async () => {
+  const path = "internal/owned.md";
+  const reader = createMemoryReader({
+    [path]: recordMarkdown({
+      id: "example.owned",
+      type: "example",
+      visibility: "internal",
+      sources: [{ kind: "authored", path }],
+      assets: [
+        {
+          id: "example.owned.frame",
+          path: "internal/owned.svg",
+          mediaType: "image/svg+xml",
+          width: 10,
+          height: 10,
+          alt: "Owned.",
+        },
+      ],
+      annotations: [{ id: "note", label: "Note", description: "Private asset." }],
+    }),
+    "internal/owned.svg": tinySvg,
+  });
+
+  const corpus = await buildCorpus(reader, [internalRoot]);
+  assert.equal(codes(corpus, PROBLEM.PATH_OUTSIDE_ROOT).length, 0);
+  assert.equal(corpus.records.get("example.owned").assets[0].path, "internal/owned.svg");
+});
+
+test("internal records cannot read the public authored root", async () => {
+  const path = "internal/borrow.md";
+  const reader = createMemoryReader({
+    [path]: recordMarkdown({
+      id: "example.borrow",
+      type: "example",
+      visibility: "internal",
+      sources: [{ kind: "authored", path }],
+      assets: [
+        {
+          id: "example.borrow.frame",
+          path: "content/public.svg",
+          mediaType: "image/svg+xml",
+          width: 10,
+          height: 10,
+          alt: "Borrowed.",
+        },
+      ],
+      annotations: [{ id: "note", label: "Note", description: "Wrong root." }],
+    }),
+    "content/public.svg": tinySvg,
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot, internalRoot]);
+  const problems = codes(corpus, PROBLEM.PATH_OUTSIDE_ROOT);
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].recordId, "example.borrow");
+  assert.equal(problems[0].path, "content/public.svg");
 });
 
 test("VISIBILITY_INTERNAL_PUBLIC fires when an internal root declares a public record", async () => {

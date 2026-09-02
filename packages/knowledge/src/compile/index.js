@@ -4,6 +4,7 @@ import { mkdir, readFile, readdir, rename, rm } from "node:fs/promises";
 import { basename, dirname, join, relative, sep } from "node:path";
 import { buildCorpus } from "./corpus.js";
 import { projectBundle, writeBundle } from "./bundle.js";
+import { safeJoinWorkspace } from "./paths.js";
 
 /**
  * @typedef {"public"|"internal"} Visibility
@@ -70,7 +71,7 @@ export async function compile(options) {
     }
 
     const reader = createWorkspaceReader(workspaceRoot);
-    const corpus = await buildCorpus(reader, roots);
+    const corpus = await buildCorpus(reader, roots, { workspaceRoot });
     const meta = { knowledgeVersion, designSystemVersion, buildTime, revision };
     const publicBundle = projectBundle(corpus, "public", meta);
     const internalBundle = projectBundle(corpus, "internal", meta);
@@ -129,15 +130,19 @@ function createWorkspaceReader(workspaceRoot) {
       return paths.sort((left, right) => left.localeCompare(right));
     },
     async readText(repoPath) {
+      const absolute = safeJoinWorkspace(workspaceRoot, repoPath);
+      if (!absolute) return null;
       try {
-        return await readFile(join(workspaceRoot, repoPath), "utf8");
+        return await readFile(absolute, "utf8");
       } catch {
         return null;
       }
     },
     async readBytes(repoPath) {
+      const absolute = safeJoinWorkspace(workspaceRoot, repoPath);
+      if (!absolute) return null;
       try {
-        return new Uint8Array(await readFile(join(workspaceRoot, repoPath)));
+        return new Uint8Array(await readFile(absolute));
       } catch {
         return null;
       }

@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import yaml from "js-yaml";
+import { safeJoinWorkspace } from "../../src/compile/paths.js";
 
 export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 
@@ -76,15 +77,19 @@ export function createFsReader(workspaceRoot) {
       return paths.sort((left, right) => left.localeCompare(right));
     },
     async readText(repoPath) {
+      const absolute = safeJoinWorkspace(workspaceRoot, repoPath);
+      if (!absolute) return null;
       try {
-        return await readFile(join(workspaceRoot, repoPath), "utf8");
+        return await readFile(absolute, "utf8");
       } catch {
         return null;
       }
     },
     async readBytes(repoPath) {
+      const absolute = safeJoinWorkspace(workspaceRoot, repoPath);
+      if (!absolute) return null;
       try {
-        return new Uint8Array(await readFile(join(workspaceRoot, repoPath)));
+        return new Uint8Array(await readFile(absolute));
       } catch {
         return null;
       }

@@ -7,7 +7,7 @@ import { compile } from "../src/compile/index.js";
 import { buildCorpus } from "../src/compile/corpus.js";
 import { projectBundle } from "../src/compile/bundle.js";
 import { PROBLEM } from "../src/compile/tables.js";
-import { createMemoryReader, recordMarkdown, repoRoot } from "./helpers/workspace.js";
+import { createMemoryReader, recordMarkdown, repoRoot, tinySvg } from "./helpers/workspace.js";
 
 const meta = {
   knowledgeVersion: "0.0.1",
@@ -67,4 +67,96 @@ test("VISIBILITY_LEAK fires when a public record references an internal record",
   ]);
   const bundle = projectBundle(corpus, "public", meta);
   assert.ok(bundle.problems.some((item) => item.code === PROBLEM.VISIBILITY_LEAK));
+});
+
+test("VISIBILITY_LEAK fires when a public body references an internal-only asset", async () => {
+  const reader = createMemoryReader({
+    "content/leaky.md": recordMarkdown(
+      {
+        id: "component.leaky-asset",
+        sources: [{ kind: "authored", path: "content/leaky.md" }],
+      },
+      "See ![shot](../internal/secret.svg) here.",
+    ),
+    "internal/secret.md": recordMarkdown({
+      id: "example.secret-shot",
+      type: "example",
+      visibility: "internal",
+      sources: [{ kind: "authored", path: "internal/secret.md" }],
+      assets: [
+        {
+          id: "ds.secret-shot",
+          path: "internal/secret.svg",
+          mediaType: "image/svg+xml",
+          width: 10,
+          height: 10,
+          alt: "Internal only.",
+        },
+      ],
+      annotations: [{ id: "note", label: "Note", description: "Private frame." }],
+    }),
+    "internal/secret.svg": tinySvg,
+  });
+
+  const corpus = await buildCorpus(reader, [
+    { root: "content", visibility: "public" },
+    { root: "internal", visibility: "internal" },
+  ]);
+  assert.equal(
+    corpus.problems.filter((item) => item.severity === "error").length,
+    0,
+    JSON.stringify(corpus.problems, null, 2),
+  );
+  assert.match(corpus.records.get("component.leaky-asset").body, /assets\/ds\.secret-shot\.svg/);
+
+  const publicBundle = projectBundle(corpus, "public", meta);
+  const leaks = publicBundle.problems.filter((item) => item.code === PROBLEM.VISIBILITY_LEAK);
+  assert.equal(leaks.length, 1);
+  assert.equal(leaks[0].recordId, "component.leaky-asset");
+  assert.match(leaks[0].message, /assets\/ds\.secret-shot\.svg/);
+  assert.equal(publicBundle.files.has("assets/ds.secret-shot.svg"), false);
+
+  const internalBundle = projectBundle(corpus, "internal", meta);
+  assert.equal(
+    internalBundle.problems.filter((item) => item.code === PROBLEM.VISIBILITY_LEAK).length,
+    0,
+  );
+  assert.equal(internalBundle.files.has("assets/ds.secret-shot.svg"), true);
+});
+
+test("public records may still reference a public asset from the body", async () => {
+  const reader = createMemoryReader({
+    "content/uses-shot.md": recordMarkdown(
+      {
+        id: "component.uses-shot",
+        sources: [{ kind: "authored", path: "content/uses-shot.md" }],
+      },
+      "See ![shot](./public.svg).",
+    ),
+    "content/public-example.md": recordMarkdown({
+      id: "example.public-shot",
+      type: "example",
+      sources: [{ kind: "authored", path: "content/public-example.md" }],
+      assets: [
+        {
+          id: "ds.public-shot",
+          path: "content/public.svg",
+          mediaType: "image/svg+xml",
+          width: 10,
+          height: 10,
+          alt: "Public frame.",
+        },
+      ],
+      annotations: [{ id: "note", label: "Note", description: "Shared frame." }],
+    }),
+    "content/public.svg": tinySvg,
+  });
+
+  const corpus = await buildCorpus(reader, [{ root: "content", visibility: "public" }]);
+  const bundle = projectBundle(corpus, "public", meta);
+  assert.equal(
+    bundle.problems.filter((item) => item.code === PROBLEM.VISIBILITY_LEAK).length,
+    0,
+  );
+  assert.equal(bundle.files.has("assets/ds.public-shot.svg"), true);
 });

@@ -17,7 +17,9 @@ const publicContent = {
 };
 
 test("Button composes spec, tokens, and ADR 0003 into disjoint namespaces", async () => {
-  const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent]);
+  const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent], {
+    workspaceRoot: repoRoot,
+  });
   const button = corpus.records.get("component.button");
   const spec = corpus.records.get("spec.button");
   const binding = corpus.records.get("binding.button.web-component");
@@ -110,7 +112,9 @@ test("a spec with no tokenRef and no token-source composes contract only", async
 });
 
 test("Badge composes spec and ADR 0003 without a token contract", async () => {
-  const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent]);
+  const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent], {
+    workspaceRoot: repoRoot,
+  });
   const badge = corpus.records.get("component.badge");
   const binding = corpus.records.get("binding.badge.web-component");
 
@@ -153,7 +157,7 @@ test("SIZE_BRIDGE rejects an unknown spec size", async () => {
       id: "component.size-unknown",
       sources: [
         { kind: "authored", path: componentPath },
-        { kind: "token-source", path: "tokens/size.json" },
+        { kind: "token-source", path: "packages/tokens/size.json" },
       ],
       relations: { uses: ["spec.size-unknown"] },
       tokenRef: {
@@ -162,7 +166,7 @@ test("SIZE_BRIDGE rejects an unknown spec size", async () => {
         description: "Size tokens.",
       },
     }),
-    "tokens/size.json": JSON.stringify({
+    "packages/tokens/size.json": JSON.stringify({
       component: {
         size: {
           primary: {
@@ -197,7 +201,7 @@ test("SIZE_BRIDGE rejects an unknown token size key", async () => {
       id: "component.token-size",
       sources: [
         { kind: "authored", path: componentPath },
-        { kind: "token-source", path: "tokens/token-size.json" },
+        { kind: "token-source", path: "packages/tokens/token-size.json" },
       ],
       relations: { uses: ["spec.token-size"] },
       tokenRef: {
@@ -206,7 +210,7 @@ test("SIZE_BRIDGE rejects an unknown token size key", async () => {
         description: "Size tokens.",
       },
     }),
-    "tokens/token-size.json": JSON.stringify({
+    "packages/tokens/token-size.json": JSON.stringify({
       component: {
         "token-size": {
           primary: {

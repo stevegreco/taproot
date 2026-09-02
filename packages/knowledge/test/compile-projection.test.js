@@ -9,9 +9,11 @@ test("baseline Button contract projects onto portable spec and web-component bin
   const baseline = JSON.parse(
     await readFile(join(repoRoot, ".audit/baseline-button-contract.json"), "utf8"),
   );
-  const corpus = await buildCorpus(createFsReader(repoRoot), [
-    { root: join(repoRoot, "packages/knowledge/content"), visibility: "public" },
-  ]);
+  const corpus = await buildCorpus(
+    createFsReader(repoRoot),
+    [{ root: join(repoRoot, "packages/knowledge/content"), visibility: "public" }],
+    { workspaceRoot: repoRoot },
+  );
   assert.equal(
     corpus.problems.filter((item) => item.severity === "error").length,
     0,
