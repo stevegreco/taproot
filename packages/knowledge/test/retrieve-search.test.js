@@ -78,6 +78,21 @@ test("search guideline is empty on the real slice because type is not indexed", 
   assert.deepEqual(catalog.search("guideline"), []);
 });
 
+test("compiled contract host and checks are searchable", async () => {
+  const catalog = await openCatalog();
+  const fullWidthIds = catalog.search("fullWidth").map((hit) => hit.record.id);
+  const accessibleNameIds = catalog.search("accessibleName").map((hit) => hit.record.id);
+  const pressedIds = catalog.search("pressed").map((hit) => hit.record.id);
+  const tagIds = catalog.search("ds-button").map((hit) => hit.record.id);
+
+  assert.equal(fullWidthIds.includes("component.button"), true);
+  assert.equal(fullWidthIds.includes("spec.button"), true);
+  assert.equal(accessibleNameIds.includes("component.button"), true);
+  assert.equal(pressedIds.includes("component.button"), true);
+  assert.equal(tagIds.includes("binding.button.web-component"), true);
+  assert.deepEqual(catalog.search("guideline"), []);
+});
+
 test("posting indexes map through searchIndex.records, not records.json position", async () => {
   const alpha = stubRecord("fixture.alpha", {
     title: "Alpha title",

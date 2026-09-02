@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildSearchIndex, tokenize } from "../src/compile/search-index.js";
+import { buildSearchIndex, collectSearchText, tokenize } from "../src/compile/search-index.js";
 
 test("postings are indexes into records, not ids", () => {
   const records = [
@@ -25,4 +25,90 @@ test("stopwords and one-character tokens are dropped", () => {
 
 test("component.button tokenizes to component and button", () => {
   assert.deepEqual([...tokenize("component.button")].sort(), ["button", "component"]);
+});
+
+test("contract host and checks add terms without stringifying the record", () => {
+  const record = {
+    id: "component.secret",
+    type: "guideline",
+    title: "Quiet title",
+    summary: "Quiet summary.",
+    jobs: ["implement", "review"],
+    tags: ["quiet"],
+    body: "Quiet body.",
+    contract: {
+      usage: {
+        do: [{ situation: "Trigger an action." }],
+        avoid: [{ situation: "Navigate away." }],
+      },
+      anatomy: [{ name: "control", role: "interactive-surface", description: "unused role text" }],
+      parameters: {
+        fullWidth: { kind: "boolean" },
+        variant: { kind: "enum", values: { ghost: "Low emphasis." } },
+      },
+      events: { activate: { description: "unused event prose" } },
+      states: ["pressed", "focus-visible"],
+      accessibility: { requirements: ["Icon-only buttons have an accessibleName."] },
+    },
+    host: {
+      defaultTagName: "ds-button",
+      anatomy: { content: { slot: "default", part: "button" } },
+      parts: { button: { description: "unused part prose" } },
+      parameters: {
+        fullWidth: { attribute: "full-width", property: "fullWidth" },
+        accessibleName: { attribute: "aria-label" },
+      },
+    },
+    checks: [{ id: "button-review-label", requirement: "The accessible label describes the result." }],
+  };
+
+  const text = collectSearchText(record);
+  assert.match(text, /fullWidth/);
+  assert.match(text, /accessibleName/);
+  assert.match(text, /pressed/);
+  assert.match(text, /ds-button/);
+  assert.match(text, /aria-label/);
+  assert.match(text, /accessible label describes/);
+  assert.equal(text.includes("component.secret"), false);
+  assert.equal(text.includes("guideline"), false);
+  assert.equal(text.includes("implement"), false);
+  assert.equal(text.includes("unused role text"), false);
+  assert.equal(text.includes("unused event prose"), false);
+  assert.equal(text.includes("unused part prose"), false);
+
+  const index = buildSearchIndex([record]);
+  assert.deepEqual(index.records, ["component.secret"]);
+  assert.deepEqual(index.terms.fullwidth, [0]);
+  assert.deepEqual(index.terms.accessiblename, [0]);
+  assert.deepEqual(index.terms.pressed, [0]);
+  assert.deepEqual(index.terms.ds, [0]);
+  assert.equal(index.terms.guideline, undefined);
+  assert.equal(index.terms.implement, undefined);
+  assert.equal(index.terms.review, undefined);
+});
+
+test("each record still contributes one posting set", () => {
+  const records = [
+    {
+      id: "spec.one",
+      title: "One",
+      summary: "First",
+      tags: ["one"],
+      body: "shared",
+      contract: { parameters: { fullWidth: { kind: "boolean" } } },
+    },
+    {
+      id: "spec.two",
+      title: "Two",
+      summary: "Second",
+      tags: ["two"],
+      body: "shared",
+      contract: { parameters: { fullWidth: { kind: "boolean" } } },
+    },
+  ];
+  const index = buildSearchIndex(records);
+  assert.deepEqual(index.records, ["spec.one", "spec.two"]);
+  assert.deepEqual(index.terms.shared, [0, 1]);
+  assert.deepEqual(index.terms.fullwidth, [0, 1]);
+  assert.equal(index.records.filter((id) => id === "spec.one").length, 1);
 });
