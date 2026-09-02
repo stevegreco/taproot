@@ -331,7 +331,7 @@ function buildLoadedBundle(records, searchIndex, manifest, visibility) {
     byId.set(record.id, deepFreeze(record));
   }
   const ids = Object.freeze([...byId.keys()].sort(byCodeUnit));
-  const postings = remapPostings(searchIndex);
+  const postings = mapIndexPostingsToRecordIds(searchIndex);
   const fieldTerms = new Map();
   for (const id of ids) {
     const record = byId.get(id);
@@ -363,13 +363,10 @@ function buildLoadedBundle(records, searchIndex, manifest, visibility) {
 }
 
 /**
- * Integer postings do not survive this step.
- * Do not index into records[i] even though load proved alignment.
- *
  * @param {object} searchIndex
  * @returns {Map<string, readonly string[]>}
  */
-function remapPostings(searchIndex) {
+function mapIndexPostingsToRecordIds(searchIndex) {
   const postings = new Map();
   for (const [term, indexes] of Object.entries(searchIndex.terms ?? {})) {
     const ids = indexes.map((index) => searchIndex.records[index]);
