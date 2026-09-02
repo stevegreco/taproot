@@ -55,7 +55,7 @@ export function buildSearchIndex(records) {
   };
 }
 
-function tokenize(text) {
+export function tokenize(text) {
   return new Set(
     text
       .toLowerCase()

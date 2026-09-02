@@ -256,6 +256,11 @@ The manifest `content` block records the schema version, knowledge version, desi
 record count, and per-file hashes. The digest hashes that block. Build time and git revision live
 in `manifest.build` and are not part of the digest (KNOW-014, KNOW-018, KNOW-024).
 
+Consumers query a compiled bundle through `openCatalog` in
+`@stevegreco/design-system-knowledge/retrieve`. `search`, `get`, `list`, and `related` read
+`records.json`, `search-index.json`, and `manifest.json`. They do not change these authored field
+names.
+
 ## Source ownership
 
 - `packages/tokens/` owns token values, token policy, and token ADRs.

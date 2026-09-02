@@ -9,9 +9,10 @@ The knowledge package parses authored Markdown records and compiles them into pu
 bundles. `pnpm --filter @stevegreco/design-system-knowledge build` writes `dist/public` and
 `dist/internal`. The published package includes `dist/public` and `src` only.
 
-The retrieval interface (`search`, `get`, `list`, `related`) and MCP adapters are not implemented.
-Tests cover schema validation, visibility isolation, relationship integrity, and deterministic
-compiler output (KNOW-025 compiler half).
+`openCatalog` from `@stevegreco/design-system-knowledge/retrieve` answers `search`, `get`, `list`,
+and `related` against one compiled bundle (KNOW-015). Tests cover schema validation, visibility
+isolation, relationship integrity, deterministic compiler output, and the retrieval interface
+(KNOW-025). MCP adapters are not implemented (KNOW-028).
 
 ## Reading order
 
@@ -88,6 +89,21 @@ bodies are not copied into Button.
 
 `dist/internal/` uses the same layout. Today it holds the same five public records. An extra
 internal root would add records there only.
+
+## Retrieval
+
+Import `openCatalog` from `@stevegreco/design-system-knowledge/retrieve`. It reads `records.json`,
+`search-index.json`, and `manifest.json` from one projected bundle. It does not parse Markdown or
+call `compile`.
+
+`openCatalog()` with no argument loads this package's `dist/public`. Pass a directory path or file
+URL to open another bundle. Pass `{ records, searchIndex, manifest }` to open already-parsed JSON.
+Directory opens verify SHA-256 and byte length for `records.json` and `search-index.json` against
+`manifest.content.files`. In-memory opens skip that check.
+
+`get` returns the compiled record or `undefined`. `list` filters `type`, `status`, `visibility`,
+`jobs`, and `tags`. `search` uses the compiled index and the same tokenizer the compiler used.
+`related` returns each neighbor once, with `via` edges named by the forward relation (KNOW-015).
 
 ## First content slice
 

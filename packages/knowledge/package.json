@@ -12,6 +12,7 @@
   "exports": {
     ".": "./src/index.js",
     "./compile": "./src/compile/index.js",
+    "./retrieve": "./src/retrieve/index.js",
     "./schema": "./src/schema/index.js",
     "./schema/knowledge-record.json": "./src/schema/knowledge-record.schema.json",
     "./manifest": "./dist/public/manifest.json",
