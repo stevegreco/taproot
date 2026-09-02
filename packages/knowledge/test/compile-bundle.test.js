@@ -18,9 +18,11 @@ const meta = {
 };
 
 test("projectBundle emits sorted records, hashed files, and reduced markdown frontmatter", async () => {
-  const corpus = await buildCorpus(createFsReader(repoRoot), [
-    { root: join(repoRoot, "packages/knowledge/content"), visibility: "public" },
-  ]);
+  const corpus = await buildCorpus(
+    createFsReader(repoRoot),
+    [{ root: join(repoRoot, "packages/knowledge/content"), visibility: "public" }],
+    { workspaceRoot: repoRoot },
+  );
   const bundle = projectBundle(corpus, "public", meta);
 
   assert.equal(
@@ -69,9 +71,11 @@ test("COMPILED_INVALID fires when emitted records fail the derived schema", () =
 });
 
 test("compiled schema forbids host on a component record", async () => {
-  const corpus = await buildCorpus(createFsReader(repoRoot), [
-    { root: join(repoRoot, "packages/knowledge/content"), visibility: "public" },
-  ]);
+  const corpus = await buildCorpus(
+    createFsReader(repoRoot),
+    [{ root: join(repoRoot, "packages/knowledge/content"), visibility: "public" }],
+    { workspaceRoot: repoRoot },
+  );
   const button = corpus.records.get("component.button");
   const binding = corpus.records.get("binding.button.web-component");
   const compiledSchema = deriveCompiledSchema(authoredSchema);

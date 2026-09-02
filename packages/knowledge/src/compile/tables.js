@@ -27,6 +27,7 @@ export const PROBLEM = Object.freeze({
   BODY_UNRESOLVED_LINK: "body/unresolved-link",
   VISIBILITY_LEAK: "visibility/leak",
   VISIBILITY_INTERNAL_PUBLIC: "visibility/internal-declares-public",
+  PATH_OUTSIDE_ROOT: "path/outside-root",
   COMPILED_INVALID: "compiled/invalid",
 });
 

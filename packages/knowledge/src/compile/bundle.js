@@ -164,6 +164,21 @@ function visibilityLeaks(record, included, corpus) {
   for (const match of record.body.matchAll(/markdown\/([a-z0-9][a-z0-9.-]*)\.md/g)) {
     leak(match[1], record.sources.find((source) => source.kind === "authored")?.path ?? null);
   }
+  const authoredPath =
+    record.sources.find((source) => source.kind === "authored")?.path ?? null;
+  for (const match of record.body.matchAll(/assets\/[A-Za-z0-9._/-]+/g)) {
+    const bundlePath = match[0];
+    const owner = corpus.assetOwner?.get(bundlePath);
+    if (!owner || included.has(owner) || !corpus.records.has(owner)) continue;
+    problems.push(
+      problem({
+        code: PROBLEM.VISIBILITY_LEAK,
+        message: `${record.id} references internal ${bundlePath}`,
+        recordId: record.id,
+        path: authoredPath,
+      }),
+    );
+  }
 
   return problems;
 }

@@ -249,10 +249,17 @@ Authored roots are `{ root, visibility }`. A record's declared visibility must m
 Public sources compile into the public bundle. An internal build can add records from a separately
 configured private input and includes both public and internal records.
 
+Source and asset paths are repository-relative. The compiler resolves each path and requires it
+to stay inside an allowed root. Public records may read their public authored root and domain
+token sources under `packages/tokens`. Internal records may read their configured private root
+and the same domain token sources. `.`, `..`, absolute paths, and symlinks that leave those
+roots fail the build. This does not replace access control on private roots (KNOW-022).
+
 The compiler rejects:
 
 - public records that reference internal records;
 - public records that reference internal-only assets;
+- paths that leave a record's allowed roots;
 - an internal root that declares a public record; and
 - public output containing undeclared files.
 

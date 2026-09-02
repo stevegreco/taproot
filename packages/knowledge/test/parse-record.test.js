@@ -65,6 +65,20 @@ function assertIssuePath(markdown, sourcePath, expectedPath) {
   );
 }
 
+test("parseRecord rejects . and .. segments in repository paths", () => {
+  const traversal = validComponent.replace(
+    "    path: packages/knowledge/content/components/test-button.md",
+    "    path: packages/knowledge/content/../secret.md",
+  );
+  assertIssuePath(traversal, "test-button.md", "/sources/0/path");
+
+  const dotSegment = validComponent.replace(
+    "    path: packages/knowledge/content/components/test-button.md",
+    "    path: packages/knowledge/content/./test-button.md",
+  );
+  assertIssuePath(dotSegment, "test-button.md", "/sources/0/path");
+});
+
 test("parseRecord rejects unknown fields at every object level", () => {
   const rootUnknown = validComponent.replace("\n---\n\n", "\nspurious: true\n---\n\n");
   assertIssuePath(rootUnknown, "test-button.md", "/spurious");

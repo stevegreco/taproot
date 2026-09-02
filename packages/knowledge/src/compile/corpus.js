@@ -3,6 +3,12 @@ import path from "node:path";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { visit } from "unist-util-visit";
 import { KnowledgeRecordError, parseRecord } from "../index.js";
+import {
+  allowedPrefixes,
+  isLexicallyAllowed,
+  isReallyAllowed,
+  pathConstraintMessage,
+} from "./paths.js";
 import { readAdr } from "./sources/adr.js";
 import { readTokenSource } from "./sources/token-source.js";
 import { PROBLEM, SIZE_BRIDGE, problem } from "./tables.js";
@@ -28,8 +34,10 @@ export function shortRevision(data) {
 /**
  * @param {import("./index.js").WorkspaceReader} reader
  * @param {readonly import("./index.js").AuthoredRoot[]} roots
+ * @param {{ workspaceRoot?: string }} [options]
  */
-export async function buildCorpus(reader, roots) {
+export async function buildCorpus(reader, roots, options = {}) {
+  const workspaceRoot = options.workspaceRoot ?? null;
   const problems = [];
   const pending = new Map();
   const listedPathById = new Map();
@@ -105,15 +113,36 @@ export async function buildCorpus(reader, roots) {
   const mergedById = new Map();
   const assetBytes = new Map();
   const assetPathToBundlePath = new Map();
+  const assetOwner = new Map();
   const recordIdByPath = new Map();
 
   for (const [id, { authored, repoPath, text }] of pending) {
     recordIdByPath.set(repoPath, id);
-    const contribution = await readContributions(reader, authored, repoPath, text);
+    const prefixes = allowedPrefixes(authored.visibility, roots, workspaceRoot);
+    const contribution = await readContributions(
+      reader,
+      authored,
+      repoPath,
+      text,
+      prefixes,
+      workspaceRoot,
+    );
     problems.push(...contribution.problems);
 
     const assets = [];
     for (const asset of authored.assets ?? []) {
+      const constraint = await constrainPath(asset.path, prefixes, workspaceRoot);
+      if (!constraint.ok) {
+        problems.push(
+          problem({
+            code: PROBLEM.PATH_OUTSIDE_ROOT,
+            message: `${id} asset ${pathConstraintMessage(constraint)}`,
+            recordId: id,
+            path: asset.path,
+          }),
+        );
+        continue;
+      }
       const bytes = await reader.readBytes(asset.path);
       const bundlePath = assetBundlePath(asset);
       if (bytes == null) {
@@ -130,6 +159,7 @@ export async function buildCorpus(reader, roots) {
 
       assetBytes.set(bundlePath, bytes);
       assetPathToBundlePath.set(asset.path, bundlePath);
+      assetOwner.set(bundlePath, id);
       assets.push({
         ...asset,
         bundlePath,
@@ -227,11 +257,26 @@ export async function buildCorpus(reader, roots) {
     records,
     edges: Object.freeze(edges),
     assetBytes,
+    assetOwner,
     problems: Object.freeze(problems),
   };
 }
 
-async function readContributions(reader, authored, repoPath, authoredText) {
+async function constrainPath(repoPath, prefixes, workspaceRoot) {
+  if (workspaceRoot) {
+    return isReallyAllowed(workspaceRoot, repoPath, prefixes);
+  }
+  return isLexicallyAllowed(repoPath, prefixes);
+}
+
+async function readContributions(
+  reader,
+  authored,
+  repoPath,
+  authoredText,
+  prefixes,
+  workspaceRoot,
+) {
   const problems = [];
   const sources = [];
   const tokenMeta = authored.tokenRef ?? null;
@@ -239,6 +284,19 @@ async function readContributions(reader, authored, repoPath, authoredText) {
   let decisions = [];
 
   for (const source of authored.sources) {
+    const constraint = await constrainPath(source.path, prefixes, workspaceRoot);
+    if (!constraint.ok) {
+      problems.push(
+        problem({
+          code: PROBLEM.PATH_OUTSIDE_ROOT,
+          message: `${authored.id} source ${pathConstraintMessage(constraint)}`,
+          recordId: authored.id,
+          path: source.path,
+        }),
+      );
+      continue;
+    }
+
     const bytes =
       source.kind === "authored"
         ? new TextEncoder().encode(authoredText)
