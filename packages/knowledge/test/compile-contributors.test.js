@@ -58,6 +58,67 @@ test("Button composes spec, tokens, and ADR 0003 into disjoint namespaces", asyn
   assert.equal(Object.hasOwn(button, "backlinks"), false);
 });
 
+test("a spec with no tokens block and no token-source composes contract only", async () => {
+  const path = "content/no-tokens.md";
+  const reader = createMemoryReader({
+    [path]: recordMarkdown({
+      id: "component.no-tokens",
+      sources: [
+        { kind: "authored", path },
+        { kind: "component-spec", path: "specs/no-tokens.yaml" },
+      ],
+    }),
+    "specs/no-tokens.yaml": `specVersion: 1
+name: No tokens
+tagName: ds-no-tokens
+description: Spec without a tokens block.
+usage: { do: [], avoid: [] }
+anatomy: []
+api:
+  attributes:
+    variant:
+      type: enum
+      values: { default: Default. }
+states: []
+behavior: []
+accessibility: {}
+decisions: []
+`,
+  });
+
+  const corpus = await buildCorpus(reader, [{ root: "content", visibility: "public" }]);
+  const record = corpus.records.get("component.no-tokens");
+
+  assert.ok(record);
+  assert.equal(record.contract.tagName, "ds-no-tokens");
+  assert.equal(Object.hasOwn(record, "tokens"), false);
+  assert.equal(
+    corpus.problems.some((item) => item.code === PROBLEM.SOURCE_CONFLICT),
+    false,
+  );
+});
+
+test("Badge composes spec and ADR 0003 without a token contract", async () => {
+  const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent]);
+  const badge = corpus.records.get("component.badge");
+
+  assert.ok(badge);
+  assert.equal(
+    corpus.problems.filter((item) => item.severity === "error").length,
+    0,
+    JSON.stringify(corpus.problems, null, 2),
+  );
+  assert.equal(badge.contract.tagName, "ds-badge");
+  assert.equal(Object.hasOwn(badge, "tokens"), false);
+  assert.equal(badge.decisions.length, 1);
+  assert.match(badge.decisions[0].title, /ADR 0003/);
+  assert.match(badge.decisions[0].title, /Token tier consumption/);
+  assert.equal(
+    corpus.problems.some((item) => item.code === PROBLEM.SOURCE_CONFLICT),
+    false,
+  );
+});
+
 test("SIZE_BRIDGE rejects an unknown spec size", async () => {
   const path = "content/size.md";
   const reader = createMemoryReader({

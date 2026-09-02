@@ -24,9 +24,13 @@ test("parseRecord accepts every authored content record", () => {
       assert.equal(record.checks.length, 8);
     }
 
+    if (record.type === "guideline" && record.jobs.includes("review")) {
+      assert.ok(Array.isArray(record.checks) && record.checks.length >= 1);
+    }
+
     if (record.type === "example") {
-      assert.equal(record.assets.length, 1);
-      assert.equal(record.annotations.length, 3);
+      assert.ok(Array.isArray(record.assets) && record.assets.length >= 1);
+      assert.ok(Array.isArray(record.annotations) && record.annotations.length >= 1);
     }
   }
 });

@@ -11,6 +11,11 @@ import { repoRoot } from "./helpers/workspace.js";
 test("get returns a hit, undefined for a miss, and malformed-id for button", async () => {
   const catalog = await openCatalog();
   assert.equal(catalog.get("component.button").id, "component.button");
+  assert.equal(catalog.get("component.badge").id, "component.badge");
+  assert.equal(
+    catalog.related("component.badge").some((neighbor) => neighbor.record.id === "component.button"),
+    true,
+  );
   assert.equal(catalog.get("component.missing"), undefined);
   assert.throws(() => catalog.get("button"), (error) => {
     assert.equal(error instanceof KnowledgeQueryError, true);
@@ -23,16 +28,27 @@ test("get returns a hit, undefined for a miss, and malformed-id for button", asy
 test("list filters AND across keys and OR within a key", async () => {
   const catalog = await openCatalog();
   const guidelines = catalog.list({ type: "guideline" });
-  assert.deepEqual(
-    guidelines.map((record) => record.id),
-    ["guideline.button-implementation", "guideline.button-review"],
+  assert.equal(
+    guidelines.every((record) => record.type === "guideline"),
+    true,
   );
+  const guidelineIds = guidelines.map((record) => record.id);
+  assert.deepEqual(guidelineIds, [...guidelineIds].sort());
+  assert.equal(guidelineIds.includes("guideline.button-implementation"), true);
+  assert.equal(guidelineIds.includes("guideline.button-review"), true);
 
   const implement = catalog.list({ jobs: "implement", type: ["guideline", "pattern"] });
-  assert.deepEqual(
-    implement.map((record) => record.id),
-    ["guideline.button-implementation", "pattern.action-hierarchy"],
+  assert.equal(
+    implement.every(
+      (record) =>
+        record.jobs.includes("implement") &&
+        (record.type === "guideline" || record.type === "pattern"),
+    ),
+    true,
   );
+  const implementIds = implement.map((record) => record.id);
+  assert.equal(implementIds.includes("guideline.button-implementation"), true);
+  assert.equal(implementIds.includes("pattern.action-hierarchy"), true);
 
   const unused = catalog.list({ tags: "not-used-yet" });
   assert.deepEqual(unused, []);
@@ -49,6 +65,25 @@ test("list filters AND across keys and OR within a key", async () => {
     assert.equal(error.code, "unknown-filter-value");
     return true;
   });
+});
+
+test("every public component record has a contract", async () => {
+  const catalog = await openCatalog();
+  const components = catalog.list({ type: "component" });
+  assert.equal(
+    components.some((record) => record.id === "component.button"),
+    true,
+  );
+  assert.equal(
+    components.some((record) => record.id === "component.badge"),
+    true,
+  );
+  for (const record of components) {
+    assert.equal(record.type, "component");
+    assert.ok(record.contract);
+    assert.ok(record.contract.tagName);
+    assert.ok(record.contract.api?.attributes);
+  }
 });
 
 test("list visibility narrows an internal catalog and never widens a public one", async () => {

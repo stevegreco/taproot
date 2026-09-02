@@ -20,6 +20,7 @@ relations:
     - pattern.action-hierarchy
     - guideline.button-implementation
     - guideline.button-review
+    - component.badge
 sources:
   - kind: authored
     path: packages/knowledge/content/components/button.md
