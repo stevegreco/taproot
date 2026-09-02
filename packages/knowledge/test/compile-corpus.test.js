@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { PROBLEM } from "../src/compile/tables.js";
 import { buildCorpus } from "../src/compile/corpus.js";
-import { codes, createMemoryReader, recordMarkdown, tinySvg } from "./helpers/workspace.js";
+import { codes, createMemoryReader, portableContract, recordMarkdown, tinySvg } from "./helpers/workspace.js";
 
 const publicRoot = { root: "content", visibility: "public" };
 const internalRoot = { root: "internal", visibility: "internal" };
@@ -174,8 +174,13 @@ test("SOURCE_MISSING fires when a declared source file is absent", async () => {
       id: "component.missing-source",
       sources: [
         { kind: "authored", path },
-        { kind: "component-spec", path: "specs/absent.yaml" },
+        { kind: "token-source", path: "tokens/absent.json" },
       ],
+      tokenRef: {
+        tier: "component",
+        namespace: "component.missing-source",
+        description: "Missing token file.",
+      },
     }),
   });
 
@@ -183,63 +188,63 @@ test("SOURCE_MISSING fires when a declared source file is absent", async () => {
   const problems = codes(corpus, PROBLEM.SOURCE_MISSING);
 
   assert.equal(problems.length, 1);
-  assert.equal(problems[0].path, "specs/absent.yaml");
+  assert.equal(problems[0].path, "tokens/absent.json");
 });
 
-test("SOURCE_UNREADABLE fires when a component spec is not specVersion 1", async () => {
-  const path = "content/bad-spec.md";
+test("SOURCE_UNREADABLE fires when a token source is not JSON", async () => {
+  const path = "content/bad-tokens.md";
   const reader = createMemoryReader({
     [path]: recordMarkdown({
-      id: "component.bad-spec",
+      id: "component.bad-tokens",
       sources: [
         { kind: "authored", path },
-        { kind: "component-spec", path: "specs/bad.yaml" },
+        { kind: "token-source", path: "tokens/bad.json" },
       ],
+      tokenRef: {
+        tier: "component",
+        namespace: "component.bad-tokens",
+        description: "Unreadable token file.",
+      },
     }),
-    "specs/bad.yaml": "specVersion: 2\nname: Bad\n",
+    "tokens/bad.json": "{ not json",
   });
 
   const corpus = await buildCorpus(reader, [publicRoot]);
   const problems = codes(corpus, PROBLEM.SOURCE_UNREADABLE);
 
   assert.equal(problems.length, 1);
-  assert.equal(problems[0].path, "specs/bad.yaml");
+  assert.equal(problems[0].path, "tokens/bad.json");
 });
 
 test("SOURCE_CONFLICT fires when the spec namespace is missing from the token file", async () => {
+  const specPath = "content/specs/namespace.md";
   const path = "content/namespace.md";
   const reader = createMemoryReader({
+    [specPath]: recordMarkdown({
+      id: "spec.namespace",
+      type: "spec",
+      sources: [{ kind: "authored", path: specPath }],
+      contract: portableContract({
+        description: "Has a namespace the token file does not define.",
+        parameters: {
+          variant: { kind: "enum", values: { primary: "Primary." } },
+          size: { kind: "enum", values: { sm: "Small.", md: "Medium." } },
+        },
+      }),
+    }),
     [path]: recordMarkdown({
       id: "component.namespace",
       sources: [
         { kind: "authored", path },
-        { kind: "component-spec", path: "specs/namespace.yaml" },
         { kind: "token-source", path: "tokens/other.json" },
       ],
+      relations: { uses: ["spec.namespace"] },
+      tokenRef: {
+        tier: "component",
+        namespace: "component.namespace",
+        description: "Missing from the token file.",
+      },
     }),
-    "specs/namespace.yaml": `specVersion: 1
-name: Namespace
-tagName: ds-namespace
-description: Has a namespace the token file does not define.
-usage: { do: [], avoid: [] }
-anatomy: []
-api:
-  attributes:
-    variant:
-      type: enum
-      values: { primary: Primary. }
-    size:
-      type: enum
-      values: { sm: Small., md: Medium. }
-states: []
-behavior: []
-accessibility: {}
-tokens:
-  tier: component
-  namespace: component.namespace
-  description: Missing from the token file.
-decisions: []
-`,
     "tokens/other.json": JSON.stringify({
       component: { other: { radius: { $value: "4px", $type: "dimension" } } },
     }),
@@ -250,6 +255,76 @@ decisions: []
 
   assert.ok(problems.length >= 1);
   assert.ok(problems.some((problem) => /component\.namespace/.test(problem.message)));
+});
+
+test("SOURCE_CONFLICT fires when a component uses two specs", async () => {
+  const reader = createMemoryReader({
+    "content/specs/a.md": recordMarkdown({
+      id: "spec.two-a",
+      type: "spec",
+      sources: [{ kind: "authored", path: "content/specs/a.md" }],
+      contract: portableContract({ description: "First spec." }),
+    }),
+    "content/specs/b.md": recordMarkdown({
+      id: "spec.two-b",
+      type: "spec",
+      sources: [{ kind: "authored", path: "content/specs/b.md" }],
+      contract: portableContract({ description: "Second spec." }),
+    }),
+    "content/two.md": recordMarkdown({
+      id: "component.two-specs",
+      sources: [{ kind: "authored", path: "content/two.md" }],
+      relations: { uses: ["spec.two-a", "spec.two-b"] },
+    }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  assert.ok(
+    codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) => /more than one spec/.test(item.message)),
+  );
+});
+
+test("SOURCE_CONFLICT fires when a binding parameter is not a bijection", async () => {
+  const reader = createMemoryReader({
+    "content/specs/bound.md": recordMarkdown({
+      id: "spec.bound",
+      type: "spec",
+      sources: [{ kind: "authored", path: "content/specs/bound.md" }],
+      contract: portableContract({
+        description: "Needs a matching host parameter.",
+        anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
+        parameters: { disabled: { kind: "boolean", default: false } },
+        events: { activate: { description: "Activate." } },
+      }),
+    }),
+    "content/bound.md": recordMarkdown({
+      id: "component.bound",
+      sources: [{ kind: "authored", path: "content/bound.md" }],
+      relations: { uses: ["spec.bound"] },
+    }),
+    "content/bindings/bound.md": recordMarkdown({
+      id: "binding.bound.web-component",
+      type: "binding",
+      sources: [{ kind: "authored", path: "content/bindings/bound.md" }],
+      relations: { implements: ["component.bound"] },
+      host: {
+        specVersion: 1,
+        platform: "web-component",
+        package: "@stevegreco/design-system-components",
+        export: "DsBound",
+        defaultTagName: "ds-bound",
+        registration: { export: "defineBound", supportsAliases: false },
+        anatomy: { control: { element: "button" } },
+        parameters: { disabled: { attribute: "disabled" }, extra: { attribute: "extra" } },
+        events: { activate: { event: "click" } },
+      },
+    }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  assert.ok(
+    codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) => /unknown extra/.test(item.message)),
+  );
 });
 
 test("ASSET_MISSING fires when a declared asset file is absent", async () => {

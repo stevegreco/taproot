@@ -96,4 +96,20 @@ export function codes(corpus, code) {
   return corpus.problems.filter((problem) => problem.code === code);
 }
 
+export function portableContract(overrides = {}) {
+  return {
+    specVersion: 2,
+    description: "A fixture contract.",
+    usage: { do: [], avoid: [] },
+    anatomy: [],
+    parameters: {},
+    events: {},
+    states: [],
+    behavior: [],
+    accessibility: { semantics: "None.", name: "None." },
+    rationale: [],
+    ...overrides,
+  };
+}
+
 export const tinySvg = `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"></svg>\n`;

@@ -2,7 +2,14 @@ import assert from "node:assert/strict";
 import { join } from "node:path";
 import { test } from "node:test";
 import { PROBLEM, buildCorpus } from "../src/compile/corpus.js";
-import { codes, createFsReader, createMemoryReader, recordMarkdown, repoRoot } from "./helpers/workspace.js";
+import {
+  codes,
+  createFsReader,
+  createMemoryReader,
+  portableContract,
+  recordMarkdown,
+  repoRoot,
+} from "./helpers/workspace.js";
 
 const publicContent = {
   root: join(repoRoot, "packages/knowledge/content"),
@@ -12,19 +19,29 @@ const publicContent = {
 test("Button composes spec, tokens, and ADR 0003 into disjoint namespaces", async () => {
   const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent]);
   const button = corpus.records.get("component.button");
+  const spec = corpus.records.get("spec.button");
+  const binding = corpus.records.get("binding.button.web-component");
 
   assert.ok(button);
+  assert.ok(spec);
+  assert.ok(binding);
   assert.equal(
     corpus.problems.filter((item) => item.severity === "error").length,
     0,
     JSON.stringify(corpus.problems, null, 2),
   );
 
-  assert.ok(button.contract.api.attributes.variant.values.primary);
+  assert.ok(button.contract.parameters.variant.values.primary);
   assert.equal(button.contract.description, "Triggers an action or submits or resets a form.");
+  assert.equal(button.contract.parameters.action.default, "activate");
+  assert.equal(Object.hasOwn(button.contract, "tagName"), false);
   assert.notEqual(button.summary, button.contract.description);
   assert.equal(button.title, "Button");
   assert.equal(button.status, "draft");
+  assert.notEqual(button.title, spec.title);
+  assert.equal(button.contract, spec.contract);
+  assert.equal(binding.host.defaultTagName, "ds-button");
+  assert.equal(binding.host.parameters.action.values.activate, "button");
   assert.equal(
     corpus.problems.some((item) => item.code === PROBLEM.SOURCE_CONFLICT),
     false,
@@ -52,45 +69,39 @@ test("Button composes spec, tokens, and ADR 0003 into disjoint namespaces", asyn
 
   assert.equal(
     button.sources.some((source) => source.kind === "component-spec"),
-    true,
+    false,
   );
+  assert.equal(spec.sources[0].kind, "authored");
   assert.equal(Object.hasOwn(button.sources[0], "contributes"), false);
   assert.equal(Object.hasOwn(button, "backlinks"), false);
 });
 
-test("a spec with no tokens block and no token-source composes contract only", async () => {
-  const path = "content/no-tokens.md";
+test("a spec with no tokenRef and no token-source composes contract only", async () => {
+  const specPath = "content/specs/no-tokens.md";
+  const componentPath = "content/components/no-tokens.md";
   const reader = createMemoryReader({
-    [path]: recordMarkdown({
-      id: "component.no-tokens",
-      sources: [
-        { kind: "authored", path },
-        { kind: "component-spec", path: "specs/no-tokens.yaml" },
-      ],
+    [specPath]: recordMarkdown({
+      id: "spec.no-tokens",
+      type: "spec",
+      sources: [{ kind: "authored", path: specPath }],
+      contract: portableContract({
+        description: "Spec without a tokenRef.",
+        parameters: { disabled: { kind: "boolean", default: false } },
+      }),
     }),
-    "specs/no-tokens.yaml": `specVersion: 1
-name: No tokens
-tagName: ds-no-tokens
-description: Spec without a tokens block.
-usage: { do: [], avoid: [] }
-anatomy: []
-api:
-  attributes:
-    variant:
-      type: enum
-      values: { default: Default. }
-states: []
-behavior: []
-accessibility: {}
-decisions: []
-`,
+    [componentPath]: recordMarkdown({
+      id: "component.no-tokens",
+      sources: [{ kind: "authored", path: componentPath }],
+      relations: { uses: ["spec.no-tokens"] },
+    }),
   });
 
   const corpus = await buildCorpus(reader, [{ root: "content", visibility: "public" }]);
   const record = corpus.records.get("component.no-tokens");
 
   assert.ok(record);
-  assert.equal(record.contract.tagName, "ds-no-tokens");
+  assert.equal(record.contract.description, "Spec without a tokenRef.");
+  assert.equal(Object.hasOwn(record.contract, "tagName"), false);
   assert.equal(Object.hasOwn(record, "tokens"), false);
   assert.equal(
     corpus.problems.some((item) => item.code === PROBLEM.SOURCE_CONFLICT),
@@ -101,6 +112,7 @@ decisions: []
 test("Badge composes spec and ADR 0003 without a token contract", async () => {
   const corpus = await buildCorpus(createFsReader(repoRoot), [publicContent]);
   const badge = corpus.records.get("component.badge");
+  const binding = corpus.records.get("binding.badge.web-component");
 
   assert.ok(badge);
   assert.equal(
@@ -108,7 +120,9 @@ test("Badge composes spec and ADR 0003 without a token contract", async () => {
     0,
     JSON.stringify(corpus.problems, null, 2),
   );
-  assert.equal(badge.contract.tagName, "ds-badge");
+  assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
+  assert.equal(badge.contract.parameters.variant.default, "default");
+  assert.equal(binding.host.defaultTagName, "ds-badge");
   assert.equal(Object.hasOwn(badge, "tokens"), false);
   assert.equal(badge.decisions.length, 1);
   assert.match(badge.decisions[0].title, /ADR 0003/);
@@ -120,39 +134,34 @@ test("Badge composes spec and ADR 0003 without a token contract", async () => {
 });
 
 test("SIZE_BRIDGE rejects an unknown spec size", async () => {
-  const path = "content/size.md";
+  const specPath = "content/specs/size.md";
+  const componentPath = "content/size.md";
   const reader = createMemoryReader({
-    [path]: recordMarkdown({
+    [specPath]: recordMarkdown({
+      id: "spec.size-unknown",
+      type: "spec",
+      sources: [{ kind: "authored", path: specPath }],
+      contract: portableContract({
+        description: "Unknown spec size.",
+        parameters: {
+          variant: { kind: "enum", values: { primary: "Primary." } },
+          size: { kind: "enum", values: { lg: "Large." } },
+        },
+      }),
+    }),
+    [componentPath]: recordMarkdown({
       id: "component.size-unknown",
       sources: [
-        { kind: "authored", path },
-        { kind: "component-spec", path: "specs/size.yaml" },
+        { kind: "authored", path: componentPath },
         { kind: "token-source", path: "tokens/size.json" },
       ],
+      relations: { uses: ["spec.size-unknown"] },
+      tokenRef: {
+        tier: "component",
+        namespace: "component.size",
+        description: "Size tokens.",
+      },
     }),
-    "specs/size.yaml": `specVersion: 1
-name: Size
-tagName: ds-size
-description: Unknown spec size.
-usage: { do: [], avoid: [] }
-anatomy: []
-api:
-  attributes:
-    variant:
-      type: enum
-      values: { primary: Primary. }
-    size:
-      type: enum
-      values: { lg: Large. }
-states: []
-behavior: []
-accessibility: {}
-tokens:
-  tier: component
-  namespace: component.size
-  description: Size tokens.
-decisions: []
-`,
     "tokens/size.json": JSON.stringify({
       component: {
         size: {
@@ -169,39 +178,34 @@ decisions: []
 });
 
 test("SIZE_BRIDGE rejects an unknown token size key", async () => {
-  const path = "content/token-size.md";
+  const specPath = "content/specs/token-size.md";
+  const componentPath = "content/token-size.md";
   const reader = createMemoryReader({
-    [path]: recordMarkdown({
+    [specPath]: recordMarkdown({
+      id: "spec.token-size",
+      type: "spec",
+      sources: [{ kind: "authored", path: specPath }],
+      contract: portableContract({
+        description: "Unknown token size key.",
+        parameters: {
+          variant: { kind: "enum", values: { primary: "Primary." } },
+          size: { kind: "enum", values: { sm: "Small.", md: "Medium." } },
+        },
+      }),
+    }),
+    [componentPath]: recordMarkdown({
       id: "component.token-size",
       sources: [
-        { kind: "authored", path },
-        { kind: "component-spec", path: "specs/token-size.yaml" },
+        { kind: "authored", path: componentPath },
         { kind: "token-source", path: "tokens/token-size.json" },
       ],
+      relations: { uses: ["spec.token-size"] },
+      tokenRef: {
+        tier: "component",
+        namespace: "component.token-size",
+        description: "Size tokens.",
+      },
     }),
-    "specs/token-size.yaml": `specVersion: 1
-name: Token size
-tagName: ds-token-size
-description: Unknown token size key.
-usage: { do: [], avoid: [] }
-anatomy: []
-api:
-  attributes:
-    variant:
-      type: enum
-      values: { primary: Primary. }
-    size:
-      type: enum
-      values: { sm: Small., md: Medium. }
-states: []
-behavior: []
-accessibility: {}
-tokens:
-  tier: component
-  namespace: component.token-size
-  description: Size tokens.
-decisions: []
-`,
     "tokens/token-size.json": JSON.stringify({
       component: {
         "token-size": {
@@ -249,5 +253,5 @@ test("link rewriting leaves fenced code alone and rewrites Markdown links", asyn
   const body = corpus.records.get("component.with-link").body;
 
   assert.match(body, /\[target\]\(markdown\/component\.target\.md\)/);
-  assert.match(body, /```md\n\[leave me\]\(target\.md\)\n```/);
+  assert.match(body, /```md\n\[leave me\]\(target.md\)\n```/);
 });

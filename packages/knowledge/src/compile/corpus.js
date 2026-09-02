@@ -4,15 +4,13 @@ import { fromMarkdown } from "mdast-util-from-markdown";
 import { visit } from "unist-util-visit";
 import { KnowledgeRecordError, parseRecord } from "../index.js";
 import { readAdr } from "./sources/adr.js";
-import { readComponentSpec } from "./sources/component-spec.js";
 import { readTokenSource } from "./sources/token-source.js";
 import { PROBLEM, SIZE_BRIDGE, problem } from "./tables.js";
 
 const posix = path.posix;
 
-const CONTRIBUTORS = Object.freeze({
+export const CONTRIBUTORS = Object.freeze({
   authored: null,
-  "component-spec": readComponentSpec,
   "token-source": readTokenSource,
   adr: readAdr,
 });
@@ -155,10 +153,13 @@ export async function buildCorpus(reader, roots) {
     mergedById.set(id, assembleRecord(authored, contribution, assets));
   }
 
+  problems.push(...attachContractFromUses(mergedById));
   for (const record of mergedById.values()) {
+    applyTokenGroups(record);
     problems.push(...checkSourceAgreement(record));
     problems.push(...completenessProblems(record));
   }
+  problems.push(...checkBindingAgreement(mergedById));
 
   const edges = [];
   for (const record of mergedById.values()) {
@@ -233,8 +234,7 @@ export async function buildCorpus(reader, roots) {
 async function readContributions(reader, authored, repoPath, authoredText) {
   const problems = [];
   const sources = [];
-  let contract;
-  let tokenMeta;
+  const tokenMeta = authored.tokenRef ?? null;
   let tokenEntries;
   let decisions = [];
 
@@ -266,12 +266,6 @@ async function readContributions(reader, authored, repoPath, authoredText) {
     const contribution = contributor(text, { path: source.path, recordId: authored.id });
     problems.push(...contribution.problems);
 
-    if (contribution.fields.contract) {
-      contract = contribution.fields.contract;
-    }
-    if (contribution.fields.tokens?.namespace) {
-      tokenMeta = contribution.fields.tokens;
-    }
     if (contribution.fields.tokens?.entries) {
       tokenEntries = contribution.fields.tokens.entries;
     }
@@ -283,19 +277,12 @@ async function readContributions(reader, authored, repoPath, authoredText) {
   }
 
   const fields = {};
-  if (contract) fields.contract = contract;
   if (decisions.length > 0) fields.decisions = decisions;
 
   if (tokenMeta && tokenEntries) {
-    const variants = new Set(
-      Object.keys(contract?.api?.attributes?.variant?.values ?? {}),
-    );
     fields.tokens = {
       ...tokenMeta,
-      entries: tokenEntries.map((entry) => ({
-        ...entry,
-        group: assignGroup(entry.name, tokenMeta.namespace, variants),
-      })),
+      entries: tokenEntries,
     };
   } else if (tokenMeta || tokenEntries) {
     problems.push(
@@ -315,7 +302,7 @@ function assembleRecord(authored, contribution, assets) {
   const record = {
     id: authored.id,
     schemaVersion: authored.schemaVersion,
-    compiledSchemaVersion: 1,
+    compiledSchemaVersion: 2,
     type: authored.type,
     title: authored.title,
     summary: authored.summary,
@@ -331,11 +318,180 @@ function assembleRecord(authored, contribution, assets) {
   if (authored.checks) record.checks = authored.checks;
   if (assets.length > 0) record.assets = assets;
   if (authored.annotations) record.annotations = authored.annotations;
-  if (contribution.fields.contract) record.contract = contribution.fields.contract;
+  if (authored.contract) record.contract = authored.contract;
+  if (authored.host) record.host = authored.host;
+  if (authored.tokenRef) record.tokenRef = authored.tokenRef;
   if (contribution.fields.tokens) record.tokens = contribution.fields.tokens;
   if (contribution.fields.decisions) record.decisions = contribution.fields.decisions;
 
   return record;
+}
+
+function attachContractFromUses(records) {
+  const problems = [];
+
+  for (const record of records.values()) {
+    if (record.type !== "component") continue;
+    const uses = record.relations?.uses ?? [];
+    const specIds = uses.filter((id) => records.get(id)?.type === "spec");
+    if (specIds.length === 0) continue;
+    if (specIds.length > 1) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `${record.id} uses more than one spec`,
+          recordId: record.id,
+          path: "/relations/uses",
+        }),
+      );
+      continue;
+    }
+
+    const spec = records.get(specIds[0]);
+    if (!spec?.contract) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `${record.id} uses ${specIds[0]} which has no contract`,
+          recordId: record.id,
+          path: "/relations/uses",
+        }),
+      );
+      continue;
+    }
+
+    record.contract = spec.contract;
+  }
+
+  return problems;
+}
+
+function checkBindingAgreement(records) {
+  const problems = [];
+
+  for (const record of records.values()) {
+    if (record.type !== "binding") continue;
+    const implementsIds = record.relations?.implements ?? [];
+    if (implementsIds.length !== 1) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `${record.id} must implement exactly one component`,
+          recordId: record.id,
+          path: "/relations/implements",
+        }),
+      );
+      continue;
+    }
+
+    const target = records.get(implementsIds[0]);
+    if (!target || target.type !== "component" || !target.contract) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `${record.id} must implement a component that has a contract`,
+          recordId: record.id,
+          path: "/relations/implements",
+        }),
+      );
+      continue;
+    }
+
+    const host = record.host ?? {};
+    const contract = target.contract;
+    problems.push(
+      ...bijectionProblems(
+        record.id,
+        "anatomy",
+        namesOfList(contract.anatomy),
+        namesOfMap(host.anatomy),
+      ),
+    );
+    problems.push(
+      ...bijectionProblems(
+        record.id,
+        "parameters",
+        namesOfMap(contract.parameters),
+        namesOfMap(host.parameters),
+      ),
+    );
+    problems.push(
+      ...bijectionProblems(
+        record.id,
+        "events",
+        namesOfMap(contract.events),
+        namesOfMap(host.events),
+      ),
+    );
+
+    for (const [name, portable] of Object.entries(contract.parameters ?? {})) {
+      const mapped = host.parameters?.[name];
+      if (!mapped?.values || portable.kind !== "enum") continue;
+      for (const value of Object.keys(portable.values ?? {})) {
+        if (!Object.hasOwn(mapped.values, value)) {
+          problems.push(
+            problem({
+              code: PROBLEM.SOURCE_CONFLICT,
+              message: `${record.id} host parameter ${name} is missing enum value ${value}`,
+              recordId: record.id,
+              path: `/host/parameters/${name}/values`,
+            }),
+          );
+        }
+      }
+    }
+  }
+
+  return problems;
+}
+
+function namesOfList(items) {
+  return new Set((items ?? []).map((item) => item.name));
+}
+
+function namesOfMap(object) {
+  return new Set(Object.keys(object ?? {}));
+}
+
+function bijectionProblems(recordId, label, expected, actual) {
+  const problems = [];
+  for (const name of expected) {
+    if (!actual.has(name)) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `${recordId} host ${label} is missing ${name}`,
+          recordId,
+          path: `/host/${label}`,
+        }),
+      );
+    }
+  }
+  for (const name of actual) {
+    if (!expected.has(name)) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `${recordId} host ${label} has unknown ${name}`,
+          recordId,
+          path: `/host/${label}`,
+        }),
+      );
+    }
+  }
+  return problems;
+}
+
+function applyTokenGroups(record) {
+  if (!record.tokens) return;
+  const variants = new Set(Object.keys(record.contract?.parameters?.variant?.values ?? {}));
+  record.tokens = {
+    ...record.tokens,
+    entries: record.tokens.entries.map((entry) => ({
+      ...entry,
+      group: assignGroup(entry.name, record.tokens.namespace, variants),
+    })),
+  };
 }
 
 function checkSourceAgreement(record) {
@@ -360,7 +516,7 @@ function checkSourceAgreement(record) {
     );
   }
 
-  const variantValues = record.contract?.api?.attributes?.variant?.values ?? {};
+  const variantValues = record.contract?.parameters?.variant?.values ?? {};
   const variantNames = new Set(Object.keys(variantValues));
 
   if (tokens.tier === "component") {
@@ -371,7 +527,7 @@ function checkSourceAgreement(record) {
             code: PROBLEM.SOURCE_CONFLICT,
             message: `component variant ${variant} has no token entries`,
             recordId: record.id,
-            path: `/contract/api/attributes/variant/${variant}`,
+            path: `/contract/parameters/variant/${variant}`,
           }),
         );
       }
@@ -394,7 +550,7 @@ function checkSourceAgreement(record) {
     }
   }
 
-  const specSizes = Object.keys(record.contract?.api?.attributes?.size?.values ?? {});
+  const specSizes = Object.keys(record.contract?.parameters?.size?.values ?? {});
   for (const size of specSizes) {
     if (!Object.hasOwn(SIZE_BRIDGE, size)) {
       problems.push(
@@ -402,7 +558,7 @@ function checkSourceAgreement(record) {
           code: PROBLEM.SOURCE_CONFLICT,
           message: `spec size ${size} is not in SIZE_BRIDGE`,
           recordId: record.id,
-          path: `/contract/api/attributes/size/${size}`,
+          path: `/contract/parameters/size/${size}`,
         }),
       );
     }

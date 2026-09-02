@@ -21,8 +21,8 @@ adapters are not implemented (KNOW-028).
    non-goals.
 2. [Content model](content-model.md) defines the records that make knowledge portable and
    retrievable.
-3. [ADR 0001](../adr/0001-portable-design-system-knowledge.md) records the initial architecture
-   decision.
+3. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md) records knowledge ownership of
+   portable contracts. [ADR 0001](../adr/0001-portable-design-system-knowledge.md) is superseded.
 
 Existing domain decisions remain authoritative:
 
@@ -37,7 +37,8 @@ in `sources[]`.
 
 Button and Badge are the first-slice records that do that. Button also names
 `button.tokens.json`. Badge omits token-source because it has no component-token namespace. The
-other four Markdown files compile as authored narrative plus their own frontmatter.
+portable contract is a `type: spec` record. The web-component mapping is a `type: binding` record.
+The other Markdown files compile as authored narrative plus their own frontmatter.
 
 ```mermaid
 flowchart TB
@@ -48,12 +49,13 @@ flowchart TB
   end
 
   subgraph domain["Opened only because sources[] names them"]
-    SPEC["button.spec.yaml → contract"]
     TOK["button.tokens.json → tokens.entries"]
     ADR["ADR 0003 → decisions[]"]
   end
 
   subgraph siblings["Other content/*.md files"]
+    SPEC["spec.button → contract"]
+    BIND["binding.button.web-component → host"]
     PAT["pattern.action-hierarchy"]
     GL["two guidelines + example"]
   end
@@ -71,10 +73,10 @@ flowchart TB
 
   FM --> R
   BODY --> R
-  SRC --> SPEC
   SRC --> TOK
   SRC --> ADR
-  SPEC --> R
+  SPEC -->|"uses"| R
+  BIND -->|"implements"| R
   TOK --> R
   ADR --> R
   PAT -->|"uses / related"| R
@@ -114,7 +116,11 @@ The executable schema, authored Markdown parser, and knowledge compiler validate
 records:
 
 - [Button](../../packages/knowledge/content/components/button.md)
+- [Button contract](../../packages/knowledge/content/specs/button.md)
+- [Button web-component binding](../../packages/knowledge/content/bindings/button.web-component.md)
 - [Badge](../../packages/knowledge/content/components/badge.md)
+- [Badge contract](../../packages/knowledge/content/specs/badge.md)
+- [Badge web-component binding](../../packages/knowledge/content/bindings/badge.web-component.md)
 - [Action hierarchy](../../packages/knowledge/content/patterns/action-hierarchy.md)
 - [Button implementation](../../packages/knowledge/content/guidelines/button-implementation.md)
 - [Button review](../../packages/knowledge/content/guidelines/button-review.md)

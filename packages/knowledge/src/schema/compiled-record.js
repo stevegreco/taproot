@@ -1,10 +1,23 @@
-import Ajv2020 from "ajv/dist/2020.js";
 import { PROBLEM, problem } from "../compile/tables.js";
+import { createKnowledgeAjv } from "./ajv.js";
 import { COMPILED_DEFS, COMPILED_PROPERTIES, COMPILED_REQUIRED } from "./compiled-extensions.js";
 
-const Ajv = Ajv2020.default ?? Ajv2020;
+const COMPILED_ID = "urn:stevegreco:design-system:compiled-knowledge-record:2";
 
-const COMPILED_ID = "urn:stevegreco:design-system:compiled-knowledge-record:1";
+const TYPE_HOST_RULES = Object.freeze([
+  {
+    if: { properties: { type: { const: "component" } }, required: ["type"] },
+    then: { not: { required: ["host"] } },
+  },
+  {
+    if: { properties: { type: { const: "spec" } }, required: ["type"] },
+    then: { not: { required: ["host"] } },
+  },
+  {
+    if: { properties: { type: { const: "binding" } }, required: ["type"] },
+    then: { not: { required: ["contract"] } },
+  },
+]);
 
 export function deriveCompiledSchema(authoredSchema) {
   const schema = structuredClone(authoredSchema);
@@ -13,12 +26,12 @@ export function deriveCompiledSchema(authoredSchema) {
   schema.properties = { ...schema.properties, ...COMPILED_PROPERTIES };
   schema.required = [...schema.required, ...COMPILED_REQUIRED];
   schema.$defs = { ...schema.$defs, ...COMPILED_DEFS };
+  schema.allOf = [...(schema.allOf ?? []), ...TYPE_HOST_RULES];
   return schema;
 }
 
 export function findCompiledIssues(compiledSchema, records) {
-  const ajv = new Ajv({ allErrors: true, strict: true });
-  const validate = ajv.compile(compiledSchema);
+  const validate = createKnowledgeAjv().compile(compiledSchema);
   const problems = [];
 
   for (const record of records) {

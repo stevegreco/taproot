@@ -389,8 +389,9 @@ function defaultDisplay(spec: Record<string, unknown>): string | undefined {
 }
 
 function typeDisplay(spec: Record<string, unknown>, kind: ApiMemberKind): string {
-  if (spec.type === "enum" && isObject(spec.values)) return enumTypeDisplay(spec.values);
-  if (typeof spec.type === "string" && spec.type.length > 0) return spec.type;
+  const valueType = typeof spec.kind === "string" ? spec.kind : spec.type;
+  if (valueType === "enum" && isObject(spec.values)) return enumTypeDisplay(spec.values);
+  if (typeof valueType === "string" && valueType.length > 0) return valueType;
   return kind === "event" ? "event" : "";
 }
 
@@ -410,22 +411,83 @@ function projectMembers(source: unknown, kind: ApiMemberKind): ApiRow[] {
   });
 }
 
-function projectApi(api: Record<string, unknown>): ApiRow[] {
-  return [
-    ...projectMembers(api.attributes, "attribute"),
-    ...projectMembers(api.properties, "property"),
-    ...projectMembers(api.events, "event"),
-  ];
+function hostValueMap(mapped: Record<string, unknown>): Record<string, unknown> | undefined {
+  return isObject(mapped.values) ? mapped.values : undefined;
+}
+
+function remapValues(fields: Record<string, unknown>, valueMap: Record<string, unknown> | undefined): ApiValue[] {
+  const original = projectValues(fields);
+  if (!valueMap) return original;
+  return original.map((item) => ({
+    ...item,
+    name: asString(valueMap[item.name], item.name),
+  }));
+}
+
+function remapDefault(
+  fields: Record<string, unknown>,
+  valueMap: Record<string, unknown> | undefined,
+): string | undefined {
+  const raw = defaultDisplay(fields);
+  if (raw == null || !valueMap) return raw;
+  return asString(valueMap[raw], raw);
+}
+
+function projectApi(contract: Record<string, unknown>, host: Record<string, unknown>): ApiRow[] {
+  const parameters = isObject(contract.parameters) ? contract.parameters : {};
+  const hostParameters = isObject(host.parameters) ? host.parameters : {};
+  const attributes = Object.entries(parameters).map(([portableName, spec]) => {
+    const fields = isObject(spec) ? spec : {};
+    const mapped = isObject(hostParameters[portableName]) ? hostParameters[portableName] : {};
+    const valueMap = hostValueMap(mapped);
+    const values = remapValues(fields, valueMap);
+    const displayed = Object.fromEntries(values.map((item) => [item.name, item.description]));
+    return {
+      name: asString(mapped.attribute, portableName),
+      kind: "attribute" as const,
+      typeDisplay: typeDisplay({ ...fields, values: displayed }, "attribute"),
+      defaultDisplay: remapDefault(fields, valueMap),
+      description: asString(fields.description),
+      values,
+    };
+  });
+  const portableEvents = isObject(contract.events) ? contract.events : {};
+  const hostEvents = isObject(host.events) ? host.events : {};
+  const events = Object.entries(hostEvents).map(([portableName, spec]) => {
+    const fields = isObject(spec) ? spec : {};
+    const portable = isObject(portableEvents[portableName]) ? portableEvents[portableName] : {};
+    return {
+      name: asString(fields.event, portableName),
+      kind: "event" as const,
+      typeDisplay: "event",
+      defaultDisplay: undefined,
+      description: asString(portable.description, asString(fields.description)),
+      values: [],
+    };
+  });
+  return [...attributes, ...projectMembers(host.properties, "property"), ...events];
+}
+
+function bindingHost(catalog: Catalog, id: string): Record<string, unknown> {
+  const bindings = catalog.related(id).flatMap((neighbor) => {
+    const related = neighbor.record;
+    if (!isObject(related) || related.type !== "binding" || !isObject(related.host)) return [];
+    return [related.host];
+  });
+  const web = bindings.find((host) => host.platform === "web-component");
+  const host = web ?? bindings[0];
+  if (!host) fail("malformed-contract", `${id} has no host binding`);
+  return host;
 }
 
 function projectVariants(
   tagName: string,
-  attributes: Record<string, unknown>,
+  parameters: Record<string, unknown>,
   guidance: Map<string, string>,
 ): Variant[] {
-  const variant = attributes.variant;
+  const variant = parameters.variant;
   if (!isObject(variant) || !isObject(variant.values) || Object.keys(variant.values).length === 0) {
-    fail("malformed-contract", "component contract is missing attributes.variant values");
+    fail("malformed-contract", "component contract is missing parameters.variant values");
   }
   const defaultName = asString(variant.default);
   return Object.entries(variant.values).map(([name, description]) => ({
@@ -526,10 +588,12 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   if (!isObject(record.contract)) {
     fail("malformed-contract", `${id} is missing a contract`);
   }
-  const tagName = asString(record.contract.tagName);
-  if (!tagName) fail("malformed-contract", `${id} contract is missing tagName`);
-  if (!isObject(record.contract.api)) {
-    fail("malformed-contract", `${id} contract is missing api`);
+  const host = bindingHost(catalog, id);
+  const tagName = asString(host.defaultTagName);
+  if (!tagName) fail("malformed-contract", `${id} binding is missing defaultTagName`);
+  const parameters = record.contract.parameters;
+  if (!isObject(parameters)) {
+    fail("malformed-contract", `${id} contract is missing parameters`);
   }
 
   const status = record.status;
@@ -563,8 +627,7 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     }
   }
 
-  const attributes = isObject(record.contract.api.attributes) ? record.contract.api.attributes : {};
-  const variants = projectVariants(tagName, attributes, patternGuidanceByVariant(patternBody));
+  const variants = projectVariants(tagName, parameters, patternGuidanceByVariant(patternBody));
   const { introMarkdown, behaviorMarkdown } = projectIntro(asString(record.body), digest);
   const avoid = bulletItems(markdownByHeading(patternBody).sections.get("avoid") ?? "");
 
@@ -587,7 +650,7 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     introMarkdown,
     behaviorMarkdown,
     variants,
-    api: projectApi(record.contract.api),
+    api: projectApi(record.contract, host),
     accessibility: projectAccessibility(record.contract.accessibility, id),
     together,
     review,

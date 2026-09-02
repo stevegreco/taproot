@@ -30,7 +30,9 @@ publish the same facts without maintaining a second agent-only copy.
 - **KNOW-001:** The repository must contain the authoritative public knowledge records and their
   schemas.
 - **KNOW-002:** Knowledge with a clear domain owner must remain close to that owner. Token facts and
-  policy remain with the token package, and component contracts remain with the component package.
+  token ADRs remain with the token package. Portable component contracts (`type: spec`) and host
+  bindings (`type: binding`) are authored in the knowledge package. Component runtime stays in the
+  component package. Knowledge must not become a second owner of token values.
 - **KNOW-003:** Cross-cutting patterns, guidelines, and examples must have an explicit home in the
   knowledge package.
 - **KNOW-004:** Human documentation must render or import authoritative knowledge records when it
@@ -39,12 +41,12 @@ publish the same facts without maintaining a second agent-only copy.
 
 ### Content
 
-- **KNOW-006:** The system must represent components, patterns, guidelines, examples, foundations,
-  and decisions.
+- **KNOW-006:** The system must represent components, specs, bindings, patterns, guidelines,
+  examples, foundations, and decisions.
 - **KNOW-007:** A record must have a stable ID, type, title, summary, status, visibility, supported
   agent jobs, tags, relationships, provenance, and agent-readable body.
 - **KNOW-008:** Component knowledge must expose structured contracts when available, including
-  usage, anatomy, API, states, behavior, accessibility, and token relationships.
+  usage, anatomy, parameters, events, states, behavior, accessibility, and token relationships.
 - **KNOW-009:** Pattern knowledge must explain when to use the pattern, when to avoid it, its
   composition, accessibility constraints, and related components and examples.
 - **KNOW-010:** Review guidance must state verifiable checks rather than broad recommendations.

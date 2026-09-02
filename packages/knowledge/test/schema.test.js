@@ -1,11 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../src/schema/index.js";
+import { createKnowledgeAjv } from "../src/schema/ajv.js";
 
 test("exported schema compiles as JSON Schema draft 2020-12", () => {
-  const Ajv = Ajv2020.default ?? Ajv2020;
-  const validate = new Ajv({ strict: true }).compile(schema);
+  const validate = createKnowledgeAjv({ allErrors: false }).compile(schema);
 
   assert.equal(typeof validate, "function");
   assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema");

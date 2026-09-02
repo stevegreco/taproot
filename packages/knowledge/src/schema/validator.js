@@ -1,8 +1,7 @@
-import Ajv2020 from "ajv/dist/2020.js";
 import schema from "./knowledge-record.schema.json" with { type: "json" };
+import { createKnowledgeAjv } from "./ajv.js";
 
-const Ajv = Ajv2020.default ?? Ajv2020;
-const validate = new Ajv({ allErrors: true, strict: true }).compile(schema);
+const validate = createKnowledgeAjv().compile(schema);
 
 function pointerJoin(instancePath, property) {
   const escaped = String(property).replaceAll("~", "~0").replaceAll("/", "~1");

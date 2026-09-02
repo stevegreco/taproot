@@ -21,7 +21,16 @@
     "id": { "$ref": "#/$defs/dottedId" },
     "schemaVersion": { "const": 1 },
     "type": {
-      "enum": ["component", "pattern", "guideline", "example", "foundation", "decision"]
+      "enum": [
+        "component",
+        "pattern",
+        "guideline",
+        "example",
+        "foundation",
+        "decision",
+        "spec",
+        "binding"
+      ]
     },
     "title": { "type": "string", "minLength": 1 },
     "summary": { "type": "string", "minLength": 1 },
@@ -88,6 +97,41 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "spec" } },
+        "required": ["type"]
+      },
+      "then": {
+        "required": ["contract"],
+        "properties": {
+          "contract": { "$ref": "#/$defs/portableContract" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "binding" } },
+        "required": ["type"]
+      },
+      "then": {
+        "required": ["host"],
+        "properties": {
+          "host": { "$ref": "#/$defs/hostBinding" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "component" } },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "tokenRef": { "$ref": "#/$defs/tokenRef" }
+        }
+      }
     }
   ],
   "unevaluatedProperties": false,
@@ -128,7 +172,7 @@
       "required": ["kind", "path"],
       "properties": {
         "kind": {
-          "enum": ["authored", "component-spec", "token-source", "adr"],
+          "enum": ["authored", "token-source", "adr"],
           "$comment": "generated is compiler-only and rejected in authored Markdown."
         },
         "path": { "$ref": "#/$defs/repositoryPath" }
@@ -171,6 +215,22 @@
         "relatesTo": { "$ref": "#/$defs/recordIdList" }
       },
       "additionalProperties": false
+    },
+    "portableContract": {
+      "$ref": "urn:stevegreco:design-system:portable-contract:2"
+    },
+    "hostBinding": {
+      "$ref": "urn:stevegreco:design-system:host-binding:1"
+    },
+    "tokenRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tier", "namespace", "description"],
+      "properties": {
+        "tier": { "enum": ["primitive", "semantic", "component"] },
+        "namespace": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 }
+      }
     }
   }
 }

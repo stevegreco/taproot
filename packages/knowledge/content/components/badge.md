@@ -14,15 +14,14 @@ tags:
   - badge
   - status
   - metadata
-  - web-component
 relations:
+  uses:
+    - spec.badge
   related:
     - component.button
 sources:
   - kind: authored
     path: packages/knowledge/content/components/badge.md
-  - kind: component-spec
-    path: packages/components/specs/badge.spec.yaml
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 ---
@@ -48,6 +47,6 @@ applies that role.
 Badge consumes semantic color, type, radius, and primitive spacing. It has no component-token
 namespace. Do not recreate its variants in product CSS.
 
-The component specification is authoritative for the complete API, anatomy, states, behavior, and
-accessibility contract. The knowledge compiler must merge those structured fields into the compiled
-record rather than reproduce them here.
+The [Badge contract](../specs/badge.md) is authoritative for usage, anatomy, parameters, events,
+states, behavior, and accessibility. Host tag names, slots, and parts live on the binding that
+implements this component.

@@ -55,7 +55,7 @@ test("projectBundle emits sorted records, hashed files, and reduced markdown fro
     written.map((record) => record.id),
     ids,
   );
-  assert.equal(written[0].compiledSchemaVersion, 1);
+  assert.equal(written[0].compiledSchemaVersion, 2);
   assert.ok(written.find((record) => record.id === "component.button").backlinks);
 });
 
@@ -66,4 +66,17 @@ test("COMPILED_INVALID fires when emitted records fail the derived schema", () =
   ]);
   assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
   assert.match(problems[0].message, /compiler bug/);
+});
+
+test("compiled schema forbids host on a component record", async () => {
+  const corpus = await buildCorpus(createFsReader(repoRoot), [
+    { root: join(repoRoot, "packages/knowledge/content"), visibility: "public" },
+  ]);
+  const button = corpus.records.get("component.button");
+  const binding = corpus.records.get("binding.button.web-component");
+  const compiledSchema = deriveCompiledSchema(authoredSchema);
+  const problems = findCompiledIssues(compiledSchema, [
+    { ...button, host: binding.host },
+  ]);
+  assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
 });

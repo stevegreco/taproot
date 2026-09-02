@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:stevegreco:design-system:portable-contract:2",
+  "title": "Portable component contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "specVersion",
+    "description",
+    "usage",
+    "anatomy",
+    "parameters",
+    "events",
+    "states",
+    "behavior",
+    "accessibility",
+    "rationale"
+  ],
+  "properties": {
+    "specVersion": { "const": 2 },
+    "description": { "type": "string", "minLength": 1 },
+    "usage": { "$ref": "#/$defs/usage" },
+    "anatomy": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/anatomyPart" }
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/parameter" }
+    },
+    "events": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/event" }
+    },
+    "states": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "behavior": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "accessibility": { "$ref": "#/$defs/accessibility" },
+    "rationale": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rationaleItem" }
+    }
+  },
+  "$defs": {
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["do", "avoid"],
+      "properties": {
+        "do": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/usageDo" }
+        },
+        "avoid": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/usageAvoid" }
+        }
+      }
+    },
+    "usageDo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["situation"],
+      "properties": {
+        "situation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "usageAvoid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["situation", "instead", "why"],
+      "properties": {
+        "situation": { "type": "string", "minLength": 1 },
+        "instead": { "type": "string", "minLength": 1 },
+        "why": { "type": "string", "minLength": 1 }
+      }
+    },
+    "anatomyPart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "role", "description"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "role": {
+          "enum": ["interactive-surface", "label", "indicator", "container"]
+        },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["enum", "boolean", "string"] },
+        "values": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "default": {
+          "anyOf": [{ "type": "string" }, { "type": "boolean" }]
+        },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantics", "name"],
+      "properties": {
+        "semantics": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "keyboard": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/keyboardBinding" }
+        },
+        "requirements": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "keyboardBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "action"],
+      "properties": {
+        "key": { "type": "string", "minLength": 1 },
+        "action": { "type": "string", "minLength": 1 }
+      }
+    },
+    "rationaleItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "rationale"],
+      "properties": {
+        "decision": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

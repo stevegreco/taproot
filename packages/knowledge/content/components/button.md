@@ -14,8 +14,9 @@ tags:
   - action
   - button
   - form
-  - web-component
 relations:
+  uses:
+    - spec.button
   related:
     - pattern.action-hierarchy
     - guideline.button-implementation
@@ -24,12 +25,14 @@ relations:
 sources:
   - kind: authored
     path: packages/knowledge/content/components/button.md
-  - kind: component-spec
-    path: packages/components/specs/button.spec.yaml
   - kind: token-source
     path: packages/tokens/src/tokens/components/button.tokens.json
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
+tokenRef:
+  tier: component
+  namespace: component.button
+  description: All visual values consume the published Button component-token contract.
 ---
 
 Button lets a person trigger an action in the current view. Use a link for navigation and Badge for
@@ -61,11 +64,11 @@ The component forwards focus to its inner native button and follows a disabled a
 
 ## Accessibility
 
-- Provide visible label text or an `aria-label` for an icon-only control.
+- Provide visible label text or an accessible name for an icon-only control.
 - Keep the focus indicator visible.
 - Do not communicate meaning through color alone.
 - Explain nearby why an action is disabled when the reason is not already clear.
 
-The component specification is authoritative for the complete API, anatomy, states, behavior, and
-accessibility contract. The knowledge compiler must merge those structured fields into the compiled
-record rather than reproduce them here.
+The [Button contract](../specs/button.md) is authoritative for usage, anatomy, parameters, events,
+states, behavior, and accessibility. Host tag names, slots, parts, and form association live on the
+binding that implements this component.

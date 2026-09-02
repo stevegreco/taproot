@@ -1,6 +1,6 @@
 # ADR 0001: Portable design system knowledge
 
-**Status:** Accepted
+**Status:** Superseded by [ADR 0002](./0002-knowledge-owned-portable-contracts.md)
 
 ## Context
 

@@ -1,9 +1,11 @@
 export const COMPILED_REQUIRED = Object.freeze(["compiledSchemaVersion", "backlinks"]);
 
 export const COMPILED_PROPERTIES = Object.freeze({
-  compiledSchemaVersion: { const: 1 },
+  compiledSchemaVersion: { const: 2 },
   backlinks: { $ref: "#/$defs/backlinks" },
-  contract: { $ref: "#/$defs/componentContract" },
+  contract: { $ref: "#/$defs/portableContract" },
+  host: { $ref: "#/$defs/hostBinding" },
+  tokenRef: { $ref: "#/$defs/tokenRef" },
   tokens: { $ref: "#/$defs/tokenContract" },
   decisions: {
     type: "array",
@@ -18,7 +20,7 @@ export const COMPILED_DEFS = Object.freeze({
     additionalProperties: false,
     properties: {
       kind: {
-        enum: ["authored", "component-spec", "token-source", "adr", "generated"],
+        enum: ["authored", "token-source", "adr", "generated"],
       },
       path: { $ref: "#/$defs/repositoryPath" },
       revision: { type: "string", minLength: 1 },
@@ -55,32 +57,20 @@ export const COMPILED_DEFS = Object.freeze({
       related: { $ref: "#/$defs/recordIdList" },
     },
   },
-  componentContract: {
+  portableContract: {
+    $ref: "urn:stevegreco:design-system:portable-contract:2",
+  },
+  hostBinding: {
+    $ref: "urn:stevegreco:design-system:host-binding:1",
+  },
+  tokenRef: {
     type: "object",
-    required: [
-      "specVersion",
-      "tagName",
-      "description",
-      "usage",
-      "anatomy",
-      "api",
-      "states",
-      "behavior",
-      "accessibility",
-      "rationale",
-    ],
     additionalProperties: false,
+    required: ["tier", "namespace", "description"],
     properties: {
-      specVersion: { const: 1 },
-      tagName: { type: "string", minLength: 1 },
-      description: { type: "string" },
-      usage: { type: "object" },
-      anatomy: { type: "array" },
-      api: { type: "object" },
-      states: { type: "array", items: { type: "string" } },
-      behavior: { type: "array", items: { type: "string" } },
-      accessibility: { type: "object" },
-      rationale: { type: "array" },
+      tier: { enum: ["primitive", "semantic", "component"] },
+      namespace: { type: "string", minLength: 1 },
+      description: { type: "string", minLength: 1 },
     },
   },
   tokenContract: {

@@ -28,15 +28,20 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.equal(records.length, authoredCount);
 
   const button = records.find((record) => record.id === "component.button");
-  assert.ok(button.contract.api.attributes.variant.values.primary);
+  assert.ok(button.contract.parameters.variant.values.primary);
+  assert.equal(Object.hasOwn(button.contract, "tagName"), false);
   const ghost = button.tokens.entries.filter((entry) => entry.group === "ghost");
   assert.ok(ghost.length > 0);
 
   const badge = records.find((record) => record.id === "component.badge");
-  assert.equal(badge.contract.tagName, "ds-badge");
+  assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
+  assert.equal(badge.contract.parameters.variant.default, "default");
   assert.equal(Object.hasOwn(badge, "tokens"), false);
   assert.equal(badge.decisions.length, 1);
   assert.match(badge.decisions[0].title, /ADR 0003/);
+
+  const binding = records.find((record) => record.id === "binding.button.web-component");
+  assert.equal(binding.host.defaultTagName, "ds-button");
 
   const buttonMarkdown = await readFile(join(outDir, "public/markdown/component.button.md"), "utf8");
   assert.match(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);

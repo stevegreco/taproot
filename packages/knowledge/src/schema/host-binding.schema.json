@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:stevegreco:design-system:host-binding:1",
+  "title": "Host binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "specVersion",
+    "platform",
+    "package",
+    "export",
+    "defaultTagName",
+    "registration",
+    "anatomy",
+    "parameters",
+    "events"
+  ],
+  "properties": {
+    "specVersion": { "const": 1 },
+    "platform": { "const": "web-component" },
+    "package": { "type": "string", "minLength": 1 },
+    "export": { "type": "string", "minLength": 1 },
+    "defaultTagName": { "type": "string", "minLength": 1 },
+    "registration": { "$ref": "#/$defs/registration" },
+    "anatomy": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/anatomyMap" }
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/parameterMap" }
+    },
+    "events": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/eventMap" }
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/hostProperty" }
+    },
+    "formAssociation": { "$ref": "#/$defs/formAssociation" },
+    "focus": { "$ref": "#/$defs/focus" },
+    "parts": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/part" }
+    },
+    "behavior": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "rationale": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rationaleItem" }
+    }
+  },
+  "$defs": {
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["export", "supportsAliases"],
+      "properties": {
+        "export": { "type": "string", "minLength": 1 },
+        "supportsAliases": { "type": "boolean" }
+      }
+    },
+    "anatomyMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "element": { "type": "string", "minLength": 1 },
+        "part": { "type": "string", "minLength": 1 },
+        "slot": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "accepts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "parameterMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "attribute": { "type": "string", "minLength": 1 },
+        "property": { "type": "string", "minLength": 1 },
+        "values": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "eventMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event"],
+      "properties": {
+        "event": { "type": "string", "minLength": 1 },
+        "suppressedWhen": { "type": "string", "minLength": 1 }
+      }
+    },
+    "hostProperty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "readonly": { "type": "boolean" },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "formAssociation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mechanism"],
+      "properties": {
+        "mechanism": { "const": "FACE" },
+        "fieldsetDisables": { "type": "boolean" },
+        "submitRunsConstraintValidation": { "type": "boolean" },
+        "resetResetsAssociatedForm": { "type": "boolean" }
+      }
+    },
+    "focus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["forwardsTo"],
+      "properties": {
+        "forwardsTo": { "type": "string", "minLength": 1 }
+      }
+    },
+    "part": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "rationaleItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "rationale"],
+      "properties": {
+        "decision": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

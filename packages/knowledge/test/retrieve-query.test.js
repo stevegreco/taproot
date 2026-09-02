@@ -81,9 +81,11 @@ test("every public component record has a contract", async () => {
   for (const record of components) {
     assert.equal(record.type, "component");
     assert.ok(record.contract);
-    assert.ok(record.contract.tagName);
-    assert.ok(record.contract.api?.attributes);
+    assert.equal(Object.hasOwn(record.contract, "tagName"), false);
+    assert.ok(record.contract.parameters);
   }
+  const binding = catalog.get("binding.button.web-component");
+  assert.equal(binding.host.defaultTagName, "ds-button");
 });
 
 test("list visibility narrows an internal catalog and never widens a public one", async () => {

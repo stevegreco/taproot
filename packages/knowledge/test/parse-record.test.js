@@ -106,14 +106,14 @@ test("parseRecord accepts an authored source that is not first", () => {
   - kind: authored
     path: packages/knowledge/content/components/test-button.md`,
     `sources:
-  - kind: component-spec
-    path: packages/components/specs/button.spec.yaml
+  - kind: token-source
+    path: packages/tokens/src/tokens/components/button.tokens.json
   - kind: authored
     path: packages/knowledge/content/components/test-button.md`,
   );
 
   const record = parseRecord(markdown, { sourcePath: "test-button.md" });
-  assert.equal(record.sources[0].kind, "component-spec");
+  assert.equal(record.sources[0].kind, "token-source");
   assert.equal(record.sources[1].kind, "authored");
 });
 
@@ -174,4 +174,164 @@ test("parseRecord rejects malformed YAML frontmatter with a record-level path", 
       return true;
     },
   );
+});
+
+const validContract = `
+  specVersion: 2
+  description: Triggers an action.
+  usage:
+    do:
+      - situation: Trigger an action in the current view.
+    avoid:
+      - situation: Navigate away.
+        instead: Link
+        why: Links provide native navigation semantics.
+  anatomy:
+    - name: control
+      role: interactive-surface
+      description: Interactive control.
+  parameters:
+    disabled:
+      kind: boolean
+      default: false
+  events:
+    activate:
+      description: Requests the action.
+  states:
+    - default
+  behavior:
+    - Disabled prevents activation.
+  accessibility:
+    semantics: Button.
+    name: Required from visible content.
+  rationale:
+    - decision: Keep the contract host-neutral.
+      rationale: Host spellings live on the binding.
+`;
+
+const validHost = `
+  specVersion: 1
+  platform: web-component
+  package: "@stevegreco/design-system-components"
+  export: DsButton
+  defaultTagName: ds-button
+  registration:
+    export: defineButton
+    supportsAliases: true
+  anatomy:
+    control:
+      element: button
+      part: button
+  parameters:
+    disabled:
+      attribute: disabled
+      property: disabled
+  events:
+    activate:
+      event: click
+`;
+
+const validSpec = `---
+id: spec.test-button
+schemaVersion: 1
+type: spec
+title: Test button contract
+summary: Trigger a test action.
+status: draft
+visibility: public
+jobs:
+  - design
+  - implement
+tags:
+  - button
+relations: {}
+sources:
+  - kind: authored
+    path: packages/knowledge/content/specs/test-button.md
+contract:${validContract}
+---
+
+Portable contract for the test button.
+`;
+
+const validBinding = `---
+id: binding.test-button.web-component
+schemaVersion: 1
+type: binding
+title: Test button web component
+summary: Maps the test button onto ds-button.
+status: draft
+visibility: public
+jobs:
+  - implement
+tags:
+  - button
+relations:
+  implements:
+    - component.test-button
+sources:
+  - kind: authored
+    path: packages/knowledge/content/bindings/test-button.web-component.md
+host:${validHost}
+---
+
+Register with defineButton().
+`;
+
+test("parseRecord accepts a spec with a portable contract", () => {
+  const record = parseRecord(validSpec, {
+    sourcePath: "packages/knowledge/content/specs/test-button.md",
+  });
+  assert.equal(record.type, "spec");
+  assert.equal(record.contract.specVersion, 2);
+  assert.equal(record.contract.parameters.disabled.kind, "boolean");
+  assert.equal(Object.hasOwn(record.contract, "tagName"), false);
+});
+
+test("parseRecord rejects a spec without contract", () => {
+  const markdown = validSpec.replace(/\ncontract:[\s\S]*?\n---\n/, "\n---\n");
+  assertIssuePath(markdown, "packages/knowledge/content/specs/test-button.md", "/contract");
+});
+
+test("parseRecord rejects tagName on an authored spec contract", () => {
+  const markdown = validSpec.replace(
+    "  specVersion: 2\n",
+    "  specVersion: 2\n  tagName: ds-button\n",
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/specs/test-button.md",
+    "/contract/tagName",
+  );
+});
+
+test("parseRecord accepts a binding with a host mapping", () => {
+  const record = parseRecord(validBinding, {
+    sourcePath: "packages/knowledge/content/bindings/test-button.web-component.md",
+  });
+  assert.equal(record.type, "binding");
+  assert.equal(record.host.defaultTagName, "ds-button");
+  assert.equal(record.host.specVersion, 1);
+});
+
+test("parseRecord rejects a binding without host", () => {
+  const markdown = validBinding.replace(/\nhost:[\s\S]*?\n---\n/, "\n---\n");
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/bindings/test-button.web-component.md",
+    "/host",
+  );
+});
+
+test("parseRecord rejects contract on an authored component", () => {
+  const markdown = validComponent.replace(
+    "\n---\n\n",
+    `\ncontract:${validContract}---\n\n`,
+  );
+  assertIssuePath(markdown, "test-button.md", "/contract");
+});
+
+test("parseRecord rejects host on an authored component", () => {
+  const markdown = validComponent.replace("\n---\n\n", `\nhost:${validHost}---\n\n`);
+  assertIssuePath(markdown, "test-button.md", "/host");
 });
