@@ -85,8 +85,8 @@ flowchart TB
   BIND -->|"implements"| R
   TOK --> R
   ADR --> R
-  PAT -->|"uses / related"| R
-  GL -->|"uses / reviews / demonstrates"| R
+  PAT -->|"uses / guides"| R
+  GL -->|"guides / reviews / demonstrates"| R
   R --> JSON
   R --> MD
   R --> IDX
@@ -94,7 +94,8 @@ flowchart TB
 ```
 
 The other Markdown files are siblings, not outputs of `button.md`. They attach through relation
-IDs. After the corpus exists, Button gains `backlinks.usedBy` and `backlinks.reviewedBy`. Their
+IDs. After the corpus exists, Button gains `backlinks.usedBy`, `backlinks.guidedBy`, and
+`backlinks.reviewedBy`. Their
 bodies are not copied into Button. The diagram traces Button. Badge follows the same path without
 a token-source. Button and Badge point at each other with `related`.
 

@@ -25,6 +25,61 @@ test("get returns a hit, undefined for a miss, and malformed-id for button", asy
   assert.throws(() => catalog.get(1), TypeError);
 });
 
+test("Button guidance uses guides and reviews, not related", async () => {
+  const catalog = await openCatalog();
+  const neighbors = catalog.related("component.button");
+  const byId = Object.fromEntries(neighbors.map((neighbor) => [neighbor.record.id, neighbor]));
+
+  assert.deepEqual(
+    neighbors.map((neighbor) => neighbor.record.id),
+    [
+      "binding.button.web-component",
+      "component.badge",
+      "example.action-hierarchy.settings",
+      "guideline.button-implementation",
+      "guideline.button-review",
+      "pattern.action-hierarchy",
+      "spec.button",
+    ],
+  );
+
+  assert.deepEqual(catalog.get("component.button").relations.related, ["component.badge"]);
+  assert.equal(Object.hasOwn(catalog.get("component.button").relations, "guides"), false);
+
+  assert.deepEqual(byId["pattern.action-hierarchy"].via, [
+    { relation: "guides", direction: "inbound" },
+    { relation: "uses", direction: "inbound" },
+  ]);
+  assert.deepEqual(byId["guideline.button-implementation"].via, [
+    { relation: "guides", direction: "inbound" },
+  ]);
+  assert.deepEqual(byId["guideline.button-review"].via, [
+    { relation: "reviews", direction: "inbound" },
+  ]);
+  assert.deepEqual(byId["component.badge"].via, [
+    { relation: "related", direction: "symmetric" },
+  ]);
+  assert.deepEqual(byId["binding.button.web-component"].via, [
+    { relation: "implements", direction: "inbound" },
+  ]);
+
+  const pattern = catalog.get("pattern.action-hierarchy");
+  assert.deepEqual(pattern.relations.guides, ["component.button"]);
+  assert.equal(Object.hasOwn(pattern.relations, "related"), false);
+
+  const implementation = catalog.get("guideline.button-implementation");
+  assert.deepEqual(implementation.relations.guides, ["component.button"]);
+  assert.deepEqual(implementation.relations.uses, ["pattern.action-hierarchy"]);
+  assert.equal(Object.hasOwn(implementation.relations, "related"), false);
+
+  const review = catalog.get("guideline.button-review");
+  assert.deepEqual(review.relations.reviews, ["component.button", "pattern.action-hierarchy"]);
+  assert.equal(Object.hasOwn(review.relations, "related"), false);
+  assert.deepEqual(review.checks.length > 0, true);
+
+  assert.deepEqual(catalog.get("component.badge").relations.related, ["component.button"]);
+});
+
 test("list filters AND across keys and OR within a key", async () => {
   const catalog = await openCatalog();
   const guidelines = catalog.list({ type: "guideline" });

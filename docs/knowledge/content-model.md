@@ -138,6 +138,8 @@ tags:
 relations:
   uses:
     - component.button
+  guides:
+    - component.button
 ---
 
 Pattern guidance goes here.
@@ -204,7 +206,8 @@ Relationship names express why records connect. The initial vocabulary is:
   implements.
 - `reviews` links a checklist to the records it checks.
 - `supersedes` links a record to older guidance it replaces.
-- `related` records a meaningful connection with no more precise relation.
+- `related` records a meaningful connection with no more precise relation. Prefer `guides` and
+  `reviews` for guidance. Keep `related` for peers such as Button and Badge.
 
 The compiler validates targets and adds named reverse relationships to compiled output. Reverse
 names come from a frozen table. `uses` becomes `usedBy`, `demonstrates` becomes `demonstratedBy`,

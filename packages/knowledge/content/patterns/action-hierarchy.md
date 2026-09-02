@@ -18,9 +18,8 @@ tags:
 relations:
   uses:
     - component.button
-  related:
-    - guideline.button-implementation
-    - guideline.button-review
+  guides:
+    - component.button
 sources:
   - kind: authored
     path: packages/knowledge/content/patterns/action-hierarchy.md
