@@ -87,8 +87,9 @@ test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
     DocsKnowledgeError,
     "component.button is a record id, not a page slug",
   );
+  assert.equal(loadComponentSlice("badge").title, "Badge", "public component.badge is available to docs");
   assert.throws(
-    () => loadComponentSlice("badge"),
+    () => loadComponentSlice("dialog"),
     DocsKnowledgeError,
     "missing public component records fail the docs build",
   );
