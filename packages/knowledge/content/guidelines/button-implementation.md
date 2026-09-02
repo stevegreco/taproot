@@ -15,10 +15,9 @@ tags:
   - implementation
 relations:
   uses:
-    - component.button
     - pattern.action-hierarchy
-  related:
-    - guideline.button-review
+  guides:
+    - component.button
 sources:
   - kind: authored
     path: packages/knowledge/content/guidelines/button-implementation.md

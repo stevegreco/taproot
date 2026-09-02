@@ -116,7 +116,9 @@ export async function buildCorpus(reader, roots, options = {}) {
         );
       }
 
-      if (authored.visibility !== root.visibility) {
+      if (!Object.hasOwn(authored, "visibility") || authored.visibility == null) {
+        authored.visibility = root.visibility;
+      } else if (authored.visibility !== root.visibility) {
         problems.push(
           problem({
             code: PROBLEM.VISIBILITY_INTERNAL_PUBLIC,

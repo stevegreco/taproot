@@ -52,6 +52,62 @@ test("RECORD_PATH_MISMATCH fires when the authored source path is not the file",
   assert.equal(problems[0].recordId, "component.mismatch");
 });
 
+test("omitted compiler-known fields compile like an explicit public record", async () => {
+  const path = "content/omitted.md";
+  const reader = createMemoryReader({
+    [path]: `---
+id: component.omitted
+type: component
+title: Omitted
+summary: A fixture record.
+status: draft
+jobs:
+  - design
+tags:
+  - fixture
+---
+
+Body text.
+`,
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  assert.equal(corpus.problems.filter((item) => item.severity === "error").length, 0);
+  const record = corpus.records.get("component.omitted");
+  assert.equal(record.schemaVersion, 1);
+  assert.equal(record.visibility, "public");
+  assert.deepEqual(record.relations, {});
+  assert.equal(record.jobs[0], "design");
+  assert.equal(
+    record.sources.some((source) => source.kind === "authored" && source.path === path),
+    true,
+  );
+});
+
+test("an internal root fills omitted visibility as internal", async () => {
+  const path = "internal/quiet.md";
+  const reader = createMemoryReader({
+    [path]: `---
+id: component.quiet
+type: component
+title: Quiet
+summary: An internal fixture.
+status: draft
+jobs:
+  - design
+tags:
+  - fixture
+---
+
+Body text.
+`,
+  });
+
+  const corpus = await buildCorpus(reader, [internalRoot]);
+  assert.equal(corpus.problems.filter((item) => item.severity === "error").length, 0);
+  assert.equal(corpus.records.get("component.quiet").visibility, "internal");
+});
+
 test("CORPUS_DUPLICATE_ID keeps the first record and names both paths", async () => {
   const first = "content/a.md";
   const second = "content/b.md";

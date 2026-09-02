@@ -19,6 +19,36 @@ function structuralError(sourcePath, keyword, message) {
   return new KnowledgeRecordError(sourcePath, [{ path: "", keyword, message }]);
 }
 
+function applyAuthoredDefaults(data, sourcePath) {
+  const next = { ...data };
+  if (!Object.hasOwn(next, "schemaVersion")) {
+    next.schemaVersion = 1;
+  }
+  if (!Object.hasOwn(next, "relations")) {
+    next.relations = {};
+  }
+  if (!Object.hasOwn(next, "sources")) {
+    next.sources = [{ kind: "authored", path: sourcePath }];
+    return next;
+  }
+  if (!Array.isArray(next.sources)) {
+    return next;
+  }
+  next.sources = next.sources.map((source) => {
+    if (source == null || typeof source !== "object" || Array.isArray(source)) {
+      return source;
+    }
+    if (source.kind === "authored" && !Object.hasOwn(source, "path")) {
+      return { ...source, path: sourcePath };
+    }
+    return source;
+  });
+  if (!next.sources.some((source) => source?.kind === "authored")) {
+    next.sources = [...next.sources, { kind: "authored", path: sourcePath }];
+  }
+  return next;
+}
+
 function readAuthoredMarkdown(markdown, sourcePath) {
   if (!/^---(?:\r\n|\r|\n)/.test(markdown)) {
     throw structuralError(sourcePath, "frontmatter", "YAML frontmatter is missing");
@@ -65,7 +95,7 @@ export function parseRecord(markdown, options) {
     ]);
   }
 
-  const candidate = { ...data, body: parsed.content.trim() };
+  const candidate = applyAuthoredDefaults({ ...data, body: parsed.content.trim() }, options.sourcePath);
   const issues = findSchemaIssues(candidate);
 
   if (issues.length > 0) {

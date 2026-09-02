@@ -18,9 +18,6 @@ relations:
   uses:
     - spec.button
   related:
-    - pattern.action-hierarchy
-    - guideline.button-implementation
-    - guideline.button-review
     - component.badge
 sources:
   - kind: authored

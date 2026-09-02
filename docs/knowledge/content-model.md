@@ -116,17 +116,18 @@ output. The authored schema stays `unevaluatedProperties: false`.
 
 ## Proposed authored format
 
-Cross-cutting knowledge uses Markdown with YAML frontmatter:
+Cross-cutting knowledge uses Markdown with YAML frontmatter. `parseRecord` fills `schemaVersion` as
+`1`, empty `relations`, and an `authored` source path from the file. The compiler fills omitted
+`visibility` from the content root that listed the file. Authors still write `id`, `type`, `title`,
+`summary`, `status`, `jobs`, `tags`, and `body`. Folder names do not set `id` or `type`.
 
 ```markdown
 ---
 id: pattern.action-hierarchy
-schemaVersion: 1
 type: pattern
 title: Action hierarchy
 summary: Choose button emphasis based on the relative importance and risk of each action.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -137,9 +138,8 @@ tags:
 relations:
   uses:
     - component.button
-sources:
-  - kind: authored
-    path: packages/knowledge/content/patterns/action-hierarchy.md
+  guides:
+    - component.button
 ---
 
 Pattern guidance goes here.
@@ -206,7 +206,8 @@ Relationship names express why records connect. The initial vocabulary is:
   implements.
 - `reviews` links a checklist to the records it checks.
 - `supersedes` links a record to older guidance it replaces.
-- `related` records a meaningful connection with no more precise relation.
+- `related` records a meaningful connection with no more precise relation. Prefer `guides` and
+  `reviews` for guidance. Keep `related` for peers such as Button and Badge.
 
 The compiler validates targets and adds named reverse relationships to compiled output. Reverse
 names come from a frozen table. `uses` becomes `usedBy`, `demonstrates` becomes `demonstratedBy`,
@@ -303,7 +304,8 @@ in `manifest.build` and are not part of the digest (KNOW-014, KNOW-018, KNOW-024
 Consumers query a compiled bundle through `openCatalog` in
 `@stevegreco/design-system-knowledge/retrieve`. `search`, `get`, `list`, and `related` read
 `records.json`, `search-index.json`, and `manifest.json`. They do not change these authored field
-names.
+names. The search index tokenizes `title`, `summary`, `tags`, `body`, and type-specific facts from
+`contract`, `host`, and `checks`. It does not index `id`, `type`, or `jobs`.
 
 ## Source ownership
 

@@ -17,8 +17,6 @@ relations:
   reviews:
     - component.button
     - pattern.action-hierarchy
-  related:
-    - guideline.button-implementation
 sources:
   - kind: authored
     path: packages/knowledge/content/guidelines/button-review.md
