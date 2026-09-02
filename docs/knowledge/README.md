@@ -24,6 +24,12 @@ adapters are not implemented (KNOW-028).
 3. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md) records knowledge ownership of
    portable contracts. [ADR 0001](../adr/0001-portable-design-system-knowledge.md) is superseded.
 
+## Open proposals
+
+- [RFC 0001: Component contract record shape](../rfcs/0001-component-contract-record-shape.md)
+  reviews whether portable contracts should remain separate spec records or move onto component
+  records. ADR 0002 remains authoritative while the RFC is proposed.
+
 Existing domain decisions remain authoritative:
 
 - [Theming policy](../../packages/tokens/docs/adr/0002-theming-policy.md)
