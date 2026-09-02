@@ -69,6 +69,130 @@ test("CORPUS_DUPLICATE_ID keeps the first record and names both paths", async ()
   assert.equal(corpus.records.get("component.dup").title, "First");
 });
 
+test("CORPUS_DUPLICATE_ASSET_ID keeps the first bytes and names both records", async () => {
+  const first = "content/one.md";
+  const second = "content/two.md";
+  const otherSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10"/></svg>\n`;
+  const reader = createMemoryReader({
+    [first]: authored(first, {
+      id: "example.one",
+      type: "example",
+      assets: [
+        {
+          id: "ds.shared-asset",
+          path: "content/one.svg",
+          mediaType: "image/svg+xml",
+          width: 10,
+          height: 10,
+          alt: "First.",
+        },
+      ],
+      annotations: [{ id: "note", label: "Note", description: "First image." }],
+    }),
+    [second]: authored(second, {
+      id: "example.two",
+      type: "example",
+      assets: [
+        {
+          id: "ds.shared-asset",
+          path: "content/two.svg",
+          mediaType: "image/svg+xml",
+          width: 10,
+          height: 10,
+          alt: "Second.",
+        },
+      ],
+      annotations: [{ id: "note", label: "Note", description: "Second image." }],
+    }),
+    "content/one.svg": tinySvg,
+    "content/two.svg": otherSvg,
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.CORPUS_DUPLICATE_ASSET_ID);
+
+  assert.equal(problems.length, 1);
+  assert.match(problems[0].message, /example\.one/);
+  assert.match(problems[0].message, /example\.two/);
+  assert.equal(problems[0].recordId, "example.two");
+
+  const shared = "assets/ds.shared-asset.svg";
+  assert.equal(corpus.assetBytes.size, 1);
+  assert.deepEqual(corpus.assetBytes.get(shared), new TextEncoder().encode(tinySvg));
+  assert.equal(corpus.records.get("example.one").assets[0].bundlePath, shared);
+  assert.equal(corpus.records.get("example.two").assets, undefined);
+});
+
+test("CORPUS_ROOT_UNREADABLE fires when listRecords fails", async () => {
+  const reader = {
+    async listRecords() {
+      const error = new Error("missing");
+      error.code = "ENOENT";
+      error.path = "content";
+      throw error;
+    },
+    async readText() {
+      return null;
+    },
+    async readBytes() {
+      return null;
+    },
+  };
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.CORPUS_ROOT_UNREADABLE);
+
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].path, "content");
+  assert.match(problems[0].message, /ENOENT/);
+  assert.equal(corpus.records.size, 0);
+});
+
+test("RECORD_UNREADABLE fires when a listed record cannot be read", async () => {
+  const reader = {
+    async listRecords() {
+      return ["content/gone.md"];
+    },
+    async readText() {
+      return null;
+    },
+    async readBytes() {
+      return null;
+    },
+  };
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.RECORD_UNREADABLE);
+
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].path, "content/gone.md");
+  assert.match(problems[0].message, /ENOENT/);
+  assert.equal(corpus.records.size, 0);
+});
+
+test("RECORD_UNREADABLE preserves a thrown filesystem code", async () => {
+  const reader = {
+    async listRecords() {
+      return ["content/denied.md"];
+    },
+    async readText() {
+      const error = new Error("denied");
+      error.code = "EACCES";
+      throw error;
+    },
+    async readBytes() {
+      return null;
+    },
+  };
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.RECORD_UNREADABLE);
+
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].path, "content/denied.md");
+  assert.match(problems[0].message, /EACCES/);
+});
+
 test("CORPUS_UNRESOLVED_RELATION fires for a missing target", async () => {
   const path = "content/orphan.md";
   const reader = createMemoryReader({

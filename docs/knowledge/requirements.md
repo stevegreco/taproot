@@ -58,7 +58,8 @@ publish the same facts without maintaining a second agent-only copy.
 ### Retrieval and portability
 
 - **KNOW-013:** A build must compile all configured sources into a self-contained knowledge bundle
-  that does not require access to the source repository.
+  that does not require access to the source repository. A missing or unreadable configured source
+  must fail the build. An existing empty source root is valid.
 - **KNOW-014:** The build must emit plain Markdown, JSON, JSONL, a manifest, a text-search index, and
   referenced visual assets.
 - **KNOW-015:** Consumers must be able to search records, get a record by stable ID, list records
@@ -81,8 +82,9 @@ publish the same facts without maintaining a second agent-only copy.
 
 ### Quality and maintenance
 
-- **KNOW-023:** The build must fail for invalid records, duplicate IDs, unresolved relationships,
-  missing assets, incompatible schema versions, or incomplete required metadata.
+- **KNOW-023:** The build must fail for invalid records, duplicate IDs, duplicate asset IDs,
+  unresolved relationships, missing assets, unreadable configured content, incompatible schema
+  versions, or incomplete required metadata.
 - **KNOW-024:** Generated records must be reproducible from their declared sources.
 - **KNOW-025:** Tests must verify schema validation, visibility isolation, relationship integrity,
   deterministic output, and the retrieval interface.

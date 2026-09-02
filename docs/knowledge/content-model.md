@@ -232,7 +232,7 @@ must not silently treat generated output as authored truth.
 
 An example asset has:
 
-- a stable asset ID;
+- a stable asset ID that is unique across the corpus;
 - repository-relative source path;
 - media type and dimensions;
 - alternative text;
@@ -260,8 +260,14 @@ The compiler rejects:
 - public records that reference internal records;
 - public records that reference internal-only assets;
 - paths that leave a record's allowed roots;
-- an internal root that declares a public record; and
+- an internal root that declares a public record;
+- a missing or unreadable configured authored root;
+- a listed record that cannot be read;
+- two records that declare the same asset ID; and
 - public output containing undeclared files.
+
+An existing empty authored root is valid. The compiler does not treat a missing or unreadable
+root as an empty corpus (KNOW-013, KNOW-023).
 
 Marking a committed file as internal does not make the source private. Access controls must protect
 the source location itself. The published package includes `dist/public` and `src`. It does not

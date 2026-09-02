@@ -43,10 +43,44 @@ export async function buildCorpus(reader, roots, options = {}) {
   const listedPathById = new Map();
 
   for (const root of roots) {
-    const listed = await reader.listRecords(root);
+    let listed;
+    try {
+      listed = await reader.listRecords(root);
+    } catch (error) {
+      problems.push(
+        problem({
+          code: PROBLEM.CORPUS_ROOT_UNREADABLE,
+          message: `cannot read content root ${root.root}: ${ioCode(error)}`,
+          path: ioPath(error, root.root),
+        }),
+      );
+      continue;
+    }
+
     for (const repoPath of listed) {
-      const text = await reader.readText(repoPath);
-      if (text == null) continue;
+      let text;
+      try {
+        text = await reader.readText(repoPath);
+      } catch (error) {
+        problems.push(
+          problem({
+            code: PROBLEM.RECORD_UNREADABLE,
+            message: `cannot read record ${repoPath}: ${ioCode(error)}`,
+            path: repoPath,
+          }),
+        );
+        continue;
+      }
+      if (text == null) {
+        problems.push(
+          problem({
+            code: PROBLEM.RECORD_UNREADABLE,
+            message: `cannot read record ${repoPath}: ENOENT`,
+            path: repoPath,
+          }),
+        );
+        continue;
+      }
 
       let authored;
       try {
@@ -114,6 +148,7 @@ export async function buildCorpus(reader, roots, options = {}) {
   const assetBytes = new Map();
   const assetPathToBundlePath = new Map();
   const assetOwner = new Map();
+  const assetIdOwner = new Map();
   const recordIdByPath = new Map();
 
   for (const [id, { authored, repoPath, text }] of pending) {
@@ -131,6 +166,20 @@ export async function buildCorpus(reader, roots, options = {}) {
 
     const assets = [];
     for (const asset of authored.assets ?? []) {
+      const owner = assetIdOwner.get(asset.id);
+      if (owner) {
+        problems.push(
+          problem({
+            code: PROBLEM.CORPUS_DUPLICATE_ASSET_ID,
+            message: `duplicate asset id ${asset.id} in ${owner.recordId} and ${id}`,
+            recordId: id,
+            path: asset.path,
+          }),
+        );
+        continue;
+      }
+      assetIdOwner.set(asset.id, { recordId: id, path: asset.path });
+
       const constraint = await constrainPath(asset.path, prefixes, workspaceRoot);
       if (!constraint.ok) {
         problems.push(
@@ -825,4 +874,18 @@ function compareEdges(left, right) {
     left.relation.localeCompare(right.relation) ||
     left.to.localeCompare(right.to)
   );
+}
+
+function ioCode(error) {
+  if (error && typeof error === "object" && typeof error.code === "string") {
+    return error.code;
+  }
+  return error instanceof Error ? error.message : "unknown";
+}
+
+function ioPath(error, fallback) {
+  if (error && typeof error === "object" && typeof error.path === "string") {
+    return error.path;
+  }
+  return fallback;
 }
