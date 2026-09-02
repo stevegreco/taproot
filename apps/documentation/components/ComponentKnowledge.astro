@@ -1,0 +1,239 @@
+---
+import { loadComponentSlice, type ComponentKnowledgeSection } from "../lib/component-knowledge";
+import "./component-knowledge.css";
+
+interface Props {
+  component: string;
+  section?: ComponentKnowledgeSection;
+}
+
+const { component, section } = Astro.props;
+const slice = loadComponentSlice(component);
+
+const titleCase = (value: string) =>
+  value.replace(/^./, (character) => character.toUpperCase());
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+const inlineMarkdown = (value: string) =>
+  escapeHtml(value)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+const markdownToHtml = (markdown: string) => {
+  const blocks = markdown.trim().split(/\n{2,}/);
+  return blocks
+    .map((block) => {
+      const heading = block.match(/^(#{2,3})\s+(.+)$/);
+      if (heading) {
+        return `<h3>${inlineMarkdown(heading[2])}</h3>`;
+      }
+      const listItems = block.match(/^[-*]\s+/m) ? block.split("\n") : null;
+      if (listItems && listItems.every((line) => /^[-*]\s+/.test(line) || line.trim() === "")) {
+        const items = listItems
+          .filter((line) => line.trim().length > 0)
+          .map((line) => `<li>${inlineMarkdown(line.replace(/^[-*]\s+/, ""))}</li>`)
+          .join("");
+        return `<ul>${items}</ul>`;
+      }
+      if (block.startsWith("```")) {
+        const fenced = block.replace(/^```[a-z]*\n?/, "").replace(/```$/, "");
+        return `<pre><code>${escapeHtml(fenced.trim())}</code></pre>`;
+      }
+      return `<p>${inlineMarkdown(block.replaceAll("\n", " "))}</p>`;
+    })
+    .join("");
+};
+
+const show = (name: ComponentKnowledgeSection) => section == null || section === name;
+---
+
+{
+  show("intro") && slice.introMarkdown ? (
+    <div class="component-knowledge component-knowledge--prose" set:html={markdownToHtml(slice.introMarkdown)} />
+  ) : null
+}
+
+{
+  show("behavior") && slice.behaviorMarkdown ? (
+    <div class="component-knowledge component-knowledge--prose" set:html={markdownToHtml(slice.behaviorMarkdown)} />
+  ) : null
+}
+
+{
+  show("variants") ? (
+    <div class="component-knowledge component-knowledge__variants">
+      {
+        slice.variants.map((variant) => (
+          <article class="component-knowledge__variant">
+            <div class="component-knowledge__specimen">
+              <ds-button variant={variant.name}>{variant.exampleLabel}</ds-button>
+            </div>
+            <div class="component-knowledge__variant-copy">
+              <div class="component-knowledge__variant-heading">
+                <h3>{titleCase(variant.name)}</h3>
+                {variant.isDefault ? <span class="component-knowledge__default">Default</span> : null}
+              </div>
+              <p>{variant.description}</p>
+              {variant.guidance ? (
+                <div class="component-knowledge__guidance" set:html={markdownToHtml(variant.guidance)} />
+              ) : null}
+              <code>{variant.exampleHtml}</code>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  ) : null
+}
+
+{
+  show("together") && slice.together ? (
+    <div class="component-knowledge component-knowledge--together">
+      <p>{slice.together.summary}</p>
+      {
+        slice.together.example ? (
+          <figure class="component-knowledge__figure">
+            <img
+              src={slice.together.example.src}
+              alt={slice.together.example.alt}
+              width={slice.together.example.width}
+              height={slice.together.example.height}
+            />
+            <figcaption>{slice.together.example.summary}</figcaption>
+          </figure>
+        ) : null
+      }
+      {
+        slice.together.example && slice.together.example.annotations.length > 0 ? (
+          <ul>
+            {slice.together.example.annotations.map((annotation) => (
+              <li>
+                <strong>{annotation.label}.</strong> {annotation.description}
+              </li>
+            ))}
+          </ul>
+        ) : null
+      }
+      {
+        slice.together.avoid.length > 0 ? (
+          <>
+            <h3>Avoid</h3>
+            <ul>
+              {slice.together.avoid.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </>
+        ) : null
+      }
+    </div>
+  ) : null
+}
+
+{
+  show("api") ? (
+    <div class="component-knowledge">
+      <table class="component-knowledge__table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            slice.api.map((row) => (
+              <tr>
+                <td>
+                  <code>{row.name}</code>
+                  {row.kind !== "attribute" ? <span class="component-knowledge__kind">{row.kind}</span> : null}
+                </td>
+                <td><code>{row.typeDisplay}</code></td>
+                <td>{row.defaultDisplay ? <code>{row.defaultDisplay}</code> : ""}</td>
+                <td>
+                  {
+                    row.values.length > 0 ? (
+                      <ul class="component-knowledge__values">
+                        {row.values.map((value) => (
+                          <li>
+                            <code>{value.name}</code> {value.description}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      row.description
+                    )
+                  }
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  ) : null
+}
+
+{
+  show("accessibility") ? (
+    <div class="component-knowledge component-knowledge--prose">
+      {
+        slice.accessibility.requirements.length > 0 ? (
+          <ul>
+            {slice.accessibility.requirements.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        ) : null
+      }
+      {
+        slice.accessibility.keyboard.length > 0 ? (
+          <table class="component-knowledge__table">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {slice.accessibility.keyboard.map((binding) => (
+                <tr>
+                  <td><code>{binding.key}</code></td>
+                  <td>{binding.action}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : null
+      }
+    </div>
+  ) : null
+}
+
+{
+  show("review") && slice.review ? (
+    <details id="review-checklist" class="component-knowledge component-knowledge__review">
+      <summary>{slice.review.title}</summary>
+      <ul>
+        {slice.review.checks.map((check) => (
+          <li>{check.requirement}</li>
+        ))}
+      </ul>
+    </details>
+  ) : null
+}
+
+{show("variants") ? (
+  <script>
+    import { defineButton } from "@stevegreco/design-system-components/button";
+    defineButton();
+  </script>
+) : null}

@@ -6,7 +6,7 @@
     "dev": "blume dev",
     "build": "blume build",
     "preview": "blume preview",
-    "test": "jiti test/semantic-reference.test.ts"
+    "test": "jiti test/semantic-reference.test.ts && jiti test/component-knowledge.test.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.3",
@@ -14,6 +14,7 @@
     "@shikijs/twoslash": "^4.3.1",
     "@stevegreco/design-system": "workspace:*",
     "@stevegreco/design-system-components": "workspace:*",
+    "@stevegreco/design-system-knowledge": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.1.3",
     "blume": "^1.5.1",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "jiti": "^2.7.0",
     "typescript": "^6.0.3"
   },
   "engines": {

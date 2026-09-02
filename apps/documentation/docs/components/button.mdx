@@ -1,12 +1,11 @@
 ---
 title: Button
-description: A token-driven web component for triggering actions and submitting forms.
+description: Use Button to trigger an action or to submit or reset a form.
 ---
 
 <Badge variant="accent">Web component</Badge>
 
-Buttons let people initiate an action. Use a clear, concise label that
-describes what happens when the button is selected.
+<ComponentKnowledge component="button" section="intro" />
 
 ## Preview
 
@@ -34,79 +33,22 @@ defineButton();`}
 
 <CodeBlock lang="html" code={`<ds-button variant="primary">Save changes</ds-button>`} />
 
+<ComponentKnowledge component="button" section="behavior" />
+
 ## Variants
 
-<Tabs>
-  <Tab title="Primary">
-    Use for the most important action in a view. Prefer one primary button per
-    action group.
+<ComponentKnowledge component="button" section="variants" />
 
-    <CodeBlock
-      lang="html"
-      code={'<ds-button variant="primary">Save changes</ds-button>'}
-    />
+## Using together
 
-  </Tab>
-  <Tab title="Secondary">
-    Use for supporting actions that should remain visible without competing
-    with the primary action.
+<ComponentKnowledge component="button" section="together" />
 
-    <CodeBlock
-      lang="html"
-      code={'<ds-button variant="secondary">Cancel</ds-button>'}
-    />
+## Attributes
 
-  </Tab>
-  <Tab title="Danger">
-    Reserve for destructive or difficult-to-reverse actions.
-
-    <CodeBlock
-      lang="html"
-      code={'<ds-button variant="danger">Delete project</ds-button>'}
-    />
-
-  </Tab>
-</Tabs>
-
-## Attributes and properties
-
-<TypeTable
-  type={{
-    variant: {
-      type: '"primary" | "secondary" | "ghost" | "danger"',
-      default: '"primary"',
-      description: "Controls the visual emphasis of the button.",
-    },
-    size: {
-      type: '"sm" | "md"',
-      default: '"md"',
-      description: "Controls the button padding.",
-    },
-    disabled: {
-      type: "boolean",
-      default: "false",
-      description: "Prevents pointer and keyboard interaction.",
-    },
-    type: {
-      type: '"button" | "submit" | "reset"',
-      default: '"button"',
-      description: "Controls form behavior.",
-    },
-    "full-width": {
-      type: "boolean",
-      default: "false",
-      description: "Fills the available inline size.",
-    },
-  }}
-/>
+<ComponentKnowledge component="button" section="api" />
 
 ## Accessibility
 
-- Use text that describes the action rather than a generic label such as
-  “Click here.”
-- Keep keyboard focus visible.
-- Use `disabled` only when the action is unavailable and explain why nearby.
-- Add an accessible name when an icon is the only visible content.
+<ComponentKnowledge component="button" section="accessibility" />
 
-The component emits the native `click` event. Its `form` property exposes its
-associated form, including association across its shadow boundary.
+<ComponentKnowledge component="button" section="review" />

@@ -10,9 +10,10 @@ bundles. `pnpm --filter @stevegreco/design-system-knowledge build` writes `dist/
 `dist/internal`. The published package includes `dist/public` and `src` only.
 
 `openCatalog` from `@stevegreco/design-system-knowledge/retrieve` answers `search`, `get`, `list`,
-and `related` against one compiled bundle (KNOW-015). Tests cover schema validation, visibility
-isolation, relationship integrity, deterministic compiler output, and the retrieval interface
-(KNOW-025). MCP adapters are not implemented (KNOW-028).
+and `related` against one compiled bundle (KNOW-015). The documentation site consumes the Button
+slice through that interface (KNOW-004). Tests cover schema validation, visibility isolation,
+relationship integrity, deterministic compiler output, and the retrieval interface (KNOW-025). MCP
+adapters are not implemented (KNOW-028).
 
 ## Reading order
 
