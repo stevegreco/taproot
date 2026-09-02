@@ -1,0 +1,135 @@
+.component-knowledge {
+  margin-block: 0.75rem 1.5rem;
+}
+
+.component-knowledge--prose p,
+.component-knowledge--together p {
+  margin: 0 0 0.85rem;
+}
+
+.component-knowledge ul {
+  margin: 0 0 1rem;
+  padding-inline-start: 1.2rem;
+}
+
+.component-knowledge li + li {
+  margin-block-start: 0.35rem;
+}
+
+.component-knowledge h3 {
+  margin: 1.25rem 0 0.5rem;
+}
+
+.component-knowledge__variants {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.component-knowledge__variant {
+  display: grid;
+  grid-template-columns: minmax(9rem, 12rem) minmax(0, 1fr);
+  gap: 1rem 1.25rem;
+  align-items: start;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  background: var(--semantic-color-background-surface);
+}
+
+.component-knowledge__specimen {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+.component-knowledge__variant-heading {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 0 0 0.35rem;
+}
+
+.component-knowledge__variant-copy h3 {
+  margin: 0;
+}
+
+.component-knowledge__default {
+  color: var(--semantic-color-foreground-muted);
+  font-family: var(--semantic-typography-label-small-font-family);
+  font-size: var(--semantic-typography-label-small-font-size);
+  font-weight: var(--semantic-typography-label-small-font-weight);
+}
+
+.component-knowledge__variant-copy p {
+  margin: 0 0 0.5rem;
+}
+
+.component-knowledge__guidance,
+.component-knowledge__guidance p {
+  margin: 0 0 0.5rem;
+  color: var(--semantic-color-foreground-muted);
+}
+
+.component-knowledge__variant-copy code {
+  display: block;
+  font-size: var(--semantic-typography-code-small-font-size);
+  overflow-wrap: anywhere;
+}
+
+.component-knowledge__figure {
+  margin: 0 0 1rem;
+}
+
+.component-knowledge__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+}
+
+.component-knowledge__figure figcaption {
+  margin-block-start: 0.5rem;
+  color: var(--semantic-color-foreground-muted);
+  font-size: var(--semantic-typography-body-small-font-size);
+}
+
+.component-knowledge__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.component-knowledge__table th,
+.component-knowledge__table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--semantic-color-border-subtle);
+  text-align: start;
+  vertical-align: top;
+}
+
+.component-knowledge__kind {
+  display: block;
+  margin-block-start: 0.2rem;
+  color: var(--semantic-color-foreground-muted);
+  font-size: var(--semantic-typography-label-small-font-size);
+}
+
+.component-knowledge__values {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+
+.component-knowledge__review summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.component-knowledge__review ul {
+  margin-block-start: 0.75rem;
+}
+
+@media (max-width: 40rem) {
+  .component-knowledge__variant {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
