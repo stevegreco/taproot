@@ -7,7 +7,7 @@ import { createFsReader, repoRoot } from "./helpers/workspace.js";
 
 test("baseline Button contract projects onto portable spec and web-component binding", async () => {
   const baseline = JSON.parse(
-    await readFile(join(repoRoot, ".audit/baseline-button-contract.json"), "utf8"),
+    await readFile(join(repoRoot, "packages/knowledge/test/fixtures/baseline-button-contract.json"), "utf8"),
   );
   const corpus = await buildCorpus(
     createFsReader(repoRoot),
