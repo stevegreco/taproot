@@ -13,8 +13,9 @@ consumer can retrieve a focused answer and follow its relationships when it need
 
 A compiled record can combine an authored Markdown record with structured domain sources. For
 example, `component.button` gets its narrative guidance from the knowledge package and its API,
-states, behavior, and accessibility contract from `button.spec.yaml`. The compiler records both
-inputs and validates that they agree where their concerns overlap.
+states, behavior, and accessibility contract from `button.spec.yaml`. The compiler copies authored
+fields verbatim and composes each source kind into a reserved namespace. It does not flat-merge
+source fields into `title`, `summary`, or `status` (KNOW-002, KNOW-008).
 
 ## Record types
 
@@ -87,9 +88,14 @@ The package exports `parseRecord(markdown, { sourcePath })`. It parses YAML fron
 trimmed Markdown body, validates the complete authored record, and returns one flat object. Invalid
 input throws a path-aware `KnowledgeRecordError`.
 
+The compiled-record schema is derived in memory from this authored schema at compile time. The
+compiler clones the authored document, sets a new `$id`, and merges compiled-only fields. It does
+not `$ref` the authored schema from a sibling file, because `unevaluatedProperties: false` would
+reject those extra fields (KNOW-007, KNOW-023).
+
 Authored records must include an `authored` source. They cannot declare the compiler-only
 `generated` source kind. Unknown fields fail validation rather than passing through to compiled
-output.
+output. The authored schema stays `unevaluatedProperties: false`.
 
 ## Proposed authored format
 
@@ -122,21 +128,41 @@ sources:
 Pattern guidance goes here.
 ```
 
-This is a proposed shape, not the final executable schema. Implementation may adjust field names
-when validation and retrieval tests expose a better interface.
+The executable authored schema matches this shape. Retrieval may still change how consumers query
+compiled records. It must not change these authored field names.
 
 ## Composed records
 
-The Markdown record owns agent-facing narrative, discovery metadata, and relationships. Entries in
-`sources` can instruct the compiler to augment that record:
+The Markdown record owns agent-facing narrative, discovery metadata, and relationships. Authored
+fields are never overwritten by a domain source. Entries in `sources` compose into disjoint
+namespaces:
 
-- a `component-spec` source contributes the component API, anatomy, states, behavior,
-  accessibility contract, and token contract;
-- a `token-source` contributes token paths and aliases used by the record; and
-- an `adr` contributes decision provenance and can later generate a separate decision record.
+- `component-spec` fills `contract` with the component API, anatomy, states, behavior,
+  accessibility, and local spec rationale;
+- `token-source` fills `tokens.entries` with flattened DTCG leaves from the declared source path,
+  never from `packages/tokens/dist/`;
+- the spec `tokens` block fills `tokens.tier`, `tokens.namespace`, and `tokens.description`;
+- `adr` fills `decisions[]` with title, status, path, and revision.
 
-The compiler must define merge behavior for each source kind. It must reject conflicting values
-instead of choosing one silently. Generated fields do not need to be repeated in Markdown.
+The compiler does not generate `type: decision` records in this slice. KNOW-005 is satisfied by
+enriched `sources[]` plus `decisions[]`. KNOW-024 constrains generated records rather than requiring
+them.
+
+Conflict is a closed list of cross-source assertions, not a general field-equality merge. The spec
+token namespace must exist in the token file. When `tokens.tier` is `component`, every spec
+`variant` value must have at least one token entry, and a token group that names no spec variant is
+a conflict. Spec size values and token `size.*` keys must appear in the frozen `sm`/`small` and
+`md`/`medium` bridge. Unknown keys fail the build. A mapped size with no token leaves is allowed,
+as is a sparse variant such as `ghost` with no rest background.
+
+These are not conflicts, because they are different facts with different owners:
+
+- record `summary` versus spec `description`
+- record `title` versus spec `name`
+- record `status` versus ADR status
+
+The compiler rejects a missing source, an unreadable source, or one of those three assertions
+(`source/conflict`) instead of choosing a value silently (KNOW-023).
 
 ## Relationships
 
@@ -150,9 +176,13 @@ Relationship names express why records connect. The initial vocabulary is:
 - `supersedes` links a record to older guidance it replaces.
 - `related` records a meaningful connection with no more precise relation.
 
-The compiler validates targets and adds named reverse relationships to compiled output. For
-example, the reverse of `demonstrates` is `demonstratedBy`, and the reverse of `reviews` is
-`reviewedBy`. Authors should not maintain both directions manually.
+The compiler validates targets and adds named reverse relationships to compiled output. Reverse
+names come from a frozen table. `uses` becomes `usedBy`, `demonstrates` becomes `demonstratedBy`,
+`reviews` becomes `reviewedBy`, and the rest follow the same pattern. `related` is symmetric.
+
+Backlinks are computed per visibility projection, not on the corpus. An internal record that `uses`
+`component.button` must not appear in the public bundle as `component.button.backlinks.usedBy`
+(KNOW-020, KNOW-021). Authors should not maintain reverse relationships manually.
 
 ## Provenance
 
@@ -184,21 +214,24 @@ annotation travel together in every bundle that includes the example.
 
 ## Visibility
 
+Authored roots are `{ root, visibility }`. A record's declared visibility must match its root.
 Public sources compile into the public bundle. An internal build can add records from a separately
 configured private input and includes both public and internal records.
 
 The compiler rejects:
 
 - public records that reference internal records;
-- public records that reference internal-only assets; and
+- public records that reference internal-only assets;
+- an internal root that declares a public record; and
 - public output containing undeclared files.
 
 Marking a committed file as internal does not make the source private. Access controls must protect
-the source location itself.
+the source location itself. The published package includes `dist/public` and `src`. It does not
+include `dist/internal` (KNOW-017, KNOW-021).
 
 ## Compiled layout
 
-The proposed output is:
+The output is:
 
 ```text
 dist/
@@ -207,14 +240,21 @@ dist/
 │   ├── records.json
 │   ├── records.jsonl
 │   ├── search-index.json
+│   ├── schema/
+│   │   ├── knowledge-record.json
+│   │   └── compiled-knowledge-record.json
 │   ├── markdown/
 │   └── assets/
 └── internal/
     └── ...
 ```
 
-The manifest records the schema version, knowledge version, design system version or source
-revision, build time, record counts, and content hashes.
+`schema/compiled-knowledge-record.json` is the derived compiled schema. `markdown/<id>.md` carries
+reduced frontmatter plus the rewritten body. It is not a round-trip format for `parseRecord`.
+
+The manifest `content` block records the schema version, knowledge version, design system version,
+record count, and per-file hashes. The digest hashes that block. Build time and git revision live
+in `manifest.build` and are not part of the digest (KNOW-014, KNOW-018, KNOW-024).
 
 ## Source ownership
 
