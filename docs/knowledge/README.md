@@ -73,7 +73,7 @@ flowchart TB
 
   subgraph dist["dist/public/  (same record, different views)"]
     JSON["records.json / records.jsonl<br/>full object"]
-    MD["markdown/component.button.md<br/>short frontmatter + rewritten body"]
+    MD["markdown/component.button.md<br/>narrative projection"]
     IDX["search-index.json<br/>words from title, summary, tags, body,<br/>contract, host, checks"]
     MAN["manifest.json<br/>path + hash only"]
   end
@@ -92,6 +92,10 @@ flowchart TB
   R --> IDX
   R --> MAN
 ```
+
+The compiled Markdown file is the narrative projection of that record. It is not a second copy of
+the record. `openCatalog().get(id)` owns structured fields including `contract`, `host`, and
+`checks`.
 
 The other Markdown files are siblings, not outputs of `button.md`. They attach through relation
 IDs. After the corpus exists, Button gains `backlinks.usedBy`, `backlinks.guidedBy`, and

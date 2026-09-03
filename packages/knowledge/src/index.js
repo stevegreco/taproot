@@ -1,4 +1,5 @@
 import grayMatter from "gray-matter";
+import { isNarrativeFrontmatterKeys } from "./compile/tables.js";
 import { findSchemaIssues } from "./schema/validator.js";
 
 const parseMatter = grayMatter.default ?? grayMatter;
@@ -91,6 +92,16 @@ export function parseRecord(markdown, options) {
         path: "/body",
         keyword: "frontmatter",
         message: "body is owned by the Markdown document, not frontmatter",
+      },
+    ]);
+  }
+
+  if (isNarrativeFrontmatterKeys(Object.keys(data))) {
+    throw new KnowledgeRecordError(options.sourcePath, [
+      {
+        path: "",
+        keyword: "frontmatter",
+        message: "compiled Markdown is a narrative projection, not authored input for parseRecord",
       },
     ]);
   }
