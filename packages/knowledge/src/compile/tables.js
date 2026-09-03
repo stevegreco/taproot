@@ -86,7 +86,7 @@ export const RECORD_ONLY_FIELDS = Object.freeze(
     .sort(),
 );
 
-const FIELD_NAME = String.raw`\b(?:contract|host|checks)\b`;
+const FIELD_NAME = String.raw`(?<![A-Za-z0-9_-])(?:contract|host|checks)(?![A-Za-z0-9_-])`;
 const MARKDOWN_PATH = String.raw`markdown\/[a-z0-9][a-z0-9.-]*\.md`;
 const SPEC_ID = String.raw`\bspec\.[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*\b`;
 const NEAR = String.raw`[\s\S]{0,80}`;
@@ -105,7 +105,7 @@ const MARKDOWN_FIELD_CLAIM_RULES = Object.freeze([
   }),
   Object.freeze({
     id: "spec-id-contract-home",
-    source: SPEC_ID,
+    source: `${SPEC_ID}${NEAR}${FIELD_NAME}|${FIELD_NAME}${NEAR}${SPEC_ID}`,
     flags: "gi",
   }),
 ]);

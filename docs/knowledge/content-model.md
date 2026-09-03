@@ -96,7 +96,9 @@ Schema version `1` fixes the current field vocabulary and dotted ID format.
 
 The package exports `parseRecord(markdown, { sourcePath })`. It parses YAML frontmatter, adds the
 trimmed Markdown body, validates the complete authored record, and returns one flat object. Invalid
-input throws a path-aware `KnowledgeRecordError`.
+input throws a path-aware `KnowledgeRecordError`. A `sourcePath` under `markdown/<id>.md` is a
+compiled narrative projection, not authored input. Identity-only frontmatter on an authored path
+still parses; `parseRecord` fills `schemaVersion`, `relations`, and `sources`.
 
 The compiled-record schema is derived in memory from this authored schema at compile time. The
 compiler clones the authored document, sets a new `$id`, and merges compiled-only fields. It does

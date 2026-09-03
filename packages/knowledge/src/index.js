@@ -1,8 +1,8 @@
 import grayMatter from "gray-matter";
-import { isNarrativeFrontmatterKeys } from "./compile/tables.js";
 import { findSchemaIssues } from "./schema/validator.js";
 
 const parseMatter = grayMatter.default ?? grayMatter;
+const COMPILED_MARKDOWN_SOURCE = /(?:^|\/)markdown\/[a-z0-9][a-z0-9.-]*\.md$/i;
 
 export class KnowledgeRecordError extends Error {
   constructor(sourcePath, issues) {
@@ -96,7 +96,7 @@ export function parseRecord(markdown, options) {
     ]);
   }
 
-  if (isNarrativeFrontmatterKeys(Object.keys(data))) {
+  if (COMPILED_MARKDOWN_SOURCE.test(options.sourcePath)) {
     throw new KnowledgeRecordError(options.sourcePath, [
       {
         path: "",

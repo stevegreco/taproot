@@ -55,6 +55,21 @@ test("findMarkdownFieldClaims flags a markdown path as a field owner and ignores
     findMarkdownFieldClaims("The contract requires a visible label"),
     [],
   );
+  assert.deepEqual(
+    findMarkdownFieldClaims(
+      "See markdown/binding.button.web-component.md. Button stays host-neutral.",
+    ),
+    [],
+  );
+  assert.deepEqual(
+    findMarkdownFieldClaims("ADR 0003 deleted spec.button. Use get(\"component.button\")."),
+    [],
+  );
+  const specClaim = findMarkdownFieldClaims("see spec.button for the contract");
+  assert.equal(
+    specClaim.some((claim) => claim.pattern === "spec-id-contract-home"),
+    true,
+  );
 });
 
 test("parseRecord on compiled Button Markdown throws", async () => {
@@ -69,6 +84,13 @@ test("parseRecord on compiled Button Markdown throws", async () => {
       return true;
     },
   );
+
+  const authoredPath = "packages/knowledge/content/components/button.md";
+  const parsed = parseRecord(markdown, { sourcePath: authoredPath });
+  assert.equal(parsed.id, "component.button");
+  assert.equal(parsed.visibility, "public");
+  assert.equal(Object.hasOwn(parsed, "contract"), false);
+  assert.deepEqual(parsed.sources, [{ kind: "authored", path: authoredPath }]);
 });
 
 async function publicBundle() {

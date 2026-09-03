@@ -158,6 +158,34 @@ Use this component to trigger a test action.
   assert.equal(Object.hasOwn(record, "visibility"), false);
 });
 
+test("parseRecord fills defaults when visibility is authored and sources are omitted", () => {
+  const markdown = `---
+id: component.test-button
+type: component
+title: Test button
+summary: Triggers a test action.
+status: draft
+visibility: public
+jobs:
+  - implement
+tags:
+  - button
+---
+
+Use this component to trigger a test action.
+`;
+  const record = parseRecord(markdown, {
+    sourcePath: "packages/knowledge/content/components/test-button.md",
+  });
+
+  assert.equal(record.schemaVersion, 1);
+  assert.equal(record.visibility, "public");
+  assert.deepEqual(record.relations, {});
+  assert.deepEqual(record.sources, [
+    { kind: "authored", path: "packages/knowledge/content/components/test-button.md" },
+  ]);
+});
+
 test("parseRecord still requires jobs", () => {
   const markdown = validComponent.replace("\njobs:\n  - implement\n", "\n");
   assertIssuePath(markdown, "test-button.md", "/jobs");

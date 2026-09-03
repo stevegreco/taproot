@@ -23,7 +23,7 @@ const meta = {
   revision: "test",
 };
 
-test("projectBundle emits sorted records, hashed files, and reduced markdown frontmatter", async () => {
+test("projectBundle emits sorted records, hashed files, and narrative projection frontmatter", async () => {
   const corpus = await buildCorpus(
     createFsReader(repoRoot),
     [{ root: join(repoRoot, "packages/knowledge/content"), visibility: "public" }],

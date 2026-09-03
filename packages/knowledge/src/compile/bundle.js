@@ -5,13 +5,7 @@ import authoredSchema from "../schema/index.js";
 import { deriveCompiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
 import { sha256Hex } from "./corpus.js";
 import { buildSearchIndex } from "./search-index.js";
-import {
-  NARRATIVE_FRONTMATTER_KEYS,
-  PROBLEM,
-  REVERSE_RELATION,
-  isNarrativeFrontmatterKeys,
-  problem,
-} from "./tables.js";
+import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
 
 export function projectBundle(corpus, visibility, meta) {
   const includedIds = [...corpus.records.keys()].filter((id) => {
@@ -199,9 +193,6 @@ function projectNarrativeFrontmatter(record) {
 
 function emitMarkdown(record) {
   const frontmatter = projectNarrativeFrontmatter(record);
-  if (!isNarrativeFrontmatterKeys(Object.keys(frontmatter))) {
-    throw new Error(`${record.id}: compiled Markdown frontmatter is not the narrative projection`);
-  }
   return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${record.body}\n`;
 }
 
