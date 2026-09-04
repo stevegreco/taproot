@@ -72,7 +72,11 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
         slice.variants.map((variant) => (
           <article class="component-knowledge__variant">
             <div class="component-knowledge__specimen">
-              <ds-button variant={variant.name}>{variant.exampleLabel}</ds-button>
+              {slice.tagName === "ds-badge" ? (
+                <ds-badge variant={variant.name}>{variant.exampleLabel}</ds-badge>
+              ) : (
+                <ds-button variant={variant.name}>{variant.exampleLabel}</ds-button>
+              )}
             </div>
             <div class="component-knowledge__variant-copy">
               <div class="component-knowledge__variant-heading">
@@ -231,9 +235,16 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
   ) : null
 }
 
-{show("variants") ? (
+{show("variants") && slice.tagName === "ds-button" ? (
   <script>
     import { defineButton } from "@stevegreco/design-system-components/button";
     defineButton();
+  </script>
+) : null}
+
+{show("variants") && slice.tagName === "ds-badge" ? (
+  <script>
+    import { defineBadge } from "@stevegreco/design-system-components/badge";
+    defineBadge();
   </script>
 ) : null}

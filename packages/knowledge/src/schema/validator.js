@@ -45,7 +45,11 @@ function issueMessage(error) {
     case "pattern":
       return `must match pattern ${JSON.stringify(error.params.pattern ?? error.schema)}`;
     case "contains":
-      return "must contain an authored source";
+      return error.params?.maxContains === 1
+        ? "must contain exactly one authored source"
+        : "must contain an authored source";
+    case "maxContains":
+      return "must contain exactly one authored source";
     case "anyOf":
       return "must name an attribute or a property";
     default:

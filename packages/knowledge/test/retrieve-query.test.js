@@ -6,7 +6,7 @@ import { test } from "node:test";
 import { compile } from "../src/compile/index.js";
 import { openCatalog, KnowledgeQueryError } from "../src/retrieve/index.js";
 import { authored, projectFiles, stubIndex, stubManifest, stubRecord } from "./helpers/catalog.js";
-import { repoRoot } from "./helpers/workspace.js";
+import { portableContract, repoRoot } from "./helpers/workspace.js";
 
 test("get returns a hit, undefined for a miss, and malformed-id for button", async () => {
   const catalog = await openCatalog();
@@ -28,6 +28,30 @@ test("get returns a hit, undefined for a miss, and malformed-id for button", asy
     return true;
   });
   assert.throws(() => catalog.get(1), TypeError);
+});
+
+test("get identifies contract provenance from the component authored source", async () => {
+  const path = "content/components/owned.md";
+  const bundle = await projectFiles({
+    [path]: authored(path, {
+      id: "component.owned",
+      contract: portableContract({ description: "Owned on the component." }),
+    }),
+  });
+  const catalog = await openCatalog({
+    records: bundle.records,
+    searchIndex: bundle.searchIndex,
+    manifest: bundle.manifest,
+  });
+
+  const record = catalog.get("component.owned");
+  const authoredSources = record.sources.filter((source) => source.kind === "authored");
+
+  assert.equal(record.contract.description, "Owned on the component.");
+  assert.equal(Object.hasOwn(record, "contractSource"), false);
+  assert.equal(authoredSources.length, 1);
+  assert.equal(authoredSources[0].path, path);
+  assert.match(authoredSources[0].revision, /^[0-9a-f]{16}$/);
 });
 
 test("Button guidance uses guides and reviews, not related", async () => {
@@ -85,6 +109,31 @@ test("Button guidance uses guides and reviews, not related", async () => {
   assert.deepEqual(review.checks.length > 0, true);
 
   assert.deepEqual(catalog.get("component.badge").relations.related, ["component.button"]);
+});
+
+test("Button review keeps checks and does not restate them in the body", async () => {
+  const catalog = await openCatalog();
+  const review = catalog.get("guideline.button-review");
+
+  assert.deepEqual(
+    review.checks.map((check) => check.id),
+    [
+      "button-review-semantics",
+      "button-review-hierarchy",
+      "button-review-danger",
+      "button-review-label",
+      "button-review-form-type",
+      "button-review-disabled",
+      "button-review-focus",
+      "button-review-tokens",
+    ],
+  );
+  assert.match(
+    review.body,
+    /source-only review cannot verify focus/,
+    "keep the note that a source-only review cannot verify focus or disabled behavior",
+  );
+  assert.doesNotMatch(review.body, /^## /m, "review body must not restate checks as a heading list");
 });
 
 test("list filters AND across keys and OR within a key", async () => {

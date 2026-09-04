@@ -1,10 +1,11 @@
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { mkdir, readFile, readdir, rename, rm } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import { buildCorpus } from "./corpus.js";
 import { projectBundle, writeBundle } from "./bundle.js";
 import { createWorkspaceReader } from "./reader.js";
+import { PROBLEM, problem } from "./tables.js";
 
 export { createWorkspaceReader } from "./reader.js";
 
@@ -41,15 +42,7 @@ export async function compile(options) {
   const workspaceRoot = options.workspaceRoot;
   const outDir = options.outDir ?? join(workspaceRoot, "packages/knowledge/dist");
   const lockDir = `${outDir}.lock`;
-
-  try {
-    await mkdir(lockDir);
-  } catch (error) {
-    if (error && error.code === "EEXIST") {
-      throw new Error(`compile lock is held: ${lockDir}`);
-    }
-    throw error;
-  }
+  await acquireCompileLock(lockDir);
 
   let staging;
   try {
@@ -112,9 +105,76 @@ export async function compile(options) {
   }
 }
 
+async function acquireCompileLock(lockDir) {
+  let stoleStale = false;
+  while (true) {
+    try {
+      await mkdir(lockDir);
+      break;
+    } catch (error) {
+      if (error?.code !== "EEXIST") throw error;
+      if (!stoleStale && (await isCompileLockStale(lockDir))) {
+        await rm(lockDir, { recursive: true, force: true });
+        stoleStale = true;
+        continue;
+      }
+      throw lockHeldError(lockDir);
+    }
+  }
+
+  try {
+    await writeFile(
+      join(lockDir, "owner.json"),
+      `${JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() })}\n`,
+    );
+  } catch (error) {
+    await rm(lockDir, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+function lockHeldError(lockDir) {
+  return new KnowledgeCompileError([
+    problem({
+      code: PROBLEM.COMPILE_LOCK_HELD,
+      path: lockDir,
+      message: `compile lock is held. If no compile is running, remove it with: rm -rf ${lockDir}`,
+    }),
+  ]);
+}
+
+async function isCompileLockStale(lockDir) {
+  try {
+    const owner = JSON.parse(await readFile(join(lockDir, "owner.json"), "utf8"));
+    return !isPidAlive(owner.pid);
+  } catch {
+    return true;
+  }
+}
+
+function isPidAlive(pid) {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error?.code !== "ESRCH";
+  }
+}
+
 async function readPackageVersion(packageJsonPath) {
-  const raw = JSON.parse(await readFile(packageJsonPath, "utf8"));
-  return raw.version;
+  try {
+    const raw = JSON.parse(await readFile(packageJsonPath, "utf8"));
+    return raw.version;
+  } catch (error) {
+    throw new KnowledgeCompileError([
+      problem({
+        code: PROBLEM.COMPILE_PACKAGE_UNREADABLE,
+        path: packageJsonPath,
+        message: `cannot read package version: ${error instanceof Error ? error.message : "read failed"}`,
+      }),
+    ]);
+  }
 }
 
 function gitRevision(workspaceRoot) {
