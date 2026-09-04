@@ -27,6 +27,11 @@ test("component.button tokenizes to component and button", () => {
   assert.deepEqual([...tokenize("component.button")].sort(), ["button", "component"]);
 });
 
+test("non-ASCII letters are separators, not indexed terms", () => {
+  assert.deepEqual([...tokenize("café")].sort(), ["caf"]);
+  assert.equal(tokenize("日本語").size, 0);
+});
+
 test("contract host and checks add terms without stringifying the record", () => {
   const record = {
     id: "component.secret",

@@ -97,7 +97,13 @@ export async function compile(options) {
     await rename(staging, outDir);
     staging = undefined;
 
-    return { bundles, warnings };
+    return {
+      bundles: bundles.map((bundle) => ({
+        ...bundle,
+        dir: join(outDir, basename(bundle.dir)),
+      })),
+      warnings,
+    };
   } finally {
     if (staging) {
       await rm(staging, { recursive: true, force: true });

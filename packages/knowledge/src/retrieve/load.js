@@ -222,6 +222,12 @@ function validateContract(records, searchIndex, manifest, label) {
     }
     byId.set(id, record);
     ids.push(id);
+    if (!Array.isArray(record.jobs)) {
+      invalid.push(`${id} jobs must be an array`);
+    }
+    if (!Array.isArray(record.tags)) {
+      invalid.push(`${id} tags must be an array`);
+    }
   }
   if (invalid.length > 0) throw fail("bundle-invalid", label, invalid);
 
@@ -247,11 +253,23 @@ function validateContract(records, searchIndex, manifest, label) {
   if (!Array.isArray(index.records)) {
     inconsistent.push("searchIndex.records must be an array");
   } else {
+    const seen = new Set();
     index.records.forEach((id, offset) => {
       if (typeof id !== "string" || !byId.has(id)) {
         inconsistent.push(`searchIndex.records[${offset}] ${id} is not in records`);
+        return;
       }
+      if (seen.has(id)) {
+        inconsistent.push(`searchIndex.records[${offset}] ${id} is repeated`);
+        return;
+      }
+      seen.add(id);
     });
+    for (const id of byId.keys()) {
+      if (!seen.has(id)) {
+        inconsistent.push(`searchIndex.records omits ${id}`);
+      }
+    }
   }
 
   const terms = index.terms;

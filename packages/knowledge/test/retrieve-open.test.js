@@ -75,6 +75,60 @@ test("search index naming an id not in records is bundle-inconsistent", async ()
   );
 });
 
+test("search index omitting a record is bundle-inconsistent", async () => {
+  const records = [stubRecord("fixture.alpha"), stubRecord("fixture.beta")];
+  await assert.rejects(
+    () =>
+      openCatalog({
+        records,
+        searchIndex: { version: 1, records: ["fixture.alpha"], terms: {} },
+        manifest: stubManifest(2),
+      }),
+    (error) => {
+      assert.equal(error instanceof KnowledgeBundleError, true);
+      assert.equal(error.code, "bundle-inconsistent");
+      assert.match(error.message, /fixture\.beta/);
+      return true;
+    },
+  );
+});
+
+test("search index repeating a record is bundle-inconsistent", async () => {
+  const records = [stubRecord("fixture.alpha"), stubRecord("fixture.beta")];
+  await assert.rejects(
+    () =>
+      openCatalog({
+        records,
+        searchIndex: {
+          version: 1,
+          records: ["fixture.alpha", "fixture.beta", "fixture.alpha"],
+          terms: {},
+        },
+        manifest: stubManifest(2),
+      }),
+    (error) => {
+      assert.equal(error instanceof KnowledgeBundleError, true);
+      assert.equal(error.code, "bundle-inconsistent");
+      assert.match(error.message, /fixture\.alpha/);
+      return true;
+    },
+  );
+});
+
+test("search index may list records in a different order", async () => {
+  const alpha = stubRecord("fixture.alpha");
+  const beta = stubRecord("fixture.beta");
+  const catalog = await openCatalog({
+    records: [alpha, beta],
+    searchIndex: { version: 1, records: ["fixture.beta", "fixture.alpha"], terms: {} },
+    manifest: stubManifest(2),
+  });
+  assert.deepEqual(
+    catalog.list().map((record) => record.id),
+    ["fixture.alpha", "fixture.beta"],
+  );
+});
+
 test("dangling relation is bundle-inconsistent", async () => {
   const records = [stubRecord("fixture.alpha", { relations: { uses: ["fixture.missing"] } })];
   await assert.rejects(
@@ -151,4 +205,56 @@ test("directory hash mismatch is rejected; in-memory open skips the check", asyn
     manifest: bundle.manifest,
   });
   assert.equal(catalog.get("component.alpha").title.endsWith("tampered"), true);
+});
+
+test("authored helper keeps caller-supplied sources", () => {
+  const markdown = authored("content/a.md", {
+    id: "component.a",
+    sources: [
+      { kind: "authored", path: "content/a.md" },
+      { kind: "adr", path: "docs/adr/0001.md" },
+    ],
+  });
+  assert.match(markdown, /kind: adr/);
+  assert.match(markdown, /docs\/adr\/0001\.md/);
+});
+
+test("in-memory record missing jobs is bundle-invalid", async () => {
+  const record = stubRecord("fixture.alpha");
+  delete record.jobs;
+
+  await assert.rejects(
+    () =>
+      openCatalog({
+        records: [record],
+        searchIndex: stubIndex([record]),
+        manifest: stubManifest(1),
+      }),
+    (error) => {
+      assert.equal(error instanceof KnowledgeBundleError, true);
+      assert.equal(error.code, "bundle-invalid");
+      assert.match(error.message, /fixture\.alpha/);
+      return true;
+    },
+  );
+});
+
+test("in-memory record missing tags is bundle-invalid", async () => {
+  const record = stubRecord("fixture.alpha");
+  delete record.tags;
+
+  await assert.rejects(
+    () =>
+      openCatalog({
+        records: [record],
+        searchIndex: stubIndex([record]),
+        manifest: stubManifest(1),
+      }),
+    (error) => {
+      assert.equal(error instanceof KnowledgeBundleError, true);
+      assert.equal(error.code, "bundle-invalid");
+      assert.match(error.message, /fixture\.alpha/);
+      return true;
+    },
+  );
 });

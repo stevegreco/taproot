@@ -10,7 +10,10 @@ export const META = {
 };
 
 export function authored(path, fields, body) {
-  return recordMarkdown({ ...fields, sources: [{ kind: "authored", path }] }, body);
+  return recordMarkdown(
+    { sources: [{ kind: "authored", path }], ...fields },
+    body,
+  );
 }
 
 export function stubRecord(id, fields = {}) {

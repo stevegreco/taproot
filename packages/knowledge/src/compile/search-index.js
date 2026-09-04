@@ -75,6 +75,11 @@ export function collectSearchText(record) {
     .join(" ");
 }
 
+/**
+ * Split on any run of characters outside `[a-z0-9]`. Accented and non-Latin
+ * letters become separators, so `café` indexes as `caf`. That is an
+ * English-only design-system choice, not an oversight.
+ */
 export function tokenize(text) {
   return new Set(
     text

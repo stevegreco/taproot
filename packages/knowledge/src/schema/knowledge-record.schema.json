@@ -15,7 +15,7 @@
   ],
   "properties": {
     "id": { "$ref": "#/$defs/dottedId" },
-    "schemaVersion": { "const": 1 },
+    "schemaVersion": { "type": "integer", "const": 1 },
     "type": {
       "enum": [
         "component",

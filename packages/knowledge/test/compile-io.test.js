@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { chmod, mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { access, chmod, mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { compile, KnowledgeCompileError } from "../src/compile/index.js";
 import { buildCorpus } from "../src/compile/corpus.js";
@@ -78,6 +78,37 @@ test("compile accepts an existing empty public content root", async () => {
   const result = await compile({ workspaceRoot: workspace, outDir, revision: "test" });
   assert.equal(result.bundles[0].recordCount, 0);
   assert.equal(result.bundles[1].recordCount, 0);
+  assert.equal(result.bundles[0].dir, join(outDir, "public"));
+  assert.equal(result.bundles[1].dir, join(outDir, "internal"));
+  await access(join(result.bundles[0].dir, "manifest.json"));
+  await access(join(result.bundles[1].dir, "manifest.json"));
+});
+
+test("compile names the source file when a record is invalid", async () => {
+  const workspace = await stubWorkspace();
+  const repoPath = "packages/knowledge/content/deep/nested/bad.md";
+  const recordPath = join(workspace, repoPath);
+  await mkdir(dirname(recordPath), { recursive: true });
+  await writeFile(
+    recordPath,
+    recordMarkdown({
+      id: "component.bad",
+      title: "",
+      sources: [{ kind: "authored", path: repoPath }],
+    }),
+  );
+
+  await assert.rejects(
+    () => compile({ workspaceRoot: workspace, outDir: join(workspace, "dist"), revision: "test" }),
+    (error) => {
+      assert.ok(isCompileError(error));
+      assert.match(error.message, /packages\/knowledge\/content\/deep\/nested\/bad\.md/);
+      assert.match(error.message, /\/title/);
+      const problems = error.problems.filter((item) => item.code === PROBLEM.RECORD_INVALID);
+      assert.equal(problems.length, 1);
+      return true;
+    },
+  );
 });
 
 test("CORPUS_ROOT_UNREADABLE fires when a configured root is not readable", async () => {
