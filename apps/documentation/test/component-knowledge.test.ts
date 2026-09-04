@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 import {
   componentKnowledgeMarkdown,
   DocsKnowledgeError,
@@ -79,6 +80,76 @@ test("button knowledge markdown keeps ghost and aria-label without reprinting th
     "enum descriptions are keyed, not concatenated",
   );
   assert.doesNotMatch(markdown, /^error /m, "review markdown does not lead with severity codes");
+});
+
+test("badge variant examples use the host tag and status labels", () => {
+  const slice = loadComponentSlice("badge");
+  const danger = slice.variants.find((variant) => variant.name === "danger");
+
+  assert.equal(slice.tagName, "ds-badge");
+  assert.ok(danger, "contract includes danger");
+  assert.equal(danger.exampleLabel, "Failed");
+  assert.equal(danger.exampleHtml, '<ds-badge variant="danger">Failed</ds-badge>');
+  assert.doesNotMatch(danger.exampleHtml, /Delete project/, "Badge danger is not a Button delete action");
+});
+
+test("badge.mdx renders variants, api, and accessibility from the catalog", async () => {
+  const publicRoot = dirname(fileURLToPath(import.meta.resolve("@stevegreco/design-system-knowledge/manifest")));
+  const catalog = await openCatalog(publicRoot, { expectVisibility: "public" });
+  const record = catalog.get("component.badge");
+  const variantValues = record.contract.parameters.variant.values;
+  const slice = loadComponentSlice("badge");
+  const danger = slice.variants.find((variant) => variant.name === "danger");
+  const markdown = componentKnowledgeMarkdown("badge");
+  const source = readFileSync(join(docsRoot, "docs/components/badge.mdx"), "utf8");
+  const banner = source.match(/^---\n([\s\S]*?)\n---/);
+
+  assert.ok(danger, "contract includes danger");
+  assert.deepEqual(
+    Object.fromEntries(slice.variants.map((variant) => [variant.name, variant.description])),
+    variantValues,
+    "variant copy tracks the compiled contract",
+  );
+  assert.deepEqual(
+    slice.accessibility.requirements,
+    record.contract.accessibility.requirements,
+    "accessibility tracks the compiled contract",
+  );
+  assert.equal(
+    danger.description,
+    "Failed or blocked status, not a destructive action.",
+    "danger meaning comes from the component contract",
+  );
+  assert.match(markdown, /not a destructive action/);
+  assert.ok(
+    slice.api.some((row) => row.name === "variant"),
+    "api includes the variant attribute from the contract",
+  );
+  assert.ok(
+    slice.api.some((row) => row.name === "hidden"),
+    "api includes the hidden attribute from the host mapping",
+  );
+  assert.equal(slice.accessibility.keyboard.length, 0, "Badge has no keyboard bindings");
+  assert.ok(
+    slice.accessibility.requirements.some((item) => /live-region/.test(item)),
+    "accessibility keeps the live-region rule from the contract",
+  );
+
+  assert.ok(banner, "badge.mdx has YAML frontmatter");
+  const title = banner[1].match(/^title:\s*(.+)$/m)?.[1]?.trim();
+  const description = banner[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
+  assert.equal(title, slice.title, "frontmatter title matches the record title");
+  assert.equal(description, slice.summary, "frontmatter description matches the record summary");
+  assert.match(source, /component="badge"\s+section="intro"/);
+  assert.match(source, /section="variants"/);
+  assert.match(source, /section="api"/);
+  assert.match(source, /section="accessibility"/);
+  assert.doesNotMatch(
+    source,
+    /destructive states/,
+    "authored MDX must not recommend Badge danger for destructive actions",
+  );
+  assert.doesNotMatch(source, /<TypeTable/, "API facts come from ComponentKnowledge, not a copied table");
 });
 
 test("loadComponentSlice rejects dotted ids and unknown slugs", () => {

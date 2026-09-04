@@ -130,11 +130,21 @@ const SECTIONS: readonly ComponentKnowledgeSection[] = [
   "accessibility",
   "review",
 ];
-const EXAMPLE_LABELS: Record<string, string> = {
-  primary: "Save changes",
-  secondary: "Cancel",
-  ghost: "View details",
-  danger: "Delete project",
+const EXAMPLE_LABELS: Record<string, Record<string, string>> = {
+  button: {
+    primary: "Save changes",
+    secondary: "Cancel",
+    ghost: "View details",
+    danger: "Delete project",
+  },
+  badge: {
+    default: "Default",
+    accent: "Accent",
+    success: "Active",
+    danger: "Failed",
+    warning: "Pending",
+    info: "Beta",
+  },
 };
 
 function resolvePublicRoot(): string {
@@ -319,12 +329,12 @@ function rewriteBundleUrls(markdown: string, digest: string): string {
     .replace(/\]\(markdown\/([^)]+?)\.md(?:#[^)]*)?\)/g, (_match, id: string) => `](${docsHref(id)})`);
 }
 
-function exampleLabel(variant: string): string {
-  return EXAMPLE_LABELS[variant] ?? "Action";
+function exampleLabel(slug: string, variant: string): string {
+  return EXAMPLE_LABELS[slug]?.[variant] ?? "Action";
 }
 
-function exampleHtml(tagName: string, variant: string): string {
-  return `<${tagName} variant="${variant}">${exampleLabel(variant)}</${tagName}>`;
+function exampleHtml(slug: string, tagName: string, variant: string): string {
+  return `<${tagName} variant="${variant}">${exampleLabel(slug, variant)}</${tagName}>`;
 }
 
 function markdownByHeading(body: string): { preamble: string; sections: Map<string, string> } {
@@ -481,6 +491,7 @@ function bindingHost(catalog: Catalog, id: string): Record<string, unknown> {
 }
 
 function projectVariants(
+  slug: string,
   tagName: string,
   parameters: Record<string, unknown>,
   guidance: Map<string, string>,
@@ -495,8 +506,8 @@ function projectVariants(
     description: asString(description),
     guidance: guidance.get(name) ?? "",
     isDefault: name === defaultName,
-    exampleHtml: exampleHtml(tagName, name),
-    exampleLabel: exampleLabel(name),
+    exampleHtml: exampleHtml(slug, tagName, name),
+    exampleLabel: exampleLabel(slug, name),
   }));
 }
 
@@ -641,7 +652,7 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     }
   }
 
-  const variants = projectVariants(tagName, parameters, patternGuidanceByVariant(patternBody));
+  const variants = projectVariants(slug, tagName, parameters, patternGuidanceByVariant(patternBody));
   const { introMarkdown, behaviorMarkdown } = projectIntro(
     asString(record.body),
     implementationBody,
