@@ -87,6 +87,31 @@ test("Button guidance uses guides and reviews, not related", async () => {
   assert.deepEqual(catalog.get("component.badge").relations.related, ["component.button"]);
 });
 
+test("Button review keeps checks and does not restate them in the body", async () => {
+  const catalog = await openCatalog();
+  const review = catalog.get("guideline.button-review");
+
+  assert.deepEqual(
+    review.checks.map((check) => check.id),
+    [
+      "button-review-semantics",
+      "button-review-hierarchy",
+      "button-review-danger",
+      "button-review-label",
+      "button-review-form-type",
+      "button-review-disabled",
+      "button-review-focus",
+      "button-review-tokens",
+    ],
+  );
+  assert.match(
+    review.body,
+    /source-only review cannot verify focus/,
+    "keep the note that a source-only review cannot verify focus or disabled behavior",
+  );
+  assert.doesNotMatch(review.body, /^## /m, "review body must not restate checks as a heading list");
+});
+
 test("list filters AND across keys and OR within a key", async () => {
   const catalog = await openCatalog();
   const guidelines = catalog.list({ type: "guideline" });
