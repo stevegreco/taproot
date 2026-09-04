@@ -19,3 +19,17 @@ test("package exports the language-neutral schema artifact", async () => {
 
   assert.deepEqual(exported.default, schema);
 });
+
+test("package exports the portable contract and host binding schemas", async () => {
+  const portable = await import(
+    "@stevegreco/design-system-knowledge/schema/portable-contract.json",
+    { with: { type: "json" } }
+  );
+  const host = await import(
+    "@stevegreco/design-system-knowledge/schema/host-binding.json",
+    { with: { type: "json" } }
+  );
+
+  assert.equal(portable.default.$id, "urn:stevegreco:design-system:portable-contract:2");
+  assert.equal(host.default.$id, "urn:stevegreco:design-system:host-binding:1");
+});

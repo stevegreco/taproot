@@ -186,3 +186,77 @@ test("portable contract schema rejects tagName on an otherwise valid contract", 
   assert.equal(validate({ ...buttonContract, tagName: "ds-button" }), false);
   assert.ok(extraPropertyPaths(validate.errors).includes("/tagName"));
 });
+
+function withParameter(name, parameter) {
+  return {
+    ...buttonContract,
+    parameters: { ...buttonContract.parameters, [name]: parameter },
+  };
+}
+
+function errorPaths(errors) {
+  return (errors ?? []).map((error) => error.instancePath || "/");
+}
+
+test("portable contract schema rejects contradictory parameter kinds", () => {
+  const validate = compile(portableContractSchema);
+
+  assert.equal(validate(withParameter("variant", { kind: "enum", default: "primary" })), false);
+  assert.ok(
+    errorPaths(validate.errors).some((path) => path.includes("/parameters/variant")),
+    JSON.stringify(validate.errors, null, 2),
+  );
+
+  assert.equal(
+    validate(withParameter("disabled", { kind: "boolean", default: "false" })),
+    false,
+  );
+  assert.ok(
+    errorPaths(validate.errors).some((path) => path.includes("/parameters/disabled")),
+    JSON.stringify(validate.errors, null, 2),
+  );
+
+  assert.equal(
+    validate(
+      withParameter("disabled", {
+        kind: "boolean",
+        default: false,
+        values: { true: "On.", false: "Off." },
+      }),
+    ),
+    false,
+  );
+  assert.ok(
+    errorPaths(validate.errors).some((path) => path.includes("/parameters/disabled")),
+    JSON.stringify(validate.errors, null, 2),
+  );
+
+  assert.equal(
+    validate(
+      withParameter("accessibleName", {
+        kind: "string",
+        values: { name: "A name." },
+      }),
+    ),
+    false,
+  );
+  assert.ok(
+    errorPaths(validate.errors).some((path) => path.includes("/parameters/accessibleName")),
+    JSON.stringify(validate.errors, null, 2),
+  );
+});
+
+test("host binding schema rejects an empty parameter mapping", () => {
+  const validate = compile(hostBindingSchema);
+  assert.equal(
+    validate({
+      ...buttonHost,
+      parameters: { ...buttonHost.parameters, disabled: {} },
+    }),
+    false,
+  );
+  assert.ok(
+    errorPaths(validate.errors).some((path) => path.includes("/parameters/disabled")),
+    JSON.stringify(validate.errors, null, 2),
+  );
+});

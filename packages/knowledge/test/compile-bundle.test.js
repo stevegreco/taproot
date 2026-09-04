@@ -45,6 +45,9 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
   assert.equal(files.includes("manifest.json"), false);
   assert.ok(files.includes("records.json"));
   assert.ok(files.includes("schema/compiled-knowledge-record.json"));
+  assert.ok(files.includes("schema/portable-contract.json"));
+  assert.ok(files.includes("schema/host-binding.json"));
+  assert.equal(bundle.manifest.content.visibility, "public");
 
   const markdown = bundle.markdown.get("markdown/component.button.md");
   assert.match(markdown, /^---\n/);
@@ -81,6 +84,11 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
   );
   assert.equal(written[0].compiledSchemaVersion, 3);
   assert.ok(written.find((record) => record.id === "component.button").backlinks);
+
+  const internal = projectBundle(corpus, "internal", meta);
+  assert.equal(internal.manifest.content.visibility, "internal");
+  assert.equal(internal.records.length, bundle.records.length);
+  assert.notEqual(internal.manifest.digest, bundle.manifest.digest);
 });
 
 test("COMPILED_INVALID fires when emitted records fail the derived schema", () => {

@@ -432,3 +432,75 @@ test("parseRecord rejects host on an authored component", () => {
   const markdown = validComponent.replace("\n---\n\n", `\nhost:${validHost}---\n\n`);
   assertIssuePath(markdown, "test-button.md", "/host");
 });
+
+test("parseRecord rejects an enum parameter that omits values", () => {
+  const markdown = validComponentWithContract.replace(
+    "    disabled:\n      kind: boolean\n      default: false\n",
+    "    variant:\n      kind: enum\n      default: primary\n",
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/components/test-button.md",
+    "/contract/parameters/variant/values",
+  );
+});
+
+test("parseRecord rejects an enum default that is not one of its values", () => {
+  const markdown = validComponentWithContract.replace(
+    "    disabled:\n      kind: boolean\n      default: false\n",
+    "    variant:\n      kind: enum\n      values:\n        primary: Highest emphasis.\n      default: ghost\n",
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/components/test-button.md",
+    "/contract/parameters/variant/default",
+  );
+});
+
+test("parseRecord rejects a boolean parameter with a string default", () => {
+  const markdown = validComponentWithContract.replace(
+    "      default: false\n",
+    '      default: "yes"\n',
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/components/test-button.md",
+    "/contract/parameters/disabled/default",
+  );
+});
+
+test("parseRecord rejects values on a boolean parameter", () => {
+  const markdown = validComponentWithContract.replace(
+    "      default: false\n",
+    "      default: false\n      values:\n        true: On.\n",
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/components/test-button.md",
+    "/contract/parameters/disabled/values",
+  );
+});
+
+test("parseRecord rejects duplicate portable anatomy names", () => {
+  const markdown = validComponentWithContract.replace(
+    "    - name: control\n      role: interactive-surface\n      description: Interactive control.\n",
+    "    - name: control\n      role: interactive-surface\n      description: Interactive control.\n    - name: control\n      role: label\n      description: Duplicate name.\n",
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/components/test-button.md",
+    "/contract/anatomy/1/name",
+  );
+});
+
+test("parseRecord rejects an empty host parameter mapping", () => {
+  const markdown = validBinding.replace(
+    "    disabled:\n      attribute: disabled\n      property: disabled\n",
+    "    disabled: {}\n",
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/bindings/test-button.web-component.md",
+    "/host/parameters/disabled",
+  );
+});

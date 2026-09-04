@@ -88,7 +88,21 @@
           "minProperties": 1,
           "additionalProperties": { "type": "string", "minLength": 1 }
         }
-      }
+      },
+      "anyOf": [
+        {
+          "required": ["attribute"],
+          "properties": {
+            "attribute": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "required": ["property"],
+          "properties": {
+            "property": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
     },
     "eventMap": {
       "type": "object",

@@ -554,6 +554,47 @@ test("SOURCE_CONFLICT fires when a binding parameter is not a bijection", async 
   );
 });
 
+test("RECORD_INVALID fires for contradictory contracts and empty host mappings", async () => {
+  const reader = createMemoryReader({
+    "content/enum.md": recordMarkdown({
+      id: "component.enum-default",
+      sources: [{ kind: "authored", path: "content/enum.md" }],
+      contract: portableContract({
+        anatomy: [
+          { name: "control", role: "interactive-surface", description: "Control." },
+          { name: "control", role: "label", description: "Duplicate." },
+        ],
+        parameters: {
+          variant: { kind: "enum", values: { primary: "Primary." }, default: "ghost" },
+        },
+      }),
+    }),
+    "content/bindings/empty.md": recordMarkdown({
+      id: "binding.empty.web-component",
+      type: "binding",
+      sources: [{ kind: "authored", path: "content/bindings/empty.md" }],
+      relations: { implements: ["component.enum-default"] },
+      host: {
+        specVersion: 1,
+        platform: "web-component",
+        package: "@stevegreco/design-system-components",
+        export: "DsEmpty",
+        defaultTagName: "ds-empty",
+        registration: { export: "defineEmpty", supportsAliases: false },
+        anatomy: { control: { element: "button" } },
+        parameters: { variant: {} },
+        events: {},
+      },
+    }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const invalid = codes(corpus, PROBLEM.RECORD_INVALID);
+  assert.ok(invalid.some((item) => /\/contract\/anatomy\/1\/name/.test(item.path)));
+  assert.ok(invalid.some((item) => /\/contract\/parameters\/variant\/default/.test(item.path)));
+  assert.ok(invalid.some((item) => /\/host\/parameters\/variant/.test(item.path)));
+});
+
 test("ASSET_MISSING fires when a declared asset file is absent", async () => {
   const path = "content/missing-asset.md";
   const reader = createMemoryReader({

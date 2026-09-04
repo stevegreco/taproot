@@ -25,6 +25,9 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const records = JSON.parse(await readFile(join(outDir, "public/records.json"), "utf8"));
   const manifest = JSON.parse(await readFile(join(outDir, "public/manifest.json"), "utf8"));
   assert.equal(manifest.content.recordCount, authoredCount);
+  assert.equal(manifest.content.visibility, "public");
+  assert.ok(manifest.content.files.some((entry) => entry.path === "schema/portable-contract.json"));
+  assert.ok(manifest.content.files.some((entry) => entry.path === "schema/host-binding.json"));
   assert.equal(records.length, authoredCount);
 
   const button = records.find((record) => record.id === "component.button");

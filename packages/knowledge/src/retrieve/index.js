@@ -13,6 +13,8 @@
  *
  * Directory opens verify SHA-256 and byte length for `records.json` and `search-index.json`
  * against `manifest.content.files`. In-memory `{ records, searchIndex, manifest }` skips that check.
+ * Bundle visibility comes from `manifest.content.visibility`. `expectVisibility` compares against
+ * that declared projection, not a guess from record contents.
  */
 
 import { tokenize } from "../compile/search-index.js";
