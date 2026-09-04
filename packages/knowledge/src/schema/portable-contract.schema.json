@@ -103,11 +103,47 @@
           "minProperties": 1,
           "additionalProperties": { "type": "string", "minLength": 1 }
         },
-        "default": {
-          "anyOf": [{ "type": "string" }, { "type": "boolean" }]
-        },
+        "default": true,
         "description": { "type": "string", "minLength": 1 }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "kind": { "const": "enum" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["values"],
+            "properties": {
+              "default": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "boolean" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "default": { "type": "boolean" },
+              "values": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "string" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "default": { "type": "string" },
+              "values": false
+            }
+          }
+        }
+      ]
     },
     "event": {
       "type": "object",

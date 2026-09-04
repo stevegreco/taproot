@@ -115,7 +115,8 @@ call `compile`.
 `openCatalog()` with no argument loads this package's `dist/public`. Pass a directory path or file
 URL to open another bundle. Pass `{ records, searchIndex, manifest }` to open already-parsed JSON.
 Directory opens verify SHA-256 and byte length for `records.json` and `search-index.json` against
-`manifest.content.files`. In-memory opens skip that check.
+`manifest.content.files`. They also read `manifest.content.visibility` instead of inferring it
+from record contents. In-memory opens skip the file-hash check.
 
 `get` returns the compiled record or `undefined`. `list` filters `type`, `status`, `visibility`,
 `jobs`, and `tags`. `search` uses the compiled index and the same tokenizer the compiler used.

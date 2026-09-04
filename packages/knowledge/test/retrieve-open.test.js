@@ -146,6 +146,66 @@ test("dangling relation is bundle-inconsistent", async () => {
   );
 });
 
+test("expectVisibility internal accepts a declared internal bundle of public records", async () => {
+  const bundle = await projectFiles(
+    {
+      "content/alpha.md": authored("content/alpha.md", { id: "component.alpha" }),
+    },
+    "internal",
+  );
+
+  assert.equal(bundle.manifest.content.visibility, "internal");
+  assert.ok(bundle.records.every((record) => record.visibility === "public"));
+
+  const catalog = await openCatalog(
+    { records: bundle.records, searchIndex: bundle.searchIndex, manifest: bundle.manifest },
+    { expectVisibility: "internal" },
+  );
+  assert.equal(catalog.info.visibility, "internal");
+});
+
+test("expectVisibility public rejects a declared internal bundle of public records", async () => {
+  const bundle = await projectFiles(
+    {
+      "content/alpha.md": authored("content/alpha.md", { id: "component.alpha" }),
+    },
+    "internal",
+  );
+
+  await assert.rejects(
+    () =>
+      openCatalog(
+        { records: bundle.records, searchIndex: bundle.searchIndex, manifest: bundle.manifest },
+        { expectVisibility: "public" },
+      ),
+    (error) => {
+      assert.equal(error.code, "projection-mismatch");
+      assert.match(error.message, /declared internal/);
+      return true;
+    },
+  );
+});
+
+test("missing manifest visibility is bundle-invalid", async () => {
+  const records = [stubRecord("fixture.alpha")];
+  const manifest = stubManifest(1);
+  delete manifest.content.visibility;
+
+  await assert.rejects(
+    () =>
+      openCatalog({
+        records,
+        searchIndex: stubIndex(records),
+        manifest,
+      }),
+    (error) => {
+      assert.equal(error.code, "bundle-invalid");
+      assert.match(error.message, /visibility/);
+      return true;
+    },
+  );
+});
+
 test("expectVisibility public rejects an internal fixture", async () => {
   const bundle = await projectFiles({
     "content/alpha.md": authored("content/alpha.md", { id: "component.alpha" }),

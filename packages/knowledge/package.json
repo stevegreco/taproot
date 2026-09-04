@@ -15,6 +15,8 @@
     "./retrieve": "./src/retrieve/index.js",
     "./schema": "./src/schema/index.js",
     "./schema/knowledge-record.json": "./src/schema/knowledge-record.schema.json",
+    "./schema/portable-contract.json": "./src/schema/portable-contract.schema.json",
+    "./schema/host-binding.json": "./src/schema/host-binding.schema.json",
     "./manifest": "./dist/public/manifest.json",
     "./records": "./dist/public/records.json",
     "./search-index": "./dist/public/search-index.json",

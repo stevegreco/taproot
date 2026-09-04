@@ -38,6 +38,7 @@ export function stubManifest(recordCount, files = []) {
     content: {
       schemaVersion: 1,
       compiledSchemaVersion: 3,
+      visibility: "public",
       knowledgeVersion: META.knowledgeVersion,
       designSystemVersion: META.designSystemVersion,
       recordCount,

@@ -162,7 +162,10 @@ omits `tokenRef` and omits `kind: token-source` (token ADR 0003). It may still a
 and leave `tokens` absent. There is no semantic-token source kind.
 
 A binding `implements` exactly one component, and that component must already have `contract`.
-Host anatomy names, parameters, and events are a bijection with the portable contract. An enum
+Host anatomy names, parameters, and events are a bijection with the portable contract. Portable
+anatomy names are unique. Enum parameters require `values`, and an enum default must name one of
+those values. Boolean and string parameters must not declare `values`, and a default must match
+the declared kind. Each host parameter mapping names an attribute, a property, or both. An enum
 `values` map on a host parameter, when present, covers every portable enum value.
 
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
@@ -277,7 +280,9 @@ dist/
 │   ├── search-index.json
 │   ├── schema/
 │   │   ├── knowledge-record.json
-│   │   └── compiled-knowledge-record.json
+│   │   ├── compiled-knowledge-record.json
+│   │   ├── portable-contract.json
+│   │   └── host-binding.json
 │   ├── markdown/
 │   └── assets/
 └── internal/
@@ -285,6 +290,9 @@ dist/
 ```
 
 `schema/compiled-knowledge-record.json` is the derived compiled schema.
+`schema/portable-contract.json` and `schema/host-binding.json` are the schemas those
+artifacts `$ref`. A copied `dist/public` contains every schema needed to validate authored and
+compiled records.
 
 ### Compiled view ownership
 
@@ -300,9 +308,12 @@ The compiler writes two views of each assembled record.
 
 `search-index.json` is an index over the record view. It is not a third record view.
 
-The manifest `content` block records the schema version, knowledge version, design system version,
-record count, and per-file hashes. The digest hashes that block. Build time and git revision live
-in `manifest.build` and are not part of the digest (KNOW-014, KNOW-018, KNOW-024).
+The manifest `content` block records the schema version, compiled schema version, bundle
+visibility, knowledge version, design system version, record count, and per-file hashes. The
+digest hashes that block. Build time and git revision live in `manifest.build` and are not part
+of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` stays `3` because
+this does not change the compiled record shape. An internal bundle may contain only public
+records; visibility is the declared projection, not a guess from record contents.
 
 Consumers query a compiled bundle through `openCatalog` in
 `@stevegreco/design-system-knowledge/retrieve`. `search`, `get`, `list`, and `related` read

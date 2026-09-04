@@ -67,7 +67,12 @@ export async function loadBundle(source, options = {}) {
 
   const resolved = await resolveSource(source);
   validateContract(resolved.records, resolved.searchIndex, resolved.manifest, resolved.label);
-  const visibility = deriveVisibility(resolved.records, expectVisibility, resolved.label);
+  const visibility = readVisibility(
+    resolved.manifest,
+    resolved.records,
+    expectVisibility,
+    resolved.label,
+  );
   return buildLoadedBundle(resolved.records, resolved.searchIndex, resolved.manifest, visibility);
 }
 
@@ -317,23 +322,42 @@ function linkedIds(record) {
 }
 
 /**
+ * @param {object} manifest
  * @param {readonly object[]} records
  * @param {"public"|"internal"|undefined} expected
  * @param {string} label
  */
-function deriveVisibility(records, expected, label) {
-  const derived = records.some((record) => record.visibility === "internal") ? "internal" : "public";
-  if (expected && expected !== derived) {
+function readVisibility(manifest, records, expected, label) {
+  const declared = manifest.content?.visibility;
+  if (declared !== "public" && declared !== "internal") {
+    throw fail("bundle-invalid", label, [
+      "manifest.content.visibility must be \"public\" or \"internal\"",
+    ]);
+  }
+
+  if (declared === "public") {
+    const offenders = records
+      .filter((record) => record.visibility === "internal")
+      .map((record) => record.id);
+    if (offenders.length > 0) {
+      throw fail("projection-mismatch", label, [
+        `declared public, found internal ${offenders.join(", ")}`,
+      ]);
+    }
+  }
+
+  if (expected && expected !== declared) {
     const offenders = records
       .filter((record) => expected === "public" && record.visibility === "internal")
       .map((record) => record.id);
     const details =
       offenders.length > 0
         ? [`expected public, found internal ${offenders.join(", ")}`]
-        : [`expected ${expected}, derived ${derived}`];
+        : [`expected ${expected}, declared ${declared}`];
     throw fail("projection-mismatch", label, details);
   }
-  return derived;
+
+  return declared;
 }
 
 /**

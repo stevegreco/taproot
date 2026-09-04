@@ -46,6 +46,8 @@ function issueMessage(error) {
       return `must match pattern ${JSON.stringify(error.params.pattern ?? error.schema)}`;
     case "contains":
       return "must contain an authored source";
+    case "anyOf":
+      return "must name an attribute or a property";
     default:
       return error.message ?? "is invalid";
   }
@@ -57,19 +59,55 @@ function compareIssues(left, right) {
 }
 
 export function findSchemaIssues(candidate) {
-  if (validate(candidate)) {
+  const schemaIssues = validate(candidate)
+    ? []
+    : (validate.errors ?? [])
+        // `contains` also emits per-item const/required failures while probing members.
+        .filter((error) => !error.schemaPath.includes("/contains/"))
+        .map((error) => ({
+          path: issuePath(error),
+          keyword: error.keyword,
+          message: issueMessage(error),
+        }));
+
+  return [...schemaIssues, ...findContractSemanticIssues(candidate)].sort(compareIssues);
+}
+
+function findContractSemanticIssues(candidate) {
+  const contract = candidate?.contract;
+  if (contract == null || typeof contract !== "object" || Array.isArray(contract)) {
     return [];
   }
 
-  return (
-    (validate.errors ?? [])
-      // `contains` also emits per-item const/required failures while probing members.
-      .filter((error) => !error.schemaPath.includes("/contains/"))
-      .map((error) => ({
-        path: issuePath(error),
-        keyword: error.keyword,
-        message: issueMessage(error),
-      }))
-      .sort(compareIssues)
-  );
+  const issues = [];
+  const seenAnatomy = new Set();
+  for (const [index, part] of (contract.anatomy ?? []).entries()) {
+    const name = part?.name;
+    if (typeof name !== "string" || name.length === 0) continue;
+    if (seenAnatomy.has(name)) {
+      issues.push({
+        path: `/contract/anatomy/${index}/name`,
+        keyword: "uniqueItems",
+        message: "must be unique",
+      });
+      continue;
+    }
+    seenAnatomy.add(name);
+  }
+
+  for (const [name, parameter] of Object.entries(contract.parameters ?? {})) {
+    if (parameter?.kind !== "enum" || !Object.hasOwn(parameter, "default")) continue;
+    const values = parameter.values;
+    if (values == null || typeof values !== "object" || Array.isArray(values)) continue;
+    if (!Object.hasOwn(values, parameter.default)) {
+      const allowed = Object.keys(values).map((value) => JSON.stringify(value));
+      issues.push({
+        path: `/contract/parameters/${name}/default`,
+        keyword: "enum",
+        message: `must be one of ${allowed.join(", ")}`,
+      });
+    }
+  }
+
+  return issues;
 }

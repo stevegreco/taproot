@@ -2,6 +2,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import yaml from "js-yaml";
 import authoredSchema from "../schema/index.js";
+import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
+import portableContractSchema from "../schema/portable-contract.schema.json" with { type: "json" };
 import { deriveCompiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
 import { sha256Hex } from "./corpus.js";
 import { buildSearchIndex } from "./search-index.js";
@@ -71,6 +73,12 @@ export function projectBundle(corpus, visibility, meta) {
     "schema/compiled-knowledge-record.json",
     `${JSON.stringify(compiledSchema, null, 2)}\n`,
   );
+  putText(
+    files,
+    "schema/portable-contract.json",
+    `${JSON.stringify(portableContractSchema, null, 2)}\n`,
+  );
+  putText(files, "schema/host-binding.json", `${JSON.stringify(hostBindingSchema, null, 2)}\n`);
 
   for (const [path, text] of markdown) {
     putText(files, path, text);
@@ -89,6 +97,7 @@ export function projectBundle(corpus, visibility, meta) {
   const content = {
     schemaVersion: 1,
     compiledSchemaVersion: 3,
+    visibility,
     knowledgeVersion: meta.knowledgeVersion,
     designSystemVersion: meta.designSystemVersion,
     recordCount: records.length,
