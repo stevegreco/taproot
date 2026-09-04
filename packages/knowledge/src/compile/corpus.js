@@ -109,16 +109,17 @@ export async function buildCorpus(reader, roots, options = {}) {
         throw error;
       }
 
-      const authoredSource = authored.sources.find((source) => source.kind === "authored");
-      if (authoredSource && authoredSource.path !== repoPath) {
-        problems.push(
-          problem({
-            code: PROBLEM.RECORD_PATH_MISMATCH,
-            message: `authored source path ${authoredSource.path} does not match file ${repoPath}`,
-            recordId: authored.id,
-            path: repoPath,
-          }),
-        );
+      for (const authoredSource of authored.sources.filter((source) => source.kind === "authored")) {
+        if (authoredSource.path !== repoPath) {
+          problems.push(
+            problem({
+              code: PROBLEM.RECORD_PATH_MISMATCH,
+              message: `authored source path ${authoredSource.path} does not match file ${repoPath}`,
+              recordId: authored.id,
+              path: repoPath,
+            }),
+          );
+        }
       }
 
       if (!Object.hasOwn(authored, "visibility") || authored.visibility == null) {
@@ -353,11 +354,11 @@ async function readContributions(
     }
 
     const bytes =
-      source.kind === "authored"
+      source.kind === "authored" && source.path === repoPath
         ? new TextEncoder().encode(authoredText)
         : await reader.readBytes(source.path);
 
-    if (source.kind !== "authored" && bytes == null) {
+    if (bytes == null) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_MISSING,
@@ -369,7 +370,7 @@ async function readContributions(
       continue;
     }
 
-    const revision = shortRevision(bytes ?? authoredText);
+    const revision = shortRevision(bytes);
     sources.push({ kind: source.kind, path: source.path, revision });
 
     const contributor = CONTRIBUTORS[source.kind];

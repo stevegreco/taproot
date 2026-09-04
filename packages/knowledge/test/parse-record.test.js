@@ -114,6 +114,36 @@ test("parseRecord rejects generated provenance in authored Markdown", () => {
   assertIssuePath(markdown, "test-button.md", "/sources/1/kind");
 });
 
+test("parseRecord rejects a second authored source", () => {
+  const markdown = validComponent.replace(
+    `sources:
+  - kind: authored
+    path: packages/knowledge/content/components/test-button.md`,
+    `sources:
+  - kind: authored
+    path: packages/knowledge/content/components/test-button.md
+  - kind: authored
+    path: packages/knowledge/content/components/other.md`,
+  );
+
+  assert.throws(
+    () => parseRecord(markdown, { sourcePath: "test-button.md" }),
+    (error) => {
+      assert.equal(error instanceof KnowledgeRecordError, true);
+      assert.ok(
+        error.issues.some(
+          (issue) =>
+            issue.path === "/sources" &&
+            issue.keyword === "contains" &&
+            issue.message === "must contain exactly one authored source",
+        ),
+        JSON.stringify(error.issues),
+      );
+      return true;
+    },
+  );
+});
+
 test("parseRecord accepts an authored source that is not first", () => {
   const markdown = validComponent.replace(
     `sources:

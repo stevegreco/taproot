@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { join } from "node:path";
 import { test } from "node:test";
-import { PROBLEM, buildCorpus } from "../src/compile/corpus.js";
+import { readFileSync } from "node:fs";
+import { PROBLEM, buildCorpus, shortRevision } from "../src/compile/corpus.js";
 import {
   codes,
   createFsReader,
@@ -70,8 +71,15 @@ test("Button composes authored contract, tokens, and ADR 0003 into disjoint name
     button.sources.some((source) => source.kind === "component-spec"),
     false,
   );
-  assert.equal(button.sources[0].kind, "authored");
-  assert.equal(button.sources[0].path, "packages/knowledge/content/components/button.md");
+  const authoredSources = button.sources.filter((source) => source.kind === "authored");
+  assert.equal(authoredSources.length, 1);
+  assert.equal(authoredSources[0].path, "packages/knowledge/content/components/button.md");
+  assert.equal(
+    authoredSources[0].revision,
+    shortRevision(readFileSync(join(repoRoot, authoredSources[0].path), "utf8")),
+  );
+  assert.ok(button.contract);
+  assert.equal(Object.hasOwn(button, "contractSource"), false);
   assert.equal(Object.hasOwn(button.sources[0], "contributes"), false);
   assert.equal(Object.hasOwn(button, "backlinks"), false);
 });
