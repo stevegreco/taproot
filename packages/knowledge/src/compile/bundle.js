@@ -5,7 +5,7 @@ import authoredSchema from "../schema/index.js";
 import { deriveCompiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
 import { sha256Hex } from "./corpus.js";
 import { buildSearchIndex } from "./search-index.js";
-import { PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
+import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
 
 export function projectBundle(corpus, visibility, meta) {
   const includedIds = [...corpus.records.keys()].filter((id) => {
@@ -183,17 +183,16 @@ function visibilityLeaks(record, included, corpus) {
   return problems;
 }
 
+function projectNarrativeFrontmatter(record) {
+  const frontmatter = {};
+  for (const key of NARRATIVE_FRONTMATTER_KEYS) {
+    frontmatter[key] = record[key];
+  }
+  return frontmatter;
+}
+
 function emitMarkdown(record) {
-  const frontmatter = {
-    id: record.id,
-    jobs: record.jobs,
-    status: record.status,
-    summary: record.summary,
-    tags: record.tags,
-    title: record.title,
-    type: record.type,
-    visibility: record.visibility,
-  };
+  const frontmatter = projectNarrativeFrontmatter(record);
   return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${record.body}\n`;
 }
 

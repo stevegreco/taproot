@@ -3,9 +3,15 @@ import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
+import yaml from "js-yaml";
 import { buildCorpus } from "../src/compile/corpus.js";
 import { projectBundle, writeBundle } from "../src/compile/bundle.js";
-import { PROBLEM } from "../src/compile/tables.js";
+import {
+  NARRATIVE_FRONTMATTER_KEYS,
+  PROBLEM,
+  RECORD_ONLY_FIELDS,
+  isNarrativeFrontmatterKeys,
+} from "../src/compile/tables.js";
 import { findCompiledIssues, deriveCompiledSchema } from "../src/schema/compiled-record.js";
 import authoredSchema from "../src/schema/index.js";
 import { createFsReader, repoRoot } from "./helpers/workspace.js";
@@ -17,7 +23,7 @@ const meta = {
   revision: "test",
 };
 
-test("projectBundle emits sorted records, hashed files, and reduced markdown frontmatter", async () => {
+test("projectBundle emits sorted records, hashed files, and narrative projection frontmatter", async () => {
   const corpus = await buildCorpus(
     createFsReader(repoRoot),
     [{ root: join(repoRoot, "packages/knowledge/content"), visibility: "public" }],
@@ -46,6 +52,22 @@ test("projectBundle emits sorted records, hashed files, and reduced markdown fro
   assert.doesNotMatch(markdown, /^contract:/m);
   assert.doesNotMatch(markdown, /^backlinks:/m);
   assert.doesNotMatch(markdown, /^sources:/m);
+
+  for (const record of bundle.records) {
+    const path = `markdown/${record.id}.md`;
+    const text = bundle.markdown.get(path);
+    const { yamlText, data } = splitCompiledMarkdown(text);
+    const keys = Object.keys(data).sort();
+    assert.deepEqual(keys, [...NARRATIVE_FRONTMATTER_KEYS], path);
+    assert.equal(isNarrativeFrontmatterKeys(keys), true, path);
+    assert.doesNotMatch(yamlText, /^(?:contract|host|checks):/m);
+    for (const field of RECORD_ONLY_FIELDS) {
+      assert.equal(Object.hasOwn(data, field), false, `${path} emitted ${field}`);
+    }
+    for (const key of NARRATIVE_FRONTMATTER_KEYS) {
+      assert.deepEqual(data[key], record[key], `${path} ${key}`);
+    }
+  }
 
   const dir = await mkdtemp(join(tmpdir(), "knowledge-bundle-"));
   const summary = await writeBundle(dir, bundle);
@@ -122,3 +144,11 @@ test("compiled schema forbids host on a component record", async () => {
   ]);
   assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
 });
+
+function splitCompiledMarkdown(markdown) {
+  assert.match(markdown, /^---\n/);
+  const end = markdown.indexOf("\n---\n", 4);
+  assert.notEqual(end, -1);
+  const yamlText = markdown.slice(4, end);
+  return { yamlText, data: yaml.load(yamlText) };
+}

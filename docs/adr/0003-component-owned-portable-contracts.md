@@ -52,8 +52,8 @@ extract a non-record contract source then.
 - Public record count drops by one per migrated component.
 - KNOW-002, KNOW-006, KNOW-008, the content model, and `AGENTS.md` name component records as the
   portable contract owner.
-- Compiled Markdown still omits `contract` unless a later decision changes that view. `get()` is
-  the contract surface.
+- Compiled Markdown is the narrative projection and omits `contract`, `host`, and `checks`. `get()` is
+  the only compiled owner of those fields.
 
 ## Alternatives considered
 

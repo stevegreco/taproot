@@ -96,7 +96,9 @@ Schema version `1` fixes the current field vocabulary and dotted ID format.
 
 The package exports `parseRecord(markdown, { sourcePath })`. It parses YAML frontmatter, adds the
 trimmed Markdown body, validates the complete authored record, and returns one flat object. Invalid
-input throws a path-aware `KnowledgeRecordError`.
+input throws a path-aware `KnowledgeRecordError`. A `sourcePath` under `markdown/<id>.md` is a
+compiled narrative projection, not authored input. Identity-only frontmatter on an authored path
+still parses; `parseRecord` fills `schemaVersion`, `relations`, and `sources`.
 
 The compiled-record schema is derived in memory from this authored schema at compile time. The
 compiler clones the authored document, sets a new `$id`, and merges compiled-only fields. It does
@@ -282,8 +284,21 @@ dist/
     └── ...
 ```
 
-`schema/compiled-knowledge-record.json` is the derived compiled schema. `markdown/<id>.md` carries
-reduced frontmatter plus the rewritten body. It is not a round-trip format for `parseRecord`.
+`schema/compiled-knowledge-record.json` is the derived compiled schema.
+
+### Compiled view ownership
+
+The compiler writes two views of each assembled record.
+
+- Record view: `records.json`, `records.jsonl`, and `openCatalog().get(id)`. This is the only
+  compiled owner of structured fields, including `contract`, `host`, `checks`, `tokens`, and
+  `decisions`.
+- Markdown view: `markdown/<id>.md`. Frontmatter is identity and discovery (`id`, `jobs`,
+  `status`, `summary`, `tags`, `title`, `type`, `visibility`). The body is the rewritten
+  narrative. The file is not a round-trip for `parseRecord`. Links to other `markdown/<id>.md`
+  files are narrative cross-references, not ownership of `contract`, `host`, or `checks`.
+
+`search-index.json` is an index over the record view. It is not a third record view.
 
 The manifest `content` block records the schema version, knowledge version, design system version,
 record count, and per-file hashes. The digest hashes that block. Build time and git revision live

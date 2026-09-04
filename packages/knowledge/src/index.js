@@ -2,6 +2,7 @@ import grayMatter from "gray-matter";
 import { findSchemaIssues } from "./schema/validator.js";
 
 const parseMatter = grayMatter.default ?? grayMatter;
+const COMPILED_MARKDOWN_SOURCE = /(?:^|\/)markdown\/[a-z0-9][a-z0-9.-]*\.md$/i;
 
 export class KnowledgeRecordError extends Error {
   constructor(sourcePath, issues) {
@@ -91,6 +92,16 @@ export function parseRecord(markdown, options) {
         path: "/body",
         keyword: "frontmatter",
         message: "body is owned by the Markdown document, not frontmatter",
+      },
+    ]);
+  }
+
+  if (COMPILED_MARKDOWN_SOURCE.test(options.sourcePath)) {
+    throw new KnowledgeRecordError(options.sourcePath, [
+      {
+        path: "",
+        keyword: "frontmatter",
+        message: "compiled Markdown is a narrative projection, not authored input for parseRecord",
       },
     ]);
   }

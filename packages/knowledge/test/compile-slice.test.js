@@ -46,6 +46,22 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const buttonMarkdown = await readFile(join(outDir, "public/markdown/component.button.md"), "utf8");
   assert.match(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);
   assert.doesNotMatch(buttonMarkdown, /\.\.\/patterns\/action-hierarchy\.md/);
+  assert.doesNotMatch(buttonMarkdown, /^contract:/m);
+  assert.doesNotMatch(buttonMarkdown, /^host:/m);
+  assert.doesNotMatch(buttonMarkdown, /^checks:/m);
+
+  const bindingMarkdown = await readFile(
+    join(outDir, "public/markdown/binding.button.web-component.md"),
+    "utf8",
+  );
+  assert.doesNotMatch(bindingMarkdown, /^host:/m);
+  assert.doesNotMatch(bindingMarkdown, /^contract:/m);
+
+  const reviewMarkdown = await readFile(
+    join(outDir, "public/markdown/guideline.button-review.md"),
+    "utf8",
+  );
+  assert.doesNotMatch(reviewMarkdown, /^checks:/m);
 
   const example = records.find((record) => record.id === "example.action-hierarchy.settings");
   const assetPath = example.assets[0].bundlePath;
