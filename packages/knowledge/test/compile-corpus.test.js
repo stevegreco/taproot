@@ -8,7 +8,7 @@ const publicRoot = { root: "content", visibility: "public" };
 const internalRoot = { root: "internal", visibility: "internal" };
 
 function authored(path, fields, body) {
-  return recordMarkdown({ ...fields, sources: [{ kind: "authored", path }] }, body);
+  return recordMarkdown({ sources: [{ kind: "authored", path }], ...fields }, body);
 }
 
 test("RECORD_INVALID fires once per parseRecord issue", async () => {
@@ -21,7 +21,7 @@ test("RECORD_INVALID fires once per parseRecord issue", async () => {
   const problems = codes(corpus, PROBLEM.RECORD_INVALID);
 
   assert.ok(problems.length >= 1);
-  assert.equal(problems[0].path, "/title");
+  assert.equal(problems[0].path, "content/invalid.md /title");
   assert.equal(corpus.records.size, 0);
 });
 
@@ -35,8 +35,22 @@ test("RECORD_SCHEMA_UNSUPPORTED fires when schemaVersion is not 1", async () => 
   const problems = codes(corpus, PROBLEM.RECORD_SCHEMA_UNSUPPORTED);
 
   assert.equal(problems.length, 1);
-  assert.equal(problems[0].path, "/schemaVersion");
+  assert.equal(problems[0].path, "content/unsupported.md /schemaVersion");
   assert.equal(codes(corpus, PROBLEM.RECORD_INVALID).length, 0);
+});
+
+test("RECORD_INVALID fires when schemaVersion has the wrong type", async () => {
+  const path = "content/typed.md";
+  const reader = createMemoryReader({
+    [path]: authored(path, { id: "component.typed", schemaVersion: "1" }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.RECORD_INVALID);
+
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].path, "content/typed.md /schemaVersion");
+  assert.equal(codes(corpus, PROBLEM.RECORD_SCHEMA_UNSUPPORTED).length, 0);
 });
 
 test("RECORD_PATH_MISMATCH fires when the authored source path is not the file", async () => {
@@ -537,6 +551,34 @@ test("BODY_UNRESOLVED_LINK fires for a relative Markdown link with no bundle tar
 
   assert.equal(problems.length, 1);
   assert.equal(problems[0].recordId, "component.links");
+});
+
+test("BODY_UNRESOLVED_LINK fires for reference-style Markdown links", async () => {
+  const path = "content/a.md";
+  const target = "content/b.md";
+  const reader = createMemoryReader({
+    [path]: authored(
+      path,
+      { id: "component.a" },
+      [
+        "Inline [ok](b.md).",
+        "",
+        "Ref style [see][b] and ![img][pic].",
+        "",
+        "[b]: ./b.md",
+        "[pic]: ./missing.svg",
+      ].join("\n"),
+    ),
+    [target]: authored(target, { id: "component.b" }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.BODY_UNRESOLVED_LINK);
+
+  assert.ok(problems.length >= 1);
+  assert.equal(problems[0].recordId, "component.a");
+  assert.ok(problems.some((item) => /reference-style/.test(item.message)));
+  assert.equal(corpus.records.get("component.a").body.includes("[b]: ./b.md"), true);
 });
 
 test("PATH_OUTSIDE_ROOT fires when a public asset leaves allowed roots", async () => {

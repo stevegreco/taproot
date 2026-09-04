@@ -87,15 +87,20 @@ export async function buildCorpus(reader, roots, options = {}) {
         authored = parseRecord(text, { sourcePath: repoPath });
       } catch (error) {
         if (error instanceof KnowledgeRecordError) {
+          const typedPaths = new Set(
+            error.issues.filter((issue) => issue.keyword === "type").map((issue) => issue.path),
+          );
           for (const issue of error.issues) {
-            const unsupported = issue.path === "/schemaVersion";
+            // Wrong type on a const field is a type error, not an unsupported version.
+            if (issue.keyword === "const" && typedPaths.has(issue.path)) continue;
+            const unsupported = issue.path === "/schemaVersion" && issue.keyword === "const";
             problems.push(
               problem({
                 code: unsupported
                   ? PROBLEM.RECORD_SCHEMA_UNSUPPORTED
                   : PROBLEM.RECORD_INVALID,
                 message: issue.message,
-                path: issue.path || repoPath,
+                path: issue.path ? `${repoPath} ${issue.path}` : repoPath,
               }),
             );
           }
@@ -711,6 +716,17 @@ function rewriteBodyLinks(body, context) {
   const problems = [];
 
   visit(tree, (node) => {
+    if (node.type === "linkReference" || node.type === "imageReference" || node.type === "definition") {
+      problems.push(
+        problem({
+          code: PROBLEM.BODY_UNRESOLVED_LINK,
+          message: `unsupported reference-style Markdown ${node.type}`,
+          recordId: context.recordId,
+          path: context.authoredPath,
+        }),
+      );
+      return;
+    }
     if (node.type !== "link" && node.type !== "image") return;
     const url = node.url ?? "";
     const resolved = resolveBodyUrl(url, context);
