@@ -105,9 +105,9 @@ compiler clones the authored document, sets a new `$id`, and merges compiled-onl
 not `$ref` the authored schema from a sibling file, because `unevaluatedProperties: false` would
 reject those extra fields (KNOW-007, KNOW-023).
 
-Authored records must include an `authored` source. They cannot declare the compiler-only
-`generated` source kind. Unknown fields fail validation rather than passing through to compiled
-output. The authored schema stays `unevaluatedProperties: false`.
+Authored records must declare exactly one `kind: authored` source. They cannot declare the
+compiler-only `generated` source kind. Unknown fields fail validation rather than passing through
+to compiled output. The authored schema stays `unevaluatedProperties: false`.
 
 ## Proposed authored format
 
@@ -215,6 +215,13 @@ A source entry identifies how a record was produced:
 - `token-source`: token definition or generated token artifact;
 - `adr`: accepted decision owned by its domain package; or
 - `generated`: deterministic output from another declared source.
+
+An authored record declares exactly one `kind: authored` source. That path must be the file the
+compiler is parsing. A second authored source is invalid. A missing or mismatched authored path
+fails the build. Each compiled `revision` is a digest of the bytes at that entry's declared path.
+
+A component's portable `contract` is authored in the same Markdown file. Its provenance is that
+`kind: authored` source. There is no separate contract-source field.
 
 Generated records include source paths and source revisions in their compiled metadata. The build
 must not silently treat generated output as authored truth.

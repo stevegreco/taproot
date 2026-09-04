@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { PROBLEM } from "../src/compile/tables.js";
-import { buildCorpus } from "../src/compile/corpus.js";
+import { buildCorpus, shortRevision } from "../src/compile/corpus.js";
 import { codes, createMemoryReader, portableContract, recordMarkdown, tinySvg } from "./helpers/workspace.js";
 
 const publicRoot = { root: "content", visibility: "public" };
@@ -64,6 +64,79 @@ test("RECORD_PATH_MISMATCH fires when the authored source path is not the file",
 
   assert.equal(problems.length, 1);
   assert.equal(problems[0].recordId, "component.mismatch");
+});
+
+test("RECORD_INVALID fires when a record declares two authored sources", async () => {
+  const path = "content/two.md";
+  const reader = createMemoryReader({
+    [path]: recordMarkdown({
+      id: "component.two",
+      sources: [
+        { kind: "authored", path },
+        { kind: "authored", path: "content/ghost.md" },
+      ],
+    }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.RECORD_INVALID);
+
+  assert.ok(problems.some((item) => item.path === "content/two.md /sources"));
+  assert.match(problems[0].message, /exactly one authored source/);
+  assert.equal(corpus.records.size, 0);
+});
+
+test("SOURCE_MISSING fires when the authored source path does not exist", async () => {
+  const path = "content/mismatch.md";
+  const reader = createMemoryReader({
+    [path]: authored("content/other.md", { id: "component.mismatch" }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const problems = codes(corpus, PROBLEM.SOURCE_MISSING);
+
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].path, "content/other.md");
+  assert.equal(
+    corpus.records
+      .get("component.mismatch")
+      .sources.some((source) => source.path === "content/other.md"),
+    false,
+  );
+});
+
+test("authored source revision digests the bytes at the declared path", async () => {
+  const path = "content/rev.md";
+  const other = "content/other.txt";
+  const otherText = "bytes at the declared authored path\n";
+  const reader = createMemoryReader({
+    [path]: authored(other, { id: "component.rev" }),
+    [other]: otherText,
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const authoredSource = corpus.records
+    .get("component.rev")
+    .sources.find((source) => source.kind === "authored");
+
+  assert.equal(codes(corpus, PROBLEM.RECORD_PATH_MISMATCH).length, 1);
+  assert.equal(codes(corpus, PROBLEM.SOURCE_MISSING).length, 0);
+  assert.equal(authoredSource.path, other);
+  assert.equal(authoredSource.revision, shortRevision(otherText));
+});
+
+test("matching authored source revision digests the record file", async () => {
+  const path = "content/rev.md";
+  const text = authored(path, { id: "component.rev" });
+  const reader = createMemoryReader({ [path]: text });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+  const record = corpus.records.get("component.rev");
+
+  assert.equal(corpus.problems.filter((item) => item.severity === "error").length, 0);
+  assert.equal(record.sources.length, 1);
+  assert.equal(record.sources[0].path, path);
+  assert.equal(record.sources[0].revision, shortRevision(text));
 });
 
 test("omitted compiler-known fields compile like an explicit public record", async () => {
