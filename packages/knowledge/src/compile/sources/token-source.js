@@ -56,7 +56,6 @@ function flattenTokens(node, pathParts, entries) {
       name: pathParts.join("."),
       alias: aliasOf(node.$value),
       valueType: typeof node.$type === "string" ? node.$type : "",
-      group: null,
     });
     return;
   }
@@ -65,6 +64,11 @@ function flattenTokens(node, pathParts, entries) {
     if (key.startsWith("$")) continue;
     flattenTokens(child, [...pathParts, key], entries);
   }
+}
+
+export function tokenNamesFromText(text) {
+  const result = readTokenSource(text, { path: "", recordId: "" });
+  return result.fields.tokens?.entries.map((entry) => entry.name) ?? [];
 }
 
 function aliasOf(value) {

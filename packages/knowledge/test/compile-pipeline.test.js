@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { assembleCorpus } from "../src/compile/corpus.js";
 import { loadCorpusInputs } from "../src/compile/inputs.js";
-import { withTokenGroups } from "../src/compile/records.js";
+import { checkMappingAgreement } from "../src/compile/records.js";
 import { rewriteBodyLinks, rewriteEmittedMarkdownUrls, toMarkdownFileUrl } from "../src/compile/narrative.js";
 import { createMemoryReader, recordMarkdown, portableContract } from "./helpers/workspace.js";
 
@@ -89,17 +89,21 @@ test("emitted Markdown destinations are relative to the markdown file", () => {
   );
 });
 
-test("token grouping returns new data without modifying frozen source entries", () => {
-  const entry = Object.freeze({ name: "component.button.primary.background.rest", group: null });
-  const record = Object.freeze({
+test("mapping agreement rejects a token name that is not in the token package", () => {
+  const record = {
+    id: "component.fixture",
     contract: portableContract({
-      parameters: { variant: { kind: "enum", values: { primary: "Primary" } } },
+      anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
+      mappings: [
+        {
+          part: "control",
+          channel: "background",
+          token: { name: "component.fixture.missing" },
+        },
+      ],
     }),
-    tokens: Object.freeze({ namespace: "component.button", entries: Object.freeze([entry]) }),
-  });
-  const grouped = withTokenGroups(record);
-  assert.equal(grouped.tokens.entries[0].group, "primary");
-  assert.equal(record.tokens.entries[0].group, null);
-  assert.notEqual(grouped, record);
-  assert.notEqual(grouped.tokens.entries[0], entry);
+  };
+  const problems = checkMappingAgreement(record, new Set(["component.fixture.present"]));
+  assert.equal(problems.length, 1);
+  assert.match(problems[0].message, /component\.fixture\.missing/);
 });

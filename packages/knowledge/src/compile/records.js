@@ -1,10 +1,11 @@
-import { PROBLEM, SIZE_BRIDGE, problem } from "./tables.js";
+import { PROBLEM, problem } from "./tables.js";
+import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 
 export function assembleRecord(authored, contribution, assets) {
   const record = {
     id: authored.id,
     schemaVersion: authored.schemaVersion,
-    compiledSchemaVersion: 3,
+    compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
     type: authored.type,
     title: authored.title,
     summary: authored.summary,
@@ -145,107 +146,110 @@ function bijectionProblems(recordId, label, expected, actual) {
   return problems;
 }
 
-export function withTokenGroups(record) {
-  if (!record.tokens) return record;
-  const variants = new Set(Object.keys(record.contract?.parameters?.variant?.values ?? {}));
-  return {
-    ...record,
-    tokens: {
-      ...record.tokens,
-      entries: record.tokens.entries.map((entry) => ({
-        ...entry,
-        group: assignGroup(entry.name, record.tokens.namespace, variants),
-      })),
-    },
-  };
-}
+const CONFIGURATION_EXTRAS = Object.freeze({
+  prefersReducedMotion: Object.freeze(["reduce"]),
+});
 
-export function checkSourceAgreement(record) {
-  const tokens = record.tokens;
-  if (!tokens) return [];
-
+export function checkSourceAgreement(record, tokenNames = new Set()) {
   const problems = [];
-  const namespace = tokens.namespace;
-  const prefix = `${namespace}.`;
-  const inNamespace = tokens.entries.filter(
-    (entry) => entry.name === namespace || entry.name.startsWith(prefix),
-  );
-
-  if (inNamespace.length === 0) {
-    problems.push(
-      problem({
-        code: PROBLEM.SOURCE_CONFLICT,
-        message: `token namespace ${namespace} is missing from the token source`,
-        recordId: record.id,
-        path: "/tokens/namespace",
-      }),
+  const tokens = record.tokens;
+  if (tokens) {
+    const namespace = tokens.namespace;
+    const prefix = `${namespace}.`;
+    const inNamespace = tokens.entries.filter(
+      (entry) => entry.name === namespace || entry.name.startsWith(prefix),
     );
+    if (inNamespace.length === 0) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `token namespace ${namespace} is missing from the token source`,
+          recordId: record.id,
+          path: "/tokens/namespace",
+        }),
+      );
+    }
   }
 
-  const variantValues = record.contract?.parameters?.variant?.values ?? {};
-  const variantNames = new Set(Object.keys(variantValues));
+  problems.push(...checkMappingAgreement(record, tokenNames));
+  return problems;
+}
 
-  if (tokens.tier === "component") {
-    for (const variant of variantNames) {
-      if (!tokens.entries.some((entry) => entry.group === variant)) {
+export function checkMappingAgreement(record, tokenNames = new Set()) {
+  const mappings = record.contract?.mappings;
+  if (!Array.isArray(mappings) || mappings.length === 0) return [];
+
+  const problems = [];
+  const parts = new Set((record.contract.anatomy ?? []).map((item) => item.name));
+  const states = new Set(record.contract.states ?? []);
+  const parameters = record.contract.parameters ?? {};
+
+  for (const [index, mapping] of mappings.entries()) {
+    const path = `/contract/mappings/${index}`;
+    if (!parts.has(mapping.part)) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `mapping part ${mapping.part} is not in anatomy`,
+          recordId: record.id,
+          path: `${path}/part`,
+        }),
+      );
+    }
+    if (mapping.state && !states.has(mapping.state)) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `mapping state ${mapping.state} is not in contract.states`,
+          recordId: record.id,
+          path: `${path}/state`,
+        }),
+      );
+    }
+    for (const [key, value] of Object.entries(mapping.configuration ?? {})) {
+      if (Object.hasOwn(CONFIGURATION_EXTRAS, key)) {
+        if (!CONFIGURATION_EXTRAS[key].includes(value)) {
+          problems.push(
+            problem({
+              code: PROBLEM.SOURCE_CONFLICT,
+              message: `mapping configuration ${key} has unknown value ${value}`,
+              recordId: record.id,
+              path: `${path}/configuration/${key}`,
+            }),
+          );
+        }
+        continue;
+      }
+      const parameter = parameters[key];
+      if (!parameter) {
         problems.push(
           problem({
             code: PROBLEM.SOURCE_CONFLICT,
-            message: `component variant ${variant} has no token entries`,
+            message: `mapping configuration ${key} is not a contract parameter`,
             recordId: record.id,
-            path: `/contract/parameters/variant/${variant}`,
+            path: `${path}/configuration/${key}`,
+          }),
+        );
+        continue;
+      }
+      if (parameter.kind === "enum" && !Object.hasOwn(parameter.values ?? {}, value)) {
+        problems.push(
+          problem({
+            code: PROBLEM.SOURCE_CONFLICT,
+            message: `mapping configuration ${key} has unknown value ${value}`,
+            recordId: record.id,
+            path: `${path}/configuration/${key}`,
           }),
         );
       }
     }
-
-    const extraGroups = new Set(
-      tokens.entries
-        .map((entry) => entry.group)
-        .filter((group) => group != null && !variantNames.has(group)),
-    );
-    for (const group of extraGroups) {
+    if (mapping.token?.name && !tokenNames.has(mapping.token.name)) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `token group ${group} is not a spec variant`,
+          message: `mapped token ${mapping.token.name} is missing from the token package`,
           recordId: record.id,
-          path: "/tokens/entries",
-        }),
-      );
-    }
-  }
-
-  const specSizes = Object.keys(record.contract?.parameters?.size?.values ?? {});
-  for (const size of specSizes) {
-    if (!Object.hasOwn(SIZE_BRIDGE, size)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `spec size ${size} is not in SIZE_BRIDGE`,
-          recordId: record.id,
-          path: `/contract/parameters/size/${size}`,
-        }),
-      );
-    }
-  }
-
-  const sizePrefix = `${namespace}.size.`;
-  const tokenSizeKeys = new Set();
-  for (const entry of tokens.entries) {
-    if (!entry.name.startsWith(sizePrefix)) continue;
-    const key = entry.name.slice(sizePrefix.length).split(".")[0];
-    if (key) tokenSizeKeys.add(key);
-  }
-  const bridged = new Set(Object.values(SIZE_BRIDGE));
-  for (const key of tokenSizeKeys) {
-    if (!bridged.has(key)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `token size key ${key} is not in SIZE_BRIDGE`,
-          recordId: record.id,
-          path: "/tokens/entries",
+          path: `${path}/token/name`,
         }),
       );
     }
@@ -284,20 +288,4 @@ export function completenessProblems(record) {
   }
 
   return problems;
-}
-
-function assignGroup(name, namespace, variantNames) {
-  const prefix = `${namespace}.`;
-  if (!name.startsWith(prefix)) return null;
-  const parts = name.slice(prefix.length).split(".");
-  const first = parts[0];
-  if (!first || first === "size") return null;
-  if (variantNames.has(first)) return first;
-  if (
-    parts.length >= 3 &&
-    (parts[1] === "background" || parts[1] === "foreground" || parts[1] === "border")
-  ) {
-    return first;
-  }
-  return null;
 }

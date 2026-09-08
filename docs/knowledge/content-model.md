@@ -23,7 +23,10 @@ and composes each source kind into a reserved namespace. It does not flat-merge 
 
 The narrative hub for a design system component. When a portable contract exists, the component
 authors it as `contract`. That object has usage, anatomy, parameters, events, states, behavior,
-accessibility, and optional rationale. It has no `tagName`, slots, parts, attribute spellings, or DOM types.
+accessibility, optional rationale, and optional visual mappings. A mapping row names an anatomy
+part, visual channel, configuration, state, and either a token name or a closed literal
+(`transparent`, `inherit`, `none`). Token names may be semantic, primitive, or component. The
+contract has no `tagName`, slots, parts, attribute spellings, or DOM types.
 Host identity is not authored here. A later component may omit `contract`.
 
 Examples: Button, Badge.
@@ -178,11 +181,13 @@ the declared kind. Each host parameter mapping names an attribute, a property, o
 `values` map on a host parameter, when present, covers every portable enum value.
 
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
-namespace must exist in the token file. When `tokens.tier` is `component`, every contract
-`parameters.variant` value must have at least one token entry, and a token group that names no
-contract variant is a conflict. Contract size values and token `size.*` keys must appear in the frozen
-`sm`/`small` and `md`/`medium` bridge. Unknown keys fail the build. A mapped size with no token
-leaves is allowed, as is a sparse variant such as `ghost` with no rest background.
+namespace must exist in the token file when a component publishes `tokenRef`. Mapping rows must
+name an anatomy part, a contract state when `state` is present, configuration keys that are
+contract parameters or the closed extra `prefersReducedMotion: reduce`, and a token name that
+exists in the token package or a closed literal. The compiler does not infer variant groups from
+token paths and does not freeze a size-name bridge. An extra size compiles when its mapping names a
+published token. A mapped token missing from the token package fails the build. Sparse variants such
+as `ghost` with no rest background token are authored as literals, not inferred.
 
 These are not conflicts, because they are different facts with different owners:
 
@@ -339,8 +344,9 @@ The compiler writes two views of each assembled record.
 The manifest `content` block records the schema version, compiled schema version, bundle
 visibility, knowledge version, design system version, record count, and per-file hashes. The
 digest hashes that block. Build time and git revision live in `manifest.build` and are not part
-of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` stays `3` because
-this does not change the compiled record shape. An internal bundle may contain only public
+of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `4` because
+portable `specVersion` 3 adds authored visual mappings and compiled token entries no longer carry
+inferred `group`. Bundles whose compiled schema version is not 4 fail closed. An internal bundle may contain only public
 records; visibility is the declared projection, not a guess from record contents.
 
 Consumers query a compiled bundle through `openCatalog` in
@@ -363,8 +369,8 @@ trusted compiler produced them.
 ### Compiler stages
 
 `loadCorpusInputs` reads authored records, domain sources, and assets. `assembleCorpus` consumes
-that data without further I/O or input mutation. It assembles records, assigns token groups,
-validates domain rules and relationships, and rewrites narrative references. `projectBundle`
+that data without further I/O or input mutation. It assembles records, validates mapping and
+namespace agreement, validates domain rules and relationships, and rewrites narrative references. `projectBundle`
 computes visibility-specific backlinks and emits files; `writeBundle` performs output I/O.
 The pure assembly stage can be tested with the same loaded inputs repeatedly (KNOW-023, KNOW-025).
 

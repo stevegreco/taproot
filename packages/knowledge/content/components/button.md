@@ -29,7 +29,7 @@ tokenRef:
   namespace: component.button
   description: All visual values consume the published Button component-token contract.
 contract:
-  specVersion: 2
+  specVersion: 3
   description: Triggers an action or submits or resets a form.
   usage:
     do:
@@ -109,6 +109,358 @@ contract:
   rationale:
     - decision: Button has a published component-token namespace.
       rationale: Consumers need a stable customization boundary for variants and states.
+  mappings:
+    - part: control
+      channel: padding-inline
+      configuration:
+        size: md
+      token:
+        name: component.button.size.medium.paddingInline
+    - part: control
+      channel: padding-block
+      configuration:
+        size: md
+      token:
+        name: component.button.size.medium.paddingBlock
+    - part: control
+      channel: padding-inline
+      configuration:
+        size: sm
+      token:
+        name: component.button.size.small.paddingInline
+    - part: control
+      channel: padding-block
+      configuration:
+        size: sm
+      token:
+        name: component.button.size.small.paddingBlock
+    - part: control
+      channel: radius
+      token:
+        name: component.button.radius
+    - part: control
+      channel: gap
+      token:
+        name: component.button.gap
+    - part: control
+      channel: font-family
+      token:
+        name: component.button.font.family
+    - part: control
+      channel: font-size
+      token:
+        name: component.button.font.size
+    - part: control
+      channel: font-weight
+      token:
+        name: component.button.font.weight
+    - part: control
+      channel: line-height
+      token:
+        name: component.button.font.lineHeight
+    - part: control
+      channel: letter-spacing
+      token:
+        name: component.button.font.letterSpacing
+    - part: control
+      channel: transition
+      token:
+        name: component.button.motion.duration
+    - part: control
+      channel: transition
+      token:
+        name: component.button.motion.easing
+    - part: control
+      channel: transition
+      configuration:
+        prefersReducedMotion: reduce
+      token:
+        literal: none
+    - part: control
+      channel: outline
+      state: focus-visible
+      token:
+        name: component.button.focus.border
+    - part: control
+      channel: background
+      configuration:
+        variant: primary
+      state: default
+      token:
+        name: component.button.primary.background.default
+    - part: control
+      channel: border
+      configuration:
+        variant: primary
+      state: default
+      token:
+        name: component.button.primary.border.default
+    - part: control
+      channel: background
+      configuration:
+        variant: primary
+      state: hover
+      token:
+        name: component.button.primary.background.hover
+    - part: control
+      channel: border
+      configuration:
+        variant: primary
+      state: hover
+      token:
+        name: component.button.primary.border.hover
+    - part: control
+      channel: background
+      configuration:
+        variant: primary
+      state: pressed
+      token:
+        name: component.button.primary.background.pressed
+    - part: control
+      channel: border
+      configuration:
+        variant: primary
+      state: pressed
+      token:
+        name: component.button.primary.border.pressed
+    - part: control
+      channel: background
+      configuration:
+        variant: primary
+      state: disabled
+      token:
+        name: component.button.primary.background.disabled
+    - part: control
+      channel: border
+      configuration:
+        variant: primary
+      state: disabled
+      token:
+        name: component.button.primary.border.disabled
+    - part: control
+      channel: foreground
+      configuration:
+        variant: primary
+      state: default
+      token:
+        name: component.button.primary.foreground.default
+    - part: control
+      channel: foreground
+      configuration:
+        variant: primary
+      state: disabled
+      token:
+        name: component.button.primary.foreground.disabled
+    - part: control
+      channel: background
+      configuration:
+        variant: danger
+      state: default
+      token:
+        name: component.button.danger.background.default
+    - part: control
+      channel: border
+      configuration:
+        variant: danger
+      state: default
+      token:
+        name: component.button.danger.border.default
+    - part: control
+      channel: background
+      configuration:
+        variant: danger
+      state: hover
+      token:
+        name: component.button.danger.background.hover
+    - part: control
+      channel: border
+      configuration:
+        variant: danger
+      state: hover
+      token:
+        name: component.button.danger.border.hover
+    - part: control
+      channel: background
+      configuration:
+        variant: danger
+      state: pressed
+      token:
+        name: component.button.danger.background.pressed
+    - part: control
+      channel: border
+      configuration:
+        variant: danger
+      state: pressed
+      token:
+        name: component.button.danger.border.pressed
+    - part: control
+      channel: background
+      configuration:
+        variant: danger
+      state: disabled
+      token:
+        name: component.button.danger.background.disabled
+    - part: control
+      channel: border
+      configuration:
+        variant: danger
+      state: disabled
+      token:
+        name: component.button.danger.border.disabled
+    - part: control
+      channel: foreground
+      configuration:
+        variant: danger
+      state: default
+      token:
+        name: component.button.danger.foreground.default
+    - part: control
+      channel: foreground
+      configuration:
+        variant: danger
+      state: disabled
+      token:
+        name: component.button.danger.foreground.disabled
+    - part: control
+      channel: background
+      configuration:
+        variant: secondary
+      state: default
+      token:
+        name: component.button.secondary.background.default
+    - part: control
+      channel: background
+      configuration:
+        variant: secondary
+      state: hover
+      token:
+        name: component.button.secondary.background.hover
+    - part: control
+      channel: background
+      configuration:
+        variant: secondary
+      state: pressed
+      token:
+        name: component.button.secondary.background.pressed
+    - part: control
+      channel: background
+      configuration:
+        variant: secondary
+      state: disabled
+      token:
+        literal: transparent
+    - part: control
+      channel: foreground
+      configuration:
+        variant: secondary
+      state: default
+      token:
+        name: component.button.secondary.foreground.default
+    - part: control
+      channel: foreground
+      configuration:
+        variant: secondary
+      state: disabled
+      token:
+        name: component.button.secondary.foreground.disabled
+    - part: control
+      channel: border
+      configuration:
+        variant: secondary
+      state: default
+      token:
+        name: component.button.secondary.border.default
+    - part: control
+      channel: border
+      configuration:
+        variant: secondary
+      state: hover
+      token:
+        name: component.button.secondary.border.default
+    - part: control
+      channel: border
+      configuration:
+        variant: secondary
+      state: pressed
+      token:
+        name: component.button.secondary.border.default
+    - part: control
+      channel: border
+      configuration:
+        variant: secondary
+      state: disabled
+      token:
+        name: component.button.secondary.border.disabled
+    - part: control
+      channel: background
+      configuration:
+        variant: ghost
+      state: default
+      token:
+        literal: transparent
+    - part: control
+      channel: background
+      configuration:
+        variant: ghost
+      state: hover
+      token:
+        name: component.button.ghost.background.hover
+    - part: control
+      channel: background
+      configuration:
+        variant: ghost
+      state: pressed
+      token:
+        name: component.button.ghost.background.pressed
+    - part: control
+      channel: background
+      configuration:
+        variant: ghost
+      state: disabled
+      token:
+        literal: transparent
+    - part: control
+      channel: foreground
+      configuration:
+        variant: ghost
+      state: default
+      token:
+        name: component.button.ghost.foreground.default
+    - part: control
+      channel: foreground
+      configuration:
+        variant: ghost
+      state: disabled
+      token:
+        name: component.button.ghost.foreground.disabled
+    - part: control
+      channel: border
+      configuration:
+        variant: ghost
+      state: default
+      token:
+        literal: transparent
+    - part: control
+      channel: border
+      configuration:
+        variant: ghost
+      state: hover
+      token:
+        literal: transparent
+    - part: control
+      channel: border
+      configuration:
+        variant: ghost
+      state: pressed
+      token:
+        literal: transparent
+    - part: control
+      channel: border
+      configuration:
+        variant: ghost
+      state: disabled
+      token:
+        literal: transparent
 ---
 
 Button lets a person trigger an action in the current view. Use a link for navigation and Badge for

@@ -51,6 +51,9 @@ Preserve these parts unless the assigned work explicitly revisits them:
 ### KR-01: Remove component-specific token policy from the compiler
 
 **Priority:** First cleanup. **Requirements:** KNOW-002, KNOW-008, KNOW-023.
+**Status:** Done. Portable `contract.mappings` authors the token relationship. `SIZE_BRIDGE`,
+`assignGroup`, and `applyTokenGroups` are deleted. Mapping token names are validated against the
+token package. Badge has no `tokenRef`. See issue #70.
 
 Evidence:
 

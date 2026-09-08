@@ -5,6 +5,7 @@ import authoredSchema from "../schema/index.js";
 import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
 import portableContractSchema from "../schema/portable-contract.schema.json" with { type: "json" };
 import { compiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
+import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import { sha256Hex } from "./digest.js";
 import { buildSearchIndex } from "./search-index.js";
 import { rewriteEmittedMarkdownUrls } from "./narrative.js";
@@ -96,7 +97,7 @@ export function projectBundle(corpus, visibility, meta) {
 
   const content = {
     schemaVersion: 1,
-    compiledSchemaVersion: 3,
+    compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
     visibility,
     knowledgeVersion: meta.knowledgeVersion,
     designSystemVersion: meta.designSystemVersion,

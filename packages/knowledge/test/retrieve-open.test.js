@@ -73,7 +73,7 @@ test("openCatalog accepts default, path, URL, and in-memory sources", async () =
   assert.equal(fromDefault.info.digest, fromUrl.info.digest);
   assert.equal(fromDefault.info.digest, fromMemory.info.digest);
   assert.equal(fromDefault.info.visibility, "public");
-  assert.equal(fromDefault.info.compiledSchemaVersion, 3);
+  assert.equal(fromDefault.info.compiledSchemaVersion, 4);
   assert.equal(fromDefault.info.recordCount, 8);
 });
 

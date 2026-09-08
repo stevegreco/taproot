@@ -87,7 +87,7 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
     written.map((record) => record.id),
     ids,
   );
-  assert.equal(written[0].compiledSchemaVersion, 3);
+  assert.equal(written[0].compiledSchemaVersion, 4);
   assert.ok(written.find((record) => record.id === "component.button").backlinks);
 
   const internal = projectBundle(corpus, "internal", meta);
@@ -152,7 +152,7 @@ test("compiled schema still requires visibility after authored defaults", () => 
     relations: {},
     sources: [{ kind: "authored", path: "content/almost.md", revision: "abc123456789abcd" }],
     body: "Body.",
-    compiledSchemaVersion: 3,
+    compiledSchemaVersion: 4,
     backlinks: {},
   };
   const missing = findCompiledIssues([almost]);

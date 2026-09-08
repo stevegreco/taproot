@@ -7,11 +7,20 @@ import {
   pathConstraintMessage,
 } from "./paths.js";
 import { readAdr } from "./sources/adr.js";
-import { readTokenSource } from "./sources/token-source.js";
+import { readTokenSource, tokenNamesFromText } from "./sources/token-source.js";
 import { PROBLEM, problem } from "./tables.js";
 import { shortRevision } from "./digest.js";
 
 const posix = path.posix;
+
+export const TOKEN_CATALOG_FILES = Object.freeze([
+  "packages/tokens/src/tokens/primitives.tokens.json",
+  "packages/tokens/src/tokens/semantic/light.tokens.json",
+  "packages/tokens/src/tokens/semantic/dark.tokens.json",
+  "packages/tokens/src/tokens/semantic/typography.tokens.json",
+  "packages/tokens/src/tokens/semantic/shape.tokens.json",
+  "packages/tokens/src/tokens/components/button.tokens.json",
+]);
 
 export const CONTRIBUTORS = Object.freeze({
   authored: null,
@@ -228,6 +237,8 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     inputs.set(id, { authored, contribution, assets });
   }
 
+  const tokenNames = await loadTokenNames(reader, inputs);
+
   return {
     inputs,
     listedPathById,
@@ -235,8 +246,24 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     assetPathToBundlePath,
     assetBytes,
     assetOwner,
+    tokenNames,
     problems,
   };
+}
+
+async function loadTokenNames(reader, inputs) {
+  const names = new Set();
+  for (const path of TOKEN_CATALOG_FILES) {
+    const text = await reader.readText(path);
+    if (text == null) continue;
+    for (const name of tokenNamesFromText(text)) names.add(name);
+  }
+  for (const input of inputs.values()) {
+    for (const entry of input.contribution.fields.tokens?.entries ?? []) {
+      names.add(entry.name);
+    }
+  }
+  return names;
 }
 
 async function constrainPath(repoPath, prefixes, workspaceRoot) {

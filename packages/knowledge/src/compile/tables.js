@@ -48,8 +48,6 @@ export const REVERSE_RELATION = Object.freeze({
   related: "related",
 });
 
-export const SIZE_BRIDGE = Object.freeze({ sm: "small", md: "medium" });
-
 export const NARRATIVE_FRONTMATTER_KEYS = Object.freeze([
   "id",
   "jobs",

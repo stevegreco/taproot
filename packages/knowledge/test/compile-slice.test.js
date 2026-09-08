@@ -33,13 +33,20 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const button = records.find((record) => record.id === "component.button");
   assert.ok(button.contract.parameters.variant.values.primary);
   assert.equal(Object.hasOwn(button.contract, "tagName"), false);
-  const ghost = button.tokens.entries.filter((entry) => entry.group === "ghost");
-  assert.ok(ghost.length > 0);
+  const ghostRestFill = button.contract.mappings.find(
+    (row) =>
+      row.configuration?.variant === "ghost" &&
+      row.channel === "background" &&
+      row.state === "default",
+  );
+  assert.equal(ghostRestFill.token.literal, "transparent");
 
   const badge = records.find((record) => record.id === "component.badge");
   assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
   assert.equal(badge.contract.parameters.variant.default, "default");
   assert.equal(Object.hasOwn(badge, "tokens"), false);
+  assert.equal(Object.hasOwn(badge, "tokenRef"), false);
+  assert.ok(badge.contract.mappings.length > 0);
   assert.equal(badge.decisions.length, 1);
   assert.match(badge.decisions[0].title, /ADR 0003/);
 
