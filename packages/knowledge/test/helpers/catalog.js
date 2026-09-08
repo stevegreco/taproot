@@ -10,15 +10,15 @@ export const META = {
 };
 
 export function authored(path, fields, body) {
-  return recordMarkdown(
-    { sources: [{ kind: "authored", path }], ...fields },
-    body,
-  );
+  return recordMarkdown({ sources: [{ kind: "authored", path }], ...fields }, body);
 }
 
 export function stubRecord(id, fields = {}) {
   return {
     id,
+    schemaVersion: 1,
+    compiledSchemaVersion: 3,
+    sources: [{ kind: "authored", path: `content/${id}.md`, revision: "fixture" }],
     type: "component",
     title: "Title",
     summary: "Summary text.",

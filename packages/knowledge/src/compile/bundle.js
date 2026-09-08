@@ -4,8 +4,8 @@ import yaml from "js-yaml";
 import authoredSchema from "../schema/index.js";
 import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
 import portableContractSchema from "../schema/portable-contract.schema.json" with { type: "json" };
-import { deriveCompiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
-import { sha256Hex } from "./corpus.js";
+import { compiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
+import { sha256Hex } from "./digest.js";
 import { buildSearchIndex } from "./search-index.js";
 import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
 
@@ -44,8 +44,7 @@ export function projectBundle(corpus, visibility, meta) {
       return { ...record, backlinks };
     });
 
-  const compiledSchema = deriveCompiledSchema(authoredSchema);
-  problems.push(...findCompiledIssues(compiledSchema, records));
+  problems.push(...findCompiledIssues(records));
 
   const searchIndex = buildSearchIndex(records);
   const markdown = new Map();
@@ -170,19 +169,18 @@ function visibilityLeaks(record, included, corpus) {
       leak(to, `/annotations/${annotation.id}/relatesTo`);
     }
   }
-  for (const match of record.body.matchAll(/markdown\/([a-z0-9][a-z0-9.-]*)\.md/g)) {
-    leak(match[1], record.sources.find((source) => source.kind === "authored")?.path ?? null);
-  }
-  const authoredPath =
-    record.sources.find((source) => source.kind === "authored")?.path ?? null;
-  for (const match of record.body.matchAll(/assets\/[A-Za-z0-9._/-]+/g)) {
-    const bundlePath = match[0];
-    const owner = corpus.assetOwner?.get(bundlePath);
-    if (!owner || included.has(owner) || !corpus.records.has(owner)) continue;
+  const authoredPath = record.sources.find((source) => source.kind === "authored")?.path ?? null;
+  for (const reference of corpus.narrativeReferences.get(record.id) ?? []) {
+    if (reference.kind === "record") {
+      leak(reference.target, authoredPath);
+      continue;
+    }
+    const owner = corpus.assetOwner.get(reference.target);
+    if (!owner || included.has(owner)) continue;
     problems.push(
       problem({
         code: PROBLEM.VISIBILITY_LEAK,
-        message: `${record.id} references internal ${bundlePath}`,
+        message: `${record.id} references internal ${reference.target}`,
         recordId: record.id,
         path: authoredPath,
       }),

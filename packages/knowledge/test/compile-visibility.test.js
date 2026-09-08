@@ -16,6 +16,71 @@ const meta = {
   revision: "test",
 };
 
+for (const [label, body, expectedLeaks] of [
+  ["record link", "See [secret](../internal/secret.md#details).", 1],
+  ["HTML image", '<img src="assets/ds.secret.svg" alt="Private">', 1],
+  ["HTML record link", '<a href="markdown/internal.secret.md#details">Private</a>', 1],
+  ["HTML authored path", '<img src="../internal/secret.svg">', 1],
+  ["HTML unquoted attribute", "<div><IMG SRC=assets/ds.secret.svg></div>", 1],
+  ["HTML entity", '<img src="assets/ds&#46;secret.svg">', 1],
+  ["HTML comment", '<!-- <img src="assets/ds.secret.svg"> -->', 0],
+  ["HTML external URL", '<img src="https://example.com/assets/ds.secret.svg">', 0],
+  ["HTML protocol-relative URL", '<img src="//example.com/assets/ds.secret.svg">', 0],
+  ["HTML in inline code", '`<img src="assets/ds.secret.svg">`', 0],
+  [
+    "inline code",
+    "Example: `[secret](../internal/secret.md)` and `markdown/internal.secret.md`.",
+    0,
+  ],
+  [
+    "code block",
+    "```md\n[secret](../internal/secret.md)\nmarkdown/internal.secret.md\nassets/ds.secret.svg\n```",
+    0,
+  ],
+  ["plain text", "The path markdown/internal.secret.md is an example.", 0],
+  ["external link", "[Example](https://example.com/markdown/internal.secret.md)", 0],
+]) {
+  test(`narrative visibility uses parsed references: ${label}`, async () => {
+    const corpus = await buildCorpus(
+      createMemoryReader({
+        "content/public.md": recordMarkdown(
+          { id: "component.public", path: "content/public.md" },
+          body,
+        ),
+        "internal/secret.md": recordMarkdown({
+          id: "internal.secret",
+          path: "internal/secret.md",
+          visibility: "internal",
+          type: "example",
+          assets: [
+            {
+              id: "ds.secret",
+              path: "internal/secret.svg",
+              mediaType: "image/svg+xml",
+              width: 10,
+              height: 10,
+              alt: "Private",
+            },
+          ],
+          annotations: [{ id: "note", label: "Note", description: "Private" }],
+        }),
+        "internal/secret.svg": tinySvg,
+      }),
+      [
+        { root: "content", visibility: "public" },
+        { root: "internal", visibility: "internal" },
+      ],
+    );
+    assert.deepEqual(corpus.problems, []);
+    const bundle = projectBundle(corpus, "public", meta);
+    assert.equal(
+      bundle.problems.filter((item) => item.code === PROBLEM.VISIBILITY_LEAK).length,
+      expectedLeaks,
+    );
+    assert.equal(Object.hasOwn(bundle.records[0], "narrativeReferences"), false);
+  });
+}
+
 test("public bundle drops internal inbound edges", async () => {
   const outDir = await mkdtemp(join(tmpdir(), "knowledge-visibility-"));
   const result = await compile({
@@ -154,9 +219,6 @@ test("public records may still reference a public asset from the body", async ()
 
   const corpus = await buildCorpus(reader, [{ root: "content", visibility: "public" }]);
   const bundle = projectBundle(corpus, "public", meta);
-  assert.equal(
-    bundle.problems.filter((item) => item.code === PROBLEM.VISIBILITY_LEAK).length,
-    0,
-  );
+  assert.equal(bundle.problems.filter((item) => item.code === PROBLEM.VISIBILITY_LEAK).length, 0);
   assert.equal(bundle.files.has("assets/ds.public-shot.svg"), true);
 });

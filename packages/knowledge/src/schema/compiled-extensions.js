@@ -10,9 +10,6 @@ export const COMPILED_REQUIRED = Object.freeze([
 export const COMPILED_PROPERTIES = Object.freeze({
   compiledSchemaVersion: { const: 3 },
   backlinks: { $ref: "#/$defs/backlinks" },
-  contract: { $ref: "#/$defs/portableContract" },
-  host: { $ref: "#/$defs/hostBinding" },
-  tokenRef: { $ref: "#/$defs/tokenRef" },
   tokens: { $ref: "#/$defs/tokenContract" },
   decisions: {
     type: "array",
@@ -62,22 +59,6 @@ export const COMPILED_DEFS = Object.freeze({
       reviewedBy: { $ref: "#/$defs/recordIdList" },
       supersededBy: { $ref: "#/$defs/recordIdList" },
       related: { $ref: "#/$defs/recordIdList" },
-    },
-  },
-  portableContract: {
-    $ref: "urn:stevegreco:design-system:portable-contract:2",
-  },
-  hostBinding: {
-    $ref: "urn:stevegreco:design-system:host-binding:1",
-  },
-  tokenRef: {
-    type: "object",
-    additionalProperties: false,
-    required: ["tier", "namespace", "description"],
-    properties: {
-      tier: { enum: ["primitive", "semantic", "component"] },
-      namespace: { type: "string", minLength: 1 },
-      description: { type: "string", minLength: 1 },
     },
   },
   tokenContract: {

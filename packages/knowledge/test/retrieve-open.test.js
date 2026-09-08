@@ -1,14 +1,63 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { test } from "node:test";
 import { writeBundle } from "../src/compile/bundle.js";
+import { sha256Hex } from "../src/compile/digest.js";
 import { openCatalog, KnowledgeBundleError } from "../src/retrieve/index.js";
 import { authored, projectFiles, stubIndex, stubManifest, stubRecord } from "./helpers/catalog.js";
 
 const publicDir = join(dirname(fileURLToPath(import.meta.url)), "../dist/public");
+
+test("importing retrieval does not load Ajv", () => {
+  execFileSync(process.execPath, [
+    "--input-type=module",
+    "-e",
+    `
+    import assert from "node:assert/strict";
+    import { createRequire } from "node:module";
+    await import(${JSON.stringify(new URL("../src/retrieve/index.js", import.meta.url).href)});
+    const require = createRequire(import.meta.url);
+    assert.equal(Object.keys(require.cache).some(path => path.includes("/ajv/")), false);
+  `,
+  ]);
+});
+
+for (const field of ["schemaVersion", "compiledSchemaVersion"]) {
+  test(`manifest ${field} takes precedence over record validation`, async () => {
+    const record = stubRecord("fixture.future", { [field]: 99 });
+    const manifest = stubManifest(1);
+    manifest.content[field] = 99;
+    await assert.rejects(
+      () => openCatalog({ records: [record], searchIndex: stubIndex([record]), manifest }),
+      {
+        name: "KnowledgeBundleError",
+        code: "unsupported-schema-version",
+      },
+    );
+  });
+}
+
+for (const value of [() => 1, Symbol("invalid")]) {
+  test(`non-cloneable ${typeof value} is a bundle-invalid error`, async () => {
+    const record = stubRecord("fixture.invalid", { extra: value });
+    await assert.rejects(
+      () =>
+        openCatalog({
+          records: [record],
+          searchIndex: stubIndex([record]),
+          manifest: stubManifest(1),
+        }),
+      {
+        name: "KnowledgeBundleError",
+        code: "bundle-invalid",
+      },
+    );
+  });
+}
 
 test("openCatalog accepts default, path, URL, and in-memory sources", async () => {
   const fromDefault = await openCatalog();
@@ -36,11 +85,14 @@ test("openCatalog does not export tokenize, createCatalog, or openDefaultCatalog
 });
 
 test("missing directory is bundle-missing", async () => {
-  await assert.rejects(() => openCatalog(join(tmpdir(), "knowledge-missing-bundle")), (error) => {
-    assert.equal(error instanceof KnowledgeBundleError, true);
-    assert.equal(error.code, "bundle-missing");
-    return true;
-  });
+  await assert.rejects(
+    () => openCatalog(join(tmpdir(), "knowledge-missing-bundle")),
+    (error) => {
+      assert.equal(error instanceof KnowledgeBundleError, true);
+      assert.equal(error.code, "bundle-missing");
+      return true;
+    },
+  );
 });
 
 test("unsupported search index version is rejected", async () => {
@@ -207,15 +259,18 @@ test("missing manifest visibility is bundle-invalid", async () => {
 });
 
 test("expectVisibility public rejects an internal fixture", async () => {
-  const bundle = await projectFiles({
-    "content/alpha.md": authored("content/alpha.md", { id: "component.alpha" }),
-    "internal/secret.md": authored("internal/secret.md", {
-      id: "internal.secret",
-      visibility: "internal",
-      type: "guideline",
-      relations: { uses: ["component.alpha"] },
-    }),
-  }, "internal");
+  const bundle = await projectFiles(
+    {
+      "content/alpha.md": authored("content/alpha.md", { id: "component.alpha" }),
+      "internal/secret.md": authored("internal/secret.md", {
+        id: "internal.secret",
+        visibility: "internal",
+        type: "guideline",
+        relations: { uses: ["component.alpha"] },
+      }),
+    },
+    "internal",
+  );
 
   await assert.rejects(
     () =>
@@ -242,6 +297,68 @@ test("returned records are deep-frozen", async () => {
   }, TypeError);
 });
 
+test("in-memory catalog owns its frozen records without freezing caller data", async () => {
+  const original = stubRecord("fixture.alpha");
+  const catalog = await openCatalog({
+    records: [original],
+    searchIndex: stubIndex([original]),
+    manifest: stubManifest(1),
+  });
+  const record = catalog.get(original.id);
+  assert.notEqual(record, original);
+  assert.equal(Object.isFrozen(original), false);
+  assert.equal(Object.isFrozen(original.tags), false);
+  assert.equal(Object.isFrozen(record.tags), true);
+  original.tags.push("changed");
+  original.title = "Changed title";
+  assert.deepEqual(record.tags, ["fixture"]);
+  assert.equal(record.title, "Title");
+});
+
+for (const [field, value] of [
+  ["jobs", ["unknown"]],
+  ["tags", [42]],
+  ["title", 42],
+  ["visibility", "unknown"],
+  ["schemaVersion", 99],
+  ["compiledSchemaVersion", 99],
+  ["sources", []],
+  ["relations", { uses: "fixture.alpha" }],
+  ["unexpected", true],
+]) {
+  test(`retrieval validates compiled record shape: ${field}`, async () => {
+    const record = stubRecord("fixture.alpha", { [field]: value });
+    await assert.rejects(
+      () =>
+        openCatalog({
+          records: [record],
+          searchIndex: stubIndex([record]),
+          manifest: stubManifest(1),
+        }),
+      (error) => {
+        assert.equal(error instanceof KnowledgeBundleError, true);
+        assert.equal(error.code, "bundle-invalid");
+        assert.match(error.message, /fixture\.alpha/);
+        return true;
+      },
+    );
+  });
+}
+
+test("in-memory records must include compiled provenance", async () => {
+  const record = stubRecord("fixture.alpha");
+  delete record.sources;
+  await assert.rejects(
+    () =>
+      openCatalog({
+        records: [record],
+        searchIndex: stubIndex([record]),
+        manifest: stubManifest(1),
+      }),
+    { code: "bundle-invalid" },
+  );
+});
+
 test("directory hash mismatch is rejected; in-memory open skips the check", async () => {
   const bundle = await projectFiles({
     "content/alpha.md": authored("content/alpha.md", { id: "component.alpha" }),
@@ -253,11 +370,14 @@ test("directory hash mismatch is rejected; in-memory open skips the check", asyn
   tampered[0] = { ...tampered[0], title: `${tampered[0].title} tampered` };
   await writeFile(join(dir, "records.json"), `${JSON.stringify(tampered, null, 2)}\n`);
 
-  await assert.rejects(() => openCatalog(dir), (error) => {
-    assert.equal(error.code, "bundle-inconsistent");
-    assert.match(error.message, /sha256/);
-    return true;
-  });
+  await assert.rejects(
+    () => openCatalog(dir),
+    (error) => {
+      assert.equal(error.code, "bundle-inconsistent");
+      assert.match(error.message, /sha256/);
+      return true;
+    },
+  );
 
   const catalog = await openCatalog({
     records: tampered,
@@ -265,6 +385,24 @@ test("directory hash mismatch is rejected; in-memory open skips the check", asyn
     manifest: bundle.manifest,
   });
   assert.equal(catalog.get("component.alpha").title.endsWith("tampered"), true);
+});
+
+test("matching directory hashes do not bypass record validation", async () => {
+  const bundle = await projectFiles({
+    "content/alpha.md": authored("content/alpha.md", { id: "component.alpha" }),
+  });
+  const dir = await mkdtemp(join(tmpdir(), "knowledge-invalid-record-"));
+  await writeBundle(dir, bundle);
+  const records = structuredClone(bundle.records);
+  records[0].jobs = ["unknown"];
+  const bytes = Buffer.from(JSON.stringify(records));
+  const manifest = structuredClone(bundle.manifest);
+  const entry = manifest.content.files.find((file) => file.path === "records.json");
+  entry.sha256 = sha256Hex(bytes);
+  entry.bytes = bytes.byteLength;
+  await writeFile(join(dir, "records.json"), bytes);
+  await writeFile(join(dir, "manifest.json"), JSON.stringify(manifest));
+  await assert.rejects(() => openCatalog(dir), { code: "bundle-invalid" });
 });
 
 test("authored helper keeps caller-supplied sources", () => {

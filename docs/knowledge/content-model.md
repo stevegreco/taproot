@@ -105,6 +105,11 @@ compiler clones the authored document, sets a new `$id`, and merges compiled-onl
 not `$ref` the authored schema from a sibling file, because `unevaluatedProperties: false` would
 reject those extra fields (KNOW-007, KNOW-023).
 
+The derived schema retains the authored conditional definitions of `contract`, `host`, and
+`tokenRef`. Extensions add only compiled fields and enriched source/asset definitions. Compilation
+and retrieval use the same compiled-record validator; retrieval separately checks manifest/index
+consistency (KNOW-008, KNOW-015, KNOW-023).
+
 Authored records must declare exactly one `kind: authored` source. They cannot declare the
 compiler-only `generated` source kind. Unknown fields fail validation rather than passing through
 to compiled output. The authored schema stays `unevaluatedProperties: false`.
@@ -209,6 +214,14 @@ names come from a frozen table. `uses` becomes `usedBy`, `demonstrates` becomes 
 Backlinks are computed per visibility projection, not on the corpus. An internal record that `uses`
 `component.button` must not appear in the public bundle as `component.button.backlinks.usedBy`
 (KNOW-020, KNOW-021). Authors should not maintain reverse relationships manually.
+
+The compiler resolves narrative links and images once using the Markdown syntax tree. It keeps
+their record and asset targets as compilation metadata and uses those targets for visibility
+checks. Code examples, plain text, and external URLs that happen to contain bundle paths are not
+local references. Reference metadata does not become a field on compiled records (KNOW-021).
+Raw HTML nodes are parsed for `href`, `src`, and `poster` attributes, including entity-encoded
+values. These destinations use the same resolution and visibility checks. HTML can refer to
+authored paths or existing bundle paths; unknown local destinations fail the build.
 
 ## Provenance
 
@@ -327,6 +340,25 @@ Consumers query a compiled bundle through `openCatalog` in
 `records.json`, `search-index.json`, and `manifest.json`. They do not change these authored field
 names. The search index tokenizes `title`, `summary`, `tags`, `body`, and type-specific facts from
 `contract`, `host`, and `checks`. It does not index `id`, `type`, or `jobs`.
+
+Directory and in-memory catalog inputs must contain complete records conforming to the compiled
+schema, including per-record versions and source revisions. Malformed records fail with
+`KnowledgeBundleError` code `bundle-invalid` before queries can run. In-memory input skips file
+hash verification, but does not skip record validation. Opening a catalog copies in-memory records
+before freezing them, so the caller retains ownership of its original data (KNOW-015, KNOW-025).
+Manifest schema-version checks precede per-record validation, so incompatible bundles report
+`unsupported-schema-version`. Values that cannot be copied report `bundle-invalid`. Retrieval
+loads the schema validator on demand and compiles it once per process. Directory bundles still
+undergo record validation: matching manifest hashes establish file consistency, not proof that a
+trusted compiler produced them.
+
+### Compiler stages
+
+`loadCorpusInputs` reads authored records, domain sources, and assets. `assembleCorpus` consumes
+that data without further I/O or input mutation. It assembles records, assigns token groups,
+validates domain rules and relationships, and rewrites narrative references. `projectBundle`
+computes visibility-specific backlinks and emits files; `writeBundle` performs output I/O.
+The pure assembly stage can be tested with the same loaded inputs repeatedly (KNOW-023, KNOW-025).
 
 ## Source ownership
 
