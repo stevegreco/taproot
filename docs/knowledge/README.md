@@ -36,6 +36,12 @@ Existing domain decisions remain authoritative:
 - [Theming policy](../../packages/tokens/docs/adr/0002-theming-policy.md)
 - [Token tier consumption](../../packages/tokens/docs/adr/0003-token-tier-consumption.md)
 
+## Reviews and planned work
+
+- [Architecture review and agent handoff, 2026-09-04](architecture-review-2026-09-04.md) records
+  simplification proposals, evidence, requirement impacts, and verification steps. It does not
+  supersede accepted requirements or decisions.
+
 ## How one record compiles
 
 `packages/knowledge/src` is the compiler program. It is not an input. Authored Markdown under
