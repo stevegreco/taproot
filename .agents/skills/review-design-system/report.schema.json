@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:stevegreco:design-system:review-report:1",
+  "title": "Design system review report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "schemaVersion",
+    "subject",
+    "catalog",
+    "pack",
+    "coverage",
+    "findings"
+  ],
+  "properties": {
+    "kind": { "const": "design-system-review" },
+    "schemaVersion": { "const": 1 },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "summary"],
+      "properties": {
+        "class": { "enum": ["design-artifact", "source", "rendered"] },
+        "summary": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["digest", "knowledgeVersion", "designSystemVersion"],
+      "properties": {
+        "digest": { "type": "string", "minLength": 1 },
+        "knowledgeVersion": { "type": "string", "minLength": 1 },
+        "designSystemVersion": { "type": "string", "minLength": 1 },
+        "schemaVersion": { "type": "integer" },
+        "compiledSchemaVersion": { "type": "integer" }
+      }
+    },
+    "pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordIds", "checkIds"],
+      "properties": {
+        "recordIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "checkIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "summary"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "kind": { "type": "string", "minLength": 1 },
+          "summary": { "type": "string", "minLength": 1 },
+          "recordIds": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["guided", "unguided"],
+      "properties": {
+        "guided": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "unguided": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["verdict", "evidence"],
+        "properties": {
+          "checkId": { "type": "string", "minLength": 1 },
+          "recordId": { "type": "string", "minLength": 1 },
+          "level": { "enum": ["error", "warning"] },
+          "recordStatus": {
+            "enum": ["draft", "accepted", "deprecated", "superseded"]
+          },
+          "lens": { "type": "string", "minLength": 1 },
+          "verdict": {
+            "enum": ["pass", "fail", "not-applicable", "cannot-verify", "unguided"]
+          },
+          "evidence": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["checkId", "verdicts", "evidence"],
+        "properties": {
+          "checkId": { "type": "string", "minLength": 1 },
+          "verdicts": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "enum": ["pass", "fail", "not-applicable", "cannot-verify", "unguided"]
+            }
+          },
+          "evidence": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "knowledgeGaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["summary"],
+        "properties": {
+          "summary": { "type": "string", "minLength": 1 },
+          "observed": { "type": "string", "minLength": 1 },
+          "suggestedRecordType": {
+            "enum": ["component", "pattern", "guideline", "example", "foundation"]
+          }
+        }
+      }
+    }
+  }
+}

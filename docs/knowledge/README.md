@@ -130,6 +130,10 @@ The index also tokenizes type-specific facts from `contract`, `host`, and `check
 index `id`, `type`, or `jobs`.
 `related` returns each neighbor once, with `via` edges named by the forward relation (KNOW-015).
 
+The review skill at `.agents/skills/review-design-system` is a procedure consumer of this
+interface (KNOW-026). It freezes a review pack from `list`, `get`, `search`, and `related`. It
+does not author design system facts.
+
 ## First content slice
 
 The executable schema, authored Markdown parser, and knowledge compiler validate these draft

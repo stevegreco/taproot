@@ -19,3 +19,7 @@ Host bindings live in `packages/knowledge/content/bindings/`. Component runtime 
 
 Do not place design system facts only in an MCP server, documentation page, or tool-specific agent
 skill. Those are consumers or delivery adapters for the portable knowledge records.
+
+When reviewing a product design or implementation against Ember & Sage guidance, follow
+`.agents/skills/review-design-system/SKILL.md`. That skill consumes compiled knowledge records
+through `openCatalog`. It must not become a second source of component, pattern, or token facts.
