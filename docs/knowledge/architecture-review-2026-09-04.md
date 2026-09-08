@@ -112,6 +112,10 @@ Completion evidence:
 - If richer rendering is adopted, contract, binding, and review guidance is generated from the
   record fields, without a manually synchronized prose copy.
 
+The link defect is closed by rewriting destinations relative to each emitted Markdown file while
+keeping JSON / `get().body` bundle-root-relative for the documentation consumer. The generated
+reading view remains deferred under ADR 0003.
+
 ### KR-03: Delete test-only ownership heuristics and redundant field bookkeeping
 
 **Priority:** Small independent cleanup. **Requirements:** KNOW-007, KNOW-023, KNOW-025.

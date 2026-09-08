@@ -119,8 +119,8 @@ status or metadata.
 Use `primary` for the highest-emphasis action in a group, `secondary` for a supporting action,
 `ghost` for low-emphasis access, and `danger` for destructive or difficult-to-reverse work.
 
-Apply the [action hierarchy pattern](../patterns/action-hierarchy.md) when several actions appear
-together.
+Apply the [action hierarchy pattern](../patterns/action-hierarchy.md#assign-emphasis) when several
+actions appear together.
 
 ## Write the label
 

@@ -323,8 +323,11 @@ The compiler writes two views of each assembled record.
   `decisions`.
 - Markdown view: `markdown/<id>.md`. Frontmatter is identity and discovery (`id`, `jobs`,
   `status`, `summary`, `tags`, `title`, `type`, `visibility`). The body is the rewritten
-  narrative. The file is not a round-trip for `parseRecord`. Links to other `markdown/<id>.md`
-  files are narrative cross-references, not ownership of `contract`, `host`, or `checks`.
+  narrative. The file is not a round-trip for `parseRecord`. Record-view bodies keep
+  bundle-root-relative destinations (`markdown/<id>.md`, `assets/...`) so documentation can rewrite
+  them. Emitted Markdown files rewrite those same destinations relative to the containing file
+  (`<id>.md`, `../assets/...`). Links to other records are narrative cross-references, not
+  ownership of `contract`, `host`, or `checks`.
 
 `search-index.json` is an index over the record view. It is not a third record view.
 

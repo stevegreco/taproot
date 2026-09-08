@@ -47,7 +47,9 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.equal(binding.host.defaultTagName, "ds-button");
 
   const buttonMarkdown = await readFile(join(outDir, "public/markdown/component.button.md"), "utf8");
-  assert.match(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);
+  assert.match(button.body, /markdown\/pattern\.action-hierarchy\.md#assign-emphasis/);
+  assert.match(buttonMarkdown, /\]\(pattern\.action-hierarchy\.md#assign-emphasis\)/);
+  assert.doesNotMatch(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);
   assert.doesNotMatch(buttonMarkdown, /\.\.\/patterns\/action-hierarchy\.md/);
   assert.doesNotMatch(buttonMarkdown, /^contract:/m);
   assert.doesNotMatch(buttonMarkdown, /^host:/m);
@@ -71,4 +73,11 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const svg = await readFile(join(outDir, "public", assetPath), "utf8");
   assert.match(svg, /<svg/);
   assert.match(example.body, new RegExp(assetPath.replaceAll(".", "\\.")));
+
+  const exampleMarkdown = await readFile(
+    join(outDir, "public/markdown/example.action-hierarchy.settings.md"),
+    "utf8",
+  );
+  assert.match(exampleMarkdown, /\]\(\.\.\/assets\/[^)]+\)/);
+  assert.doesNotMatch(exampleMarkdown, /\]\(assets\//);
 });

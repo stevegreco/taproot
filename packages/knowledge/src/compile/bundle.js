@@ -7,6 +7,7 @@ import portableContractSchema from "../schema/portable-contract.schema.json" wit
 import { compiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
 import { sha256Hex } from "./digest.js";
 import { buildSearchIndex } from "./search-index.js";
+import { rewriteEmittedMarkdownUrls } from "./narrative.js";
 import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
 
 export function projectBundle(corpus, visibility, meta) {
@@ -200,7 +201,8 @@ function projectNarrativeFrontmatter(record) {
 
 function emitMarkdown(record) {
   const frontmatter = projectNarrativeFrontmatter(record);
-  return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${record.body}\n`;
+  const body = rewriteEmittedMarkdownUrls(record.body);
+  return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${body}\n`;
 }
 
 function putText(files, path, text) {

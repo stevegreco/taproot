@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { assembleCorpus } from "../src/compile/corpus.js";
 import { loadCorpusInputs } from "../src/compile/inputs.js";
 import { withTokenGroups } from "../src/compile/records.js";
-import { rewriteBodyLinks } from "../src/compile/narrative.js";
+import { rewriteBodyLinks, rewriteEmittedMarkdownUrls, toMarkdownFileUrl } from "../src/compile/narrative.js";
 import { createMemoryReader, recordMarkdown, portableContract } from "./helpers/workspace.js";
 
 test("HTML destinations share resolution and preserve unrelated markup", () => {
@@ -69,6 +69,24 @@ test("corpus assembly is repeatable and leaves loaded inputs unchanged", async (
   assert.deepEqual(first.edges, [
     { from: "component.alpha", relation: "related", to: "component.beta" },
   ]);
+});
+
+test("emitted Markdown destinations are relative to the markdown file", () => {
+  assert.equal(
+    toMarkdownFileUrl("markdown/component.beta.md#usage"),
+    "component.beta.md#usage",
+  );
+  assert.equal(toMarkdownFileUrl("assets/ds.shot.svg"), "../assets/ds.shot.svg");
+  assert.equal(toMarkdownFileUrl("https://example.com/markdown/component.beta.md"), "https://example.com/markdown/component.beta.md");
+  assert.equal(toMarkdownFileUrl("#usage"), "#usage");
+
+  const emitted = rewriteEmittedMarkdownUrls(
+    '<div class="example"><img alt="Shot" src="assets/ds.shot.svg"><a href="markdown/component.beta.md#usage">Beta</a></div>\n\nSee [Beta](markdown/component.beta.md#usage).',
+  );
+  assert.equal(
+    emitted,
+    '<div class="example"><img alt="Shot" src="../assets/ds.shot.svg"><a href="component.beta.md#usage">Beta</a></div>\n\nSee [Beta](component.beta.md#usage).',
+  );
 });
 
 test("token grouping returns new data without modifying frozen source entries", () => {

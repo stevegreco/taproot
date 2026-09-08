@@ -171,6 +171,22 @@ test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
   );
 });
 
+test("component record bodies keep bundle-root destinations for docs rewriting", async () => {
+  const publicRoot = dirname(
+    fileURLToPath(import.meta.resolve("@stevegreco/design-system-knowledge/manifest")),
+  );
+  const catalog = await openCatalog(publicRoot, { expectVisibility: "public" });
+  const body = catalog.get("component.button").body;
+  assert.match(body, /\]\(markdown\/pattern\.action-hierarchy\.md#assign-emphasis\)/);
+  assert.match(
+    body.replace(/\]\(markdown\/([^)]+?)\.md(?:#[^)]*)?\)/g, (_match, id) => {
+      const type = id.slice(0, id.indexOf("."));
+      return type === "pattern" ? "](#using-together)" : `](#${id})`;
+    }),
+    /action hierarchy pattern\]\(#using-together\)/,
+  );
+});
+
 test("button.mdx frontmatter matches the slice title and summary", () => {
   const slice = loadComponentSlice("button");
   const source = readFileSync(join(docsRoot, "docs/components/button.mdx"), "utf8");
