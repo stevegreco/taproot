@@ -1,3 +1,5 @@
+import { stubRecord } from "./helpers/catalog.js";
+import { portableContract } from "./helpers/workspace.js";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -12,7 +14,7 @@ import {
   RECORD_ONLY_FIELDS,
   isNarrativeFrontmatterKeys,
 } from "../src/compile/tables.js";
-import { findCompiledIssues, deriveCompiledSchema } from "../src/schema/compiled-record.js";
+import { findCompiledIssues } from "../src/schema/compiled-record.js";
 import authoredSchema from "../src/schema/index.js";
 import { createFsReader, repoRoot } from "./helpers/workspace.js";
 
@@ -38,10 +40,16 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
   );
 
   const ids = bundle.records.map((record) => record.id);
-  assert.deepEqual(ids, [...ids].sort((left, right) => left.localeCompare(right)));
+  assert.deepEqual(
+    ids,
+    [...ids].sort((left, right) => left.localeCompare(right)),
+  );
 
   const files = bundle.manifest.content.files.map((entry) => entry.path);
-  assert.deepEqual(files, [...files].sort((left, right) => left.localeCompare(right)));
+  assert.deepEqual(
+    files,
+    [...files].sort((left, right) => left.localeCompare(right)),
+  );
   assert.equal(files.includes("manifest.json"), false);
   assert.ok(files.includes("records.json"));
   assert.ok(files.includes("schema/compiled-knowledge-record.json"));
@@ -92,16 +100,49 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
 });
 
 test("COMPILED_INVALID fires when emitted records fail the derived schema", () => {
-  const compiledSchema = deriveCompiledSchema(authoredSchema);
-  const problems = findCompiledIssues(compiledSchema, [
-    { id: "component.broken", title: "Broken" },
-  ]);
+  const problems = findCompiledIssues([{ id: "component.broken", title: "Broken" }]);
   assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
   assert.match(problems[0].message, /compiler bug/);
 });
 
+test("compiled schema preserves authored component and binding field ownership", async () => {
+  const component = stubRecord("component.fixture", {
+    contract: portableContract(),
+    tokenRef: { tier: "component", namespace: "component.fixture", description: "Fixture" },
+  });
+  const host = {
+    specVersion: 1,
+    platform: "web-component",
+    package: "fixture",
+    export: "Fixture",
+    defaultTagName: "ds-fixture",
+    registration: { export: "defineFixture", supportsAliases: false },
+    anatomy: {},
+    parameters: {},
+    events: {},
+  };
+  const binding = stubRecord("binding.fixture", { type: "binding", host });
+  assert.deepEqual(findCompiledIssues([component, binding]), []);
+  for (const type of authoredSchema.properties.type.enum) {
+    // Supply valid field values so failures exercise ownership, not field shape.
+    const base = { ...component, type };
+    delete base.contract;
+    delete base.tokenRef;
+    delete base.tokens;
+    if (type === "binding") base.host = binding.host;
+    assert.deepEqual(findCompiledIssues([base]), [], type);
+    for (const [field, value, owner] of [
+      ["contract", component.contract, "component"],
+      ["tokenRef", component.tokenRef, "component"],
+      ["host", binding.host, "binding"],
+    ]) {
+      const issues = findCompiledIssues([{ ...base, [field]: value }]);
+      assert.equal(issues.length === 0, type === owner, `${type}.${field}`);
+    }
+  }
+});
+
 test("compiled schema still requires visibility after authored defaults", () => {
-  const compiledSchema = deriveCompiledSchema(authoredSchema);
   const almost = {
     id: "component.almost",
     schemaVersion: 1,
@@ -117,9 +158,9 @@ test("compiled schema still requires visibility after authored defaults", () => 
     compiledSchemaVersion: 3,
     backlinks: {},
   };
-  const missing = findCompiledIssues(compiledSchema, [almost]);
+  const missing = findCompiledIssues([almost]);
   assert.ok(missing.some((item) => item.code === PROBLEM.COMPILED_INVALID));
-  const complete = findCompiledIssues(compiledSchema, [{ ...almost, visibility: "public" }]);
+  const complete = findCompiledIssues([{ ...almost, visibility: "public" }]);
   assert.equal(complete.length, 0);
 });
 
@@ -131,10 +172,7 @@ test("compiled schema forbids contract on a binding record", async () => {
   );
   const button = corpus.records.get("component.button");
   const binding = corpus.records.get("binding.button.web-component");
-  const compiledSchema = deriveCompiledSchema(authoredSchema);
-  const problems = findCompiledIssues(compiledSchema, [
-    { ...binding, contract: button.contract },
-  ]);
+  const problems = findCompiledIssues([{ ...binding, contract: button.contract }]);
   assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
 });
 
@@ -146,10 +184,7 @@ test("compiled schema forbids host on a component record", async () => {
   );
   const button = corpus.records.get("component.button");
   const binding = corpus.records.get("binding.button.web-component");
-  const compiledSchema = deriveCompiledSchema(authoredSchema);
-  const problems = findCompiledIssues(compiledSchema, [
-    { ...button, host: binding.host },
-  ]);
+  const problems = findCompiledIssues([{ ...button, host: binding.host }]);
   assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
 });
 

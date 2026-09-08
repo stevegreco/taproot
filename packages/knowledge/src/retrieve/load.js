@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { sha256Hex } from "../compile/digest.js";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,7 +66,7 @@ export async function loadBundle(source, options = {}) {
   }
 
   const resolved = await resolveSource(source);
-  validateContract(resolved.records, resolved.searchIndex, resolved.manifest, resolved.label);
+  await validateContract(resolved.records, resolved.searchIndex, resolved.manifest, resolved.label);
   const visibility = readVisibility(
     resolved.manifest,
     resolved.records,
@@ -93,7 +93,7 @@ async function resolveSource(source) {
   if (source !== null && typeof source === "object" && !Array.isArray(source)) {
     return {
       label: "<in-memory bundle>",
-      records: source.records,
+      records: cloneRecords(source.records),
       searchIndex: source.searchIndex,
       manifest: source.manifest,
     };
@@ -191,7 +191,7 @@ function verifyFileIntegrity(manifest, path, bytes, label) {
  * @param {unknown} manifest
  * @param {string} label
  */
-function validateContract(records, searchIndex, manifest, label) {
+async function validateContract(records, searchIndex, manifest, label) {
   const invalid = [];
   if (!Array.isArray(records)) invalid.push("records must be an array");
   if (searchIndex == null || typeof searchIndex !== "object" || Array.isArray(searchIndex)) {
@@ -208,6 +208,28 @@ function validateContract(records, searchIndex, manifest, label) {
   if (content == null || typeof content !== "object" || Array.isArray(content)) {
     throw fail("bundle-invalid", label, ["manifest.content must be an object"]);
   }
+
+  if (!Object.hasOwn(index, "version")) {
+    throw fail("bundle-invalid", label, ["searchIndex.version is missing"]);
+  }
+  if (index.version !== 1) {
+    throw fail("unsupported-index-version", label, [
+      `search index version ${index.version} is not 1`,
+    ]);
+  }
+  if (
+    !Object.hasOwn(content, "schemaVersion") ||
+    !Object.hasOwn(content, "compiledSchemaVersion")
+  ) {
+    throw fail("bundle-invalid", label, ["manifest.content schema versions are missing"]);
+  }
+  if (content.schemaVersion !== 1 || content.compiledSchemaVersion !== 3) {
+    throw fail("unsupported-schema-version", label, [
+      `schemaVersion ${content.schemaVersion} compiledSchemaVersion ${content.compiledSchemaVersion} are not 1 and 3`,
+    ]);
+  }
+
+  const { compiledRecordErrors } = await import("../schema/compiled-record.js");
 
   const ids = [];
   const byId = new Map();
@@ -227,29 +249,11 @@ function validateContract(records, searchIndex, manifest, label) {
     }
     byId.set(id, record);
     ids.push(id);
-    if (!Array.isArray(record.jobs)) {
-      invalid.push(`${id} jobs must be an array`);
-    }
-    if (!Array.isArray(record.tags)) {
-      invalid.push(`${id} tags must be an array`);
+    for (const error of compiledRecordErrors(record)) {
+      invalid.push(`${id} ${error.instancePath || "/"} ${error.message}`);
     }
   }
   if (invalid.length > 0) throw fail("bundle-invalid", label, invalid);
-
-  if (!Object.hasOwn(index, "version")) {
-    throw fail("bundle-invalid", label, ["searchIndex.version is missing"]);
-  }
-  if (index.version !== 1) {
-    throw fail("unsupported-index-version", label, [`search index version ${index.version} is not 1`]);
-  }
-  if (!Object.hasOwn(content, "schemaVersion") || !Object.hasOwn(content, "compiledSchemaVersion")) {
-    throw fail("bundle-invalid", label, ["manifest.content schema versions are missing"]);
-  }
-  if (content.schemaVersion !== 1 || content.compiledSchemaVersion !== 3) {
-    throw fail("unsupported-schema-version", label, [
-      `schemaVersion ${content.schemaVersion} compiledSchemaVersion ${content.compiledSchemaVersion} are not 1 and 3`,
-    ]);
-  }
 
   const inconsistent = [];
   if (content.recordCount !== records.length) {
@@ -331,7 +335,7 @@ function readVisibility(manifest, records, expected, label) {
   const declared = manifest.content?.visibility;
   if (declared !== "public" && declared !== "internal") {
     throw fail("bundle-invalid", label, [
-      "manifest.content.visibility must be \"public\" or \"internal\"",
+      'manifest.content.visibility must be "public" or "internal"',
     ]);
   }
 
@@ -436,8 +440,14 @@ export function byCodeUnit(left, right) {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function sha256Hex(bytes) {
-  return createHash("sha256").update(bytes).digest("hex");
+function cloneRecords(records) {
+  try {
+    return structuredClone(records);
+  } catch (error) {
+    throw fail("bundle-invalid", "<in-memory bundle>", [
+      `records cannot be copied: ${error instanceof Error ? error.message : String(error)}`,
+    ]);
+  }
 }
 
 function fail(code, source, details) {

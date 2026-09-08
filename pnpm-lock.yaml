@@ -103,6 +103,9 @@ importers:
       mdast-util-from-markdown:
         specifier: ^2.0.3
         version: 2.0.3(supports-color@8.1.1)
+      parse5:
+        specifier: ^7.3.0
+        version: 7.3.0
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
