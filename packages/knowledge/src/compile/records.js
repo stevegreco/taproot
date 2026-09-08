@@ -25,7 +25,6 @@ export function assembleRecord(authored, contribution, assets) {
   if (authored.host) record.host = authored.host;
   if (authored.tokenRef) record.tokenRef = authored.tokenRef;
   if (contribution.fields.tokens) record.tokens = contribution.fields.tokens;
-  if (contribution.fields.decisions) record.decisions = contribution.fields.decisions;
 
   return record;
 }

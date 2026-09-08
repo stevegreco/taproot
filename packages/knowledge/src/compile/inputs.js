@@ -287,7 +287,6 @@ async function readContributions(
   const sources = [];
   const tokenMeta = authored.tokenRef ?? null;
   let tokenEntries;
-  let decisions = [];
 
   for (const source of authored.sources) {
     const constraint = await constrainPath(source.path, prefixes, workspaceRoot);
@@ -333,15 +332,9 @@ async function readContributions(
     if (contribution.fields.tokens?.entries) {
       tokenEntries = contribution.fields.tokens.entries;
     }
-    if (contribution.fields.decisions) {
-      decisions = decisions.concat(
-        contribution.fields.decisions.map((entry) => ({ ...entry, revision })),
-      );
-    }
   }
 
   const fields = {};
-  if (decisions.length > 0) fields.decisions = decisions;
 
   if (tokenMeta && tokenEntries) {
     fields.tokens = {

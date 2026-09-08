@@ -1,4 +1,4 @@
-export const COMPILED_SCHEMA_VERSION = 4;
+export const COMPILED_SCHEMA_VERSION = 5;
 
 export const COMPILED_REQUIRED = Object.freeze([
   "schemaVersion",
@@ -13,10 +13,6 @@ export const COMPILED_PROPERTIES = Object.freeze({
   compiledSchemaVersion: { const: COMPILED_SCHEMA_VERSION },
   backlinks: { $ref: "#/$defs/backlinks" },
   tokens: { $ref: "#/$defs/tokenContract" },
-  decisions: {
-    type: "array",
-    items: { $ref: "#/$defs/decisionRef" },
-  },
 });
 
 export const COMPILED_DEFS = Object.freeze({
@@ -85,17 +81,6 @@ export const COMPILED_DEFS = Object.freeze({
       name: { type: "string", minLength: 1 },
       alias: { type: ["string", "null"] },
       valueType: { type: "string" },
-    },
-  },
-  decisionRef: {
-    type: "object",
-    required: ["path", "title", "status", "revision"],
-    additionalProperties: false,
-    properties: {
-      path: { type: "string", minLength: 1 },
-      title: { type: "string", minLength: 1 },
-      status: { type: "string", minLength: 1 },
-      revision: { type: "string", minLength: 1 },
     },
   },
 });

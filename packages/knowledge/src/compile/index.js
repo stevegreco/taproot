@@ -71,9 +71,12 @@ export async function compile(options) {
     const corpus = await buildCorpus(reader, roots, { workspaceRoot });
     const meta = { knowledgeVersion, designSystemVersion, buildTime, revision };
     const publicBundle = projectBundle(corpus, "public", meta);
-    const internalBundle = projectBundle(corpus, "internal", meta);
+    const projected = [publicBundle];
+    if (options.internalContent) {
+      projected.push(projectBundle(corpus, "internal", meta));
+    }
 
-    const problems = [...corpus.problems, ...publicBundle.problems, ...internalBundle.problems];
+    const problems = [...corpus.problems, ...projected.flatMap((bundle) => bundle.problems)];
     const errors = problems.filter((item) => item.severity === "error");
     const warnings = problems.filter((item) => item.severity === "warning");
     if (errors.length > 0) {
@@ -82,10 +85,10 @@ export async function compile(options) {
 
     staging = `${outDir}.tmp-${process.pid}-${randomBytes(8).toString("hex")}`;
     await mkdir(staging, { recursive: true });
-    const bundles = [
-      await writeBundle(join(staging, "public"), publicBundle),
-      await writeBundle(join(staging, "internal"), internalBundle),
-    ];
+    const bundles = [];
+    for (const bundle of projected) {
+      bundles.push(await writeBundle(join(staging, bundle.visibility), bundle));
+    }
     await rm(outDir, { recursive: true, force: true });
     await rename(staging, outDir);
     staging = undefined;

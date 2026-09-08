@@ -1,6 +1,9 @@
 import { PROBLEM, problem } from "../tables.js";
 
 /**
+ * ADR sources contribute provenance on `sources[]`. The decision body stays
+ * in the domain package that owns the ADR.
+ *
  * @param {string} text
  * @param {{ path: string, recordId: string }} context
  */
@@ -23,16 +26,7 @@ export function readAdr(text, context) {
   }
 
   return {
-    fields: {
-      decisions: [
-        {
-          path: context.path,
-          title: heading[1].trim(),
-          status: status[1].trim(),
-          revision: "",
-        },
-      ],
-    },
+    fields: {},
     problems: [],
   };
 }

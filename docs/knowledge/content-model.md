@@ -167,7 +167,10 @@ namespaces:
   never from `packages/tokens/dist/`;
 - the component's authored `tokenRef` fills `tokens.tier`, `tokens.namespace`, and
   `tokens.description`;
-- `adr` fills `decisions[]` with title, status, path, and revision.
+- `adr` contributes a `kind: adr` source with path and revision. Design, implement, and review
+  agents need that provenance so they can follow a compiled record to the domain-owned ADR. They
+  do not need ADR prose copied into the knowledge bundle. Token ADR bodies remain in
+  `packages/tokens`.
 
 The pairing is both halves or neither. A component with no published component-token namespace
 omits `tokenRef` and omits `kind: token-source` (token ADR 0003). It may still author `contract`
@@ -199,8 +202,8 @@ The compiler rejects a missing source, an unreadable source, a binding that is n
 one of those token assertions (`source/conflict`) instead of choosing a value silently (KNOW-023).
 
 The compiler does not generate `type: decision` records in this slice. KNOW-005 is satisfied by
-enriched `sources[]` plus `decisions[]`. KNOW-024 constrains generated records rather than requiring
-them.
+`sources[]`. KNOW-006 still allows authored `type: decision` records. KNOW-024 constrains
+generated records rather than requiring them.
 
 ## Relationships
 
@@ -305,7 +308,6 @@ dist/
 ├── public/
 │   ├── manifest.json
 │   ├── records.json
-│   ├── records.jsonl
 │   ├── search-index.json
 │   ├── schema/
 │   │   ├── knowledge-record.json
@@ -314,7 +316,7 @@ dist/
 │   │   └── host-binding.json
 │   ├── markdown/
 │   └── assets/
-└── internal/
+└── internal/   # only when internal content is configured
     └── ...
 ```
 
@@ -327,9 +329,8 @@ compiled records.
 
 The compiler writes two views of each assembled record.
 
-- Record view: `records.json`, `records.jsonl`, and `openCatalog().get(id)`. This is the only
-  compiled owner of structured fields, including `contract`, `host`, `checks`, `tokens`, and
-  `decisions`.
+- Record view: `records.json` and `openCatalog().get(id)`. This is the only
+  compiled owner of structured fields, including `contract`, `host`, `checks`, and `tokens`.
 - Markdown view: `markdown/<id>.md`. Frontmatter is identity and discovery (`id`, `jobs`,
   `status`, `summary`, `tags`, `title`, `type`, `visibility`). The body is the rewritten
   narrative. The file is not a round-trip for `parseRecord`. Record-view bodies keep
@@ -344,9 +345,10 @@ The compiler writes two views of each assembled record.
 The manifest `content` block records the schema version, compiled schema version, bundle
 visibility, knowledge version, design system version, record count, and per-file hashes. The
 digest hashes that block. Build time and git revision live in `manifest.build` and are not part
-of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `4` because
-portable `specVersion` 3 adds authored visual mappings and compiled token entries no longer carry
-inferred `group`. Bundles whose compiled schema version is not 4 fail closed. An internal bundle may contain only public
+of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `5` because
+compiled records no longer carry `decisions[]`; ADR provenance lives on `sources[]`. Bundles
+whose compiled schema version is not 5 fail closed. An internal bundle is emitted only when
+internal content is configured. An internal bundle may contain only public
 records; visibility is the declared projection, not a guess from record contents.
 
 Consumers query a compiled bundle through `openCatalog` in

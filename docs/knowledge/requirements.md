@@ -61,7 +61,7 @@ publish the same facts without maintaining a second agent-only copy.
 - **KNOW-013:** A build must compile all configured sources into a self-contained knowledge bundle
   that does not require access to the source repository. A missing or unreadable configured source
   must fail the build. An existing empty source root is valid.
-- **KNOW-014:** The build must emit plain Markdown, JSON, JSONL, a manifest, a text-search index, and
+- **KNOW-014:** The build must emit plain Markdown, JSON, a manifest, a text-search index, and
   referenced visual assets.
 - **KNOW-015:** Consumers must be able to search records, get a record by stable ID, list records
   using filters, and retrieve related records.
@@ -74,8 +74,9 @@ publish the same facts without maintaining a second agent-only copy.
 ### Public and internal knowledge
 
 - **KNOW-019:** Every record must declare `public` or `internal` visibility.
-- **KNOW-020:** The compiler must produce a public bundle containing only public records and an
-  internal bundle containing both public and configured internal records.
+- **KNOW-020:** The compiler must produce a public bundle containing only public records. When
+  internal content is configured, it must also produce an internal bundle containing both public
+  and configured internal records. A public-only build must not leave a previous internal bundle.
 - **KNOW-021:** Public bundle validation must fail when a public record references an internal
   record or asset.
 - **KNOW-022:** Visibility controls bundle inclusion, not source-code security. Internal source

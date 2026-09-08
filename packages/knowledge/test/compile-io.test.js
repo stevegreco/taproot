@@ -82,12 +82,43 @@ test("compile accepts an existing empty public content root", async () => {
   const outDir = join(workspace, "dist");
 
   const result = await compile({ workspaceRoot: workspace, outDir, revision: "test" });
+  assert.equal(result.bundles.length, 1);
   assert.equal(result.bundles[0].recordCount, 0);
-  assert.equal(result.bundles[1].recordCount, 0);
   assert.equal(result.bundles[0].dir, join(outDir, "public"));
-  assert.equal(result.bundles[1].dir, join(outDir, "internal"));
   await access(join(result.bundles[0].dir, "manifest.json"));
-  await access(join(result.bundles[1].dir, "manifest.json"));
+  await access(join(result.bundles[0].dir, "records.json"));
+  await access(join(result.bundles[0].dir, "search-index.json"));
+  await assert.rejects(() => access(join(result.bundles[0].dir, "records.jsonl")));
+  await assert.rejects(() => access(join(outDir, "internal")));
+});
+
+test("a public-only compile does not leave a previous internal bundle", async () => {
+  const workspace = await stubWorkspace();
+  await mkdir(join(workspace, "packages/knowledge/content"), { recursive: true });
+  const internalRoot = join(workspace, "internal-content");
+  await mkdir(internalRoot, { recursive: true });
+  await writeFile(
+    join(internalRoot, "secret.md"),
+    recordMarkdown({
+      id: "internal.secret",
+      visibility: "internal",
+      sources: [{ kind: "authored", path: "internal-content/secret.md" }],
+    }),
+  );
+  const outDir = join(workspace, "dist");
+
+  await compile({
+    workspaceRoot: workspace,
+    outDir,
+    revision: "test",
+    internalContent: { root: internalRoot, visibility: "internal" },
+  });
+  await access(join(outDir, "internal/manifest.json"));
+
+  const publicOnly = await compile({ workspaceRoot: workspace, outDir, revision: "test" });
+  assert.equal(publicOnly.bundles.length, 1);
+  await access(join(outDir, "public/manifest.json"));
+  await assert.rejects(() => access(join(outDir, "internal")));
 });
 
 test("compile names the source file when a record is invalid", async () => {

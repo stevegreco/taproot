@@ -47,8 +47,11 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.equal(Object.hasOwn(badge, "tokens"), false);
   assert.equal(Object.hasOwn(badge, "tokenRef"), false);
   assert.ok(badge.contract.mappings.length > 0);
-  assert.equal(badge.decisions.length, 1);
-  assert.match(badge.decisions[0].title, /ADR 0003/);
+  assert.equal(Object.hasOwn(badge, "decisions"), false);
+  assert.equal(
+    badge.sources.some((source) => source.kind === "adr"),
+    true,
+  );
 
   const binding = records.find((record) => record.id === "binding.button.web-component");
   assert.equal(binding.host.defaultTagName, "ds-button");

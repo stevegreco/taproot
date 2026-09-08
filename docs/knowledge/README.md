@@ -5,9 +5,10 @@ The knowledge system is independent of any one agent product or delivery protoco
 
 ## Status
 
-The knowledge package parses authored Markdown records and compiles them into public and internal
-bundles. `pnpm --filter @stevegreco/design-system-knowledge build` writes `dist/public` and
-`dist/internal`. The published package includes `dist/public` and `src` only.
+The knowledge package parses authored Markdown records and compiles them into a public bundle.
+`pnpm --filter @stevegreco/design-system-knowledge build` writes `dist/public`. An internal bundle
+is written only when internal content is configured. The published package includes `dist/public`
+and `src` only.
 
 `openCatalog` from `@stevegreco/design-system-knowledge/retrieve` answers `search`, `get`, `list`,
 and `related` against one compiled bundle (KNOW-015). The documentation site consumes the Button
@@ -64,7 +65,7 @@ flowchart TB
 
   subgraph domain["Opened only because sources[] names them"]
     TOK["button.tokens.json → tokens.entries"]
-    ADR["ADR 0003 → decisions[]"]
+    ADR["ADR 0003 → sources[] kind adr"]
   end
 
   subgraph siblings["Other content/*.md files"]
@@ -74,11 +75,11 @@ flowchart TB
   end
 
   subgraph record["One object: component.button"]
-    R["Authored fields + body<br/>+ contract + tokens + decisions<br/>+ backlinks from siblings"]
+    R["Authored fields + body<br/>+ contract + tokens<br/>+ backlinks from siblings"]
   end
 
   subgraph dist["dist/public/  (same record, different views)"]
-    JSON["records.json / records.jsonl<br/>full object"]
+    JSON["records.json<br/>full object"]
     MD["markdown/component.button.md<br/>narrative projection"]
     IDX["search-index.json<br/>words from title, summary, tags, body,<br/>contract, host, checks"]
     MAN["manifest.json<br/>path + hash only"]

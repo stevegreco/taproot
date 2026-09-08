@@ -34,8 +34,8 @@ The component body is when and why, and host-neutral. FACE, `fieldset`, and inne
 how-to live on the binding and the implementation guideline.
 
 Compiled `contract` is legal only on `type: component`. A later component may omit `contract`.
-Compiled schema version is 4. Authored `schemaVersion` stays 1. Bundles whose compiled schema
-version is not 4 fail closed. Portable `specVersion` is 3 and may include authored visual mappings.
+Compiled schema version is 5. Authored `schemaVersion` stays 1. Bundles whose compiled schema
+version is not 5 fail closed. Portable `specVersion` is 3 and may include authored visual mappings.
 
 Provenance of a contract is the component's `kind: authored` source.
 

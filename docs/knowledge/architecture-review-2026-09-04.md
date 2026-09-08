@@ -150,6 +150,9 @@ without a `markdown/<id>.md` path heuristic.
 
 **Priority:** After consumer inventory. **Requirements:** KNOW-014, KNOW-015, KNOW-017, KNOW-020,
 KNOW-021, KNOW-024.
+**Status:** Done. Internal bundles are written only when `internalContent` is configured.
+`records.jsonl` is removed. `search-index.json` remains. KNOW-014 and KNOW-020 are updated. See
+issue #76.
 
 Evidence: [`compile`](../../packages/knowledge/src/compile/index.js) always projects and writes
 both bundles. [`projectBundle`](../../packages/knowledge/src/compile/bundle.js) always emits JSON,
@@ -194,6 +197,9 @@ runtime dependency and initialization costs before adding AJV to the retrieval p
 
 **Priority:** Decide from consumer needs. **Requirements:** KNOW-002, KNOW-005, KNOW-006, KNOW-012,
 KNOW-013, KNOW-024.
+**Status:** Done. Provenance only. `decisions[]` is removed. `sources[]` keeps `kind: adr` with path
+and revision. Design, implement, and review agents need that pointer, not ADR prose in the copied
+bundle. Token ADRs remain in `packages/tokens`. See issue #77.
 
 Evidence: the [ADR reader](../../packages/knowledge/src/compile/sources/adr.js) retains title,
 status, path, and revision. It does not publish the decision's explanation. The content model

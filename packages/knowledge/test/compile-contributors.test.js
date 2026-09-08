@@ -66,11 +66,14 @@ test("Button composes authored contract, tokens, and ADR 0003 into disjoint name
   );
   assert.deepEqual([...sizeKeys].sort(), ["medium", "small"]);
 
-  assert.equal(button.decisions.length, 1);
-  assert.equal(button.decisions[0].status, "Accepted");
-  assert.notEqual(button.status, button.decisions[0].status);
-  assert.match(button.decisions[0].title, /ADR 0003/);
-  assert.match(button.decisions[0].title, /Token tier consumption/);
+  assert.equal(
+    button.sources.some((source) => source.kind === "adr"),
+    true,
+  );
+  const adr = button.sources.find((source) => source.kind === "adr");
+  assert.equal(adr.path, "packages/tokens/docs/adr/0003-token-tier-consumption.md");
+  assert.ok(adr.revision);
+  assert.equal(Object.hasOwn(button, "decisions"), false);
 
   assert.equal(
     button.sources.some((source) => source.kind === "component-spec"),
@@ -142,9 +145,11 @@ test("Badge composes authored contract and ADR 0003 without a token contract", a
       (row) => row.token.name === "semantic.color.background.muted",
     ),
   );
-  assert.equal(badge.decisions.length, 1);
-  assert.match(badge.decisions[0].title, /ADR 0003/);
-  assert.match(badge.decisions[0].title, /Token tier consumption/);
+  assert.equal(Object.hasOwn(badge, "decisions"), false);
+  assert.equal(
+    badge.sources.some((source) => source.kind === "adr"),
+    true,
+  );
   assert.equal(
     corpus.problems.some((item) => item.code === PROBLEM.SOURCE_CONFLICT),
     false,

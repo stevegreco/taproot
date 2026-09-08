@@ -62,11 +62,6 @@ export function projectBundle(corpus, visibility, meta) {
 
   const files = new Map();
   putText(files, "records.json", `${JSON.stringify(records, null, 2)}\n`);
-  putText(
-    files,
-    "records.jsonl",
-    `${records.map((record) => JSON.stringify(record)).join("\n")}${records.length ? "\n" : ""}`,
-  );
   putText(files, "search-index.json", `${JSON.stringify(searchIndex, null, 2)}\n`);
   putText(files, "schema/knowledge-record.json", `${JSON.stringify(authoredSchema, null, 2)}\n`);
   putText(
