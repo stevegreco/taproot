@@ -56,16 +56,11 @@ contract:
         warning: Condition that needs attention.
         info: Informational state or feature label.
       default: default
-    hidden:
-      kind: boolean
-      default: false
-      description: Hides the badge.
   events: {}
   states:
     - default
   behavior:
     - Badge is not focusable and does not activate.
-    - Hidden hides the badge from the rendered UI.
   accessibility:
     semantics: Non-interactive text.
     name: Visible text is the accessible name.

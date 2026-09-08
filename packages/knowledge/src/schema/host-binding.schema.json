@@ -44,10 +44,6 @@
       "type": "object",
       "additionalProperties": { "$ref": "#/$defs/part" }
     },
-    "behavior": {
-      "type": "array",
-      "items": { "type": "string", "minLength": 1 }
-    },
     "rationale": {
       "type": "array",
       "items": { "$ref": "#/$defs/rationaleItem" }

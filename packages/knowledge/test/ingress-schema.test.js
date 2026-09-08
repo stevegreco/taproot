@@ -246,6 +246,22 @@ test("portable contract schema rejects contradictory parameter kinds", () => {
   );
 });
 
+test("portable contract schema allows omitting rationale", () => {
+  const validate = compile(portableContractSchema);
+  const { rationale, ...withoutRationale } = buttonContract;
+  assert.equal(
+    validate(withoutRationale),
+    true,
+    JSON.stringify(validate.errors, null, 2),
+  );
+});
+
+test("host binding schema rejects behavior", () => {
+  const validate = compile(hostBindingSchema);
+  assert.equal(validate({ ...buttonHost, behavior: ["A fieldset disables the button."] }), false);
+  assert.ok(extraPropertyPaths(validate.errors).includes("/behavior"));
+});
+
 test("host binding schema rejects an empty parameter mapping", () => {
   const validate = compile(hostBindingSchema);
   assert.equal(

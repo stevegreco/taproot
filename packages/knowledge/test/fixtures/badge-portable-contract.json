@@ -49,11 +49,6 @@
         "info": "Informational state or feature label."
       },
       "default": "default"
-    },
-    "hidden": {
-      "kind": "boolean",
-      "default": false,
-      "description": "Hides the badge."
     }
   },
   "events": {},
@@ -61,8 +56,7 @@
     "default"
   ],
   "behavior": [
-    "Badge is not focusable and does not activate.",
-    "Hidden hides the badge from the rendered UI."
+    "Badge is not focusable and does not activate."
   ],
   "accessibility": {
     "semantics": "Non-interactive text.",

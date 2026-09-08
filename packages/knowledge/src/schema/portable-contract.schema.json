@@ -13,8 +13,7 @@
     "events",
     "states",
     "behavior",
-    "accessibility",
-    "rationale"
+    "accessibility"
   ],
   "properties": {
     "specVersion": { "const": 2 },

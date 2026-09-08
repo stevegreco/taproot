@@ -125,9 +125,10 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
     slice.api.some((row) => row.name === "variant"),
     "api includes the variant attribute from the contract",
   );
-  assert.ok(
+  assert.equal(
     slice.api.some((row) => row.name === "hidden"),
-    "api includes the hidden attribute from the host mapping",
+    false,
+    "Badge does not publish hidden; native hiding is a host attribute, not a contract parameter",
   );
   assert.equal(slice.accessibility.keyboard.length, 0, "Badge has no keyboard bindings");
   assert.ok(

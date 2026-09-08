@@ -23,7 +23,7 @@ and composes each source kind into a reserved namespace. It does not flat-merge 
 
 The narrative hub for a design system component. When a portable contract exists, the component
 authors it as `contract`. That object has usage, anatomy, parameters, events, states, behavior,
-accessibility, and rationale. It has no `tagName`, slots, parts, attribute spellings, or DOM types.
+accessibility, and optional rationale. It has no `tagName`, slots, parts, attribute spellings, or DOM types.
 Host identity is not authored here. A later component may omit `contract`.
 
 Examples: Button, Badge.
@@ -31,7 +31,9 @@ Examples: Button, Badge.
 ### Binding
 
 The authored host mapping for one platform. A binding `implements` a component. Its `host` is the
-only object that may name a custom-element tag, FACE, slots, parts, or `HTMLFormElement`.
+only object that may name a custom-element tag, FACE, slots, parts, or `HTMLFormElement`. Host
+`behavior` is not part of the mapping schema; structured siblings such as `formAssociation` and
+`focus` are the source of those facts.
 
 Examples: `binding.button.web-component`, `binding.badge.web-component`.
 
