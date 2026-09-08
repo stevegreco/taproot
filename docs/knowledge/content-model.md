@@ -96,9 +96,11 @@ Schema version `1` fixes the current field vocabulary and dotted ID format.
 
 The package exports `parseRecord(markdown, { sourcePath })`. It parses YAML frontmatter, adds the
 trimmed Markdown body, validates the complete authored record, and returns one flat object. Invalid
-input throws a path-aware `KnowledgeRecordError`. A `sourcePath` under `markdown/<id>.md` is a
-compiled narrative projection, not authored input. Identity-only frontmatter on an authored path
-still parses; `parseRecord` fills `schemaVersion`, `relations`, and `sources`.
+input throws a path-aware `KnowledgeRecordError`. `sourcePath` is provenance for the authored
+source, not a format discriminator: the same bytes parse under `markdown/<id>.md` or an authored
+filename when identity frontmatter plus defaults satisfy the authored schema. Compiled Markdown is
+still not a round-trip for `contract`, `host`, or `checks`. Identity-only frontmatter still
+parses; `parseRecord` fills `schemaVersion`, `relations`, and `sources`.
 
 The compiled-record schema is derived in memory from this authored schema at compile time. The
 compiler clones the authored document, sets a new `$id`, and merges compiled-only fields. It does
@@ -327,7 +329,8 @@ The compiler writes two views of each assembled record.
   bundle-root-relative destinations (`markdown/<id>.md`, `assets/...`) so documentation can rewrite
   them. Emitted Markdown files rewrite those same destinations relative to the containing file
   (`<id>.md`, `../assets/...`). Links to other records are narrative cross-references, not
-  ownership of `contract`, `host`, or `checks`.
+  ownership of `contract`, `host`, or `checks`. `parseRecord` does not reject a `markdown/<id>.md`
+  path; compiled Markdown that satisfies the authored schema parses, without structured fields.
 
 `search-index.json` is an index over the record view. It is not a third record view.
 

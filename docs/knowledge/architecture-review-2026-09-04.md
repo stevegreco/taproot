@@ -139,6 +139,10 @@ Completion evidence: retain tests of emitted fields and schema rejection of inva
 the content model's parser description. Keep ADR ownership guidance in documentation; do not try to
 enforce its meaning with a prose regex.
 
+KR-03 is done: `findMarkdownFieldClaims` and `COMPILED_FIELD_VIEW` are deleted. The Markdown
+exporter lists identity frontmatter keys explicitly. `parseRecord` validates the authored schema
+without a `markdown/<id>.md` path heuristic.
+
 ### KR-04: Reduce mandatory bundle outputs
 
 **Priority:** After consumer inventory. **Requirements:** KNOW-014, KNOW-015, KNOW-017, KNOW-020,

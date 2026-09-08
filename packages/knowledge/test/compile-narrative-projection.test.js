@@ -1,13 +1,11 @@
 import assert from "node:assert/strict";
 import { join } from "node:path";
 import { test } from "node:test";
-import { KnowledgeRecordError, parseRecord } from "../src/index.js";
+import yaml from "js-yaml";
+import { parseRecord } from "../src/index.js";
 import { projectBundle } from "../src/compile/bundle.js";
 import { buildCorpus } from "../src/compile/corpus.js";
-import {
-  COMPILED_FIELD_VIEW,
-  findMarkdownFieldClaims,
-} from "../src/compile/tables.js";
+import { NARRATIVE_FRONTMATTER_KEYS } from "../src/compile/tables.js";
 import { createFsReader, repoRoot } from "./helpers/workspace.js";
 
 const meta = {
@@ -17,73 +15,29 @@ const meta = {
   revision: "test",
 };
 
-test("every compiled public record key is in COMPILED_FIELD_VIEW", async () => {
+test("emitted Markdown frontmatter is the exporter's identity keys only", async () => {
   const bundle = await publicBundle();
   for (const record of bundle.records) {
-    for (const key of Object.keys(record)) {
-      assert.equal(
-        Object.hasOwn(COMPILED_FIELD_VIEW, key),
-        true,
-        `${record.id} has unclassified compiled field ${key}`,
-      );
+    const text = bundle.markdown.get(`markdown/${record.id}.md`);
+    const { data } = splitCompiledMarkdown(text);
+    assert.deepEqual(Object.keys(data).sort(), [...NARRATIVE_FRONTMATTER_KEYS], record.id);
+    for (const field of ["contract", "host", "checks", "backlinks", "sources"]) {
+      assert.equal(Object.hasOwn(data, field), false, `${record.id} emitted ${field}`);
     }
   }
 });
 
-test("findMarkdownFieldClaims is empty on compiled public bodies", async () => {
-  const bundle = await publicBundle();
-  for (const record of bundle.records) {
-    assert.deepEqual(
-      findMarkdownFieldClaims(record.body),
-      [],
-      `${record.id}: ${JSON.stringify(findMarkdownFieldClaims(record.body))}`,
-    );
-  }
-});
-
-test("findMarkdownFieldClaims flags a markdown path as a field owner and ignores narrative contract language", () => {
-  const claims = findMarkdownFieldClaims(
-    "see markdown/component.button.md for the contract",
-  );
-  assert.equal(claims.length > 0, true);
-  assert.equal(
-    claims.some((claim) => claim.pattern === "markdown-path-field-owner"),
-    true,
-  );
-
-  assert.deepEqual(
-    findMarkdownFieldClaims("The contract requires a visible label"),
-    [],
-  );
-  assert.deepEqual(
-    findMarkdownFieldClaims(
-      "See markdown/binding.button.web-component.md. Button stays host-neutral.",
-    ),
-    [],
-  );
-  assert.deepEqual(
-    findMarkdownFieldClaims("ADR 0003 deleted spec.button. Use get(\"component.button\")."),
-    [],
-  );
-  const specClaim = findMarkdownFieldClaims("see spec.button for the contract");
-  assert.equal(
-    specClaim.some((claim) => claim.pattern === "spec-id-contract-home"),
-    true,
-  );
-});
-
-test("parseRecord on compiled Button Markdown throws", async () => {
+test("parseRecord does not treat markdown/<id>.md as a special format", async () => {
   const bundle = await publicBundle();
   const markdown = bundle.markdown.get("markdown/component.button.md");
   assert.equal(typeof markdown, "string");
-  assert.throws(
-    () => parseRecord(markdown, { sourcePath: "markdown/component.button.md" }),
-    (error) => {
-      assert.equal(error instanceof KnowledgeRecordError, true);
-      assert.match(error.message, /narrative projection/);
-      return true;
-    },
-  );
+
+  const compiledPath = "markdown/component.button.md";
+  const fromCompiledPath = parseRecord(markdown, { sourcePath: compiledPath });
+  assert.equal(fromCompiledPath.id, "component.button");
+  assert.equal(fromCompiledPath.visibility, "public");
+  assert.equal(Object.hasOwn(fromCompiledPath, "contract"), false);
+  assert.deepEqual(fromCompiledPath.sources, [{ kind: "authored", path: compiledPath }]);
 
   const authoredPath = "packages/knowledge/content/components/button.md";
   const parsed = parseRecord(markdown, { sourcePath: authoredPath });
@@ -100,4 +54,12 @@ async function publicBundle() {
     { workspaceRoot: repoRoot },
   );
   return projectBundle(corpus, "public", meta);
+}
+
+function splitCompiledMarkdown(markdown) {
+  assert.match(markdown, /^---\n/);
+  const end = markdown.indexOf("\n---\n", 4);
+  assert.notEqual(end, -1);
+  const yamlText = markdown.slice(4, end);
+  return { yamlText, data: yaml.load(yamlText) };
 }

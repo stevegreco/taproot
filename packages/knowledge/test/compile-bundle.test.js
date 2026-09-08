@@ -11,8 +11,6 @@ import { projectBundle, writeBundle } from "../src/compile/bundle.js";
 import {
   NARRATIVE_FRONTMATTER_KEYS,
   PROBLEM,
-  RECORD_ONLY_FIELDS,
-  isNarrativeFrontmatterKeys,
 } from "../src/compile/tables.js";
 import { findCompiledIssues } from "../src/schema/compiled-record.js";
 import authoredSchema from "../src/schema/index.js";
@@ -70,9 +68,8 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
     const { yamlText, data } = splitCompiledMarkdown(text);
     const keys = Object.keys(data).sort();
     assert.deepEqual(keys, [...NARRATIVE_FRONTMATTER_KEYS], path);
-    assert.equal(isNarrativeFrontmatterKeys(keys), true, path);
     assert.doesNotMatch(yamlText, /^(?:contract|host|checks):/m);
-    for (const field of RECORD_ONLY_FIELDS) {
+    for (const field of ["contract", "host", "checks", "backlinks", "sources", "tokens"]) {
       assert.equal(Object.hasOwn(data, field), false, `${path} emitted ${field}`);
     }
     for (const key of NARRATIVE_FRONTMATTER_KEYS) {
