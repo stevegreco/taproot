@@ -237,7 +237,7 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     inputs.set(id, { authored, contribution, assets });
   }
 
-  const tokenNames = await loadTokenNames(reader, inputs);
+  const tokenNames = await loadTokenNames(reader, inputs, workspaceRoot);
 
   return {
     inputs,
@@ -251,12 +251,14 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
   };
 }
 
-async function loadTokenNames(reader, inputs) {
+async function loadTokenNames(reader, inputs, workspaceRoot) {
   const names = new Set();
-  for (const path of TOKEN_CATALOG_FILES) {
-    const text = await reader.readText(path);
-    if (text == null) continue;
-    for (const name of tokenNamesFromText(text)) names.add(name);
+  if (workspaceRoot) {
+    for (const path of TOKEN_CATALOG_FILES) {
+      const text = await reader.readText(path);
+      if (text == null) continue;
+      for (const name of tokenNamesFromText(text)) names.add(name);
+    }
   }
   for (const input of inputs.values()) {
     for (const entry of input.contribution.fields.tokens?.entries ?? []) {
