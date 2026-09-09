@@ -81,6 +81,10 @@ contract:
     accessibleName:
       kind: string
       description: Accessible name when visible content is insufficient.
+  configurationAxes:
+    prefersReducedMotion:
+      values:
+        - reduce
   events:
     activate:
       description: Requests the action represented by the button.
@@ -93,6 +97,8 @@ contract:
   behavior:
     - Disabled prevents activation.
     - Submit and reset participate in a form when the host supports form association.
+    - A disabled ancestor fieldset disables the button.
+    - Programmatic focus and blur are forwarded to the inner native control.
   accessibility:
     semantics: Button.
     name: Required from visible content or accessibleName.
@@ -163,11 +169,11 @@ contract:
       token:
         name: component.button.font.letterSpacing
     - part: control
-      channel: transition
+      channel: transition-duration
       token:
         name: component.button.motion.duration
     - part: control
-      channel: transition
+      channel: transition-timing-function
       token:
         name: component.button.motion.easing
     - part: control

@@ -256,6 +256,18 @@ test("portable contract schema allows omitting rationale", () => {
   );
 });
 
+test("portable contract schema accepts configurationAxes", () => {
+  const validate = compile(portableContractSchema);
+  assert.equal(
+    validate({
+      ...buttonContract,
+      configurationAxes: { prefersReducedMotion: { values: ["reduce"] } },
+    }),
+    true,
+    JSON.stringify(validate.errors, null, 2),
+  );
+});
+
 test("host binding schema rejects behavior", () => {
   const validate = compile(hostBindingSchema);
   assert.equal(validate({ ...buttonHost, behavior: ["A fieldset disables the button."] }), false);

@@ -146,11 +146,9 @@ function bijectionProblems(recordId, label, expected, actual) {
   return problems;
 }
 
-const CONFIGURATION_EXTRAS = Object.freeze({
-  prefersReducedMotion: Object.freeze(["reduce"]),
-});
+const BOOLEAN_CONFIGURATION_VALUES = Object.freeze(["true", "false"]);
 
-export function checkSourceAgreement(record, tokenNames = new Set()) {
+export function checkSourceAgreement(record, tokenNames = null) {
   const problems = [];
   const tokens = record.tokens;
   if (tokens) {
@@ -175,7 +173,7 @@ export function checkSourceAgreement(record, tokenNames = new Set()) {
   return problems;
 }
 
-export function checkMappingAgreement(record, tokenNames = new Set()) {
+export function checkMappingAgreement(record, tokenNames = null) {
   const mappings = record.contract?.mappings;
   if (!Array.isArray(mappings) || mappings.length === 0) return [];
 
@@ -183,6 +181,8 @@ export function checkMappingAgreement(record, tokenNames = new Set()) {
   const parts = new Set((record.contract.anatomy ?? []).map((item) => item.name));
   const states = new Set(record.contract.states ?? []);
   const parameters = record.contract.parameters ?? {};
+  const configurationAxes = record.contract.configurationAxes ?? {};
+  const seen = new Map();
 
   for (const [index, mapping] of mappings.entries()) {
     const path = `/contract/mappings/${index}`;
@@ -207,32 +207,19 @@ export function checkMappingAgreement(record, tokenNames = new Set()) {
       );
     }
     for (const [key, value] of Object.entries(mapping.configuration ?? {})) {
-      if (Object.hasOwn(CONFIGURATION_EXTRAS, key)) {
-        if (!CONFIGURATION_EXTRAS[key].includes(value)) {
-          problems.push(
-            problem({
-              code: PROBLEM.SOURCE_CONFLICT,
-              message: `mapping configuration ${key} has unknown value ${value}`,
-              recordId: record.id,
-              path: `${path}/configuration/${key}`,
-            }),
-          );
-        }
-        continue;
-      }
-      const parameter = parameters[key];
-      if (!parameter) {
+      const allowed = configurationValues(key, parameters, configurationAxes);
+      if (!allowed) {
         problems.push(
           problem({
             code: PROBLEM.SOURCE_CONFLICT,
-            message: `mapping configuration ${key} is not a contract parameter`,
+            message: `mapping configuration ${key} is not a contract parameter or configuration axis`,
             recordId: record.id,
             path: `${path}/configuration/${key}`,
           }),
         );
         continue;
       }
-      if (parameter.kind === "enum" && !Object.hasOwn(parameter.values ?? {}, value)) {
+      if (!allowed.has(value)) {
         problems.push(
           problem({
             code: PROBLEM.SOURCE_CONFLICT,
@@ -243,7 +230,7 @@ export function checkMappingAgreement(record, tokenNames = new Set()) {
         );
       }
     }
-    if (mapping.token?.name && !tokenNames.has(mapping.token.name)) {
+    if (mapping.token?.name && tokenNames != null && !tokenNames.has(mapping.token.name)) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
@@ -253,9 +240,65 @@ export function checkMappingAgreement(record, tokenNames = new Set()) {
         }),
       );
     }
+
+    const identity = mappingIdentity(mapping);
+    const previous = seen.get(identity);
+    if (previous !== undefined && previous.token !== tokenIdentity(mapping.token)) {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `mapping ${mapping.part} ${mapping.channel} names both ${previous.token} and ${tokenIdentity(mapping.token)}`,
+          recordId: record.id,
+          path,
+        }),
+      );
+    } else if (previous === undefined) {
+      seen.set(identity, { token: tokenIdentity(mapping.token), index });
+    } else {
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `mapping ${mapping.part} ${mapping.channel} is duplicated`,
+          recordId: record.id,
+          path,
+        }),
+      );
+    }
   }
 
   return problems;
+}
+
+function configurationValues(key, parameters, configurationAxes) {
+  if (Object.hasOwn(configurationAxes, key)) {
+    return new Set(configurationAxes[key].values ?? []);
+  }
+  const parameter = parameters[key];
+  if (!parameter) return null;
+  if (parameter.kind === "enum") {
+    return new Set(Object.keys(parameter.values ?? {}));
+  }
+  if (parameter.kind === "boolean") {
+    return new Set(BOOLEAN_CONFIGURATION_VALUES);
+  }
+  if (parameter.kind === "string") {
+    return { has: () => true };
+  }
+  return null;
+}
+
+function mappingIdentity(mapping) {
+  const configuration = Object.entries(mapping.configuration ?? {})
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, value]) => `${key}=${value}`)
+    .join(",");
+  return `${mapping.part}\0${mapping.channel}\0${configuration}\0${mapping.state ?? ""}`;
+}
+
+function tokenIdentity(token) {
+  if (token?.name) return token.name;
+  if (token?.literal) return token.literal;
+  return "unknown";
 }
 
 export function completenessProblems(record) {

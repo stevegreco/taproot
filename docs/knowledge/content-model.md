@@ -22,10 +22,12 @@ and composes each source kind into a reserved namespace. It does not flat-merge 
 ### Component
 
 The narrative hub for a design system component. When a portable contract exists, the component
-authors it as `contract`. That object has usage, anatomy, parameters, events, states, behavior,
-accessibility, optional rationale, and optional visual mappings. A mapping row names an anatomy
+authors it as `contract`. That object has usage, anatomy, parameters, optional configuration
+axes, events, states, behavior, accessibility, optional rationale, and optional visual mappings.
+A mapping row names an anatomy
 part, visual channel, configuration, state, and either a token name or a closed literal
-(`transparent`, `inherit`, `none`). Token names may be semantic, primitive, or component. The
+(`transparent`, `inherit`, `none`). Token names may be semantic, primitive, or component. Media-query
+axes such as `prefersReducedMotion` live in `configurationAxes`, not in the compiler. The
 contract has no `tagName`, slots, parts, attribute spellings, or DOM types.
 Host identity is not authored here. A later component may omit `contract`.
 
@@ -36,7 +38,8 @@ Examples: Button, Badge.
 The authored host mapping for one platform. A binding `implements` a component. Its `host` is the
 only object that may name a custom-element tag, FACE, slots, parts, or `HTMLFormElement`. Host
 `behavior` is not part of the mapping schema; structured siblings such as `formAssociation` and
-`focus` are the source of those facts.
+`focus` are the source of those host facts. Portable behaviors that those fields cannot express
+belong on the component `contract.behavior` array.
 
 Examples: `binding.button.web-component`, `binding.badge.web-component`.
 
@@ -183,9 +186,13 @@ the declared kind. Each host parameter mapping names an attribute, a property, o
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
 namespace must exist in the token file when a component publishes `tokenRef`. Mapping rows must
 name an anatomy part, a contract state when `state` is present, configuration keys that are
-contract parameters or the closed extra `prefersReducedMotion: reduce`, and a token name that
-exists in the token package or a closed literal. The compiler does not infer variant groups from
-token paths and does not freeze a size-name bridge. An extra size compiles when its mapping names a
+contract parameters or `configurationAxes` (for media-query axes such as
+`prefersReducedMotion`), and a token name that
+exists in the token package or a closed literal. Boolean configuration values are `"true"` or
+`"false"`. Duplicate rows that share part, channel, configuration, and state are a conflict.
+The compiler does not infer variant groups from
+token paths and does not freeze a size-name bridge. Token names are checked against every
+`*.tokens.json` file under `packages/tokens/src/tokens`. An extra size compiles when its mapping names a
 published token. A mapped token missing from the token package fails the build. Sparse variants such
 as `ghost` with no rest background token are authored as literals, not inferred.
 

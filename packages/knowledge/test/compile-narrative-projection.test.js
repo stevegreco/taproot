@@ -6,6 +6,7 @@ import { parseRecord } from "../src/index.js";
 import { projectBundle } from "../src/compile/bundle.js";
 import { buildCorpus } from "../src/compile/corpus.js";
 import { NARRATIVE_FRONTMATTER_KEYS } from "../src/compile/tables.js";
+import { recordOnlyCompiledFields } from "./helpers/catalog.js";
 import { createFsReader, repoRoot } from "./helpers/workspace.js";
 
 const meta = {
@@ -21,9 +22,26 @@ test("emitted Markdown frontmatter is the exporter's identity keys only", async 
     const text = bundle.markdown.get(`markdown/${record.id}.md`);
     const { data } = splitCompiledMarkdown(text);
     assert.deepEqual(Object.keys(data).sort(), [...NARRATIVE_FRONTMATTER_KEYS], record.id);
-    for (const field of ["contract", "host", "checks", "backlinks", "sources"]) {
+    for (const field of recordOnlyCompiledFields()) {
       assert.equal(Object.hasOwn(data, field), false, `${record.id} emitted ${field}`);
     }
+  }
+});
+
+test("parseRecord accepts emitted markdown and omits contract, host, and checks", async () => {
+  const bundle = await publicBundle();
+  const samples = [
+    "component.button",
+    "binding.button.web-component",
+    "guideline.button-review",
+  ];
+  for (const id of samples) {
+    const markdown = bundle.markdown.get(`markdown/${id}.md`);
+    const parsed = parseRecord(markdown, { sourcePath: `markdown/${id}.md` });
+    assert.equal(parsed.id, id);
+    assert.equal(Object.hasOwn(parsed, "contract"), false, `${id}.contract`);
+    assert.equal(Object.hasOwn(parsed, "host"), false, `${id}.host`);
+    assert.equal(Object.hasOwn(parsed, "checks"), false, `${id}.checks`);
   }
 });
 
