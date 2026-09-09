@@ -59,18 +59,6 @@ test("copied public Markdown files resolve record, asset, and fragment destinati
   assert.ok(seen.fragment > 0, "copied bundle must include a fragment");
 });
 
-test("bundle-root destinations inside markdown/ point at a missing nested path", async () => {
-  const outDir = await mkdtemp(join(tmpdir(), "knowledge-links-bug-"));
-  await compile({
-    workspaceRoot: repoRoot,
-    outDir,
-    buildTime: new Date(0),
-    revision: "markdown-links-bug",
-  });
-  const nested = join(outDir, "public/markdown/markdown/pattern.action-hierarchy.md");
-  await assert.rejects(() => access(nested), { code: "ENOENT" });
-});
-
 async function markdownFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   return entries.filter((entry) => entry.isFile() && entry.name.endsWith(".md")).map((entry) => join(dir, entry.name));

@@ -36,7 +36,8 @@ Examples: Button, Badge.
 The authored host mapping for one platform. A binding `implements` a component. Its `host` is the
 only object that may name a custom-element tag, FACE, slots, parts, or `HTMLFormElement`. Host
 `behavior` is not part of the mapping schema; structured siblings such as `formAssociation` and
-`focus` are the source of those facts.
+`focus` are the source of those host facts. Portable behaviors that those fields cannot express
+belong on the component `contract.behavior` array.
 
 Examples: `binding.button.web-component`, `binding.badge.web-component`.
 
