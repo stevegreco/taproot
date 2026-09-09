@@ -1,4 +1,5 @@
-import path from "node:path";
+import { readdir, readFile } from "node:fs/promises";
+import path, { join } from "node:path";
 import { KnowledgeRecordError, parseRecord } from "../index.js";
 import {
   allowedPrefixes,
@@ -7,20 +8,11 @@ import {
   pathConstraintMessage,
 } from "./paths.js";
 import { readAdr } from "./sources/adr.js";
-import { readTokenSource, tokenNamesFromText } from "./sources/token-source.js";
+import { readTokenSource } from "./sources/token-source.js";
 import { PROBLEM, problem } from "./tables.js";
 import { shortRevision } from "./digest.js";
 
 const posix = path.posix;
-
-export const TOKEN_CATALOG_FILES = Object.freeze([
-  "packages/tokens/src/tokens/primitives.tokens.json",
-  "packages/tokens/src/tokens/semantic/light.tokens.json",
-  "packages/tokens/src/tokens/semantic/dark.tokens.json",
-  "packages/tokens/src/tokens/semantic/typography.tokens.json",
-  "packages/tokens/src/tokens/semantic/shape.tokens.json",
-  "packages/tokens/src/tokens/components/button.tokens.json",
-]);
 
 export const CONTRIBUTORS = Object.freeze({
   authored: null,
@@ -237,7 +229,8 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     inputs.set(id, { authored, contribution, assets });
   }
 
-  const tokenNames = await loadTokenNames(reader, inputs, workspaceRoot);
+  const tokenCatalog = await loadTokenNames(inputs, workspaceRoot);
+  problems.push(...tokenCatalog.problems);
 
   return {
     inputs,
@@ -246,26 +239,72 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     assetPathToBundlePath,
     assetBytes,
     assetOwner,
-    tokenNames,
+    tokenNames: tokenCatalog.names,
     problems,
   };
 }
 
-async function loadTokenNames(reader, inputs, workspaceRoot) {
-  const names = new Set();
-  if (workspaceRoot) {
-    for (const path of TOKEN_CATALOG_FILES) {
-      const text = await reader.readText(path);
-      if (text == null) continue;
-      for (const name of tokenNamesFromText(text)) names.add(name);
+export const TOKEN_CATALOG_ROOT = "packages/tokens/src/tokens";
+
+/** List published token files under packages/tokens/src/tokens. */
+export async function listTokenCatalogFiles(workspaceRoot) {
+  const files = [];
+
+  async function walk(relativeDir) {
+    let entries;
+    try {
+      entries = await readdir(join(workspaceRoot, relativeDir), { withFileTypes: true });
+    } catch (error) {
+      if (error && typeof error === "object" && error.code === "ENOENT") return;
+      throw error;
+    }
+    for (const entry of entries) {
+      const relative = posix.join(relativeDir, entry.name);
+      if (entry.isDirectory()) {
+        await walk(relative);
+        continue;
+      }
+      if (entry.isFile() && entry.name.endsWith(".tokens.json")) {
+        files.push(relative);
+      }
     }
   }
+
+  await walk(TOKEN_CATALOG_ROOT);
+  return files.sort((left, right) => left.localeCompare(right));
+}
+
+async function loadTokenNames(inputs, workspaceRoot) {
+  const names = new Set();
+  const problems = [];
+
+  if (workspaceRoot) {
+    for (const repoPath of await listTokenCatalogFiles(workspaceRoot)) {
+      let text;
+      try {
+        text = await readFile(join(workspaceRoot, repoPath), "utf8");
+      } catch (error) {
+        if (error && typeof error === "object" && error.code === "ENOENT") continue;
+        throw error;
+      }
+      const result = readTokenSource(text, { path: repoPath, recordId: "" });
+      problems.push(...result.problems);
+      for (const entry of result.fields.tokens?.entries ?? []) {
+        names.add(entry.name);
+      }
+    }
+  }
+
   for (const input of inputs.values()) {
     for (const entry of input.contribution.fields.tokens?.entries ?? []) {
       names.add(entry.name);
     }
   }
-  return names;
+
+  if (!workspaceRoot && names.size === 0) {
+    return { names: null, problems };
+  }
+  return { names, problems };
 }
 
 async function constrainPath(repoPath, prefixes, workspaceRoot) {

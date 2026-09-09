@@ -46,4 +46,4 @@ host:
 ---
 
 Register with `defineBadge()`. The default tag is `ds-badge`. Aliases are allowed. `::part(badge)` is
-an escape hatch.
+an escape hatch. The host honors the native `hidden` attribute; that is not a contract parameter.

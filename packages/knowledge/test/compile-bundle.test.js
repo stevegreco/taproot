@@ -1,4 +1,4 @@
-import { stubRecord } from "./helpers/catalog.js";
+import { recordOnlyCompiledFields, stubRecord } from "./helpers/catalog.js";
 import { portableContract } from "./helpers/workspace.js";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile } from "node:fs/promises";
@@ -71,7 +71,7 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
     const keys = Object.keys(data).sort();
     assert.deepEqual(keys, [...NARRATIVE_FRONTMATTER_KEYS], path);
     assert.doesNotMatch(yamlText, /^(?:contract|host|checks):/m);
-    for (const field of ["contract", "host", "checks", "backlinks", "sources", "tokens"]) {
+    for (const field of recordOnlyCompiledFields()) {
       assert.equal(Object.hasOwn(data, field), false, `${path} emitted ${field}`);
     }
     for (const key of NARRATIVE_FRONTMATTER_KEYS) {
