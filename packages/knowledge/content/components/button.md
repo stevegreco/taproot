@@ -93,6 +93,8 @@ contract:
   behavior:
     - Disabled prevents activation.
     - Submit and reset participate in a form when the host supports form association.
+    - A disabled ancestor fieldset disables the button.
+    - Programmatic focus and blur are forwarded to the inner native control.
   accessibility:
     semantics: Button.
     name: Required from visible content or accessibleName.
