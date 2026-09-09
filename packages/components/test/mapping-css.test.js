@@ -5,11 +5,12 @@ import { styles as buttonStyles } from "../dist/button.styles.js";
 import {
   compiledMappings,
   cssVariableFromTokenName,
-  stylesheetNeedle,
+  declarationContains,
+  stylesheetContains,
 } from "./mapping-css.js";
 
 describe("compiled mapping stylesheet coverage", () => {
-  test("token names kebab-case the same way published CSS variables do", () => {
+  test("token names use flatten() CSS variables", () => {
     expect(cssVariableFromTokenName("component.button.size.medium.paddingInline")).toBe(
       "--component-button-size-medium-padding-inline",
     );
@@ -18,11 +19,29 @@ describe("compiled mapping stylesheet coverage", () => {
     );
   });
 
-  test("Button stylesheet contains every compiled mapping token or literal", async () => {
+  test("literal needles are scoped to a declaration, not a bare token", () => {
+    expect(
+      stylesheetContains("--_background: transparent;\ntransition: none;", {
+        channel: "background",
+        token: { literal: "transparent" },
+      }),
+    ).toBe(true);
+    expect(
+      stylesheetContains("transition: none;", {
+        channel: "background",
+        token: { literal: "transparent" },
+      }),
+    ).toBe(false);
+    expect(
+      declarationContains(".button { transition: none; }", "transition", "none"),
+    ).toBe(true);
+  });
+
+  test("Button stylesheet assigns every compiled mapping in a matching declaration", async () => {
     const mappings = await compiledMappings("component.button");
     for (const mapping of mappings) {
-      expect(buttonStyles, coverMessage("component.button", mapping)).toContain(
-        stylesheetNeedle(mapping),
+      expect(stylesheetContains(buttonStyles, mapping), coverMessage("component.button", mapping)).toBe(
+        true,
       );
     }
     expect(buttonStyles).not.toContain("var(--semantic-");
@@ -31,11 +50,11 @@ describe("compiled mapping stylesheet coverage", () => {
     expect(buttonStyles).not.toContain(".button::before");
   });
 
-  test("Badge stylesheet contains every compiled mapping token or literal", async () => {
+  test("Badge stylesheet assigns every compiled mapping in a matching declaration", async () => {
     const mappings = await compiledMappings("component.badge");
     for (const mapping of mappings) {
-      expect(badgeStyles, coverMessage("component.badge", mapping)).toContain(
-        stylesheetNeedle(mapping),
+      expect(stylesheetContains(badgeStyles, mapping), coverMessage("component.badge", mapping)).toBe(
+        true,
       );
     }
     expect(badgeStyles).not.toContain("--component-");
@@ -49,5 +68,5 @@ function coverMessage(recordId, mapping) {
         .join(",")
     : "shared";
   const state = mapping.state ?? "any";
-  return `${recordId} ${mapping.part} ${mapping.channel} ${config} ${state} → ${stylesheetNeedle(mapping)}`;
+  return `${recordId} ${mapping.part} ${mapping.channel} ${config} ${state}`;
 }
