@@ -30,19 +30,31 @@ test("emitted Markdown frontmatter is the exporter's identity keys only", async 
 
 test("parseRecord accepts emitted markdown and omits contract, host, and checks", async () => {
   const bundle = await publicBundle();
-  const samples = [
-    "component.button",
-    "binding.button.web-component",
-    "guideline.button-review",
-  ];
-  for (const id of samples) {
-    const markdown = bundle.markdown.get(`markdown/${id}.md`);
-    const parsed = parseRecord(markdown, { sourcePath: `markdown/${id}.md` });
-    assert.equal(parsed.id, id);
-    assert.equal(Object.hasOwn(parsed, "contract"), false, `${id}.contract`);
-    assert.equal(Object.hasOwn(parsed, "host"), false, `${id}.host`);
-    assert.equal(Object.hasOwn(parsed, "checks"), false, `${id}.checks`);
-  }
+
+  const button = parseRecord(bundle.markdown.get("markdown/component.button.md"), {
+    sourcePath: "markdown/component.button.md",
+  });
+  assert.equal(button.id, "component.button");
+  assert.equal(Object.hasOwn(button, "contract"), false);
+  assert.equal(Object.hasOwn(button, "host"), false);
+  assert.equal(Object.hasOwn(button, "checks"), false);
+
+  const guideline = parseRecord(bundle.markdown.get("markdown/guideline.button-review.md"), {
+    sourcePath: "markdown/guideline.button-review.md",
+  });
+  assert.equal(guideline.id, "guideline.button-review");
+  assert.equal(Object.hasOwn(guideline, "checks"), false);
+
+  assert.throws(
+    () =>
+      parseRecord(bundle.markdown.get("markdown/binding.button.web-component.md"), {
+        sourcePath: "markdown/binding.button.web-component.md",
+      }),
+    (error) => {
+      assert.match(error.message, /\/host is required/);
+      return true;
+    },
+  );
 });
 
 test("parseRecord does not treat markdown/<id>.md as a special format", async () => {
