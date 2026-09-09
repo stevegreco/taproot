@@ -187,17 +187,33 @@ the declared kind. Each host parameter mapping names an attribute, a property, o
 `values` map on a host parameter, when present, covers every portable enum value.
 
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
-namespace must exist in the token file when a component publishes `tokenRef`. Mapping rows must
-name an anatomy part, a contract state when `state` is present, configuration keys that are
-contract parameters or `configurationAxes` (for media-query axes such as
-`prefersReducedMotion`), and a token name that
-exists in the token package or a closed literal. Boolean configuration values are `"true"` or
-`"false"`. Duplicate rows that share part, channel, configuration, and state are a conflict.
+namespace must exist in the token file when a component publishes `tokenRef`. Button and Badge
+author compact `contract.visuals` grouped by anatomy part and configuration axis. The compiler
+expands that source into `contract.mappings` rows and omits `visuals` from compiled output.
+`base` applies regardless of state. Nested `states` replace only the channels they name. Rest
+values beside a nested `states` block compile as `state: default` when that name is in
+`contract.states`. Bare values are published token names or the closed literals `transparent`,
+`inherit`, and `none`. Unknown names fail as missing tokens. `base` and `states` are reserved
+and cannot be parameter or axis names.
+
+Mapping rows must name an anatomy part, a contract state when `state` is present, configuration
+keys that are contract parameters or `configurationAxes` (for media-query axes such as
+`prefersReducedMotion`), and a token name that exists in the token package or a closed literal.
+Boolean configuration values are `"true"` or `"false"`. Duplicate rows that share part, channel,
+configuration, and state are a conflict. Incomparable axis assignments for the same part and
+channel are a conflict. YAML object order does not decide precedence.
+
+`contract.states` is a vocabulary. Simultaneous states use `contract.stateResolution`: `suppress`
+removes losers when the winner is active, `overlay` orders remaining interaction states, and
+`independent` states still contribute. Button `disabled` suppresses `hover` and `pressed`.
+`focus-visible` can combine with an enabled interaction state and with `disabled`.
+`transition: none` replaces duration and easing for that configuration when resolved.
 The compiler does not infer variant groups from
 token paths and does not freeze a size-name bridge. Token names are checked against every
 `*.tokens.json` file under `packages/tokens/src/tokens`. An extra size compiles when its mapping names a
 published token. A mapped token missing from the token package fails the build. Sparse variants such
-as `ghost` with no rest background token are authored as literals, not inferred.
+as `ghost` with no rest background token are authored as literals, not inferred. Authoring both
+`visuals` and `mappings` is a conflict. See [ADR 0004](../adr/0004-compact-visual-authoring.md).
 
 These are not conflicts, because they are different facts with different owners:
 
@@ -352,9 +368,9 @@ The compiler writes two views of each assembled record.
 The manifest `content` block records the schema version, compiled schema version, bundle
 visibility, knowledge version, design system version, record count, and per-file hashes. The
 digest hashes that block. Build time and git revision live in `manifest.build` and are not part
-of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `5` because
-compiled records no longer carry `decisions[]`; ADR provenance lives on `sources[]`. Bundles
-whose compiled schema version is not 5 fail closed. The compiler always projects the internal
+of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `6` because
+compiled contracts carry `stateResolution` and expand `visuals` into `mappings`. Bundles
+whose compiled schema version is not 6 fail closed. The compiler always projects the internal
 bundle for validation and writes it only when internal content is configured. An internal bundle may contain only public
 records; visibility is the declared projection, not a guess from record contents.
 
@@ -378,7 +394,8 @@ trusted compiler produced them.
 ### Compiler stages
 
 `loadCorpusInputs` reads authored records, domain sources, and assets. `assembleCorpus` consumes
-that data without further I/O or input mutation. It assembles records, validates mapping and
+that data without further I/O or input mutation. It expands compact `visuals` into `mappings`,
+assembles records, validates mapping and
 namespace agreement, validates domain rules and relationships, and rewrites narrative references. `projectBundle`
 computes visibility-specific backlinks and emits files; `writeBundle` performs output I/O.
 The pure assembly stage can be tested with the same loaded inputs repeatedly (KNOW-023, KNOW-025).

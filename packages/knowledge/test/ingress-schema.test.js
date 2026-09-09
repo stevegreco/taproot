@@ -11,7 +11,7 @@ import { repoRoot } from "./helpers/workspace.js";
 const Ajv = Ajv2020.default ?? Ajv2020;
 
 const buttonContract = {
-  specVersion: 3,
+  specVersion: 4,
   description: "Triggers an action or submits or resets a form.",
   usage: {
     do: [
@@ -150,7 +150,7 @@ test("ingress schemas compile as JSON Schema draft 2020-12", () => {
   assert.equal(typeof ajv.compile(hostBindingSchema), "function");
   assert.equal(portableContractSchema.additionalProperties, false);
   assert.equal(hostBindingSchema.additionalProperties, false);
-  assert.equal(portableContractSchema.properties.specVersion.const, 3);
+  assert.equal(portableContractSchema.properties.specVersion.const, 4);
   assert.equal(hostBindingSchema.properties.specVersion.const, 1);
   assert.equal(Object.hasOwn(portableContractSchema.properties, "tagName"), false);
   assert.equal(Object.hasOwn(portableContractSchema.properties, "api"), false);
@@ -256,15 +256,41 @@ test("portable contract schema allows omitting rationale", () => {
   );
 });
 
-test("portable contract schema accepts configurationAxes", () => {
+test("portable contract schema accepts grouped visuals", () => {
   const validate = compile(portableContractSchema);
   assert.equal(
     validate({
       ...buttonContract,
-      configurationAxes: { prefersReducedMotion: { values: ["reduce"] } },
+      stateResolution: {
+        suppress: { disabled: ["hover", "pressed"] },
+        overlay: ["hover", "pressed"],
+        independent: ["focus-visible"],
+      },
+      visuals: {
+        control: {
+          base: { radius: "component.button.radius" },
+          variant: {
+            ghost: {
+              background: "transparent",
+              states: { hover: { background: "component.button.ghost.background.hover" } },
+            },
+          },
+        },
+      },
     }),
     true,
     JSON.stringify(validate.errors, null, 2),
+  );
+});
+
+test("portable contract schema rejects an unknown visual channel", () => {
+  const validate = compile(portableContractSchema);
+  assert.equal(
+    validate({
+      ...buttonContract,
+      visuals: { control: { base: { opacity: "none" } } },
+    }),
+    false,
   );
 });
 

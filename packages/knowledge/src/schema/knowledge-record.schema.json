@@ -203,7 +203,7 @@
       "additionalProperties": false
     },
     "portableContract": {
-      "$ref": "urn:stevegreco:design-system:portable-contract:3"
+      "$ref": "urn:stevegreco:design-system:portable-contract:4"
     },
     "hostBinding": {
       "$ref": "urn:stevegreco:design-system:host-binding:1"

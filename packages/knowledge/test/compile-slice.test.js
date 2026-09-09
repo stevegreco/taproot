@@ -40,6 +40,8 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
       row.state === "default",
   );
   assert.equal(ghostRestFill.token.literal, "transparent");
+  assert.equal(Object.hasOwn(button.contract, "visuals"), false);
+  assert.equal(button.contract.specVersion, 4);
 
   const badge = records.find((record) => record.id === "component.badge");
   assert.equal(Object.hasOwn(badge.contract, "tagName"), false);

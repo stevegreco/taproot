@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:stevegreco:design-system:portable-contract:3",
+  "$id": "urn:stevegreco:design-system:portable-contract:4",
   "title": "Portable component contract",
   "type": "object",
   "additionalProperties": false,
@@ -16,7 +16,7 @@
     "accessibility"
   ],
   "properties": {
-    "specVersion": { "const": 3 },
+    "specVersion": { "const": 4 },
     "description": { "type": "string", "minLength": 1 },
     "usage": { "$ref": "#/$defs/usage" },
     "anatomy": {
@@ -48,6 +48,11 @@
       "type": "array",
       "items": { "$ref": "#/$defs/rationaleItem" }
     },
+    "visuals": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/visualPart" }
+    },
+    "stateResolution": { "$ref": "#/$defs/stateResolution" },
     "mappings": {
       "type": "array",
       "items": { "$ref": "#/$defs/visualMapping" }
@@ -212,6 +217,93 @@
       "properties": {
         "decision": { "type": "string", "minLength": 1 },
         "rationale": { "type": "string", "minLength": 1 }
+      }
+    },
+    "channelValue": { "type": "string", "minLength": 1 },
+    "channelMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "background": { "$ref": "#/$defs/channelValue" },
+        "foreground": { "$ref": "#/$defs/channelValue" },
+        "border": { "$ref": "#/$defs/channelValue" },
+        "outline": { "$ref": "#/$defs/channelValue" },
+        "padding-inline": { "$ref": "#/$defs/channelValue" },
+        "padding-block": { "$ref": "#/$defs/channelValue" },
+        "radius": { "$ref": "#/$defs/channelValue" },
+        "gap": { "$ref": "#/$defs/channelValue" },
+        "font-family": { "$ref": "#/$defs/channelValue" },
+        "font-size": { "$ref": "#/$defs/channelValue" },
+        "font-weight": { "$ref": "#/$defs/channelValue" },
+        "line-height": { "$ref": "#/$defs/channelValue" },
+        "letter-spacing": { "$ref": "#/$defs/channelValue" },
+        "transition": { "$ref": "#/$defs/channelValue" },
+        "transition-duration": { "$ref": "#/$defs/channelValue" },
+        "transition-timing-function": { "$ref": "#/$defs/channelValue" }
+      }
+    },
+    "stateMap": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/channelMap" }
+    },
+    "visualAxisValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "states": { "$ref": "#/$defs/stateMap" },
+        "background": { "$ref": "#/$defs/channelValue" },
+        "foreground": { "$ref": "#/$defs/channelValue" },
+        "border": { "$ref": "#/$defs/channelValue" },
+        "outline": { "$ref": "#/$defs/channelValue" },
+        "padding-inline": { "$ref": "#/$defs/channelValue" },
+        "padding-block": { "$ref": "#/$defs/channelValue" },
+        "radius": { "$ref": "#/$defs/channelValue" },
+        "gap": { "$ref": "#/$defs/channelValue" },
+        "font-family": { "$ref": "#/$defs/channelValue" },
+        "font-size": { "$ref": "#/$defs/channelValue" },
+        "font-weight": { "$ref": "#/$defs/channelValue" },
+        "line-height": { "$ref": "#/$defs/channelValue" },
+        "letter-spacing": { "$ref": "#/$defs/channelValue" },
+        "transition": { "$ref": "#/$defs/channelValue" },
+        "transition-duration": { "$ref": "#/$defs/channelValue" },
+        "transition-timing-function": { "$ref": "#/$defs/channelValue" }
+      }
+    },
+    "visualAxis": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/visualAxisValue" }
+    },
+    "visualPart": {
+      "type": "object",
+      "properties": {
+        "base": { "$ref": "#/$defs/channelMap" },
+        "states": { "$ref": "#/$defs/stateMap" }
+      },
+      "additionalProperties": { "$ref": "#/$defs/visualAxis" }
+    },
+    "stateResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "suppress": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        },
+        "overlay": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "independent": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
       }
     },
     "visualMapping": {

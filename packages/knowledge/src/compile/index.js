@@ -8,6 +8,13 @@ import { createWorkspaceReader } from "./reader.js";
 import { PROBLEM, problem } from "./tables.js";
 
 export { createWorkspaceReader } from "./reader.js";
+export {
+  compileContractVisuals,
+  expandVisuals,
+  resolveMappings,
+  VISUAL_CHANNELS,
+  VISUAL_LITERALS,
+} from "./visuals.js";
 
 /**
  * @typedef {"public"|"internal"} Visibility
