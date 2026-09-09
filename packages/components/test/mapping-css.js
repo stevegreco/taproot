@@ -91,12 +91,9 @@ export function stylesheetContains(styles, mapping) {
 
 export function declarationContains(styles, property, value) {
   const pattern = new RegExp(
-    `${escapeRegExp(property)}\\s*:([\\s\\S]*?)${escapeRegExp(value)}`,
-    "m",
+    `${escapeRegExp(property)}\\s*:([^;]*)${escapeRegExp(value)}`,
   );
-  const match = pattern.exec(styles);
-  if (!match) return false;
-  return !match[1].includes(";");
+  return pattern.test(styles);
 }
 
 export async function compiledMappings(recordId) {
