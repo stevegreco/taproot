@@ -77,9 +77,6 @@ host:
   parts:
     button:
       description: The inner native button control.
-  behavior:
-    - A disabled ancestor fieldset disables the button.
-    - Programmatic focus and blur are forwarded to the inner native control.
   rationale:
     - decision: Button is form-associated.
       rationale: Submit and reset behavior must work across the shadow boundary.

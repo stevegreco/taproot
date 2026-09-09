@@ -1,4 +1,5 @@
-import path from "node:path";
+import { readdir, readFile } from "node:fs/promises";
+import path, { join } from "node:path";
 import { KnowledgeRecordError, parseRecord } from "../index.js";
 import {
   allowedPrefixes,
@@ -228,6 +229,9 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     inputs.set(id, { authored, contribution, assets });
   }
 
+  const tokenCatalog = await loadTokenNames(inputs, workspaceRoot);
+  problems.push(...tokenCatalog.problems);
+
   return {
     inputs,
     listedPathById,
@@ -235,8 +239,72 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     assetPathToBundlePath,
     assetBytes,
     assetOwner,
+    tokenNames: tokenCatalog.names,
     problems,
   };
+}
+
+export const TOKEN_CATALOG_ROOT = "packages/tokens/src/tokens";
+
+/** List published token files under packages/tokens/src/tokens. */
+export async function listTokenCatalogFiles(workspaceRoot) {
+  const files = [];
+
+  async function walk(relativeDir) {
+    let entries;
+    try {
+      entries = await readdir(join(workspaceRoot, relativeDir), { withFileTypes: true });
+    } catch (error) {
+      if (error && typeof error === "object" && error.code === "ENOENT") return;
+      throw error;
+    }
+    for (const entry of entries) {
+      const relative = posix.join(relativeDir, entry.name);
+      if (entry.isDirectory()) {
+        await walk(relative);
+        continue;
+      }
+      if (entry.isFile() && entry.name.endsWith(".tokens.json")) {
+        files.push(relative);
+      }
+    }
+  }
+
+  await walk(TOKEN_CATALOG_ROOT);
+  return files.sort((left, right) => left.localeCompare(right));
+}
+
+async function loadTokenNames(inputs, workspaceRoot) {
+  const names = new Set();
+  const problems = [];
+
+  if (workspaceRoot) {
+    for (const repoPath of await listTokenCatalogFiles(workspaceRoot)) {
+      let text;
+      try {
+        text = await readFile(join(workspaceRoot, repoPath), "utf8");
+      } catch (error) {
+        if (error && typeof error === "object" && error.code === "ENOENT") continue;
+        throw error;
+      }
+      const result = readTokenSource(text, { path: repoPath, recordId: "" });
+      problems.push(...result.problems);
+      for (const entry of result.fields.tokens?.entries ?? []) {
+        names.add(entry.name);
+      }
+    }
+  }
+
+  for (const input of inputs.values()) {
+    for (const entry of input.contribution.fields.tokens?.entries ?? []) {
+      names.add(entry.name);
+    }
+  }
+
+  if (!workspaceRoot && names.size === 0) {
+    return { names: null, problems };
+  }
+  return { names, problems };
 }
 
 async function constrainPath(repoPath, prefixes, workspaceRoot) {
@@ -258,7 +326,6 @@ async function readContributions(
   const sources = [];
   const tokenMeta = authored.tokenRef ?? null;
   let tokenEntries;
-  let decisions = [];
 
   for (const source of authored.sources) {
     const constraint = await constrainPath(source.path, prefixes, workspaceRoot);
@@ -304,15 +371,9 @@ async function readContributions(
     if (contribution.fields.tokens?.entries) {
       tokenEntries = contribution.fields.tokens.entries;
     }
-    if (contribution.fields.decisions) {
-      decisions = decisions.concat(
-        contribution.fields.decisions.map((entry) => ({ ...entry, revision })),
-      );
-    }
   }
 
   const fields = {};
-  if (decisions.length > 0) fields.decisions = decisions;
 
   if (tokenMeta && tokenEntries) {
     fields.tokens = {

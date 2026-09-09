@@ -11,7 +11,7 @@ import { repoRoot } from "./helpers/workspace.js";
 const Ajv = Ajv2020.default ?? Ajv2020;
 
 const buttonContract = {
-  specVersion: 2,
+  specVersion: 3,
   description: "Triggers an action or submits or resets a form.",
   usage: {
     do: [
@@ -150,7 +150,7 @@ test("ingress schemas compile as JSON Schema draft 2020-12", () => {
   assert.equal(typeof ajv.compile(hostBindingSchema), "function");
   assert.equal(portableContractSchema.additionalProperties, false);
   assert.equal(hostBindingSchema.additionalProperties, false);
-  assert.equal(portableContractSchema.properties.specVersion.const, 2);
+  assert.equal(portableContractSchema.properties.specVersion.const, 3);
   assert.equal(hostBindingSchema.properties.specVersion.const, 1);
   assert.equal(Object.hasOwn(portableContractSchema.properties, "tagName"), false);
   assert.equal(Object.hasOwn(portableContractSchema.properties, "api"), false);
@@ -244,6 +244,34 @@ test("portable contract schema rejects contradictory parameter kinds", () => {
     errorPaths(validate.errors).some((path) => path.includes("/parameters/accessibleName")),
     JSON.stringify(validate.errors, null, 2),
   );
+});
+
+test("portable contract schema allows omitting rationale", () => {
+  const validate = compile(portableContractSchema);
+  const { rationale, ...withoutRationale } = buttonContract;
+  assert.equal(
+    validate(withoutRationale),
+    true,
+    JSON.stringify(validate.errors, null, 2),
+  );
+});
+
+test("portable contract schema accepts configurationAxes", () => {
+  const validate = compile(portableContractSchema);
+  assert.equal(
+    validate({
+      ...buttonContract,
+      configurationAxes: { prefersReducedMotion: { values: ["reduce"] } },
+    }),
+    true,
+    JSON.stringify(validate.errors, null, 2),
+  );
+});
+
+test("host binding schema rejects behavior", () => {
+  const validate = compile(hostBindingSchema);
+  assert.equal(validate({ ...buttonHost, behavior: ["A fieldset disables the button."] }), false);
+  assert.ok(extraPropertyPaths(validate.errors).includes("/behavior"));
 });
 
 test("host binding schema rejects an empty parameter mapping", () => {

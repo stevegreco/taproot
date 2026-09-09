@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:stevegreco:design-system:portable-contract:2",
+  "$id": "urn:stevegreco:design-system:portable-contract:3",
   "title": "Portable component contract",
   "type": "object",
   "additionalProperties": false,
@@ -13,11 +13,10 @@
     "events",
     "states",
     "behavior",
-    "accessibility",
-    "rationale"
+    "accessibility"
   ],
   "properties": {
-    "specVersion": { "const": 2 },
+    "specVersion": { "const": 3 },
     "description": { "type": "string", "minLength": 1 },
     "usage": { "$ref": "#/$defs/usage" },
     "anatomy": {
@@ -27,6 +26,10 @@
     "parameters": {
       "type": "object",
       "additionalProperties": { "$ref": "#/$defs/parameter" }
+    },
+    "configurationAxes": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/configurationAxis" }
     },
     "events": {
       "type": "object",
@@ -44,6 +47,10 @@
     "rationale": {
       "type": "array",
       "items": { "$ref": "#/$defs/rationaleItem" }
+    },
+    "mappings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/visualMapping" }
     }
   },
   "$defs": {
@@ -150,6 +157,20 @@
         }
       ]
     },
+    "configurationAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["values"],
+      "properties": {
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
     "event": {
       "type": "object",
       "additionalProperties": false,
@@ -191,6 +212,59 @@
       "properties": {
         "decision": { "type": "string", "minLength": 1 },
         "rationale": { "type": "string", "minLength": 1 }
+      }
+    },
+    "visualMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["part", "channel", "token"],
+      "properties": {
+        "part": { "type": "string", "minLength": 1 },
+        "channel": {
+          "enum": [
+            "background",
+            "foreground",
+            "border",
+            "outline",
+            "padding-inline",
+            "padding-block",
+            "radius",
+            "gap",
+            "font-family",
+            "font-size",
+            "font-weight",
+            "line-height",
+            "letter-spacing",
+            "transition",
+            "transition-duration",
+            "transition-timing-function"
+          ]
+        },
+        "configuration": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "state": { "type": "string", "minLength": 1 },
+        "token": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name"],
+              "properties": {
+                "name": { "type": "string", "minLength": 1 }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["literal"],
+              "properties": {
+                "literal": { "enum": ["transparent", "inherit", "none"] }
+              }
+            }
+          ]
+        }
       }
     }
   }

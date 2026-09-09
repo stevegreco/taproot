@@ -51,6 +51,9 @@ Preserve these parts unless the assigned work explicitly revisits them:
 ### KR-01: Remove component-specific token policy from the compiler
 
 **Priority:** First cleanup. **Requirements:** KNOW-002, KNOW-008, KNOW-023.
+**Status:** Done. Portable `contract.mappings` authors the token relationship. `SIZE_BRIDGE`,
+`assignGroup`, and `applyTokenGroups` are deleted. Mapping token names are validated against the
+token package. Badge has no `tokenRef`. See issue #70.
 
 Evidence:
 
@@ -112,6 +115,10 @@ Completion evidence:
 - If richer rendering is adopted, contract, binding, and review guidance is generated from the
   record fields, without a manually synchronized prose copy.
 
+The link defect is closed by rewriting destinations relative to each emitted Markdown file while
+keeping JSON / `get().body` bundle-root-relative for the documentation consumer. The generated
+reading view remains deferred under ADR 0003.
+
 ### KR-03: Delete test-only ownership heuristics and redundant field bookkeeping
 
 **Priority:** Small independent cleanup. **Requirements:** KNOW-007, KNOW-023, KNOW-025.
@@ -135,10 +142,17 @@ Completion evidence: retain tests of emitted fields and schema rejection of inva
 the content model's parser description. Keep ADR ownership guidance in documentation; do not try to
 enforce its meaning with a prose regex.
 
+KR-03 is done: `findMarkdownFieldClaims` and `COMPILED_FIELD_VIEW` are deleted. The Markdown
+exporter lists identity frontmatter keys explicitly. `parseRecord` validates the authored schema
+without a `markdown/<id>.md` path heuristic.
+
 ### KR-04: Reduce mandatory bundle outputs
 
 **Priority:** After consumer inventory. **Requirements:** KNOW-014, KNOW-015, KNOW-017, KNOW-020,
 KNOW-021, KNOW-024.
+**Status:** Done. Internal bundles are written only when `internalContent` is configured.
+`records.jsonl` is removed. `search-index.json` remains. KNOW-014 and KNOW-020 are updated. See
+issue #76.
 
 Evidence: [`compile`](../../packages/knowledge/src/compile/index.js) always projects and writes
 both bundles. [`projectBundle`](../../packages/knowledge/src/compile/bundle.js) always emits JSON,
@@ -183,6 +197,9 @@ runtime dependency and initialization costs before adding AJV to the retrieval p
 
 **Priority:** Decide from consumer needs. **Requirements:** KNOW-002, KNOW-005, KNOW-006, KNOW-012,
 KNOW-013, KNOW-024.
+**Status:** Done. Provenance only. `decisions[]` is removed. `sources[]` keeps `kind: adr` with path
+and revision. Design, implement, and review agents need that pointer, not ADR prose in the copied
+bundle. Token ADRs remain in `packages/tokens`. See issue #77.
 
 Evidence: the [ADR reader](../../packages/knowledge/src/compile/sources/adr.js) retains title,
 status, path, and revision. It does not publish the decision's explanation. The content model

@@ -125,9 +125,10 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
     slice.api.some((row) => row.name === "variant"),
     "api includes the variant attribute from the contract",
   );
-  assert.ok(
+  assert.equal(
     slice.api.some((row) => row.name === "hidden"),
-    "api includes the hidden attribute from the host mapping",
+    false,
+    "Badge does not publish hidden; native hiding is a host attribute, not a contract parameter",
   );
   assert.equal(slice.accessibility.keyboard.length, 0, "Badge has no keyboard bindings");
   assert.ok(
@@ -168,6 +169,22 @@ test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
     () => componentKnowledgeMarkdown("button", "hierarchy"),
     DocsKnowledgeError,
     "unknown page sections fail instead of dumping related records",
+  );
+});
+
+test("component record bodies keep bundle-root destinations for docs rewriting", async () => {
+  const publicRoot = dirname(
+    fileURLToPath(import.meta.resolve("@stevegreco/design-system-knowledge/manifest")),
+  );
+  const catalog = await openCatalog(publicRoot, { expectVisibility: "public" });
+  const body = catalog.get("component.button").body;
+  assert.match(body, /\]\(markdown\/pattern\.action-hierarchy\.md#assign-emphasis\)/);
+  assert.match(
+    body.replace(/\]\(markdown\/([^)]+?)\.md(?:#[^)]*)?\)/g, (_match, id) => {
+      const type = id.slice(0, id.indexOf("."));
+      return type === "pattern" ? "](#using-together)" : `](#${id})`;
+    }),
+    /action hierarchy pattern\]\(#using-together\)/,
   );
 });
 

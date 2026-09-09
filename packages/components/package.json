@@ -53,6 +53,7 @@
     "@stevegreco/design-system": "workspace:*"
   },
   "devDependencies": {
+    "@stevegreco/design-system-knowledge": "workspace:*",
     "@vitest/browser-playwright": "^4.1.10",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.1.0",

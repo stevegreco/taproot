@@ -268,7 +268,7 @@ test("parseRecord rejects malformed YAML frontmatter with a record-level path", 
 });
 
 const validContract = `
-  specVersion: 2
+  specVersion: 3
   description: Triggers an action.
   usage:
     do:
@@ -374,7 +374,7 @@ test("parseRecord accepts a component with a portable contract", () => {
     sourcePath: "packages/knowledge/content/components/test-button.md",
   });
   assert.equal(record.type, "component");
-  assert.equal(record.contract.specVersion, 2);
+  assert.equal(record.contract.specVersion, 3);
   assert.equal(record.contract.parameters.disabled.kind, "boolean");
   assert.equal(Object.hasOwn(record.contract, "tagName"), false);
 });
@@ -392,8 +392,8 @@ test("parseRecord rejects type spec", () => {
 
 test("parseRecord rejects tagName on an authored component contract", () => {
   const markdown = validComponentWithContract.replace(
-    "  specVersion: 2\n",
-    "  specVersion: 2\n  tagName: ds-button\n",
+    "  specVersion: 3\n",
+    "  specVersion: 3\n  tagName: ds-button\n",
   );
   assertIssuePath(
     markdown,

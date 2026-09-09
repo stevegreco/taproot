@@ -39,15 +39,11 @@ host:
     variant:
       attribute: variant
       property: variant
-    hidden:
-      attribute: hidden
   events: {}
   parts:
     badge:
       description: The inner label surface.
-  behavior:
-    - The native hidden attribute hides the host.
 ---
 
 Register with `defineBadge()`. The default tag is `ds-badge`. Aliases are allowed. `::part(badge)` is
-an escape hatch.
+an escape hatch. The host honors the native `hidden` attribute; that is not a contract parameter.

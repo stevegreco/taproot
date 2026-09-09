@@ -4,6 +4,8 @@ import { parseFragment } from "parse5";
 import { visit } from "unist-util-visit";
 import { PROBLEM, problem } from "./tables.js";
 
+const MARKDOWN_VIEW_DIR = "markdown";
+
 export function rewriteBodyLinks(body, context) {
   const tree = fromMarkdown(body);
   const replacements = [];
@@ -87,6 +89,81 @@ export function rewriteBodyLinks(body, context) {
   }
 
   return { body: next, references, problems };
+}
+
+/**
+ * Convert bundle-root-relative destinations in a JSON record body into paths that
+ * resolve from an emitted file inside `markdown/`.
+ */
+export function rewriteEmittedMarkdownUrls(body) {
+  const tree = fromMarkdown(body);
+  const replacements = [];
+
+  visit(tree, (node) => {
+    if (node.type === "html") {
+      for (const destination of htmlDestinations(node.value)) {
+        const next = toMarkdownFileUrl(destination.url);
+        if (next === destination.url) continue;
+        replacements.push({
+          start: node.position.start.offset + destination.start,
+          end: node.position.start.offset + destination.end,
+          text: `${destination.name}="${escapeAttribute(next)}"`,
+        });
+      }
+      return;
+    }
+    if (node.type !== "link" && node.type !== "image") return;
+    const url = node.url ?? "";
+    const next = toMarkdownFileUrl(url);
+    if (next === url || !node.position) return;
+    replacements.push({
+      start: node.position.start.offset,
+      end: node.position.end.offset,
+      text: replaceDestination(
+        body.slice(node.position.start.offset, node.position.end.offset),
+        url,
+        next,
+      ),
+    });
+  });
+
+  let rewritten = body;
+  for (const replacement of replacements.sort((left, right) => right.start - left.start)) {
+    rewritten =
+      rewritten.slice(0, replacement.start) + replacement.text + rewritten.slice(replacement.end);
+  }
+  return rewritten;
+}
+
+export function markdownDestinations(body) {
+  const destinations = [];
+  const tree = fromMarkdown(body);
+  visit(tree, (node) => {
+    if (node.type === "html") {
+      for (const destination of htmlDestinations(node.value)) {
+        destinations.push(destination.url);
+      }
+      return;
+    }
+    if (node.type === "link" || node.type === "image") {
+      destinations.push(node.url ?? "");
+    }
+  });
+  return destinations;
+}
+
+export function toMarkdownFileUrl(url) {
+  if (!url || url.startsWith("#")) return url;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(url) || url.startsWith("//")) return url;
+
+  const hashIndex = url.indexOf("#");
+  const pathPart = hashIndex === -1 ? url : url.slice(0, hashIndex);
+  const hash = hashIndex === -1 ? "" : url.slice(hashIndex);
+  if (!pathPart || pathPart.startsWith("/")) return url;
+  if (!pathPart.startsWith(`${MARKDOWN_VIEW_DIR}/`) && !pathPart.startsWith("assets/")) {
+    return url;
+  }
+  return `${posix.relative(MARKDOWN_VIEW_DIR, pathPart)}${hash}`;
 }
 
 function resolveBodyUrl(url, context, allowBundlePath = false) {

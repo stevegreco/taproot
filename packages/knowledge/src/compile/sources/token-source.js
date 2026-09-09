@@ -56,7 +56,6 @@ function flattenTokens(node, pathParts, entries) {
       name: pathParts.join("."),
       alias: aliasOf(node.$value),
       valueType: typeof node.$type === "string" ? node.$type : "",
-      group: null,
     });
     return;
   }

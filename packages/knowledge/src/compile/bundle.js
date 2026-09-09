@@ -5,8 +5,10 @@ import authoredSchema from "../schema/index.js";
 import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
 import portableContractSchema from "../schema/portable-contract.schema.json" with { type: "json" };
 import { compiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
+import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import { sha256Hex } from "./digest.js";
 import { buildSearchIndex } from "./search-index.js";
+import { rewriteEmittedMarkdownUrls } from "./narrative.js";
 import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
 
 export function projectBundle(corpus, visibility, meta) {
@@ -60,11 +62,6 @@ export function projectBundle(corpus, visibility, meta) {
 
   const files = new Map();
   putText(files, "records.json", `${JSON.stringify(records, null, 2)}\n`);
-  putText(
-    files,
-    "records.jsonl",
-    `${records.map((record) => JSON.stringify(record)).join("\n")}${records.length ? "\n" : ""}`,
-  );
   putText(files, "search-index.json", `${JSON.stringify(searchIndex, null, 2)}\n`);
   putText(files, "schema/knowledge-record.json", `${JSON.stringify(authoredSchema, null, 2)}\n`);
   putText(
@@ -95,7 +92,7 @@ export function projectBundle(corpus, visibility, meta) {
 
   const content = {
     schemaVersion: 1,
-    compiledSchemaVersion: 3,
+    compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
     visibility,
     knowledgeVersion: meta.knowledgeVersion,
     designSystemVersion: meta.designSystemVersion,
@@ -200,7 +197,8 @@ function projectNarrativeFrontmatter(record) {
 
 function emitMarkdown(record) {
   const frontmatter = projectNarrativeFrontmatter(record);
-  return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${record.body}\n`;
+  const body = rewriteEmittedMarkdownUrls(record.body);
+  return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${body}\n`;
 }
 
 function putText(files, path, text) {

@@ -82,10 +82,11 @@ export async function compile(options) {
 
     staging = `${outDir}.tmp-${process.pid}-${randomBytes(8).toString("hex")}`;
     await mkdir(staging, { recursive: true });
-    const bundles = [
-      await writeBundle(join(staging, "public"), publicBundle),
-      await writeBundle(join(staging, "internal"), internalBundle),
-    ];
+    const bundles = [];
+    const written = options.internalContent ? [publicBundle, internalBundle] : [publicBundle];
+    for (const bundle of written) {
+      bundles.push(await writeBundle(join(staging, bundle.visibility), bundle));
+    }
     await rm(outDir, { recursive: true, force: true });
     await rename(staging, outDir);
     staging = undefined;

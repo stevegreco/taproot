@@ -1,7 +1,6 @@
 import { loadCorpusInputs } from "./inputs.js";
 import {
   assembleRecord,
-  withTokenGroups,
   checkBindingAgreement,
   checkSourceAgreement,
   completenessProblems,
@@ -11,7 +10,7 @@ import { PROBLEM, problem } from "./tables.js";
 
 export { CONTRIBUTORS } from "./inputs.js";
 export { sha256Hex, shortRevision } from "./digest.js";
-export { PROBLEM, REVERSE_RELATION, SIZE_BRIDGE } from "./tables.js";
+export { PROBLEM, REVERSE_RELATION } from "./tables.js";
 
 /** Load sources, then transform and validate plain record data (KNOW-023, KNOW-025). */
 export async function buildCorpus(reader, roots, options = {}) {
@@ -23,14 +22,14 @@ export function assembleCorpus(loaded) {
   const records = new Map(
     [...loaded.inputs].map(([id, input]) => [
       id,
-      withTokenGroups(assembleRecord(input.authored, input.contribution, input.assets)),
+      assembleRecord(input.authored, input.contribution, input.assets),
     ]),
   );
   const validation = validateRelations(records);
   const problems = [
     ...loaded.problems,
     ...[...records.values()].flatMap((record) => [
-      ...checkSourceAgreement(record),
+      ...checkSourceAgreement(record, loaded.tokenNames),
       ...completenessProblems(record),
     ]),
     ...checkBindingAgreement(records),

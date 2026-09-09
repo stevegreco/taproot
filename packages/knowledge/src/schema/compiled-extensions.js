@@ -1,3 +1,5 @@
+export const COMPILED_SCHEMA_VERSION = 5;
+
 export const COMPILED_REQUIRED = Object.freeze([
   "schemaVersion",
   "visibility",
@@ -8,13 +10,9 @@ export const COMPILED_REQUIRED = Object.freeze([
 ]);
 
 export const COMPILED_PROPERTIES = Object.freeze({
-  compiledSchemaVersion: { const: 3 },
+  compiledSchemaVersion: { const: COMPILED_SCHEMA_VERSION },
   backlinks: { $ref: "#/$defs/backlinks" },
   tokens: { $ref: "#/$defs/tokenContract" },
-  decisions: {
-    type: "array",
-    items: { $ref: "#/$defs/decisionRef" },
-  },
 });
 
 export const COMPILED_DEFS = Object.freeze({
@@ -77,24 +75,12 @@ export const COMPILED_DEFS = Object.freeze({
   },
   tokenEntry: {
     type: "object",
-    required: ["name", "alias", "valueType", "group"],
+    required: ["name", "alias", "valueType"],
     additionalProperties: false,
     properties: {
       name: { type: "string", minLength: 1 },
       alias: { type: ["string", "null"] },
       valueType: { type: "string" },
-      group: { type: ["string", "null"] },
-    },
-  },
-  decisionRef: {
-    type: "object",
-    required: ["path", "title", "status", "revision"],
-    additionalProperties: false,
-    properties: {
-      path: { type: "string", minLength: 1 },
-      title: { type: "string", minLength: 1 },
-      status: { type: "string", minLength: 1 },
-      revision: { type: "string", minLength: 1 },
     },
   },
 });

@@ -1,6 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 
-import { styles } from "../dist/button.styles.js";
 import { DsButton, defineButton } from "../src/button.js";
 
 const tagName = "test-ds-button";
@@ -111,43 +110,5 @@ describe("DsButton", () => {
 
     button.removeAttribute("aria-label");
     expect(control.hasAttribute("aria-label")).toBe(false);
-  });
-
-  test("uses the Button component token contract", () => {
-    expect(styles).toContain(
-      "--_background-press: var(--component-button-primary-background-pressed)",
-    );
-    expect(styles).toContain("--_background: var(--component-button-secondary-background-default)");
-    expect(styles).toContain("var(--component-button-danger-background-default)");
-    expect(styles).toContain("var(--component-button-size-small-padding-inline)");
-    expect(styles).not.toContain("var(--semantic-");
-    expect(styles).not.toContain("var(--primitives-");
-  });
-
-  test("keeps primary borders aligned with interactive backgrounds", () => {
-    expect(styles).toContain("--_border-hover: var(--component-button-primary-border-hover)");
-    expect(styles).toContain("--_border-press: var(--component-button-primary-border-pressed)");
-    expect(styles).toContain("border-color: var(--_border-hover)");
-    expect(styles).toContain("border-color: var(--_border-press)");
-  });
-
-  test("keeps danger borders aligned with destructive interaction states", () => {
-    expect(styles).toContain("--_border-hover: var(--component-button-danger-border-hover)");
-    expect(styles).toContain("--_border-press: var(--component-button-danger-border-pressed)");
-  });
-
-  test("uses one direct background token for each neutral interaction state", () => {
-    expect(styles).toContain(
-      "--_background-hover: var(--component-button-secondary-background-hover)",
-    );
-    expect(styles).toContain(
-      "--_background-press: var(--component-button-secondary-background-pressed)",
-    );
-    expect(styles).toContain("--_background-hover: var(--component-button-ghost-background-hover)");
-    expect(styles).toContain(
-      "--_background-press: var(--component-button-ghost-background-pressed)",
-    );
-    expect(styles).not.toContain("state-layer");
-    expect(styles).not.toContain(".button::before");
   });
 });

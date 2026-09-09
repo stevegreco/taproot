@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tokenize } from "../compile/search-index.js";
 import authoredSchema from "../schema/index.js";
+import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 
 export class KnowledgeBundleError extends Error {
   /**
@@ -223,9 +224,9 @@ async function validateContract(records, searchIndex, manifest, label) {
   ) {
     throw fail("bundle-invalid", label, ["manifest.content schema versions are missing"]);
   }
-  if (content.schemaVersion !== 1 || content.compiledSchemaVersion !== 3) {
+  if (content.schemaVersion !== 1 || content.compiledSchemaVersion !== COMPILED_SCHEMA_VERSION) {
     throw fail("unsupported-schema-version", label, [
-      `schemaVersion ${content.schemaVersion} compiledSchemaVersion ${content.compiledSchemaVersion} are not 1 and 3`,
+      `schemaVersion ${content.schemaVersion} compiledSchemaVersion ${content.compiledSchemaVersion} are not 1 and ${COMPILED_SCHEMA_VERSION}`,
     ]);
   }
 

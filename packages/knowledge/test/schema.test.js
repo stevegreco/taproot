@@ -30,6 +30,6 @@ test("package exports the portable contract and host binding schemas", async () 
     { with: { type: "json" } }
   );
 
-  assert.equal(portable.default.$id, "urn:stevegreco:design-system:portable-contract:2");
+  assert.equal(portable.default.$id, "urn:stevegreco:design-system:portable-contract:3");
   assert.equal(host.default.$id, "urn:stevegreco:design-system:host-binding:1");
 });

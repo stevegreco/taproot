@@ -1,5 +1,5 @@
 {
-  "specVersion": 2,
+  "specVersion": 3,
   "description": "Labels status or metadata. Not a control.",
   "usage": {
     "do": [
@@ -49,11 +49,6 @@
         "info": "Informational state or feature label."
       },
       "default": "default"
-    },
-    "hidden": {
-      "kind": "boolean",
-      "default": false,
-      "description": "Hides the badge."
     }
   },
   "events": {},
@@ -61,8 +56,7 @@
     "default"
   ],
   "behavior": [
-    "Badge is not focusable and does not activate.",
-    "Hidden hides the badge from the rendered UI."
+    "Badge is not focusable and does not activate."
   ],
   "accessibility": {
     "semantics": "Non-interactive text.",
@@ -83,6 +77,244 @@
     {
       "decision": "Badge is non-interactive and sets no live-region role.",
       "rationale": "Status that must be announced belongs to the surrounding UI."
+    }
+  ],
+  "mappings": [
+    {
+      "part": "surface",
+      "channel": "background",
+      "configuration": {
+        "variant": "default"
+      },
+      "token": {
+        "name": "semantic.color.background.muted"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "foreground",
+      "configuration": {
+        "variant": "default"
+      },
+      "token": {
+        "name": "semantic.color.foreground.muted"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "border",
+      "configuration": {
+        "variant": "default"
+      },
+      "token": {
+        "name": "semantic.color.border.subtle"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "background",
+      "configuration": {
+        "variant": "accent"
+      },
+      "token": {
+        "name": "semantic.color.background.brand.muted"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "foreground",
+      "configuration": {
+        "variant": "accent"
+      },
+      "token": {
+        "name": "semantic.color.foreground.brand.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "border",
+      "configuration": {
+        "variant": "accent"
+      },
+      "token": {
+        "name": "semantic.color.border.brand.muted"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "background",
+      "configuration": {
+        "variant": "success"
+      },
+      "token": {
+        "name": "semantic.color.background.status.success.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "foreground",
+      "configuration": {
+        "variant": "success"
+      },
+      "token": {
+        "name": "semantic.color.foreground.status.success.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "border",
+      "configuration": {
+        "variant": "success"
+      },
+      "token": {
+        "name": "semantic.color.border.status.success.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "background",
+      "configuration": {
+        "variant": "danger"
+      },
+      "token": {
+        "name": "semantic.color.background.status.danger.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "foreground",
+      "configuration": {
+        "variant": "danger"
+      },
+      "token": {
+        "name": "semantic.color.foreground.status.danger.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "border",
+      "configuration": {
+        "variant": "danger"
+      },
+      "token": {
+        "name": "semantic.color.border.status.danger.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "background",
+      "configuration": {
+        "variant": "warning"
+      },
+      "token": {
+        "name": "semantic.color.background.status.warning.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "foreground",
+      "configuration": {
+        "variant": "warning"
+      },
+      "token": {
+        "name": "semantic.color.foreground.status.warning.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "border",
+      "configuration": {
+        "variant": "warning"
+      },
+      "token": {
+        "name": "semantic.color.border.status.warning.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "background",
+      "configuration": {
+        "variant": "info"
+      },
+      "token": {
+        "name": "semantic.color.background.status.info.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "foreground",
+      "configuration": {
+        "variant": "info"
+      },
+      "token": {
+        "name": "semantic.color.foreground.status.info.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "border",
+      "configuration": {
+        "variant": "info"
+      },
+      "token": {
+        "name": "semantic.color.border.status.info.default"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "padding-block",
+      "token": {
+        "name": "primitives.space.1"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "padding-inline",
+      "token": {
+        "name": "primitives.space.2"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "radius",
+      "token": {
+        "name": "semantic.radius.pill"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "font-family",
+      "token": {
+        "name": "semantic.typography.label.small.fontFamily"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "font-size",
+      "token": {
+        "name": "semantic.typography.label.small.fontSize"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "font-weight",
+      "token": {
+        "name": "semantic.typography.label.small.fontWeight"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "line-height",
+      "token": {
+        "name": "semantic.typography.label.small.lineHeight"
+      }
+    },
+    {
+      "part": "surface",
+      "channel": "letter-spacing",
+      "token": {
+        "name": "semantic.typography.label.small.letterSpacing"
+      }
     }
   ]
 }

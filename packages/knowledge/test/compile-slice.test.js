@@ -33,21 +33,33 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const button = records.find((record) => record.id === "component.button");
   assert.ok(button.contract.parameters.variant.values.primary);
   assert.equal(Object.hasOwn(button.contract, "tagName"), false);
-  const ghost = button.tokens.entries.filter((entry) => entry.group === "ghost");
-  assert.ok(ghost.length > 0);
+  const ghostRestFill = button.contract.mappings.find(
+    (row) =>
+      row.configuration?.variant === "ghost" &&
+      row.channel === "background" &&
+      row.state === "default",
+  );
+  assert.equal(ghostRestFill.token.literal, "transparent");
 
   const badge = records.find((record) => record.id === "component.badge");
   assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
   assert.equal(badge.contract.parameters.variant.default, "default");
   assert.equal(Object.hasOwn(badge, "tokens"), false);
-  assert.equal(badge.decisions.length, 1);
-  assert.match(badge.decisions[0].title, /ADR 0003/);
+  assert.equal(Object.hasOwn(badge, "tokenRef"), false);
+  assert.ok(badge.contract.mappings.length > 0);
+  assert.equal(Object.hasOwn(badge, "decisions"), false);
+  assert.equal(
+    badge.sources.some((source) => source.kind === "adr"),
+    true,
+  );
 
   const binding = records.find((record) => record.id === "binding.button.web-component");
   assert.equal(binding.host.defaultTagName, "ds-button");
 
   const buttonMarkdown = await readFile(join(outDir, "public/markdown/component.button.md"), "utf8");
-  assert.match(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);
+  assert.match(button.body, /markdown\/pattern\.action-hierarchy\.md#assign-emphasis/);
+  assert.match(buttonMarkdown, /\]\(pattern\.action-hierarchy\.md#assign-emphasis\)/);
+  assert.doesNotMatch(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);
   assert.doesNotMatch(buttonMarkdown, /\.\.\/patterns\/action-hierarchy\.md/);
   assert.doesNotMatch(buttonMarkdown, /^contract:/m);
   assert.doesNotMatch(buttonMarkdown, /^host:/m);
@@ -71,4 +83,11 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const svg = await readFile(join(outDir, "public", assetPath), "utf8");
   assert.match(svg, /<svg/);
   assert.match(example.body, new RegExp(assetPath.replaceAll(".", "\\.")));
+
+  const exampleMarkdown = await readFile(
+    join(outDir, "public/markdown/example.action-hierarchy.settings.md"),
+    "utf8",
+  );
+  assert.match(exampleMarkdown, /\]\(\.\.\/assets\/[^)]+\)/);
+  assert.doesNotMatch(exampleMarkdown, /\]\(assets\//);
 });

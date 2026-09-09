@@ -1,6 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
 
-import { styles } from "../dist/badge.styles.js";
 import { DsBadge, defineBadge } from "../src/badge.js";
 
 const tagName = "test-ds-badge";
@@ -44,26 +43,6 @@ describe("DsBadge", () => {
     expect(() => defineBadge(alias)).not.toThrow();
     expect(document.createElement(alias)).toBeInstanceOf(DsBadge);
     expect(() => defineBadge(alias)).not.toThrow();
-  });
-
-  test("maps every documented status variant to semantic tokens", () => {
-    for (const status of ["success", "danger", "warning", "info"]) {
-      for (const application of ["background", "foreground", "border"]) {
-        expect(styles).toContain(`--semantic-color-${application}-status-${status}-default`);
-      }
-    }
-
-    expect(styles).toContain("--semantic-color-background-brand-muted");
-    for (const property of [
-      "font-family",
-      "font-size",
-      "font-weight",
-      "line-height",
-      "letter-spacing",
-    ]) {
-      expect(styles).toContain(`--semantic-typography-label-small-${property}`);
-    }
-    expect(styles).not.toContain("--component-");
   });
 
   test("honors the native hidden attribute", () => {

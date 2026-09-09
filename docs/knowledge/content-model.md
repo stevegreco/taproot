@@ -22,8 +22,13 @@ and composes each source kind into a reserved namespace. It does not flat-merge 
 ### Component
 
 The narrative hub for a design system component. When a portable contract exists, the component
-authors it as `contract`. That object has usage, anatomy, parameters, events, states, behavior,
-accessibility, and rationale. It has no `tagName`, slots, parts, attribute spellings, or DOM types.
+authors it as `contract`. That object has usage, anatomy, parameters, optional configuration
+axes, events, states, behavior, accessibility, optional rationale, and optional visual mappings.
+A mapping row names an anatomy
+part, visual channel, configuration, state, and either a token name or a closed literal
+(`transparent`, `inherit`, `none`). Token names may be semantic, primitive, or component. Media-query
+axes such as `prefersReducedMotion` live in `configurationAxes`, not in the compiler. The
+contract has no `tagName`, slots, parts, attribute spellings, or DOM types.
 Host identity is not authored here. A later component may omit `contract`.
 
 Examples: Button, Badge.
@@ -31,7 +36,10 @@ Examples: Button, Badge.
 ### Binding
 
 The authored host mapping for one platform. A binding `implements` a component. Its `host` is the
-only object that may name a custom-element tag, FACE, slots, parts, or `HTMLFormElement`.
+only object that may name a custom-element tag, FACE, slots, parts, or `HTMLFormElement`. Host
+`behavior` is not part of the mapping schema; structured siblings such as `formAssociation` and
+`focus` are the source of those host facts. Portable behaviors that those fields cannot express
+belong on the component `contract.behavior` array.
 
 Examples: `binding.button.web-component`, `binding.badge.web-component`.
 
@@ -96,9 +104,11 @@ Schema version `1` fixes the current field vocabulary and dotted ID format.
 
 The package exports `parseRecord(markdown, { sourcePath })`. It parses YAML frontmatter, adds the
 trimmed Markdown body, validates the complete authored record, and returns one flat object. Invalid
-input throws a path-aware `KnowledgeRecordError`. A `sourcePath` under `markdown/<id>.md` is a
-compiled narrative projection, not authored input. Identity-only frontmatter on an authored path
-still parses; `parseRecord` fills `schemaVersion`, `relations`, and `sources`.
+input throws a path-aware `KnowledgeRecordError`. `sourcePath` is provenance for the authored
+source, not a format discriminator: the same bytes parse under `markdown/<id>.md` or an authored
+filename when identity frontmatter plus defaults satisfy the authored schema. Compiled Markdown is
+still not a round-trip for `contract`, `host`, or `checks`. Identity-only frontmatter still
+parses; `parseRecord` fills `schemaVersion`, `relations`, and `sources`.
 
 The compiled-record schema is derived in memory from this authored schema at compile time. The
 compiler clones the authored document, sets a new `$id`, and merges compiled-only fields. It does
@@ -160,7 +170,10 @@ namespaces:
   never from `packages/tokens/dist/`;
 - the component's authored `tokenRef` fills `tokens.tier`, `tokens.namespace`, and
   `tokens.description`;
-- `adr` fills `decisions[]` with title, status, path, and revision.
+- `adr` contributes a `kind: adr` source with path and revision. Design, implement, and review
+  agents need that provenance so they can follow a compiled record to the domain-owned ADR. They
+  do not need ADR prose copied into the knowledge bundle. Token ADR bodies remain in
+  `packages/tokens`.
 
 The pairing is both halves or neither. A component with no published component-token namespace
 omits `tokenRef` and omits `kind: token-source` (token ADR 0003). It may still author `contract`
@@ -174,11 +187,17 @@ the declared kind. Each host parameter mapping names an attribute, a property, o
 `values` map on a host parameter, when present, covers every portable enum value.
 
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
-namespace must exist in the token file. When `tokens.tier` is `component`, every contract
-`parameters.variant` value must have at least one token entry, and a token group that names no
-contract variant is a conflict. Contract size values and token `size.*` keys must appear in the frozen
-`sm`/`small` and `md`/`medium` bridge. Unknown keys fail the build. A mapped size with no token
-leaves is allowed, as is a sparse variant such as `ghost` with no rest background.
+namespace must exist in the token file when a component publishes `tokenRef`. Mapping rows must
+name an anatomy part, a contract state when `state` is present, configuration keys that are
+contract parameters or `configurationAxes` (for media-query axes such as
+`prefersReducedMotion`), and a token name that
+exists in the token package or a closed literal. Boolean configuration values are `"true"` or
+`"false"`. Duplicate rows that share part, channel, configuration, and state are a conflict.
+The compiler does not infer variant groups from
+token paths and does not freeze a size-name bridge. Token names are checked against every
+`*.tokens.json` file under `packages/tokens/src/tokens`. An extra size compiles when its mapping names a
+published token. A mapped token missing from the token package fails the build. Sparse variants such
+as `ghost` with no rest background token are authored as literals, not inferred.
 
 These are not conflicts, because they are different facts with different owners:
 
@@ -190,8 +209,8 @@ The compiler rejects a missing source, an unreadable source, a binding that is n
 one of those token assertions (`source/conflict`) instead of choosing a value silently (KNOW-023).
 
 The compiler does not generate `type: decision` records in this slice. KNOW-005 is satisfied by
-enriched `sources[]` plus `decisions[]`. KNOW-024 constrains generated records rather than requiring
-them.
+`sources[]`. KNOW-006 still allows authored `type: decision` records. KNOW-024 constrains
+generated records rather than requiring them.
 
 ## Relationships
 
@@ -296,7 +315,6 @@ dist/
 ├── public/
 │   ├── manifest.json
 │   ├── records.json
-│   ├── records.jsonl
 │   ├── search-index.json
 │   ├── schema/
 │   │   ├── knowledge-record.json
@@ -305,7 +323,7 @@ dist/
 │   │   └── host-binding.json
 │   ├── markdown/
 │   └── assets/
-└── internal/
+└── internal/   # only when internal content is configured
     └── ...
 ```
 
@@ -318,21 +336,26 @@ compiled records.
 
 The compiler writes two views of each assembled record.
 
-- Record view: `records.json`, `records.jsonl`, and `openCatalog().get(id)`. This is the only
-  compiled owner of structured fields, including `contract`, `host`, `checks`, `tokens`, and
-  `decisions`.
+- Record view: `records.json` and `openCatalog().get(id)`. This is the only
+  compiled owner of structured fields, including `contract`, `host`, `checks`, and `tokens`.
 - Markdown view: `markdown/<id>.md`. Frontmatter is identity and discovery (`id`, `jobs`,
   `status`, `summary`, `tags`, `title`, `type`, `visibility`). The body is the rewritten
-  narrative. The file is not a round-trip for `parseRecord`. Links to other `markdown/<id>.md`
-  files are narrative cross-references, not ownership of `contract`, `host`, or `checks`.
+  narrative. The file is not a round-trip for `parseRecord`. Record-view bodies keep
+  bundle-root-relative destinations (`markdown/<id>.md`, `assets/...`) so documentation can rewrite
+  them. Emitted Markdown files rewrite those same destinations relative to the containing file
+  (`<id>.md`, `../assets/...`). Links to other records are narrative cross-references, not
+  ownership of `contract`, `host`, or `checks`. `parseRecord` does not reject a `markdown/<id>.md`
+  path; compiled Markdown that satisfies the authored schema parses, without structured fields.
 
 `search-index.json` is an index over the record view. It is not a third record view.
 
 The manifest `content` block records the schema version, compiled schema version, bundle
 visibility, knowledge version, design system version, record count, and per-file hashes. The
 digest hashes that block. Build time and git revision live in `manifest.build` and are not part
-of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` stays `3` because
-this does not change the compiled record shape. An internal bundle may contain only public
+of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `5` because
+compiled records no longer carry `decisions[]`; ADR provenance lives on `sources[]`. Bundles
+whose compiled schema version is not 5 fail closed. The compiler always projects the internal
+bundle for validation and writes it only when internal content is configured. An internal bundle may contain only public
 records; visibility is the declared projection, not a guess from record contents.
 
 Consumers query a compiled bundle through `openCatalog` in
@@ -355,8 +378,8 @@ trusted compiler produced them.
 ### Compiler stages
 
 `loadCorpusInputs` reads authored records, domain sources, and assets. `assembleCorpus` consumes
-that data without further I/O or input mutation. It assembles records, assigns token groups,
-validates domain rules and relationships, and rewrites narrative references. `projectBundle`
+that data without further I/O or input mutation. It assembles records, validates mapping and
+namespace agreement, validates domain rules and relationships, and rewrites narrative references. `projectBundle`
 computes visibility-specific backlinks and emits files; `writeBundle` performs output I/O.
 The pure assembly stage can be tested with the same loaded inputs repeatedly (KNOW-023, KNOW-025).
 

@@ -1,4 +1,4 @@
-import { stubRecord } from "./helpers/catalog.js";
+import { recordOnlyCompiledFields, stubRecord } from "./helpers/catalog.js";
 import { portableContract } from "./helpers/workspace.js";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile } from "node:fs/promises";
@@ -11,8 +11,6 @@ import { projectBundle, writeBundle } from "../src/compile/bundle.js";
 import {
   NARRATIVE_FRONTMATTER_KEYS,
   PROBLEM,
-  RECORD_ONLY_FIELDS,
-  isNarrativeFrontmatterKeys,
 } from "../src/compile/tables.js";
 import { findCompiledIssues } from "../src/schema/compiled-record.js";
 import authoredSchema from "../src/schema/index.js";
@@ -52,6 +50,8 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
   );
   assert.equal(files.includes("manifest.json"), false);
   assert.ok(files.includes("records.json"));
+  assert.equal(files.includes("records.jsonl"), false);
+  assert.ok(files.includes("search-index.json"));
   assert.ok(files.includes("schema/compiled-knowledge-record.json"));
   assert.ok(files.includes("schema/portable-contract.json"));
   assert.ok(files.includes("schema/host-binding.json"));
@@ -70,9 +70,8 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
     const { yamlText, data } = splitCompiledMarkdown(text);
     const keys = Object.keys(data).sort();
     assert.deepEqual(keys, [...NARRATIVE_FRONTMATTER_KEYS], path);
-    assert.equal(isNarrativeFrontmatterKeys(keys), true, path);
     assert.doesNotMatch(yamlText, /^(?:contract|host|checks):/m);
-    for (const field of RECORD_ONLY_FIELDS) {
+    for (const field of recordOnlyCompiledFields()) {
       assert.equal(Object.hasOwn(data, field), false, `${path} emitted ${field}`);
     }
     for (const key of NARRATIVE_FRONTMATTER_KEYS) {
@@ -90,7 +89,7 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
     written.map((record) => record.id),
     ids,
   );
-  assert.equal(written[0].compiledSchemaVersion, 3);
+  assert.equal(written[0].compiledSchemaVersion, 5);
   assert.ok(written.find((record) => record.id === "component.button").backlinks);
 
   const internal = projectBundle(corpus, "internal", meta);
@@ -155,7 +154,7 @@ test("compiled schema still requires visibility after authored defaults", () => 
     relations: {},
     sources: [{ kind: "authored", path: "content/almost.md", revision: "abc123456789abcd" }],
     body: "Body.",
-    compiledSchemaVersion: 3,
+    compiledSchemaVersion: 5,
     backlinks: {},
   };
   const missing = findCompiledIssues([almost]);
