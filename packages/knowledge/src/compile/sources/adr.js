@@ -25,6 +25,8 @@ export function readAdr(text, context) {
     };
   }
 
+  // heading and status validate ADR shape. Provenance is the source path and
+  // revision on sources[]; compiled records do not copy those fields out.
   return {
     fields: {},
     problems: [],

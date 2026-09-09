@@ -16,6 +16,19 @@ slice through that interface (KNOW-004). Tests cover schema validation, visibili
 relationship integrity, deterministic compiler output, and the retrieval interface (KNOW-025). MCP
 adapters are not implemented (KNOW-028).
 
+## Compatibility
+
+`@stevegreco/design-system-knowledge` `0.0.1` is a breaking change relative to earlier compiled
+bundles in this stack:
+
+- `compiledSchemaVersion` is 5. Bundles at 3 or 4 fail closed.
+- `dist/public/records.jsonl` is no longer written or published. Read `records.json`.
+- Compiled records no longer include `decisions[]`. ADR provenance is a `sources[]` entry with
+  `kind: adr`.
+
+The next published version of this package must be treated as incompatible with any consumer that
+opened `records.jsonl` by path or assumed compiled schema 3.
+
 ## Reading order
 
 1. [Requirements](requirements.md) defines the users, required behavior, first release, and

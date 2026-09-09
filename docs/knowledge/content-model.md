@@ -354,8 +354,8 @@ visibility, knowledge version, design system version, record count, and per-file
 digest hashes that block. Build time and git revision live in `manifest.build` and are not part
 of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `5` because
 compiled records no longer carry `decisions[]`; ADR provenance lives on `sources[]`. Bundles
-whose compiled schema version is not 5 fail closed. An internal bundle is emitted only when
-internal content is configured. An internal bundle may contain only public
+whose compiled schema version is not 5 fail closed. The compiler always projects the internal
+bundle for validation and writes it only when internal content is configured. An internal bundle may contain only public
 records; visibility is the declared projection, not a guess from record contents.
 
 Consumers query a compiled bundle through `openCatalog` in

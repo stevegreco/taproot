@@ -88,8 +88,10 @@ test("compile accepts an existing empty public content root", async () => {
   await access(join(result.bundles[0].dir, "manifest.json"));
   await access(join(result.bundles[0].dir, "records.json"));
   await access(join(result.bundles[0].dir, "search-index.json"));
-  await assert.rejects(() => access(join(result.bundles[0].dir, "records.jsonl")));
-  await assert.rejects(() => access(join(outDir, "internal")));
+  await assert.rejects(() => access(join(result.bundles[0].dir, "records.jsonl")), {
+    code: "ENOENT",
+  });
+  await assert.rejects(() => access(join(outDir, "internal")), { code: "ENOENT" });
 });
 
 test("a public-only compile does not leave a previous internal bundle", async () => {
@@ -118,7 +120,7 @@ test("a public-only compile does not leave a previous internal bundle", async ()
   const publicOnly = await compile({ workspaceRoot: workspace, outDir, revision: "test" });
   assert.equal(publicOnly.bundles.length, 1);
   await access(join(outDir, "public/manifest.json"));
-  await assert.rejects(() => access(join(outDir, "internal")));
+  await assert.rejects(() => access(join(outDir, "internal")), { code: "ENOENT" });
 });
 
 test("compile names the source file when a record is invalid", async () => {
