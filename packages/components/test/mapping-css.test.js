@@ -27,6 +27,12 @@ describe("compiled mapping stylesheet coverage", () => {
       }),
     ).toBe(true);
     expect(
+      stylesheetContains("--_background: white;\n--_background-disabled: transparent;", {
+        channel: "background",
+        token: { literal: "transparent" },
+      }),
+    ).toBe(false);
+    expect(
       stylesheetContains("transition: none;", {
         channel: "background",
         token: { literal: "transparent" },
