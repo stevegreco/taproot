@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
 import { PROBLEM, buildCorpus, shortRevision } from "../src/compile/corpus.js";
+import { listTokenCatalogFiles } from "../src/compile/inputs.js";
 import {
   codes,
   createFsReader,
@@ -229,7 +232,11 @@ test("a mapped token missing from the token package fails the build", async () =
     }),
   });
 
-  const corpus = await buildCorpus(reader, [{ root: "content", visibility: "public" }]);
+  const corpus = await buildCorpus(
+    reader,
+    [{ root: "content", visibility: "public" }],
+    { workspaceRoot: repoRoot },
+  );
   assert.ok(
     codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) =>
       /semantic\.color\.does\.not\.exist/.test(item.message),
@@ -267,4 +274,82 @@ test("link rewriting leaves fenced code alone and rewrites Markdown links", asyn
 
   assert.match(body, /\[target\]\(markdown\/component\.target\.md\)/);
   assert.match(body, /```md\n\[leave me\]\(target.md\)\n```/);
+});
+
+test("token catalog lists every tokens.json file under packages/tokens/src/tokens", async () => {
+  const files = await listTokenCatalogFiles(repoRoot);
+  assert.ok(files.includes("packages/tokens/src/tokens/primitives.tokens.json"));
+  assert.ok(files.includes("packages/tokens/src/tokens/components/button.tokens.json"));
+  assert.ok(files.includes("packages/tokens/src/tokens/semantic/light.tokens.json"));
+  assert.equal(
+    files.every((path) => path.startsWith("packages/tokens/src/tokens/") && path.endsWith(".tokens.json")),
+    true,
+  );
+});
+
+test("a new tokens.json file is in the catalog without a compiler table", async () => {
+  const workspace = await mkdtemp(join(tmpdir(), "knowledge-catalog-"));
+  const componentPath = "packages/knowledge/content/extra.md";
+  await mkdir(join(workspace, "packages/knowledge/content"), { recursive: true });
+  await mkdir(join(workspace, "packages/tokens/src/tokens/components"), { recursive: true });
+  await writeFile(
+    join(workspace, componentPath),
+    recordMarkdown({
+      id: "component.extra",
+      sources: [{ kind: "authored", path: componentPath }],
+      contract: portableContract({
+        anatomy: [{ name: "surface", role: "indicator", description: "Surface." }],
+        mappings: [
+          {
+            part: "surface",
+            channel: "background",
+            token: { name: "component.extra.background" },
+          },
+        ],
+      }),
+    }),
+  );
+  await writeFile(
+    join(workspace, "packages/tokens/src/tokens/components/extra.tokens.json"),
+    JSON.stringify({
+      component: { extra: { background: { $value: "#000", $type: "color" } } },
+    }),
+  );
+
+  const corpus = await buildCorpus(
+    createFsReader(workspace),
+    [{ root: join(workspace, "packages/knowledge/content"), visibility: "public" }],
+    { workspaceRoot: workspace },
+  );
+  assert.equal(
+    corpus.problems.filter((item) => item.severity === "error").length,
+    0,
+    JSON.stringify(corpus.problems, null, 2),
+  );
+});
+
+test("a malformed token catalog file fails with SOURCE_UNREADABLE", async () => {
+  const workspace = await mkdtemp(join(tmpdir(), "knowledge-catalog-bad-"));
+  const componentPath = "packages/knowledge/content/extra.md";
+  await mkdir(join(workspace, "packages/knowledge/content"), { recursive: true });
+  await mkdir(join(workspace, "packages/tokens/src/tokens"), { recursive: true });
+  await writeFile(
+    join(workspace, componentPath),
+    recordMarkdown({
+      id: "component.extra",
+      sources: [{ kind: "authored", path: componentPath }],
+    }),
+  );
+  await writeFile(join(workspace, "packages/tokens/src/tokens/broken.tokens.json"), "{");
+
+  const corpus = await buildCorpus(
+    createFsReader(workspace),
+    [{ root: join(workspace, "packages/knowledge/content"), visibility: "public" }],
+    { workspaceRoot: workspace },
+  );
+  assert.ok(
+    codes(corpus, PROBLEM.SOURCE_UNREADABLE).some((item) =>
+      /packages\/tokens\/src\/tokens\/broken\.tokens\.json/.test(item.path ?? ""),
+    ),
+  );
 });

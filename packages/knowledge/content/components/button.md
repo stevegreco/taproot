@@ -81,6 +81,10 @@ contract:
     accessibleName:
       kind: string
       description: Accessible name when visible content is insufficient.
+  configurationAxes:
+    prefersReducedMotion:
+      values:
+        - reduce
   events:
     activate:
       description: Requests the action represented by the button.
@@ -165,11 +169,11 @@ contract:
       token:
         name: component.button.font.letterSpacing
     - part: control
-      channel: transition
+      channel: transition-duration
       token:
         name: component.button.motion.duration
     - part: control
-      channel: transition
+      channel: transition-timing-function
       token:
         name: component.button.motion.easing
     - part: control

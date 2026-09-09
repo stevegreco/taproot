@@ -66,11 +66,6 @@ function flattenTokens(node, pathParts, entries) {
   }
 }
 
-export function tokenNamesFromText(text) {
-  const result = readTokenSource(text, { path: "", recordId: "" });
-  return result.fields.tokens?.entries.map((entry) => entry.name) ?? [];
-}
-
 function aliasOf(value) {
   if (typeof value !== "string") return null;
   const match = /^\{([^{}]+)\}$/.exec(value.trim());
