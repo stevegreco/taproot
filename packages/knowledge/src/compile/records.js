@@ -184,7 +184,7 @@ export function checkMappingAgreement(record, tokenNames = null) {
   const seen = new Map();
 
   for (const [index, mapping] of mappings.entries()) {
-    const path = `/contract/mappings/${index}`;
+    const path = mapping.source ?? `/contract/mappings/${index}`;
     if (!parts.has(mapping.part)) {
       problems.push(
         problem({

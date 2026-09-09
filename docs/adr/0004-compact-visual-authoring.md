@@ -66,10 +66,26 @@ and in fixtures that skip compact authoring.
 `default` is the rest layer. It is not listed in `suppress`, `overlay`, or `independent`.
 
 Consumers resolve a configuration and a set of active states with
-`resolveMappings(mappings, stateResolution, { configuration, states })` from
-`@stevegreco/design-system-knowledge/compile`. Compiled mappings are **partial rules**, not a
-cartesian product of state combinations. Base applies first, then `default`, then overlay, then
-suppress winners, then independent states.
+`resolveMappings(mappings, stateResolution, { configuration, states, part })` from
+`@stevegreco/design-system-knowledge/compile`. Results are grouped by anatomy part in
+`parts`. `channels` is filled when `part` is passed or when only one part matched.
+Compiled mappings are **partial rules**, not a cartesian product of state combinations.
+
+Layering is:
+
+1. Base rows (no `state`). Specificity is the number of configuration keys; a
+   variant rule beats a part-level `base` rule for the same channel.
+2. `default`.
+3. Overlay states, in `overlay` list order.
+4. Suppress winners that are still active.
+5. Independent states.
+
+Independent states are orthogonal: they may combine with overlay and suppress
+winners, but they must not assign the same part and channel as those states when
+the configurations can apply together. The compiler rejects that overlap so
+`focus-visible` cannot silently replace a disabled fill. Independent states may
+still override base and `default` (Button outline). YAML object order and
+`contract.states` order do not decide any of these ranks.
 
 Precedence alone is not enough. If Ghost is hovered and disabled, a disabled rule that only
 changes foreground would retain the hover background unless `disabled` suppresses `hover`. That
@@ -90,14 +106,23 @@ implicit.
 
 ### Compiled output relative to specVersion 3
 
-The compiled mapping row shape is unchanged. Button compiled mappings drop five rows that only
-restated inherited values:
+The compiled mapping row shape is unchanged except for the added `visualCoverage` object.
+Compiled contracts omit `visuals` and omit compiler-only `source` paths used during validation.
+Button compiled mappings drop rows that only restated a rest-layer value on another state,
+including Ghost disabled `background: transparent` (inherited from rest) and Ghost/Secondary
+border copies. Host CSS may still copy those inherited values into `--_*-hover` /
+`--_*-disabled` custom properties; mapping stylesheet tests no longer assert those copies.
 
-- Ghost hover, pressed, and disabled no longer repeat `border: transparent`.
-- Secondary hover and pressed no longer repeat the default border token.
+Badge compiled mapping coverage is unchanged (26 rows).
 
-Those facts remain true through rest-layer inheritance plus `stateResolution`. Badge compiled
-coverage is unchanged (26 rows). Compiled contracts omit `visuals`.
+### Coverage
+
+Compiled `visualCoverage` records which parts, axes, axis values, states, and channels were
+authored. Anatomy parts and parameters with no visuals are listed as `uncoveredParts` and
+`uncoveredAxes` rather than failing the build. Button `content`, `action`, `disabled`,
+`fullWidth`, and `accessibleName` are uncovered by intent. When an axis is used, omitted values
+appear on `missingValues` so a new variant is an absence, not silent success. Incomplete axes do
+not fail compilation in this slice.
 
 ## Consequences
 
@@ -106,8 +131,9 @@ coverage is unchanged (26 rows). Compiled contracts omit `visuals`.
 - `packages/components` stylesheet tests still generate needles from compiled mappings. Changing
   a mapped token or literal in CSS still fails those tests.
 - Host custom properties that copy an inherited value into a state-specific variable
-  (`--_border-hover: transparent` on Ghost) are no longer asserted once the repeated mapping row
-  is gone. Confirm those copies visually or by reading `button.css` until a host adapter exists.
+  (`--_border-hover: transparent` or Ghost `--_background-disabled: transparent`) are no longer
+  asserted once the repeated mapping row is gone. Confirm those copies visually or by reading
+  `button.css` until a host adapter exists.
 - Figma agreement remains a manual check.
 - Token-value-only changes still need no mapping or CSS-reference edits.
 
@@ -132,6 +158,15 @@ suppression match the CSS model and avoid combined-condition syntax.
 
 **Infer suppression from `contract.states` order.** Rejected. Reordering the vocabulary must not
 change visuals.
+
+**Fail compilation when an axis is incomplete or a parameter has no visuals.** Deferred. Button
+`action` and `disabled` are parameters, not visual axes. Incomplete axis values belong on
+`visualCoverage.missingValues` so the gap is visible. A later component can turn missing values
+into errors once the catalog has a completeness policy.
+
+**Keep inherited state copies that CSS still declares as `--_*-hover` variables.** Rejected. The
+portable rest-layer assignment is the authored fact. Host variable copies are implementation
+detail until a binding adapter exists.
 
 ## Requirements
 

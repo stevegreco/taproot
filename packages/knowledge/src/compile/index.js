@@ -12,6 +12,7 @@ export {
   compileContractVisuals,
   expandVisuals,
   resolveMappings,
+  stripMappingSources,
   VISUAL_CHANNELS,
   VISUAL_LITERALS,
 } from "./visuals.js";

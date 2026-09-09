@@ -37,7 +37,11 @@ export function compileContractVisuals(contract, recordId) {
 
   const hasVisuals = Object.hasOwn(contract, "visuals");
   const hasMappings = Object.hasOwn(contract, "mappings");
-  if (!hasVisuals && !Object.hasOwn(contract, "stateResolution")) {
+  if (
+    !hasVisuals &&
+    !Object.hasOwn(contract, "stateResolution") &&
+    !Object.hasOwn(contract, "visualCoverage")
+  ) {
     return { contract, problems: [] };
   }
 
@@ -54,12 +58,24 @@ export function compileContractVisuals(contract, recordId) {
     );
   }
 
+  if (Object.hasOwn(next, "visualCoverage")) {
+    problems.push(
+      conflict(
+        recordId,
+        "/contract/visualCoverage",
+        "visualCoverage is generated from visuals and cannot be authored",
+      ),
+    );
+    delete next.visualCoverage;
+  }
+
   problems.push(...stateResolutionProblems(next, recordId));
 
   if (hasVisuals) {
     const expanded = expandVisuals(next, recordId);
     problems.push(...expanded.problems);
     next.mappings = expanded.mappings;
+    next.visualCoverage = buildVisualCoverage(next);
     delete next.visuals;
   }
 
@@ -97,13 +113,18 @@ export function expandVisuals(contract, recordId) {
 
   const sorted = sortMappings(mappings);
   problems.push(...overlappingAssignmentProblems(sorted, recordId));
+  problems.push(...independentChannelProblems(sorted, contract.stateResolution, recordId));
   return { mappings: sorted, problems };
 }
 
 /**
  * Resolve partial mapping rows for one configuration and simultaneous states.
- * Base (no state) applies first, then `default`, then overlay, then suppress
- * winners, then independent states. `transition: none` clears duration/easing.
+ * Rows are grouped by anatomy part. Base (no state, specificity 0) applies
+ * first, then `default`, then overlay, then suppress winners, then independent
+ * states. At the same layer, more configuration keys win. Independent states
+ * must not share channels with overlay or suppress winners; the compiler rejects
+ * that overlap so independence is orthogonal, not last-write-wins.
+ * `transition: none` clears duration/easing on the same part.
  */
 export function resolveMappings(mappings, stateResolution = {}, options = {}) {
   const configuration = options.configuration ?? {};
@@ -111,43 +132,81 @@ export function resolveMappings(mappings, stateResolution = {}, options = {}) {
   const problems = [];
   const active = applySuppression(requested, stateResolution);
   const layers = layerStates(active, stateResolution);
+  /** @type {Map<string, Map<string, object>>} */
   const resolved = new Map();
+  /** @type {Map<string, { layer: number, specificity: number, state: string }>} */
   const sources = new Map();
 
   for (const mapping of mappings ?? []) {
+    if (options.part && mapping.part !== options.part) continue;
     if (!configurationMatches(mapping.configuration, configuration)) continue;
     const layer = mappingLayer(mapping.state, layers);
     if (layer < 0) continue;
-    const previous = sources.get(mapping.channel);
-    if (previous && previous.layer === layer && previous.state !== (mapping.state ?? "")) {
+    const key = `${mapping.part}\0${mapping.channel}`;
+    const specificity = Object.keys(mapping.configuration ?? {}).length;
+    const previous = sources.get(key);
+    if (
+      previous &&
+      previous.layer === layer &&
+      previous.specificity === specificity &&
+      previous.state !== (mapping.state ?? "")
+    ) {
       problems.push({
         code: PROBLEM.SOURCE_CONFLICT,
         message: `resolved ${mapping.part} ${mapping.channel} is ambiguous between ${previous.state || "base"} and ${mapping.state}`,
-        path: null,
+        path: mapping.source ?? null,
       });
     }
-    if (!previous || previous.layer <= layer) {
-      resolved.set(mapping.channel, {
+    if (
+      !previous ||
+      previous.layer < layer ||
+      (previous.layer === layer && previous.specificity < specificity)
+    ) {
+      if (!resolved.has(mapping.part)) resolved.set(mapping.part, new Map());
+      resolved.get(mapping.part).set(mapping.channel, {
         part: mapping.part,
         channel: mapping.channel,
         token: mapping.token,
         configuration: mapping.configuration,
         state: mapping.state,
       });
-      sources.set(mapping.channel, { layer, state: mapping.state ?? "" });
+      sources.set(key, { layer, specificity, state: mapping.state ?? "" });
     }
   }
 
-  if (isNone(resolved.get(MOTION_SHORTHAND)?.token)) {
-    for (const channel of MOTION_CLEARED) resolved.delete(channel);
+  const parts = {};
+  for (const [part, channels] of [...resolved.entries()].sort(([left], [right]) =>
+    left.localeCompare(right),
+  )) {
+    if (isNone(channels.get(MOTION_SHORTHAND)?.token)) {
+      for (const channel of MOTION_CLEARED) channels.delete(channel);
+    }
+    const selected = {};
+    for (const channel of VISUAL_CHANNELS) {
+      const row = channels.get(channel);
+      if (row) selected[channel] = row;
+    }
+    parts[part] = selected;
   }
 
-  const channels = {};
-  for (const channel of VISUAL_CHANNELS) {
-    const row = resolved.get(channel);
-    if (row) channels[channel] = row;
-  }
-  return { channels, problems };
+  const partNames = Object.keys(parts);
+  const selectedPart = options.part ?? (partNames.length === 1 ? partNames[0] : undefined);
+  return {
+    parts,
+    channels: selectedPart ? (parts[selectedPart] ?? {}) : undefined,
+    problems,
+  };
+}
+
+/** Drop compiler-only authored paths from compiled mapping rows. */
+export function stripMappingSources(contract) {
+  if (!contract || !Array.isArray(contract.mappings)) return contract;
+  contract.mappings = contract.mappings.map((mapping) => {
+    if (!Object.hasOwn(mapping, "source")) return mapping;
+    const { source: _source, ...row } = mapping;
+    return row;
+  });
+  return contract;
 }
 
 function expandPart(partName, node, contract, recordId, path) {
@@ -262,7 +321,7 @@ function channelMappings(partName, channels, configuration, state, recordId, pat
     }
     const token = parseChannelValue(channels[channel], recordId, channelPath, problems);
     if (!token) continue;
-    const mapping = { part: partName, channel, token };
+    const mapping = { part: partName, channel, token, source: channelPath };
     if (configuration && Object.keys(configuration).length > 0) mapping.configuration = { ...configuration };
     if (state) mapping.state = state;
     mappings.push(mapping);
@@ -345,6 +404,127 @@ function checkResolutionState(state, states, recordId, path, problems) {
   }
 }
 
+function independentChannelProblems(mappings, stateResolution, recordId) {
+  const independent = new Set(stateResolution?.independent ?? []);
+  const contested = new Set([
+    ...(stateResolution?.overlay ?? []),
+    ...Object.keys(stateResolution?.suppress ?? {}),
+  ]);
+  if (independent.size === 0 || contested.size === 0) return [];
+
+  const problems = [];
+  for (let i = 0; i < mappings.length; i += 1) {
+    for (let j = i + 1; j < mappings.length; j += 1) {
+      const left = mappings[i];
+      const right = mappings[j];
+      if (left.part !== right.part || left.channel !== right.channel) continue;
+      if (!configurationsCanApplyTogether(left.configuration, right.configuration)) continue;
+      const leftIndependent = independent.has(left.state);
+      const rightIndependent = independent.has(right.state);
+      if (leftIndependent === rightIndependent) continue;
+      const independentRow = leftIndependent ? left : right;
+      const other = leftIndependent ? right : left;
+      if (!contested.has(other.state)) continue;
+      problems.push(
+        conflict(
+          recordId,
+          independentRow.source ?? `/contract/visuals/${independentRow.part}`,
+          `independent state ${independentRow.state} cannot share ${independentRow.part} ${independentRow.channel} with ${other.state}`,
+        ),
+      );
+    }
+  }
+  return problems;
+}
+
+function buildVisualCoverage(contract) {
+  const visuals = contract.visuals ?? {};
+  const parts = {};
+  const usedAxes = new Set();
+
+  for (const partName of Object.keys(visuals).sort(compareKey)) {
+    const node = visuals[partName];
+    if (!isPlainObject(node)) continue;
+    const axes = [];
+    const values = {};
+    const states = new Set();
+    const channels = new Set();
+
+    collectChannels(node.base, channels);
+    collectStates(node.states, states, channels);
+
+    for (const axis of Object.keys(node).filter((key) => !RESERVED_PART_KEYS.includes(key)).sort(compareKey)) {
+      const axisValues = node[axis];
+      if (!isPlainObject(axisValues)) continue;
+      axes.push(axis);
+      usedAxes.add(axis);
+      const authored = [];
+      for (const value of Object.keys(axisValues).sort(compareKey)) {
+        authored.push(value);
+        const body = axisValues[value];
+        if (!isPlainObject(body)) continue;
+        const rest = Object.fromEntries(Object.entries(body).filter(([key]) => key !== "states"));
+        collectChannels(rest, channels);
+        if (Object.hasOwn(body, "states")) {
+          if (Object.keys(rest).length > 0) states.add(REST_STATE);
+          collectStates(body.states, states, channels);
+        }
+      }
+      values[axis] = authored;
+    }
+
+    const coverage = {
+      axes,
+      values,
+      states: [...states].sort(compareKey),
+      channels: VISUAL_CHANNELS.filter((channel) => channels.has(channel)),
+    };
+    const missingValues = missingAxisValues(axes, values, contract);
+    if (Object.keys(missingValues).length > 0) coverage.missingValues = missingValues;
+    parts[partName] = coverage;
+  }
+
+  const uncoveredParts = (contract.anatomy ?? [])
+    .map((item) => item.name)
+    .filter((name) => !Object.hasOwn(parts, name))
+    .sort(compareKey);
+  const uncoveredAxes = [
+    ...Object.keys(contract.parameters ?? {}),
+    ...Object.keys(contract.configurationAxes ?? {}),
+  ]
+    .filter((name) => !usedAxes.has(name) && !RESERVED_PART_KEYS.includes(name))
+    .sort(compareKey);
+
+  return { parts, uncoveredParts, uncoveredAxes };
+}
+
+function collectChannels(channels, into) {
+  if (!isPlainObject(channels)) return;
+  for (const channel of Object.keys(channels)) {
+    if (VISUAL_CHANNEL_SET.has(channel)) into.add(channel);
+  }
+}
+
+function collectStates(states, stateSet, channels) {
+  if (!isPlainObject(states)) return;
+  for (const [state, body] of Object.entries(states)) {
+    stateSet.add(state);
+    collectChannels(body, channels);
+  }
+}
+
+function missingAxisValues(axes, authoredValues, contract) {
+  const missing = {};
+  for (const axis of axes) {
+    const allowed = configurationValues(axis, contract.parameters ?? {}, contract.configurationAxes ?? {});
+    if (!allowed || typeof allowed.has !== "function" || !allowed[Symbol.iterator]) continue;
+    const authored = new Set(authoredValues[axis] ?? []);
+    const absent = [...allowed].filter((value) => !authored.has(value)).sort(compareKey);
+    if (absent.length > 0) missing[axis] = absent;
+  }
+  return missing;
+}
+
 function overlappingAssignmentProblems(mappings, recordId) {
   const problems = [];
   for (let i = 0; i < mappings.length; i += 1) {
@@ -364,7 +544,7 @@ function overlappingAssignmentProblems(mappings, recordId) {
       problems.push(
         conflict(
           recordId,
-          `/contract/visuals/${left.part}`,
+          left.source ?? `/contract/visuals/${left.part}`,
           `visuals ${left.part} ${left.channel} assigns overlapping ${formatConfig(left.configuration)} and ${formatConfig(right.configuration)} rules`,
         ),
       );

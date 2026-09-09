@@ -316,5 +316,42 @@
         "name": "semantic.radius.pill"
       }
     }
-  ]
+  ],
+  "visualCoverage": {
+    "parts": {
+      "surface": {
+        "axes": [
+          "variant"
+        ],
+        "values": {
+          "variant": [
+            "accent",
+            "danger",
+            "default",
+            "info",
+            "success",
+            "warning"
+          ]
+        },
+        "states": [],
+        "channels": [
+          "background",
+          "foreground",
+          "border",
+          "padding-inline",
+          "padding-block",
+          "radius",
+          "font-family",
+          "font-size",
+          "font-weight",
+          "line-height",
+          "letter-spacing"
+        ]
+      }
+    },
+    "uncoveredParts": [
+      "content"
+    ],
+    "uncoveredAxes": []
+  }
 }

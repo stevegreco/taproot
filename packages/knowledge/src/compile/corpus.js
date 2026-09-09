@@ -7,7 +7,7 @@ import {
 } from "./records.js";
 import { rewriteBodyLinks } from "./narrative.js";
 import { PROBLEM, problem } from "./tables.js";
-import { compileContractVisuals } from "./visuals.js";
+import { compileContractVisuals, stripMappingSources } from "./visuals.js";
 
 export { CONTRIBUTORS } from "./inputs.js";
 export { sha256Hex, shortRevision } from "./digest.js";
@@ -43,6 +43,9 @@ export function assembleCorpus(loaded) {
     ...checkBindingAgreement(records),
     ...validation.problems,
   ];
+  for (const record of records.values()) {
+    stripMappingSources(record.contract);
+  }
   const rewrittenRecords = new Map();
   const narrativeReferences = new Map();
   for (const [id, record] of records) {

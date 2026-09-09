@@ -186,7 +186,6 @@ contract:
             pressed:
               background: component.button.ghost.background.pressed
             disabled:
-              background: transparent
               foreground: component.button.ghost.foreground.disabled
         danger:
           background: component.button.danger.background.default

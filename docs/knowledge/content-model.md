@@ -208,7 +208,9 @@ removes losers when the winner is active, `overlay` orders remaining interaction
 `independent` states still contribute. Button `disabled` suppresses `hover` and `pressed`.
 `focus-visible` can combine with an enabled interaction state and with `disabled`.
 `transition: none` replaces duration and easing for that configuration when resolved.
-The compiler does not infer variant groups from
+Compiled `visualCoverage` lists authored parts, axes, values, states, and channels, and names
+uncovered parts and parameters so missing visuals are visible. Authoring `visualCoverage` is a
+conflict. The compiler does not infer variant groups from
 token paths and does not freeze a size-name bridge. Token names are checked against every
 `*.tokens.json` file under `packages/tokens/src/tokens`. An extra size compiles when its mapping names a
 published token. A mapped token missing from the token package fails the build. Sparse variants such

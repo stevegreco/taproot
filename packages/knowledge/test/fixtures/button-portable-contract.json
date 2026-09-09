@@ -203,17 +203,6 @@
       "part": "control",
       "channel": "background",
       "token": {
-        "literal": "transparent"
-      },
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "disabled"
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "token": {
         "name": "component.button.ghost.background.hover"
       },
       "configuration": {
@@ -650,5 +639,65 @@
         "name": "component.button.motion.easing"
       }
     }
-  ]
+  ],
+  "visualCoverage": {
+    "parts": {
+      "control": {
+        "axes": [
+          "prefersReducedMotion",
+          "size",
+          "variant"
+        ],
+        "values": {
+          "prefersReducedMotion": [
+            "reduce"
+          ],
+          "size": [
+            "md",
+            "sm"
+          ],
+          "variant": [
+            "danger",
+            "ghost",
+            "primary",
+            "secondary"
+          ]
+        },
+        "states": [
+          "default",
+          "disabled",
+          "focus-visible",
+          "hover",
+          "pressed"
+        ],
+        "channels": [
+          "background",
+          "foreground",
+          "border",
+          "outline",
+          "padding-inline",
+          "padding-block",
+          "radius",
+          "gap",
+          "font-family",
+          "font-size",
+          "font-weight",
+          "line-height",
+          "letter-spacing",
+          "transition",
+          "transition-duration",
+          "transition-timing-function"
+        ]
+      }
+    },
+    "uncoveredParts": [
+      "content"
+    ],
+    "uncoveredAxes": [
+      "accessibleName",
+      "action",
+      "disabled",
+      "fullWidth"
+    ]
+  }
 }

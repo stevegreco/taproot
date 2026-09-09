@@ -57,10 +57,10 @@ test("compact visuals expand into deterministic mapping rows", () => {
   });
   const { mappings, problems } = expandVisuals(contract, "component.fixture");
   assert.deepEqual(problems, []);
-  assert.deepEqual(
-    mappings.find((row) => row.channel === "radius"),
-    { part: "control", channel: "radius", token: token("component.fixture.radius") },
-  );
+  const radius = mappings.find((row) => row.channel === "radius");
+  assert.equal(radius.part, "control");
+  assert.deepEqual(radius.token, token("component.fixture.radius"));
+  assert.equal(radius.source, "/contract/visuals/control/base/radius");
   assert.equal(
     mappings.find((row) => row.channel === "padding-inline").state,
     undefined,
@@ -346,6 +346,12 @@ test("a visuals token missing from the token package fails the build", async () 
       /semantic\.color\.does\.not\.exist/.test(item.message),
     ),
   );
+  assert.equal(
+    codes(corpus, PROBLEM.SOURCE_CONFLICT).find((item) =>
+      /semantic\.color\.does\.not\.exist/.test(item.message),
+    ).path,
+    "/contract/visuals/control/base/background/token/name",
+  );
 });
 
 test("an extra contract size compiles from compact visuals", async () => {
@@ -401,4 +407,92 @@ test("an extra contract size compiles from compact visuals", async () => {
   assert.equal(record.contract.mappings[0].token.name, "component.size.size.large.paddingInline");
   assert.equal(record.contract.mappings[0].configuration.size, "lg");
   assert.equal(Object.hasOwn(record.contract, "visuals"), false);
+  assert.deepEqual(record.contract.visualCoverage.parts.control.missingValues.size, ["md", "sm"]);
+  assert.equal(Object.hasOwn(record.contract.mappings[0], "source"), false);
+});
+
+test("resolveMappings keeps the same channel on two anatomy parts", () => {
+  const resolved = resolveMappings(
+    [
+      {
+        part: "content",
+        channel: "foreground",
+        token: { name: "component.fixture.content.fg" },
+      },
+      {
+        part: "control",
+        channel: "foreground",
+        token: { name: "component.fixture.control.fg" },
+      },
+    ],
+    buttonResolution,
+    {},
+  );
+  assert.equal(resolved.channels, undefined);
+  assert.equal(resolved.parts.content.foreground.token.name, "component.fixture.content.fg");
+  assert.equal(resolved.parts.control.foreground.token.name, "component.fixture.control.fg");
+  assert.equal(
+    resolveMappings(
+      [
+        {
+          part: "content",
+          channel: "foreground",
+          token: { name: "component.fixture.content.fg" },
+        },
+        {
+          part: "control",
+          channel: "foreground",
+          token: { name: "component.fixture.control.fg" },
+        },
+      ],
+      buttonResolution,
+      { part: "content" },
+    ).channels.foreground.token.name,
+    "component.fixture.content.fg",
+  );
+});
+
+test("independent states cannot share a channel with overlay or suppress winners", () => {
+  const { problems } = expandVisuals(
+    visualContract({
+      control: {
+        states: { "focus-visible": { background: "component.fixture.focus" } },
+        variant: {
+          ghost: {
+            background: "transparent",
+            states: { hover: { background: "component.fixture.hover" } },
+          },
+        },
+      },
+    }),
+    "component.fixture",
+  );
+  assert.ok(problems.some((item) => /independent state focus-visible cannot share/.test(item.message)));
+});
+
+test("compiled Button coverage lists unused parts and axes without failing them", async () => {
+  const corpus = await buildCorpus(
+    createFsReader(repoRoot),
+    [{ root: `${repoRoot}/packages/knowledge/content`, visibility: "public" }],
+    { workspaceRoot: repoRoot },
+  );
+  const button = corpus.records.get("component.button");
+  assert.deepEqual(button.contract.visualCoverage.uncoveredParts, ["content"]);
+  assert.deepEqual(button.contract.visualCoverage.uncoveredAxes, [
+    "accessibleName",
+    "action",
+    "disabled",
+    "fullWidth",
+  ]);
+  assert.equal(Object.hasOwn(button.contract.visualCoverage.parts.control, "missingValues"), false);
+  assert.equal(
+    button.contract.mappings.some(
+      (row) =>
+        row.configuration?.variant === "ghost" &&
+        row.channel === "background" &&
+        row.state === "disabled",
+    ),
+    false,
+  );
+  assert.equal(Object.hasOwn(button.contract.mappings[0], "source"), false);
 });
