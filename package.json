@@ -4,7 +4,7 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "test": "turbo run test",
+    "test": "vitest run",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
@@ -14,7 +14,8 @@
     "oxfmt": "^0.62.0",
     "oxlint": "^1.82.0",
     "playwright": "^1.62.1",
-    "turbo": "latest"
+    "turbo": "latest",
+    "vitest": "^5.0.0"
   },
   "packageManager": "pnpm@11.22.0"
 }
