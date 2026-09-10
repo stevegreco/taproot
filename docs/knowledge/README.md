@@ -21,7 +21,9 @@ adapters are not implemented (KNOW-028).
 `@stevegreco/design-system-knowledge` `0.0.1` is a breaking change relative to earlier compiled
 bundles in this stack:
 
-- `compiledSchemaVersion` is 5. Bundles at 3 or 4 fail closed.
+- `compiledSchemaVersion` is 6. Bundles at 3, 4, or 5 fail closed.
+- Portable `specVersion` is 4. Compact `visuals` compile into `mappings`. See
+  [ADR 0004](../adr/0004-compact-visual-authoring.md).
 - `dist/public/records.jsonl` is no longer written or published. Read `records.json`.
 - Compiled records no longer include `decisions[]`. ADR provenance is a `sources[]` entry with
   `kind: adr`.
@@ -36,7 +38,8 @@ opened `records.jsonl` by path or assumed compiled schema 3.
 2. [Content model](content-model.md) defines the records that make knowledge portable and
    retrievable.
 3. [ADR 0003](../adr/0003-component-owned-portable-contracts.md) records that portable contracts
-   are authored on component records. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md)
+   are authored on component records. [ADR 0004](../adr/0004-compact-visual-authoring.md) records
+   compact visual authoring and state resolution. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md)
    remains the host-neutrality decision. [ADR 0001](../adr/0001-portable-design-system-knowledge.md)
    is superseded.
 
@@ -44,6 +47,8 @@ opened `records.jsonl` by path or assumed compiled schema 3.
 
 - [RFC 0001: Component contract record shape](../rfcs/0001-component-contract-record-shape.md)
   accepted Option B. Portable contracts live on component records. Host bindings stay separate.
+- [ADR 0004: Compact visual authoring](../adr/0004-compact-visual-authoring.md) compiles grouped
+  `visuals` into mapping rows and records simultaneous-state resolution.
 
 Existing domain decisions remain authoritative:
 
@@ -167,3 +172,8 @@ records:
 - Change these documents in the same pull request when implementation changes an accepted
   requirement or decision.
 - Do not make an MCP server, documentation site, or agent skill the sole source of knowledge.
+- Visual change workflow: accept the design intent; edit compact `visuals` and token sources as
+  needed; update CSS and Figma; run knowledge compile and mapping stylesheet tests; release
+  token, knowledge, and component packages together when the published contract or CSS references
+  change. Token-value-only changes normally need no mapping or CSS-reference edits. Figma
+  agreement is manual until an adapter exists.

@@ -1,4 +1,4 @@
-export const COMPILED_SCHEMA_VERSION = 5;
+export const COMPILED_SCHEMA_VERSION = 6;
 
 export const COMPILED_REQUIRED = Object.freeze([
   "schemaVersion",

@@ -7,6 +7,7 @@ import {
 } from "./records.js";
 import { rewriteBodyLinks } from "./narrative.js";
 import { PROBLEM, problem } from "./tables.js";
+import { compileContractVisuals, stripMappingSources } from "./visuals.js";
 
 export { CONTRIBUTORS } from "./inputs.js";
 export { sha256Hex, shortRevision } from "./digest.js";
@@ -19,15 +20,22 @@ export async function buildCorpus(reader, roots, options = {}) {
 
 /** Pure corpus assembly. Does not modify the loaded inputs. */
 export function assembleCorpus(loaded) {
+  const visualProblems = [];
   const records = new Map(
-    [...loaded.inputs].map(([id, input]) => [
-      id,
-      assembleRecord(input.authored, input.contribution, input.assets),
-    ]),
+    [...loaded.inputs].map(([id, input]) => {
+      const record = assembleRecord(input.authored, input.contribution, input.assets);
+      if (record.contract) {
+        const expanded = compileContractVisuals(record.contract, id);
+        record.contract = expanded.contract;
+        visualProblems.push(...expanded.problems);
+      }
+      return [id, record];
+    }),
   );
   const validation = validateRelations(records);
   const problems = [
     ...loaded.problems,
+    ...visualProblems,
     ...[...records.values()].flatMap((record) => [
       ...checkSourceAgreement(record, loaded.tokenNames),
       ...completenessProblems(record),
@@ -35,6 +43,11 @@ export function assembleCorpus(loaded) {
     ...checkBindingAgreement(records),
     ...validation.problems,
   ];
+  // visualMapping.additionalProperties is false, so compiler-only `source`
+  // paths must come off after checkMappingAgreement and before compiled output.
+  for (const record of records.values()) {
+    stripMappingSources(record.contract);
+  }
   const rewrittenRecords = new Map();
   const narrativeReferences = new Map();
   for (const [id, record] of records) {

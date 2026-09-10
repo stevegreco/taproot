@@ -1,5 +1,5 @@
 {
-  "specVersion": 3,
+  "specVersion": 4,
   "description": "Triggers an action or submits or resets a form.",
   "usage": {
     "do": [
@@ -79,7 +79,9 @@
   },
   "configurationAxes": {
     "prefersReducedMotion": {
-      "values": ["reduce"]
+      "values": [
+        "reduce"
+      ]
     }
   },
   "events": {
@@ -126,60 +128,307 @@
       "rationale": "Consumers need a stable customization boundary for variants and states."
     }
   ],
+  "stateResolution": {
+    "suppress": {
+      "disabled": [
+        "hover",
+        "pressed"
+      ]
+    },
+    "overlay": [
+      "hover",
+      "pressed"
+    ],
+    "independent": [
+      "focus-visible"
+    ]
+  },
   "mappings": [
     {
       "part": "control",
-      "channel": "padding-inline",
-      "configuration": {
-        "size": "md"
+      "channel": "background",
+      "token": {
+        "name": "component.button.danger.background.default"
       },
-      "token": {
-        "name": "component.button.size.medium.paddingInline"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "padding-block",
       "configuration": {
-        "size": "md"
+        "variant": "danger"
       },
-      "token": {
-        "name": "component.button.size.medium.paddingBlock"
-      }
+      "state": "default"
     },
     {
       "part": "control",
-      "channel": "padding-inline",
+      "channel": "background",
+      "token": {
+        "name": "component.button.danger.background.disabled"
+      },
       "configuration": {
-        "size": "sm"
+        "variant": "danger"
       },
-      "token": {
-        "name": "component.button.size.small.paddingInline"
-      }
+      "state": "disabled"
     },
     {
       "part": "control",
-      "channel": "padding-block",
+      "channel": "background",
+      "token": {
+        "name": "component.button.danger.background.hover"
+      },
       "configuration": {
-        "size": "sm"
+        "variant": "danger"
       },
-      "token": {
-        "name": "component.button.size.small.paddingBlock"
-      }
+      "state": "hover"
     },
     {
       "part": "control",
-      "channel": "radius",
+      "channel": "background",
       "token": {
-        "name": "component.button.radius"
-      }
+        "name": "component.button.danger.background.pressed"
+      },
+      "configuration": {
+        "variant": "danger"
+      },
+      "state": "pressed"
     },
     {
       "part": "control",
-      "channel": "gap",
+      "channel": "background",
       "token": {
-        "name": "component.button.gap"
-      }
+        "literal": "transparent"
+      },
+      "configuration": {
+        "variant": "ghost"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.ghost.background.hover"
+      },
+      "configuration": {
+        "variant": "ghost"
+      },
+      "state": "hover"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.ghost.background.pressed"
+      },
+      "configuration": {
+        "variant": "ghost"
+      },
+      "state": "pressed"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.primary.background.default"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.primary.background.disabled"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "disabled"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.primary.background.hover"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "hover"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.primary.background.pressed"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "pressed"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.secondary.background.default"
+      },
+      "configuration": {
+        "variant": "secondary"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "literal": "transparent"
+      },
+      "configuration": {
+        "variant": "secondary"
+      },
+      "state": "disabled"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.secondary.background.hover"
+      },
+      "configuration": {
+        "variant": "secondary"
+      },
+      "state": "hover"
+    },
+    {
+      "part": "control",
+      "channel": "background",
+      "token": {
+        "name": "component.button.secondary.background.pressed"
+      },
+      "configuration": {
+        "variant": "secondary"
+      },
+      "state": "pressed"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.danger.border.default"
+      },
+      "configuration": {
+        "variant": "danger"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.danger.border.disabled"
+      },
+      "configuration": {
+        "variant": "danger"
+      },
+      "state": "disabled"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.danger.border.hover"
+      },
+      "configuration": {
+        "variant": "danger"
+      },
+      "state": "hover"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.danger.border.pressed"
+      },
+      "configuration": {
+        "variant": "danger"
+      },
+      "state": "pressed"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "literal": "transparent"
+      },
+      "configuration": {
+        "variant": "ghost"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.primary.border.default"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.primary.border.disabled"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "disabled"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.primary.border.hover"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "hover"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.primary.border.pressed"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "pressed"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.secondary.border.default"
+      },
+      "configuration": {
+        "variant": "secondary"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "border",
+      "token": {
+        "name": "component.button.secondary.border.disabled"
+      },
+      "configuration": {
+        "variant": "secondary"
+      },
+      "state": "disabled"
     },
     {
       "part": "control",
@@ -204,9 +453,97 @@
     },
     {
       "part": "control",
-      "channel": "line-height",
+      "channel": "foreground",
       "token": {
-        "name": "component.button.font.lineHeight"
+        "name": "component.button.danger.foreground.default"
+      },
+      "configuration": {
+        "variant": "danger"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "foreground",
+      "token": {
+        "name": "component.button.danger.foreground.disabled"
+      },
+      "configuration": {
+        "variant": "danger"
+      },
+      "state": "disabled"
+    },
+    {
+      "part": "control",
+      "channel": "foreground",
+      "token": {
+        "name": "component.button.ghost.foreground.default"
+      },
+      "configuration": {
+        "variant": "ghost"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "foreground",
+      "token": {
+        "name": "component.button.ghost.foreground.disabled"
+      },
+      "configuration": {
+        "variant": "ghost"
+      },
+      "state": "disabled"
+    },
+    {
+      "part": "control",
+      "channel": "foreground",
+      "token": {
+        "name": "component.button.primary.foreground.default"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "foreground",
+      "token": {
+        "name": "component.button.primary.foreground.disabled"
+      },
+      "configuration": {
+        "variant": "primary"
+      },
+      "state": "disabled"
+    },
+    {
+      "part": "control",
+      "channel": "foreground",
+      "token": {
+        "name": "component.button.secondary.foreground.default"
+      },
+      "configuration": {
+        "variant": "secondary"
+      },
+      "state": "default"
+    },
+    {
+      "part": "control",
+      "channel": "foreground",
+      "token": {
+        "name": "component.button.secondary.foreground.disabled"
+      },
+      "configuration": {
+        "variant": "secondary"
+      },
+      "state": "disabled"
+    },
+    {
+      "part": "control",
+      "channel": "gap",
+      "token": {
+        "name": "component.button.gap"
       }
     },
     {
@@ -214,6 +551,78 @@
       "channel": "letter-spacing",
       "token": {
         "name": "component.button.font.letterSpacing"
+      }
+    },
+    {
+      "part": "control",
+      "channel": "line-height",
+      "token": {
+        "name": "component.button.font.lineHeight"
+      }
+    },
+    {
+      "part": "control",
+      "channel": "outline",
+      "token": {
+        "name": "component.button.focus.border"
+      },
+      "state": "focus-visible"
+    },
+    {
+      "part": "control",
+      "channel": "padding-block",
+      "token": {
+        "name": "component.button.size.medium.paddingBlock"
+      },
+      "configuration": {
+        "size": "md"
+      }
+    },
+    {
+      "part": "control",
+      "channel": "padding-block",
+      "token": {
+        "name": "component.button.size.small.paddingBlock"
+      },
+      "configuration": {
+        "size": "sm"
+      }
+    },
+    {
+      "part": "control",
+      "channel": "padding-inline",
+      "token": {
+        "name": "component.button.size.medium.paddingInline"
+      },
+      "configuration": {
+        "size": "md"
+      }
+    },
+    {
+      "part": "control",
+      "channel": "padding-inline",
+      "token": {
+        "name": "component.button.size.small.paddingInline"
+      },
+      "configuration": {
+        "size": "sm"
+      }
+    },
+    {
+      "part": "control",
+      "channel": "radius",
+      "token": {
+        "name": "component.button.radius"
+      }
+    },
+    {
+      "part": "control",
+      "channel": "transition",
+      "token": {
+        "literal": "none"
+      },
+      "configuration": {
+        "prefersReducedMotion": "reduce"
       }
     },
     {
@@ -229,464 +638,66 @@
       "token": {
         "name": "component.button.motion.easing"
       }
-    },
-    {
-      "part": "control",
-      "channel": "transition",
-      "configuration": {
-        "prefersReducedMotion": "reduce"
-      },
-      "token": {
-        "literal": "none"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "outline",
-      "state": "focus-visible",
-      "token": {
-        "name": "component.button.focus.border"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.primary.background.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.primary.border.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "hover",
-      "token": {
-        "name": "component.button.primary.background.hover"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "hover",
-      "token": {
-        "name": "component.button.primary.border.hover"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "pressed",
-      "token": {
-        "name": "component.button.primary.background.pressed"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "pressed",
-      "token": {
-        "name": "component.button.primary.border.pressed"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.primary.background.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.primary.border.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "foreground",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.primary.foreground.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "foreground",
-      "configuration": {
-        "variant": "primary"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.primary.foreground.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.danger.background.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.danger.border.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "hover",
-      "token": {
-        "name": "component.button.danger.background.hover"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "hover",
-      "token": {
-        "name": "component.button.danger.border.hover"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "pressed",
-      "token": {
-        "name": "component.button.danger.background.pressed"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "pressed",
-      "token": {
-        "name": "component.button.danger.border.pressed"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.danger.background.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.danger.border.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "foreground",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.danger.foreground.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "foreground",
-      "configuration": {
-        "variant": "danger"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.danger.foreground.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.secondary.background.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "hover",
-      "token": {
-        "name": "component.button.secondary.background.hover"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "pressed",
-      "token": {
-        "name": "component.button.secondary.background.pressed"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "disabled",
-      "token": {
-        "literal": "transparent"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "foreground",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.secondary.foreground.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "foreground",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.secondary.foreground.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.secondary.border.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "hover",
-      "token": {
-        "name": "component.button.secondary.border.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "pressed",
-      "token": {
-        "name": "component.button.secondary.border.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "secondary"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.secondary.border.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "default",
-      "token": {
-        "literal": "transparent"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "hover",
-      "token": {
-        "name": "component.button.ghost.background.hover"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "pressed",
-      "token": {
-        "name": "component.button.ghost.background.pressed"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "background",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "disabled",
-      "token": {
-        "literal": "transparent"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "foreground",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "default",
-      "token": {
-        "name": "component.button.ghost.foreground.default"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "foreground",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "disabled",
-      "token": {
-        "name": "component.button.ghost.foreground.disabled"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "default",
-      "token": {
-        "literal": "transparent"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "hover",
-      "token": {
-        "literal": "transparent"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "pressed",
-      "token": {
-        "literal": "transparent"
-      }
-    },
-    {
-      "part": "control",
-      "channel": "border",
-      "configuration": {
-        "variant": "ghost"
-      },
-      "state": "disabled",
-      "token": {
-        "literal": "transparent"
-      }
     }
-  ]
+  ],
+  "visualCoverage": {
+    "parts": {
+      "control": {
+        "axes": [
+          "prefersReducedMotion",
+          "size",
+          "variant"
+        ],
+        "values": {
+          "prefersReducedMotion": [
+            "reduce"
+          ],
+          "size": [
+            "md",
+            "sm"
+          ],
+          "variant": [
+            "danger",
+            "ghost",
+            "primary",
+            "secondary"
+          ]
+        },
+        "states": [
+          "default",
+          "disabled",
+          "focus-visible",
+          "hover",
+          "pressed"
+        ],
+        "channels": [
+          "background",
+          "foreground",
+          "border",
+          "outline",
+          "padding-inline",
+          "padding-block",
+          "radius",
+          "gap",
+          "font-family",
+          "font-size",
+          "font-weight",
+          "line-height",
+          "letter-spacing",
+          "transition",
+          "transition-duration",
+          "transition-timing-function"
+        ]
+      }
+    },
+    "uncoveredParts": [
+      "content"
+    ],
+    "uncoveredAxes": [
+      "accessibleName",
+      "action",
+      "disabled",
+      "fullWidth"
+    ]
+  }
 }
