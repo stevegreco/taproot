@@ -34,7 +34,9 @@ const EMPTY = Object.freeze([]);
 const FIELD_WEIGHT = Object.freeze({ title: 8, tags: 4, summary: 2, body: 1 });
 
 const FORWARD_RELATION = Object.freeze(
-  Object.fromEntries(Object.entries(REVERSE_RELATION).map(([forward, reverse]) => [reverse, forward])),
+  Object.fromEntries(
+    Object.entries(REVERSE_RELATION).map(([forward, reverse]) => [reverse, forward]),
+  ),
 );
 
 const SYMMETRIC = new Set(

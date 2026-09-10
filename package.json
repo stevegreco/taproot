@@ -6,7 +6,9 @@
     "clean": "turbo run clean",
     "test": "turbo run test",
     "format": "oxfmt --write .",
-    "lint": "oxlint --fix ."
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix ."
   },
   "devDependencies": {
     "oxfmt": "^0.62.0",

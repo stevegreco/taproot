@@ -14,7 +14,9 @@ test("get returns a hit, undefined for a miss, and malformed-id for button", asy
   assert.equal(catalog.get("component.badge").id, "component.badge");
   assert.equal(catalog.get("spec.button"), undefined);
   assert.equal(
-    catalog.related("component.badge").some((neighbor) => neighbor.record.id === "component.button"),
+    catalog
+      .related("component.badge")
+      .some((neighbor) => neighbor.record.id === "component.button"),
     true,
   );
   assert.equal(
@@ -22,11 +24,14 @@ test("get returns a hit, undefined for a miss, and malformed-id for button", asy
     false,
   );
   assert.equal(catalog.get("component.missing"), undefined);
-  assert.throws(() => catalog.get("button"), (error) => {
-    assert.equal(error instanceof KnowledgeQueryError, true);
-    assert.equal(error.code, "malformed-id");
-    return true;
-  });
+  assert.throws(
+    () => catalog.get("button"),
+    (error) => {
+      assert.equal(error instanceof KnowledgeQueryError, true);
+      assert.equal(error.code, "malformed-id");
+      return true;
+    },
+  );
   assert.throws(() => catalog.get(1), TypeError);
 });
 
@@ -84,9 +89,7 @@ test("Button guidance uses guides and reviews, not related", async () => {
   assert.deepEqual(byId["guideline.button-review"].via, [
     { relation: "reviews", direction: "inbound" },
   ]);
-  assert.deepEqual(byId["component.badge"].via, [
-    { relation: "related", direction: "symmetric" },
-  ]);
+  assert.deepEqual(byId["component.badge"].via, [{ relation: "related", direction: "symmetric" }]);
   assert.deepEqual(byId["binding.button.web-component"].via, [
     { relation: "implements", direction: "inbound" },
   ]);
@@ -133,7 +136,11 @@ test("Button review keeps checks and does not restate them in the body", async (
     /source-only review cannot verify focus/,
     "keep the note that a source-only review cannot verify focus or disabled behavior",
   );
-  assert.doesNotMatch(review.body, /^## /m, "review body must not restate checks as a heading list");
+  assert.doesNotMatch(
+    review.body,
+    /^## /m,
+    "review body must not restate checks as a heading list",
+  );
 });
 
 test("list filters AND across keys and OR within a key", async () => {
@@ -164,22 +171,34 @@ test("list filters AND across keys and OR within a key", async () => {
   const unused = catalog.list({ tags: "not-used-yet" });
   assert.deepEqual(unused, []);
 
-  assert.throws(() => catalog.list({ typo: "x" }), (error) => {
-    assert.equal(error.code, "unknown-filter");
-    return true;
-  });
-  assert.throws(() => catalog.list({ type: "spec" }), (error) => {
-    assert.equal(error.code, "unknown-filter-value");
-    return true;
-  });
-  assert.throws(() => catalog.list({ type: "widget" }), (error) => {
-    assert.equal(error.code, "unknown-filter-value");
-    return true;
-  });
-  assert.throws(() => catalog.list({ tags: "Not A Slug" }), (error) => {
-    assert.equal(error.code, "unknown-filter-value");
-    return true;
-  });
+  assert.throws(
+    () => catalog.list({ typo: "x" }),
+    (error) => {
+      assert.equal(error.code, "unknown-filter");
+      return true;
+    },
+  );
+  assert.throws(
+    () => catalog.list({ type: "spec" }),
+    (error) => {
+      assert.equal(error.code, "unknown-filter-value");
+      return true;
+    },
+  );
+  assert.throws(
+    () => catalog.list({ type: "widget" }),
+    (error) => {
+      assert.equal(error.code, "unknown-filter-value");
+      return true;
+    },
+  );
+  assert.throws(
+    () => catalog.list({ tags: "Not A Slug" }),
+    (error) => {
+      assert.equal(error.code, "unknown-filter-value");
+      return true;
+    },
+  );
 });
 
 test("every public component record has a contract", async () => {
@@ -270,10 +289,13 @@ test("related throws for an unknown seed and returns [] for an isolated record",
     manifest: stubManifest(1),
   });
   assert.deepEqual(catalog.related("fixture.alone"), []);
-  assert.throws(() => catalog.related("fixture.missing"), (error) => {
-    assert.equal(error.code, "unknown-record");
-    return true;
-  });
+  assert.throws(
+    () => catalog.related("fixture.missing"),
+    (error) => {
+      assert.equal(error.code, "unknown-record");
+      return true;
+    },
+  );
 });
 
 test("a public catalog cannot related() an internal neighbor", async () => {
@@ -293,15 +315,22 @@ test("a public catalog cannot related() an internal neighbor", async () => {
   const internalCatalog = await openCatalog(join(outDir, "internal"));
 
   assert.equal(
-    publicCatalog.related("component.button").some((neighbor) => neighbor.record.id === "internal.uses-button"),
+    publicCatalog
+      .related("component.button")
+      .some((neighbor) => neighbor.record.id === "internal.uses-button"),
     false,
   );
   assert.equal(
-    internalCatalog.related("component.button").some((neighbor) => neighbor.record.id === "internal.uses-button"),
+    internalCatalog
+      .related("component.button")
+      .some((neighbor) => neighbor.record.id === "internal.uses-button"),
     true,
   );
-  assert.throws(() => publicCatalog.related("internal.uses-button"), (error) => {
-    assert.equal(error.code, "unknown-record");
-    return true;
-  });
+  assert.throws(
+    () => publicCatalog.related("internal.uses-button"),
+    (error) => {
+      assert.equal(error.code, "unknown-record");
+      return true;
+    },
+  );
 });

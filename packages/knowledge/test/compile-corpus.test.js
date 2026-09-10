@@ -2,7 +2,13 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { PROBLEM } from "../src/compile/tables.js";
 import { buildCorpus, shortRevision } from "../src/compile/corpus.js";
-import { codes, createMemoryReader, portableContract, recordMarkdown, tinySvg } from "./helpers/workspace.js";
+import {
+  codes,
+  createMemoryReader,
+  portableContract,
+  recordMarkdown,
+  tinySvg,
+} from "./helpers/workspace.js";
 
 const publicRoot = { root: "content", visibility: "public" };
 const internalRoot = { root: "internal", visibility: "internal" };

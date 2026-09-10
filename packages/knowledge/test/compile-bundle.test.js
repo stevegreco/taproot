@@ -8,10 +8,7 @@ import { test } from "node:test";
 import yaml from "js-yaml";
 import { buildCorpus } from "../src/compile/corpus.js";
 import { projectBundle, writeBundle } from "../src/compile/bundle.js";
-import {
-  NARRATIVE_FRONTMATTER_KEYS,
-  PROBLEM,
-} from "../src/compile/tables.js";
+import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM } from "../src/compile/tables.js";
 import { findCompiledIssues } from "../src/schema/compiled-record.js";
 import authoredSchema from "../src/schema/index.js";
 import { createFsReader, repoRoot } from "./helpers/workspace.js";

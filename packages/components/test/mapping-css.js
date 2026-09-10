@@ -90,9 +90,7 @@ export function stylesheetContains(styles, mapping) {
 }
 
 export function declarationContains(styles, property, value) {
-  const pattern = new RegExp(
-    `${escapeRegExp(property)}\\s*:([^;]*)${escapeRegExp(value)}`,
-  );
+  const pattern = new RegExp(`${escapeRegExp(property)}\\s*:([^;]*)${escapeRegExp(value)}`);
   return pattern.test(styles);
 }
 

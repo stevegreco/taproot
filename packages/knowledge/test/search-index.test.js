@@ -4,8 +4,20 @@ import { buildSearchIndex, collectSearchText, tokenize } from "../src/compile/se
 
 test("postings are indexes into records, not ids", () => {
   const records = [
-    { id: "component.alpha", title: "Alpha", summary: "First record", tags: ["alpha"], body: "hello world" },
-    { id: "component.beta", title: "Beta", summary: "Second record", tags: ["beta"], body: "hello there" },
+    {
+      id: "component.alpha",
+      title: "Alpha",
+      summary: "First record",
+      tags: ["alpha"],
+      body: "hello world",
+    },
+    {
+      id: "component.beta",
+      title: "Beta",
+      summary: "Second record",
+      tags: ["beta"],
+      body: "hello there",
+    },
   ];
   const index = buildSearchIndex(records);
   assert.equal(index.version, 1);
@@ -64,7 +76,9 @@ test("contract host and checks add terms without stringifying the record", () =>
         accessibleName: { attribute: "aria-label" },
       },
     },
-    checks: [{ id: "button-review-label", requirement: "The accessible label describes the result." }],
+    checks: [
+      { id: "button-review-label", requirement: "The accessible label describes the result." },
+    ],
   };
 
   const text = collectSearchText(record);

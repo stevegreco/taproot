@@ -58,7 +58,9 @@ test("Button composes authored contract, tokens, and ADR 0003 into disjoint name
   );
   assert.equal(ghostRestFill.token.literal, "transparent");
   assert.equal(
-    button.tokens.entries.some((entry) => entry.name === "component.button.ghost.background.default"),
+    button.tokens.entries.some(
+      (entry) => entry.name === "component.button.ghost.background.default",
+    ),
     false,
   );
 
@@ -137,16 +139,16 @@ test("Badge composes authored contract and ADR 0003 without a token contract", a
   assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
   assert.equal(badge.contract.parameters.variant.default, "default");
   assert.equal(
-    badge.sources.some((source) => source.path === "packages/knowledge/content/components/badge.md"),
+    badge.sources.some(
+      (source) => source.path === "packages/knowledge/content/components/badge.md",
+    ),
     true,
   );
   assert.equal(binding.host.defaultTagName, "ds-badge");
   assert.equal(Object.hasOwn(badge, "tokens"), false);
   assert.equal(Object.hasOwn(badge, "tokenRef"), false);
   assert.ok(
-    badge.contract.mappings.some(
-      (row) => row.token.name === "semantic.color.background.muted",
-    ),
+    badge.contract.mappings.some((row) => row.token.name === "semantic.color.background.muted"),
   );
   assert.equal(Object.hasOwn(badge, "decisions"), false);
   assert.equal(
@@ -237,11 +239,9 @@ test("a mapped token missing from the token package fails the build", async () =
     }),
   });
 
-  const corpus = await buildCorpus(
-    reader,
-    [{ root: "content", visibility: "public" }],
-    { workspaceRoot: repoRoot },
-  );
+  const corpus = await buildCorpus(reader, [{ root: "content", visibility: "public" }], {
+    workspaceRoot: repoRoot,
+  });
   assert.ok(
     codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) =>
       /semantic\.color\.does\.not\.exist/.test(item.message),
@@ -287,7 +287,9 @@ test("token catalog lists every tokens.json file under packages/tokens/src/token
   assert.ok(files.includes("packages/tokens/src/tokens/components/button.tokens.json"));
   assert.ok(files.includes("packages/tokens/src/tokens/semantic/light.tokens.json"));
   assert.equal(
-    files.every((path) => path.startsWith("packages/tokens/src/tokens/") && path.endsWith(".tokens.json")),
+    files.every(
+      (path) => path.startsWith("packages/tokens/src/tokens/") && path.endsWith(".tokens.json"),
+    ),
     true,
   );
 });

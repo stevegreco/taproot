@@ -158,7 +158,10 @@ test("ingress schemas compile as JSON Schema draft 2020-12", () => {
 });
 
 test("current Button YAML fails the portable contract schema on tagName", async () => {
-  const text = await readFile(join(repoRoot, "packages/knowledge/test/fixtures/mixed-button.spec.yaml"), "utf8");
+  const text = await readFile(
+    join(repoRoot, "packages/knowledge/test/fixtures/mixed-button.spec.yaml"),
+    "utf8",
+  );
   const fixture = yaml.load(text);
   const validate = compile(portableContractSchema);
 
@@ -207,10 +210,7 @@ test("portable contract schema rejects contradictory parameter kinds", () => {
     JSON.stringify(validate.errors, null, 2),
   );
 
-  assert.equal(
-    validate(withParameter("disabled", { kind: "boolean", default: "false" })),
-    false,
-  );
+  assert.equal(validate(withParameter("disabled", { kind: "boolean", default: "false" })), false);
   assert.ok(
     errorPaths(validate.errors).some((path) => path.includes("/parameters/disabled")),
     JSON.stringify(validate.errors, null, 2),
@@ -248,12 +248,8 @@ test("portable contract schema rejects contradictory parameter kinds", () => {
 
 test("portable contract schema allows omitting rationale", () => {
   const validate = compile(portableContractSchema);
-  const { rationale, ...withoutRationale } = buttonContract;
-  assert.equal(
-    validate(withoutRationale),
-    true,
-    JSON.stringify(validate.errors, null, 2),
-  );
+  const { rationale: _rationale, ...withoutRationale } = buttonContract;
+  assert.equal(validate(withoutRationale), true, JSON.stringify(validate.errors, null, 2));
 });
 
 test("portable contract schema accepts grouped visuals", () => {

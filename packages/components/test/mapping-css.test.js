@@ -38,17 +38,16 @@ describe("compiled mapping stylesheet coverage", () => {
         token: { literal: "transparent" },
       }),
     ).toBe(false);
-    expect(
-      declarationContains(".button { transition: none; }", "transition", "none"),
-    ).toBe(true);
+    expect(declarationContains(".button { transition: none; }", "transition", "none")).toBe(true);
   });
 
   test("Button stylesheet assigns every compiled mapping in a matching declaration", async () => {
     const mappings = await compiledMappings("component.button");
     for (const mapping of mappings) {
-      expect(stylesheetContains(buttonStyles, mapping), coverMessage("component.button", mapping)).toBe(
-        true,
-      );
+      expect(
+        stylesheetContains(buttonStyles, mapping),
+        coverMessage("component.button", mapping),
+      ).toBe(true);
     }
     expect(buttonStyles).not.toContain("var(--semantic-");
     expect(buttonStyles).not.toContain("var(--primitives-");
@@ -59,9 +58,10 @@ describe("compiled mapping stylesheet coverage", () => {
   test("Badge stylesheet assigns every compiled mapping in a matching declaration", async () => {
     const mappings = await compiledMappings("component.badge");
     for (const mapping of mappings) {
-      expect(stylesheetContains(badgeStyles, mapping), coverMessage("component.badge", mapping)).toBe(
-        true,
-      );
+      expect(
+        stylesheetContains(badgeStyles, mapping),
+        coverMessage("component.badge", mapping),
+      ).toBe(true);
     }
     expect(badgeStyles).not.toContain("--component-");
   });

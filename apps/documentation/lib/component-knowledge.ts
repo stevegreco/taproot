@@ -205,7 +205,10 @@ export function componentKnowledgeMarkdown(slug: string, section?: string): stri
       .join("\n\n");
   }
   if (!isSection(section)) {
-    throw new DocsKnowledgeError("unknown-section", `"${section}" is not a component page section.`);
+    throw new DocsKnowledgeError(
+      "unknown-section",
+      `"${section}" is not a component page section.`,
+    );
   }
   return renderSectionMarkdown(slice, section);
 }
@@ -326,7 +329,10 @@ function rewriteBundleUrls(markdown: string, digest: string): string {
   const assetsRoot = `/knowledge-assets/${digestPrefix(digest)}`;
   return markdown
     .replace(/\]\(assets\/([^)]+)\)/g, (_match, file: string) => `](${assetsRoot}/${file})`)
-    .replace(/\]\(markdown\/([^)]+?)\.md(?:#[^)]*)?\)/g, (_match, id: string) => `](${docsHref(id)})`);
+    .replace(
+      /\]\(markdown\/([^)]+?)\.md(?:#[^)]*)?\)/g,
+      (_match, id: string) => `](${docsHref(id)})`,
+    );
 }
 
 function exampleLabel(slug: string, variant: string): string {
@@ -349,7 +355,8 @@ function markdownByHeading(body: string): { preamble: string; sections: Map<stri
     const heading = match[1]?.trim().toLowerCase();
     if (!heading) continue;
     const start = (match.index ?? 0) + match[0].length;
-    const end = index + 1 < matches.length ? (matches[index + 1].index ?? body.length) : body.length;
+    const end =
+      index + 1 < matches.length ? (matches[index + 1].index ?? body.length) : body.length;
     sections.set(heading, body.slice(start, end).trim());
   }
   return { preamble, sections };
@@ -363,7 +370,8 @@ function patternGuidanceByVariant(body: string): Map<string, string> {
     const heading = match[1]?.trim().toLowerCase();
     if (!heading) continue;
     const start = (match.index ?? 0) + match[0].length;
-    const end = index + 1 < matches.length ? (matches[index + 1].index ?? body.length) : body.length;
+    const end =
+      index + 1 < matches.length ? (matches[index + 1].index ?? body.length) : body.length;
     let text = body.slice(start, end).trim();
     const cut = text.search(/^##\s+/m);
     if (cut !== -1) text = text.slice(0, cut).trim();
@@ -425,7 +433,10 @@ function hostValueMap(mapped: Record<string, unknown>): Record<string, unknown> 
   return isObject(mapped.values) ? mapped.values : undefined;
 }
 
-function remapValues(fields: Record<string, unknown>, valueMap: Record<string, unknown> | undefined): ApiValue[] {
+function remapValues(
+  fields: Record<string, unknown>,
+  valueMap: Record<string, unknown> | undefined,
+): ApiValue[] {
   const original = projectValues(fields);
   if (!valueMap) return original;
   return original.map((item) => ({
@@ -614,7 +625,12 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   }
 
   const status = record.status;
-  if (status !== "draft" && status !== "accepted" && status !== "deprecated" && status !== "superseded") {
+  if (
+    status !== "draft" &&
+    status !== "accepted" &&
+    status !== "deprecated" &&
+    status !== "superseded"
+  ) {
     fail("malformed-contract", `${id} has an unknown status`);
   }
 
@@ -646,13 +662,19 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
       }
       const jobs = Array.isArray(related.jobs) ? related.jobs : [];
       if (jobs.includes("implement")) {
-        if (implementationBody) fail("unexpected-slice", `${id} has more than one related implementation guideline`);
+        if (implementationBody)
+          fail("unexpected-slice", `${id} has more than one related implementation guideline`);
         implementationBody = asString(related.body);
       }
     }
   }
 
-  const variants = projectVariants(slug, tagName, parameters, patternGuidanceByVariant(patternBody));
+  const variants = projectVariants(
+    slug,
+    tagName,
+    parameters,
+    patternGuidanceByVariant(patternBody),
+  );
   const { introMarkdown, behaviorMarkdown } = projectIntro(
     asString(record.body),
     implementationBody,

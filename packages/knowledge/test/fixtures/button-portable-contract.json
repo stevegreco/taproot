@@ -79,9 +79,7 @@
   },
   "configurationAxes": {
     "prefersReducedMotion": {
-      "values": [
-        "reduce"
-      ]
+      "values": ["reduce"]
     }
   },
   "events": {
@@ -89,13 +87,7 @@
       "description": "Requests the action represented by the button."
     }
   },
-  "states": [
-    "default",
-    "hover",
-    "pressed",
-    "focus-visible",
-    "disabled"
-  ],
+  "states": ["default", "hover", "pressed", "focus-visible", "disabled"],
   "behavior": [
     "Disabled prevents activation.",
     "Submit and reset participate in a form when the host supports form association.",
@@ -130,18 +122,10 @@
   ],
   "stateResolution": {
     "suppress": {
-      "disabled": [
-        "hover",
-        "pressed"
-      ]
+      "disabled": ["hover", "pressed"]
     },
-    "overlay": [
-      "hover",
-      "pressed"
-    ],
-    "independent": [
-      "focus-visible"
-    ]
+    "overlay": ["hover", "pressed"],
+    "independent": ["focus-visible"]
   },
   "mappings": [
     {
@@ -643,33 +627,13 @@
   "visualCoverage": {
     "parts": {
       "control": {
-        "axes": [
-          "prefersReducedMotion",
-          "size",
-          "variant"
-        ],
+        "axes": ["prefersReducedMotion", "size", "variant"],
         "values": {
-          "prefersReducedMotion": [
-            "reduce"
-          ],
-          "size": [
-            "md",
-            "sm"
-          ],
-          "variant": [
-            "danger",
-            "ghost",
-            "primary",
-            "secondary"
-          ]
+          "prefersReducedMotion": ["reduce"],
+          "size": ["md", "sm"],
+          "variant": ["danger", "ghost", "primary", "secondary"]
         },
-        "states": [
-          "default",
-          "disabled",
-          "focus-visible",
-          "hover",
-          "pressed"
-        ],
+        "states": ["default", "disabled", "focus-visible", "hover", "pressed"],
         "channels": [
           "background",
           "foreground",
@@ -690,14 +654,7 @@
         ]
       }
     },
-    "uncoveredParts": [
-      "content"
-    ],
-    "uncoveredAxes": [
-      "accessibleName",
-      "action",
-      "disabled",
-      "fullWidth"
-    ]
+    "uncoveredParts": ["content"],
+    "uncoveredAxes": ["accessibleName", "action", "disabled", "fullWidth"]
   }
 }

@@ -25,10 +25,9 @@ test("package exports the portable contract and host binding schemas", async () 
     "@stevegreco/design-system-knowledge/schema/portable-contract.json",
     { with: { type: "json" } }
   );
-  const host = await import(
-    "@stevegreco/design-system-knowledge/schema/host-binding.json",
-    { with: { type: "json" } }
-  );
+  const host = await import("@stevegreco/design-system-knowledge/schema/host-binding.json", {
+    with: { type: "json" },
+  });
 
   assert.equal(portable.default.$id, "urn:stevegreco:design-system:portable-contract:4");
   assert.equal(host.default.$id, "urn:stevegreco:design-system:host-binding:1");

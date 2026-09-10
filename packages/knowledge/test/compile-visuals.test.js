@@ -61,16 +61,19 @@ test("compact visuals expand into deterministic mapping rows", () => {
   assert.equal(radius.part, "control");
   assert.deepEqual(radius.token, token("component.fixture.radius"));
   assert.equal(radius.source, "/contract/visuals/control/base/radius");
-  assert.equal(
-    mappings.find((row) => row.channel === "padding-inline").state,
-    undefined,
-  );
+  assert.equal(mappings.find((row) => row.channel === "padding-inline").state, undefined);
   const ghostDefault = mappings.find(
-    (row) => row.channel === "background" && row.state === "default" && row.configuration?.variant === "ghost",
+    (row) =>
+      row.channel === "background" &&
+      row.state === "default" &&
+      row.configuration?.variant === "ghost",
   );
   assert.deepEqual(ghostDefault.token, { literal: "transparent" });
   const ghostHover = mappings.find(
-    (row) => row.channel === "background" && row.state === "hover" && row.configuration?.variant === "ghost",
+    (row) =>
+      row.channel === "background" &&
+      row.state === "hover" &&
+      row.configuration?.variant === "ghost",
   );
   assert.deepEqual(ghostHover.token, token("component.fixture.ghost.hover"));
   assert.equal(
@@ -304,13 +307,19 @@ test("compiled Button mappings omit visuals and preserve ghost rest fill", async
   assert.deepEqual(button.contract.stateResolution.suppress.disabled, ["hover", "pressed"]);
   const ghostRest = button.contract.mappings.find(
     (row) =>
-      row.configuration?.variant === "ghost" && row.channel === "background" && row.state === "default",
+      row.configuration?.variant === "ghost" &&
+      row.channel === "background" &&
+      row.state === "default",
   );
   assert.deepEqual(ghostRest.token, { literal: "transparent" });
-  const ghostHoverDisabled = resolveMappings(button.contract.mappings, button.contract.stateResolution, {
-    configuration: { variant: "ghost", size: "md" },
-    states: ["hover", "disabled"],
-  });
+  const ghostHoverDisabled = resolveMappings(
+    button.contract.mappings,
+    button.contract.stateResolution,
+    {
+      configuration: { variant: "ghost", size: "md" },
+      states: ["hover", "disabled"],
+    },
+  );
   assert.deepEqual(ghostHoverDisabled.channels.background.token, { literal: "transparent" });
   assert.equal(
     ghostHoverDisabled.channels.foreground.token.name,
@@ -428,14 +437,8 @@ test("resolveMappings keeps the same channel on two anatomy parts", () => {
     buttonResolution,
     {},
   );
-  assert.throws(
-    () => resolved.channels,
-    /pass \{ part \} to read channels/,
-  );
-  assert.equal(
-    Object.getOwnPropertyDescriptor(resolved, "channels").enumerable,
-    false,
-  );
+  assert.throws(() => resolved.channels, /pass \{ part \} to read channels/);
+  assert.equal(Object.getOwnPropertyDescriptor(resolved, "channels").enumerable, false);
   const serialized = JSON.parse(JSON.stringify(resolved));
   assert.equal(Object.hasOwn(serialized, "channels"), false);
   assert.deepEqual(serialized.parts.content.foreground.token, {
@@ -483,7 +486,9 @@ test("independent states cannot share a channel with overlay or suppress winners
     }),
     "component.fixture",
   );
-  assert.ok(problems.some((item) => /independent state focus-visible cannot share/.test(item.message)));
+  assert.ok(
+    problems.some((item) => /independent state focus-visible cannot share/.test(item.message)),
+  );
 });
 
 test("compiled Button coverage lists unused parts and axes without failing them", async () => {
