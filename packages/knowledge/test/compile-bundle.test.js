@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { test } from "node:test";
+import { test } from "vitest";
 import yaml from "js-yaml";
 import { buildCorpus } from "../src/compile/corpus.js";
 import { projectBundle, writeBundle } from "../src/compile/bundle.js";

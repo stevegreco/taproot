@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { PROBLEM, buildCorpus } from "../src/compile/corpus.js";
 import { compileContractVisuals, expandVisuals, resolveMappings } from "../src/compile/visuals.js";
 import {

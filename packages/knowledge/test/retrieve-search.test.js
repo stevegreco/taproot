@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { buildSearchIndex } from "../src/compile/search-index.js";
 import { openCatalog } from "../src/retrieve/index.js";
 import { stubManifest, stubRecord } from "./helpers/catalog.js";

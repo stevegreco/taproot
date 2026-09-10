@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test } from "vitest";
 import assert from "node:assert/strict";
 import { createCombinedCss, SYSTEM_DARK_QUERY } from "../build-css-utils.js";
 import { semanticConfig } from "../style-dictionary.config.js";

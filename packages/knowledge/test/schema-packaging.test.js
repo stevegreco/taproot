@@ -3,7 +3,7 @@ import { cp, mkdtemp, readdir, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { test } from "node:test";
+import { test } from "vitest";
 import Ajv2020 from "ajv/dist/2020.js";
 
 const Ajv = Ajv2020.default ?? Ajv2020;

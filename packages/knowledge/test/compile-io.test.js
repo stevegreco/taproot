@@ -4,7 +4,7 @@ import { once } from "node:events";
 import { access, chmod, mkdir, mkdtemp, unlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { test } from "node:test";
+import { test } from "vitest";
 import { compile, KnowledgeCompileError } from "../src/compile/index.js";
 import { buildCorpus } from "../src/compile/corpus.js";
 import { createWorkspaceReader } from "../src/compile/reader.js";

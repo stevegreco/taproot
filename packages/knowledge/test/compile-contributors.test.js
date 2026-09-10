@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { test } from "node:test";
+import { test } from "vitest";
 import { readFileSync } from "node:fs";
 import { PROBLEM, buildCorpus, shortRevision } from "../src/compile/corpus.js";
 import { listTokenCatalogFiles } from "../src/compile/inputs.js";
