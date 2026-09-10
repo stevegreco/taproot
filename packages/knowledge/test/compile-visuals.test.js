@@ -432,25 +432,38 @@ test("resolveMappings keeps the same channel on two anatomy parts", () => {
     () => resolved.channels,
     /pass \{ part \} to read channels/,
   );
+  assert.equal(
+    Object.getOwnPropertyDescriptor(resolved, "channels").enumerable,
+    false,
+  );
+  const serialized = JSON.parse(JSON.stringify(resolved));
+  assert.equal(Object.hasOwn(serialized, "channels"), false);
+  assert.deepEqual(serialized.parts.content.foreground.token, {
+    name: "component.fixture.content.fg",
+  });
+  assert.equal(Object.hasOwn({ ...resolved }, "channels"), false);
   assert.equal(resolved.parts.content.foreground.token.name, "component.fixture.content.fg");
   assert.equal(resolved.parts.control.foreground.token.name, "component.fixture.control.fg");
+  const content = resolveMappings(
+    [
+      {
+        part: "content",
+        channel: "foreground",
+        token: { name: "component.fixture.content.fg" },
+      },
+      {
+        part: "control",
+        channel: "foreground",
+        token: { name: "component.fixture.control.fg" },
+      },
+    ],
+    buttonResolution,
+    { part: "content" },
+  );
+  assert.equal(content.channels.foreground.token.name, "component.fixture.content.fg");
+  assert.equal(Object.getOwnPropertyDescriptor(content, "channels").enumerable, true);
   assert.equal(
-    resolveMappings(
-      [
-        {
-          part: "content",
-          channel: "foreground",
-          token: { name: "component.fixture.content.fg" },
-        },
-        {
-          part: "control",
-          channel: "foreground",
-          token: { name: "component.fixture.control.fg" },
-        },
-      ],
-      buttonResolution,
-      { part: "content" },
-    ).channels.foreground.token.name,
+    JSON.parse(JSON.stringify(content)).channels.foreground.token.name,
     "component.fixture.content.fg",
   );
 });

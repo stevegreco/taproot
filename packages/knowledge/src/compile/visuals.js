@@ -192,16 +192,18 @@ export function resolveMappings(mappings, stateResolution = {}, options = {}) {
   const partNames = Object.keys(parts);
   const selectedPart = options.part ?? (partNames.length === 1 ? partNames[0] : undefined);
   const result = { parts, problems };
-  Object.defineProperty(result, "channels", {
-    enumerable: true,
-    get() {
-      if (selectedPart) return parts[selectedPart] ?? {};
-      if (partNames.length === 0) return {};
-      throw new TypeError(
-        `resolveMappings matched parts ${partNames.join(", ")}; pass { part } to read channels, or use parts`,
-      );
-    },
-  });
+  if (selectedPart || partNames.length === 0) {
+    result.channels = selectedPart ? (parts[selectedPart] ?? {}) : {};
+  } else {
+    Object.defineProperty(result, "channels", {
+      enumerable: false,
+      get() {
+        throw new TypeError(
+          `resolveMappings matched parts ${partNames.join(", ")}; pass { part } to read channels, or use parts`,
+        );
+      },
+    });
+  }
   return result;
 }
 
