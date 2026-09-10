@@ -42,7 +42,9 @@ test("compile fails when the public content root is missing", async () => {
     () => compile({ workspaceRoot: workspace, outDir, revision: "test" }),
     (error) => {
       assert.ok(isCompileError(error));
-      const problems = error.problems.filter((item) => item.code === PROBLEM.CORPUS_ROOT_UNREADABLE);
+      const problems = error.problems.filter(
+        (item) => item.code === PROBLEM.CORPUS_ROOT_UNREADABLE,
+      );
       assert.equal(problems.length, 1);
       assert.match(problems[0].message, /ENOENT/);
       assert.match(problems[0].path ?? "", /packages\/knowledge\/content/);
@@ -67,7 +69,9 @@ test("compile fails when a configured internal content root is missing", async (
       }),
     (error) => {
       assert.ok(isCompileError(error));
-      const problems = error.problems.filter((item) => item.code === PROBLEM.CORPUS_ROOT_UNREADABLE);
+      const problems = error.problems.filter(
+        (item) => item.code === PROBLEM.CORPUS_ROOT_UNREADABLE,
+      );
       assert.equal(problems.length, 1);
       assert.match(problems[0].message, /ENOENT/);
       assert.equal(problems[0].path, missing);

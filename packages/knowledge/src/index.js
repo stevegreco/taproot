@@ -95,7 +95,10 @@ export function parseRecord(markdown, options) {
     ]);
   }
 
-  const candidate = applyAuthoredDefaults({ ...data, body: parsed.content.trim() }, options.sourcePath);
+  const candidate = applyAuthoredDefaults(
+    { ...data, body: parsed.content.trim() },
+    options.sourcePath,
+  );
   const issues = findSchemaIssues(candidate);
 
   if (issues.length > 0) {

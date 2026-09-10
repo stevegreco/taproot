@@ -58,7 +58,10 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const binding = records.find((record) => record.id === "binding.button.web-component");
   assert.equal(binding.host.defaultTagName, "ds-button");
 
-  const buttonMarkdown = await readFile(join(outDir, "public/markdown/component.button.md"), "utf8");
+  const buttonMarkdown = await readFile(
+    join(outDir, "public/markdown/component.button.md"),
+    "utf8",
+  );
   assert.match(button.body, /markdown\/pattern\.action-hierarchy\.md#assign-emphasis/);
   assert.match(buttonMarkdown, /\]\(pattern\.action-hierarchy\.md#assign-emphasis\)/);
   assert.doesNotMatch(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);

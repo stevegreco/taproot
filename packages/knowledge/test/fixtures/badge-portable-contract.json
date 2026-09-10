@@ -52,12 +52,8 @@
     }
   },
   "events": {},
-  "states": [
-    "default"
-  ],
-  "behavior": [
-    "Badge is not focusable and does not activate."
-  ],
+  "states": ["default"],
+  "behavior": ["Badge is not focusable and does not activate."],
   "accessibility": {
     "semantics": "Non-interactive text.",
     "name": "Visible text is the accessible name.",
@@ -320,18 +316,9 @@
   "visualCoverage": {
     "parts": {
       "surface": {
-        "axes": [
-          "variant"
-        ],
+        "axes": ["variant"],
         "values": {
-          "variant": [
-            "accent",
-            "danger",
-            "default",
-            "info",
-            "success",
-            "warning"
-          ]
+          "variant": ["accent", "danger", "default", "info", "success", "warning"]
         },
         "states": [],
         "channels": [
@@ -349,9 +336,7 @@
         ]
       }
     },
-    "uncoveredParts": [
-      "content"
-    ],
+    "uncoveredParts": ["content"],
     "uncoveredAxes": []
   }
 }

@@ -29,5 +29,8 @@ test("compile is byte-identical across runs with a fixed buildTime", async () =>
   const manifest = JSON.parse(await readFile(join(options.outDir, "public/manifest.json"), "utf8"));
   assert.equal(manifest.build.time, new Date(0).toISOString());
   assert.equal(manifest.digest.startsWith("sha256:"), true);
-  assert.equal(manifest.content.files.some((entry) => entry.path === "manifest.json"), false);
+  assert.equal(
+    manifest.content.files.some((entry) => entry.path === "manifest.json"),
+    false,
+  );
 });

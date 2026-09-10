@@ -20,7 +20,9 @@ const defaults = {
 export function recordMarkdown(frontmatter, body = "Body text.") {
   const data = {
     ...defaults,
-    sources: [{ kind: "authored", path: frontmatter.path ?? frontmatter.id ?? "content/fixture.md" }],
+    sources: [
+      { kind: "authored", path: frontmatter.path ?? frontmatter.id ?? "content/fixture.md" },
+    ],
     ...frontmatter,
   };
   delete data.path;
@@ -32,7 +34,9 @@ export function createMemoryReader(files) {
     async listRecords(root) {
       const prefix = root.root.replaceAll("\\", "/").replace(/\/$/, "");
       return Object.keys(files)
-        .filter((path) => path.endsWith(".md") && (path === prefix || path.startsWith(`${prefix}/`)))
+        .filter(
+          (path) => path.endsWith(".md") && (path === prefix || path.startsWith(`${prefix}/`)),
+        )
         .sort((left, right) => left.localeCompare(right));
     },
     async readText(repoPath) {

@@ -68,12 +68,6 @@ export const NARRATIVE_FRONTMATTER_KEYS = Object.freeze([
  * @param {Severity} [fields.severity]
  * @returns {Problem}
  */
-export function problem({
-  code,
-  message,
-  recordId = null,
-  path = null,
-  severity = "error",
-}) {
+export function problem({ code, message, recordId = null, path = null, severity = "error" }) {
   return { severity, code, message, recordId, path };
 }

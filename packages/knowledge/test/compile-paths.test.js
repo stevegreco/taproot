@@ -32,7 +32,10 @@ test("isLexicallyAllowed keeps records inside their authored root or packages/to
     true,
   );
   assert.equal(isLexicallyAllowed("internal/secret.svg", publicPrefixes).reason, "outside-root");
-  assert.equal(isLexicallyAllowed("packages/other/file.json", publicPrefixes).reason, "outside-root");
+  assert.equal(
+    isLexicallyAllowed("packages/other/file.json", publicPrefixes).reason,
+    "outside-root",
+  );
 
   const internalPrefixes = ["internal", "packages/tokens"];
   assert.equal(isLexicallyAllowed("internal/shot.svg", internalPrefixes).ok, true);

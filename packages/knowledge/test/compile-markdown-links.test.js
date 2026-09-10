@@ -61,7 +61,9 @@ test("copied public Markdown files resolve record, asset, and fragment destinati
 
 async function markdownFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
-  return entries.filter((entry) => entry.isFile() && entry.name.endsWith(".md")).map((entry) => join(dir, entry.name));
+  return entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+    .map((entry) => join(dir, entry.name));
 }
 
 function stripFrontmatter(markdown) {

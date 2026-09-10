@@ -25,7 +25,11 @@ test("button slice variants and api come from the public catalog contract", () =
     1,
     "exactly one variant is the contract default",
   );
-  assert.match(slice.introMarkdown, /Use a link for navigation/, "intro uses the component record body");
+  assert.match(
+    slice.introMarkdown,
+    /Use a link for navigation/,
+    "intro uses the component record body",
+  );
   assert.match(slice.behaviorMarkdown, /Write the label/, "label guidance sits with usage");
   assert.match(slice.behaviorMarkdown, /type="submit"/, "form behavior stays with usage");
   assert.ok(
@@ -53,7 +57,10 @@ test("button slice variants and api come from the public catalog contract", () =
     slice.together?.example?.src.startsWith("/knowledge-assets/"),
     "example image is a docs URL, not a bundlePath",
   );
-  assert.ok(slice.together && slice.together.avoid.length > 0, "pattern Avoid items stay with using-together");
+  assert.ok(
+    slice.together && slice.together.avoid.length > 0,
+    "pattern Avoid items stay with using-together",
+  );
   assert.equal(slice.review?.checks.length, 8, "review uses guideline checks, not body prose");
 });
 
@@ -73,7 +80,11 @@ test("button knowledge markdown keeps ghost and aria-label without reprinting th
     /Do not use it for the\s+main path through a task/,
     "ghost guidance appears in the variants section",
   );
-  assert.doesNotMatch(markdown, /Define the action group/, "full pattern body does not belong on the page");
+  assert.doesNotMatch(
+    markdown,
+    /Define the action group/,
+    "full pattern body does not belong on the page",
+  );
   assert.doesNotMatch(
     markdown,
     /Highest-emphasis action\. Supporting action\. Low-emphasis action/,
@@ -90,11 +101,17 @@ test("badge variant examples use the host tag and status labels", () => {
   assert.ok(danger, "contract includes danger");
   assert.equal(danger.exampleLabel, "Failed");
   assert.equal(danger.exampleHtml, '<ds-badge variant="danger">Failed</ds-badge>');
-  assert.doesNotMatch(danger.exampleHtml, /Delete project/, "Badge danger is not a Button delete action");
+  assert.doesNotMatch(
+    danger.exampleHtml,
+    /Delete project/,
+    "Badge danger is not a Button delete action",
+  );
 });
 
 test("badge.mdx renders variants, api, and accessibility from the catalog", async () => {
-  const publicRoot = dirname(fileURLToPath(import.meta.resolve("@stevegreco/design-system-knowledge/manifest")));
+  const publicRoot = dirname(
+    fileURLToPath(import.meta.resolve("@stevegreco/design-system-knowledge/manifest")),
+  );
   const catalog = await openCatalog(publicRoot, { expectVisibility: "public" });
   const record = catalog.get("component.badge");
   const variantValues = record.contract.parameters.variant.values;
@@ -150,7 +167,11 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
     /destructive states/,
     "authored MDX must not recommend Badge danger for destructive actions",
   );
-  assert.doesNotMatch(source, /<TypeTable/, "API facts come from ComponentKnowledge, not a copied table");
+  assert.doesNotMatch(
+    source,
+    /<TypeTable/,
+    "API facts come from ComponentKnowledge, not a copied table",
+  );
 });
 
 test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
@@ -159,7 +180,11 @@ test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
     DocsKnowledgeError,
     "component.button is a record id, not a page slug",
   );
-  assert.equal(loadComponentSlice("badge").title, "Badge", "public component.badge is available to docs");
+  assert.equal(
+    loadComponentSlice("badge").title,
+    "Badge",
+    "public component.badge is available to docs",
+  );
   assert.throws(
     () => loadComponentSlice("dialog"),
     DocsKnowledgeError,

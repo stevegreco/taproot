@@ -31,7 +31,7 @@ function loadTheme(theme) {
   const tree = JSON.parse(
     readFileSync(join(ROOT, `dist/tokens/semantic.${theme}.json`), "utf-8"),
   ).semantic;
-  return new Map([...leaves(tree)]);
+  return new Map(leaves(tree));
 }
 
 // --- 1. Key parity -----------------------------------------------------------

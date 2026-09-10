@@ -3,7 +3,11 @@ import { test } from "node:test";
 import { assembleCorpus } from "../src/compile/corpus.js";
 import { loadCorpusInputs } from "../src/compile/inputs.js";
 import { checkMappingAgreement } from "../src/compile/records.js";
-import { rewriteBodyLinks, rewriteEmittedMarkdownUrls, toMarkdownFileUrl } from "../src/compile/narrative.js";
+import {
+  rewriteBodyLinks,
+  rewriteEmittedMarkdownUrls,
+  toMarkdownFileUrl,
+} from "../src/compile/narrative.js";
 import { createMemoryReader, recordMarkdown, portableContract } from "./helpers/workspace.js";
 
 test("HTML destinations share resolution and preserve unrelated markup", () => {
@@ -72,12 +76,12 @@ test("corpus assembly is repeatable and leaves loaded inputs unchanged", async (
 });
 
 test("emitted Markdown destinations are relative to the markdown file", () => {
-  assert.equal(
-    toMarkdownFileUrl("markdown/component.beta.md#usage"),
-    "component.beta.md#usage",
-  );
+  assert.equal(toMarkdownFileUrl("markdown/component.beta.md#usage"), "component.beta.md#usage");
   assert.equal(toMarkdownFileUrl("assets/ds.shot.svg"), "../assets/ds.shot.svg");
-  assert.equal(toMarkdownFileUrl("https://example.com/markdown/component.beta.md"), "https://example.com/markdown/component.beta.md");
+  assert.equal(
+    toMarkdownFileUrl("https://example.com/markdown/component.beta.md"),
+    "https://example.com/markdown/component.beta.md",
+  );
   assert.equal(toMarkdownFileUrl("#usage"), "#usage");
 
   const emitted = rewriteEmittedMarkdownUrls(

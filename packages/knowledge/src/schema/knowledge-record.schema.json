@@ -3,29 +3,12 @@
   "$id": "urn:stevegreco:design-system:knowledge-record:1",
   "title": "Authored knowledge record",
   "type": "object",
-  "required": [
-    "id",
-    "type",
-    "title",
-    "summary",
-    "status",
-    "jobs",
-    "tags",
-    "body"
-  ],
+  "required": ["id", "type", "title", "summary", "status", "jobs", "tags", "body"],
   "properties": {
     "id": { "$ref": "#/$defs/dottedId" },
     "schemaVersion": { "type": "integer", "const": 1 },
     "type": {
-      "enum": [
-        "component",
-        "pattern",
-        "guideline",
-        "example",
-        "foundation",
-        "decision",
-        "binding"
-      ]
+      "enum": ["component", "pattern", "guideline", "example", "foundation", "decision", "binding"]
     },
     "title": { "type": "string", "minLength": 1 },
     "summary": { "type": "string", "minLength": 1 },

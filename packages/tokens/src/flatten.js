@@ -7,9 +7,9 @@ export function inferType(value) {
   if (/^#[0-9a-f]{3,8}$/i.test(v) || /^(rgb|hsl)a?\(/.test(v)) return "color";
   if (/^-?\d+(\.\d+)?(px|rem|em|%)$/.test(v)) return "dimension";
   if (/^\d+ms$/.test(v)) return "duration";
-  if (/^cubic-bezier/.test(v)) return "cubicBezier";
+  if (v.startsWith("cubic-bezier")) return "cubicBezier";
   // shadows: multi-part strings containing px and spaces, or inset keyword
-  if (/^inset /.test(v) || (v.includes(" ") && v.includes("px"))) return "shadow";
+  if (v.startsWith("inset ") || (v.includes(" ") && v.includes("px"))) return "shadow";
   // font families: quoted strings or comma-separated lists (not function calls)
   if (v.includes("'") || v.includes('"') || (v.includes(",") && !v.includes("(")))
     return "fontFamily";

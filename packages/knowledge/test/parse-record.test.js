@@ -421,10 +421,9 @@ test("parseRecord rejects a binding without host", () => {
 });
 
 test("parseRecord rejects contract on an authored pattern", () => {
-  const markdown = validComponent.replace("type: component", "type: pattern").replace(
-    "\n---\n\n",
-    `\ncontract:${validContract}---\n\n`,
-  );
+  const markdown = validComponent
+    .replace("type: component", "type: pattern")
+    .replace("\n---\n\n", `\ncontract:${validContract}---\n\n`);
   assertIssuePath(markdown, "test-button.md", "/contract");
 });
 
