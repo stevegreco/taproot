@@ -43,6 +43,8 @@ export function assembleCorpus(loaded) {
     ...checkBindingAgreement(records),
     ...validation.problems,
   ];
+  // visualMapping.additionalProperties is false, so compiler-only `source`
+  // paths must come off after checkMappingAgreement and before compiled output.
   for (const record of records.values()) {
     stripMappingSources(record.contract);
   }

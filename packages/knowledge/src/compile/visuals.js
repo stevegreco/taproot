@@ -191,11 +191,18 @@ export function resolveMappings(mappings, stateResolution = {}, options = {}) {
 
   const partNames = Object.keys(parts);
   const selectedPart = options.part ?? (partNames.length === 1 ? partNames[0] : undefined);
-  return {
-    parts,
-    channels: selectedPart ? (parts[selectedPart] ?? {}) : undefined,
-    problems,
-  };
+  const result = { parts, problems };
+  Object.defineProperty(result, "channels", {
+    enumerable: true,
+    get() {
+      if (selectedPart) return parts[selectedPart] ?? {};
+      if (partNames.length === 0) return {};
+      throw new TypeError(
+        `resolveMappings matched parts ${partNames.join(", ")}; pass { part } to read channels, or use parts`,
+      );
+    },
+  });
+  return result;
 }
 
 /** Drop compiler-only authored paths from compiled mapping rows. */

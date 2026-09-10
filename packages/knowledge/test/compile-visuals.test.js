@@ -428,7 +428,10 @@ test("resolveMappings keeps the same channel on two anatomy parts", () => {
     buttonResolution,
     {},
   );
-  assert.equal(resolved.channels, undefined);
+  assert.throws(
+    () => resolved.channels,
+    /pass \{ part \} to read channels/,
+  );
   assert.equal(resolved.parts.content.foreground.token.name, "component.fixture.content.fg");
   assert.equal(resolved.parts.control.foreground.token.name, "component.fixture.control.fg");
   assert.equal(

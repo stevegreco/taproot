@@ -69,6 +69,8 @@ Consumers resolve a configuration and a set of active states with
 `resolveMappings(mappings, stateResolution, { configuration, states, part })` from
 `@stevegreco/design-system-knowledge/compile`. Results are grouped by anatomy part in
 `parts`. `channels` is filled when `part` is passed or when only one part matched.
+Reading `channels` without `part` when more than one part matched throws, so a
+second anatomy part cannot turn `.channels.background` into a silent TypeError.
 Compiled mappings are **partial rules**, not a cartesian product of state combinations.
 
 Layering is:
