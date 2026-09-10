@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { assembleCorpus } from "../src/compile/corpus.js";
 import { loadCorpusInputs } from "../src/compile/inputs.js";
 import { checkMappingAgreement } from "../src/compile/records.js";

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { test } from "node:test";
+import { test } from "vitest";
 import { compile } from "../src/compile/index.js";
 import { openCatalog, KnowledgeQueryError } from "../src/retrieve/index.js";
 import { authored, projectFiles, stubIndex, stubManifest, stubRecord } from "./helpers/catalog.js";

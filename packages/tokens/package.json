@@ -33,12 +33,13 @@
     "build": "pnpm run clean && node build-tokens.js && node build-css.js && pnpm run audit",
     "audit": "node scripts/audit.js",
     "watch": "chokidar \"src/tokens/**/*.json\" -c \"pnpm run build\" --initial",
-    "test": "node --test test/*.test.js",
+    "test": "vitest run",
     "prepack": "pnpm run build"
   },
   "devDependencies": {
     "chokidar-cli": "^3.0.0",
-    "style-dictionary": "^5.5.0"
+    "style-dictionary": "^5.5.0",
+    "vitest": "^5.0.0"
   },
   "packageManager": "pnpm@10.33.4"
 }

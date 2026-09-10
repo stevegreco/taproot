@@ -2,7 +2,7 @@ import { globSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { parseRecord } from "../src/index.js";
 
 const contentRoot = join(dirname(fileURLToPath(import.meta.url)), "../content");

@@ -4,7 +4,7 @@ import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { test } from "node:test";
+import { test } from "vitest";
 import { writeBundle } from "../src/compile/bundle.js";
 import { sha256Hex } from "../src/compile/digest.js";
 import { openCatalog, KnowledgeBundleError } from "../src/retrieve/index.js";

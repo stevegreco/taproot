@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 import { groupedColorReference, semanticReferenceMarkdown } from "../lib/semantic-reference";
 
 test("background action references expose one token per neutral state", () => {

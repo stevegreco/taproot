@@ -6,7 +6,7 @@
     "dev": "blume dev",
     "build": "blume build",
     "preview": "blume preview",
-    "test": "jiti test/semantic-reference.test.ts && jiti test/component-knowledge.test.ts"
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.3",
@@ -24,8 +24,8 @@
   "devDependencies": {
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "jiti": "^2.7.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.0"
   },
   "engines": {
     "node": ">=22.12.0"
