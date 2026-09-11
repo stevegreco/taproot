@@ -17,6 +17,17 @@ const defaults = {
   relations: {},
 };
 
+export function recordYaml(fields) {
+  const data = {
+    ...defaults,
+    sources: [{ kind: "authored", path: fields.path ?? fields.id ?? "content/fixture.spec.yaml" }],
+    ...fields,
+  };
+  delete data.path;
+  delete data.body;
+  return yaml.dump(data, { lineWidth: 100, noRefs: true });
+}
+
 export function recordMarkdown(frontmatter, body = "Body text.") {
   const data = {
     ...defaults,
@@ -35,7 +46,9 @@ export function createMemoryReader(files) {
       const prefix = root.root.replaceAll("\\", "/").replace(/\/$/, "");
       return Object.keys(files)
         .filter(
-          (path) => path.endsWith(".md") && (path === prefix || path.startsWith(`${prefix}/`)),
+          (path) =>
+            (path.endsWith(".md") || path.endsWith(".spec.yaml")) &&
+            (path === prefix || path.startsWith(`${prefix}/`)),
         )
         .sort((left, right) => left.localeCompare(right));
     },
@@ -62,7 +75,7 @@ export function codes(corpus, code) {
 
 export function portableContract(overrides = {}) {
   return {
-    specVersion: 4,
+    specVersion: 5,
     description: "A fixture contract.",
     usage: { do: [], avoid: [] },
     anatomy: [],

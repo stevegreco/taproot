@@ -86,7 +86,10 @@ test("Button composes authored contract, tokens, and ADR 0003 into disjoint name
   );
   const authoredSources = button.sources.filter((source) => source.kind === "authored");
   assert.equal(authoredSources.length, 1);
-  assert.equal(authoredSources[0].path, "packages/knowledge/content/components/button.md");
+  assert.equal(
+    authoredSources[0].path,
+    "packages/knowledge/content/components/button/button.spec.yaml",
+  );
   assert.equal(
     authoredSources[0].revision,
     shortRevision(readFileSync(join(repoRoot, authoredSources[0].path), "utf8")),
@@ -140,7 +143,7 @@ test("Badge composes authored contract and ADR 0003 without a token contract", a
   assert.equal(badge.contract.parameters.variant.default, "default");
   assert.equal(
     badge.sources.some(
-      (source) => source.path === "packages/knowledge/content/components/badge.md",
+      (source) => source.path === "packages/knowledge/content/components/badge/badge.spec.yaml",
     ),
     true,
   );

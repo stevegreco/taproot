@@ -105,7 +105,12 @@ function collectContractTerms(contract) {
   }
   for (const item of contract.usage?.avoid ?? []) {
     pushString(parts, item?.situation);
+    pushString(parts, item?.instead);
+    pushString(parts, item?.why);
   }
+
+  collectRuleTerms(parts, contract.content);
+  collectRuleTerms(parts, contract.behavior);
 
   for (const part of contract.anatomy ?? []) {
     pushString(parts, part?.name);
@@ -126,11 +131,23 @@ function collectContractTerms(contract) {
     pushString(parts, state);
   }
 
-  for (const requirement of contract.accessibility?.requirements ?? []) {
-    pushString(parts, requirement);
-  }
+  collectRuleTerms(parts, contract.accessibility?.requirements);
 
   return parts;
+}
+
+function collectRuleTerms(parts, rules) {
+  for (const rule of rules ?? []) {
+    if (typeof rule === "string") {
+      pushString(parts, rule);
+      continue;
+    }
+    pushString(parts, rule?.statement);
+    pushString(parts, rule?.applicability);
+    pushString(parts, rule?.rationale);
+    for (const example of rule?.examples?.do ?? []) pushString(parts, example);
+    for (const example of rule?.examples?.avoid ?? []) pushString(parts, example);
+  }
 }
 
 /**

@@ -11,7 +11,9 @@ import { repoRoot } from "./helpers/workspace.js";
 const contentRoot = join(dirname(fileURLToPath(import.meta.url)), "../content");
 
 test("the authored slice compiles with contracts, ghost tokens, rewritten links, and assets", async () => {
-  const authoredCount = globSync("**/*.md", { cwd: contentRoot }).length;
+  const authoredCount =
+    globSync("**/*.md", { cwd: contentRoot }).length +
+    globSync("**/*.spec.yaml", { cwd: contentRoot }).length;
   const outDir = await mkdtemp(join(tmpdir(), "knowledge-slice-"));
   const result = await compile({
     workspaceRoot: repoRoot,
@@ -41,7 +43,7 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   );
   assert.equal(ghostRestFill.token.literal, "transparent");
   assert.equal(Object.hasOwn(button.contract, "visuals"), false);
-  assert.equal(button.contract.specVersion, 4);
+  assert.equal(button.contract.specVersion, 5);
 
   const badge = records.find((record) => record.id === "component.badge");
   assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
@@ -62,6 +64,7 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
     join(outDir, "public/markdown/component.button.md"),
     "utf8",
   );
+  assert.equal(button.bodyOrigin, "generated");
   assert.match(button.body, /markdown\/pattern\.action-hierarchy\.md#assign-emphasis/);
   assert.match(buttonMarkdown, /\]\(pattern\.action-hierarchy\.md#assign-emphasis\)/);
   assert.doesNotMatch(buttonMarkdown, /markdown\/pattern\.action-hierarchy\.md/);

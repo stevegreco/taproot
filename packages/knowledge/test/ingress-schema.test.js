@@ -11,15 +11,16 @@ import { repoRoot } from "./helpers/workspace.js";
 const Ajv = Ajv2020.default ?? Ajv2020;
 
 const buttonContract = {
-  specVersion: 4,
+  specVersion: 5,
   description: "Triggers an action or submits or resets a form.",
   usage: {
     do: [
-      { situation: "Trigger an action in the current view." },
-      { situation: "Submit or reset a form." },
+      { id: "trigger-action", situation: "Trigger an action in the current view." },
+      { id: "submit-or-reset", situation: "Submit or reset a form." },
     ],
     avoid: [
       {
+        id: "navigation",
         situation: "Navigate to another location",
         instead: "Link",
         why: "Links provide native navigation semantics.",
@@ -75,8 +76,16 @@ const buttonContract = {
   },
   states: ["default", "hover", "pressed", "focus-visible", "disabled"],
   behavior: [
-    "Disabled prevents activation.",
-    "Submit and reset participate in a form when the host supports form association.",
+    {
+      id: "disabled-prevents-activation",
+      level: "must",
+      statement: "Disabled prevents activation.",
+    },
+    {
+      id: "form-association",
+      level: "should",
+      statement: "Submit and reset participate in a form when the host supports form association.",
+    },
   ],
   accessibility: {
     semantics: "Button.",
@@ -150,7 +159,7 @@ test("ingress schemas compile as JSON Schema draft 2020-12", () => {
   assert.equal(typeof ajv.compile(hostBindingSchema), "function");
   assert.equal(portableContractSchema.additionalProperties, false);
   assert.equal(hostBindingSchema.additionalProperties, false);
-  assert.equal(portableContractSchema.properties.specVersion.const, 4);
+  assert.equal(portableContractSchema.properties.specVersion.const, 5);
   assert.equal(hostBindingSchema.properties.specVersion.const, 1);
   assert.equal(Object.hasOwn(portableContractSchema.properties, "tagName"), false);
   assert.equal(Object.hasOwn(portableContractSchema.properties, "api"), false);

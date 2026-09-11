@@ -5,7 +5,8 @@ The knowledge system is independent of any one agent product or delivery protoco
 
 ## Status
 
-The knowledge package parses authored Markdown records and compiles them into a public bundle.
+The knowledge package parses authored Markdown records and YAML component specs and compiles them
+into a public bundle.
 `pnpm --filter @stevegreco/design-system-knowledge build` writes `dist/public`. An internal bundle
 is written only when internal content is configured. The published package includes `dist/public`
 and `src` only.
@@ -21,9 +22,9 @@ adapters are not implemented (KNOW-028).
 `@stevegreco/design-system-knowledge` `0.0.1` is a breaking change relative to earlier compiled
 bundles in this stack:
 
-- `compiledSchemaVersion` is 6. Bundles at 3, 4, or 5 fail closed.
-- Portable `specVersion` is 4. Compact `visuals` compile into `mappings`. See
-  [ADR 0004](../adr/0004-compact-visual-authoring.md).
+- `compiledSchemaVersion` is 7. Bundles at 3, 4, 5, or 6 fail closed.
+- Portable `specVersion` is 5. Usage entries have stable IDs. Component rules use a shared
+  vocabulary in `content`, `behavior`, and `accessibility.requirements`.
 - `dist/public/records.jsonl` is no longer written or published. Read `records.json`.
 - Compiled records no longer include `decisions[]`. ADR provenance is a `sources[]` entry with
   `kind: adr`.
@@ -37,8 +38,9 @@ opened `records.jsonl` by path or assumed compiled schema 3.
    non-goals.
 2. [Content model](content-model.md) defines the records that make knowledge portable and
    retrievable.
-3. [ADR 0003](../adr/0003-component-owned-portable-contracts.md) records that portable contracts
-   are authored on component records. [ADR 0004](../adr/0004-compact-visual-authoring.md) records
+3. [ADR 0005](../adr/0005-yaml-component-specs.md) records YAML component specs and generated
+   narrative. [ADR 0003](../adr/0003-component-owned-portable-contracts.md) remains the
+   component-ownership decision. [ADR 0004](../adr/0004-compact-visual-authoring.md) records
    compact visual authoring and state resolution. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md)
    remains the host-neutrality decision. [ADR 0001](../adr/0001-portable-design-system-knowledge.md)
    is superseded.
@@ -63,19 +65,20 @@ Existing domain decisions remain authoritative:
 
 ## How one record compiles
 
-`packages/knowledge/src` is the compiler program. It is not an input. Authored Markdown under
-`packages/knowledge/content/` is the input. Extra files are included only when a record lists them
+`packages/knowledge/src` is the compiler program. It is not an input. Authored Markdown and
+`*.spec.yaml` files under
+`packages/knowledge/content/` are the input. Extra files are included only when a record lists them
 in `sources[]`.
 
 Button and Badge are the first-slice records that do that. Button also names
 `button.tokens.json`. Badge omits token-source because it has no component-token namespace. The
-portable contract is authored on the component record. The web-component mapping is a
+portable contract is authored on the YAML component record. The web-component mapping is a
 `type: binding` record.
 The other Markdown files compile as authored narrative plus their own frontmatter.
 
 ```mermaid
 flowchart TB
-  subgraph authored["button.md owns"]
+  subgraph authored["button.spec.yaml owns"]
     FM["Frontmatter: id, title, summary, status, jobs, tags, relations, contract"]
     BODY["Body: host-neutral when/why"]
     SRC["sources[]: pointers, not content"]
@@ -122,7 +125,7 @@ The compiled Markdown file is the narrative projection of that record. It is not
 the record. `openCatalog().get(id)` owns structured fields including `contract`, `host`, and
 `checks`.
 
-The other Markdown files are siblings, not outputs of `button.md`. They attach through relation
+The other Markdown files are siblings, not outputs of `button.spec.yaml`. They attach through relation
 IDs. After the corpus exists, Button gains `backlinks.usedBy`, `backlinks.guidedBy`, and
 `backlinks.reviewedBy`. Their
 bodies are not copied into Button. The diagram traces Button. Badge follows the same path without
@@ -154,9 +157,9 @@ index `id`, `type`, or `jobs`.
 The executable schema, authored Markdown parser, and knowledge compiler validate these draft
 records:
 
-- [Button](../../packages/knowledge/content/components/button.md)
+- [Button](../../packages/knowledge/content/components/button/button.spec.yaml)
 - [Button web-component binding](../../packages/knowledge/content/bindings/button.web-component.md)
-- [Badge](../../packages/knowledge/content/components/badge.md)
+- [Badge](../../packages/knowledge/content/components/badge/badge.spec.yaml)
 - [Badge web-component binding](../../packages/knowledge/content/bindings/badge.web-component.md)
 - [Action hierarchy](../../packages/knowledge/content/patterns/action-hierarchy.md)
 - [Button implementation](../../packages/knowledge/content/guidelines/button-implementation.md)

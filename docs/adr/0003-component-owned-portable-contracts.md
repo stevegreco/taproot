@@ -48,7 +48,8 @@ extract a non-record contract source then.
 
 ## Consequences
 
-- `get("component.button").contract` is authored in `components/button.md` and stays host-neutral.
+- `get("component.button").contract` is authored on the component record and stays host-neutral.
+  [ADR 0005](./0005-yaml-component-specs.md) moves that authoring to `button.spec.yaml`.
 - `related("component.button")` still reaches the web-component binding through `implementedBy`.
 - Public record count drops by one per migrated component.
 - KNOW-002, KNOW-006, KNOW-008, the content model, and `AGENTS.md` name component records as the

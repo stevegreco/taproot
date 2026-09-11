@@ -1,5 +1,8 @@
 import grayMatter from "gray-matter";
+import { parseYamlMapping } from "./parse-yaml.js";
 import { findSchemaIssues } from "./schema/validator.js";
+
+export const YAML_SPEC_SUFFIX = ".spec.yaml";
 
 const parseMatter = grayMatter.default ?? grayMatter;
 
@@ -101,6 +104,80 @@ export function parseRecord(markdown, options) {
   );
   const issues = findSchemaIssues(candidate);
 
+  if (issues.length > 0) {
+    throw new KnowledgeRecordError(options.sourcePath, issues);
+  }
+
+  return candidate;
+}
+
+export function isYamlSpecPath(sourcePath) {
+  return typeof sourcePath === "string" && sourcePath.endsWith(YAML_SPEC_SUFFIX);
+}
+
+/**
+ * Parse an authored Markdown or YAML component record. Filename suffix selects
+ * the parser. Identity still comes from the document, not the path (KNOW-005).
+ */
+export function parseAuthoredRecord(text, options) {
+  if (typeof text !== "string") {
+    throw new TypeError("text must be a string");
+  }
+  if (typeof options?.sourcePath !== "string") {
+    throw new TypeError("options.sourcePath must be a string");
+  }
+  if (isYamlSpecPath(options.sourcePath)) {
+    return parseYamlRecord(text, options);
+  }
+  return parseRecord(text, options);
+}
+
+export function parseYamlRecord(yamlText, options) {
+  if (typeof yamlText !== "string") {
+    throw new TypeError("yamlText must be a string");
+  }
+  if (typeof options?.sourcePath !== "string") {
+    throw new TypeError("options.sourcePath must be a string");
+  }
+  if (!isYamlSpecPath(options.sourcePath)) {
+    throw new KnowledgeRecordError(options.sourcePath, [
+      {
+        path: "",
+        keyword: "sourcePath",
+        message: "YAML component records must use a .spec.yaml source path",
+      },
+    ]);
+  }
+
+  const parsed = parseYamlMapping(yamlText);
+  if (!parsed.ok) {
+    throw new KnowledgeRecordError(options.sourcePath, parsed.issues);
+  }
+
+  const data = parsed.data;
+  if (Object.hasOwn(data, "body")) {
+    throw new KnowledgeRecordError(options.sourcePath, [
+      {
+        path: "/body",
+        keyword: "yaml",
+        message: "body is generated from the structured record, not authored in YAML",
+      },
+    ]);
+  }
+
+  const candidate = applyAuthoredDefaults(data, options.sourcePath);
+  const issues = findSchemaIssues(candidate);
+  if (candidate.type != null && candidate.type !== "component") {
+    issues.push({
+      path: "/type",
+      keyword: "const",
+      message: "YAML spec files must be type component",
+    });
+  }
+  issues.sort((left, right) => {
+    const byPath = left.path.localeCompare(right.path);
+    return byPath === 0 ? left.keyword.localeCompare(right.keyword) : byPath;
+  });
   if (issues.length > 0) {
     throw new KnowledgeRecordError(options.sourcePath, issues);
   }

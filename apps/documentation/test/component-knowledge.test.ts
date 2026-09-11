@@ -27,8 +27,8 @@ test("button slice variants and api come from the public catalog contract", () =
   );
   assert.match(
     slice.introMarkdown,
-    /Use a link for navigation/,
-    "intro uses the component record body",
+    /Use Link instead/,
+    "intro uses usage guidance from the compiled contract",
   );
   assert.match(slice.behaviorMarkdown, /Write the label/, "label guidance sits with usage");
   assert.match(slice.behaviorMarkdown, /type="submit"/, "form behavior stays with usage");
@@ -129,7 +129,7 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
   );
   assert.deepEqual(
     slice.accessibility.requirements,
-    record.contract.accessibility.requirements,
+    record.contract.accessibility.requirements.map((item) => item.statement),
     "accessibility tracks the compiled contract",
   );
   assert.equal(

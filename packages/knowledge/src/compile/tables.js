@@ -22,6 +22,7 @@ export const PROBLEM = Object.freeze({
   CORPUS_SELF_RELATION: "corpus/self-relation",
   CORPUS_INCOMPLETE_EXAMPLE: "corpus/incomplete-example",
   CORPUS_INCOMPLETE_CHECKS: "corpus/incomplete-checks",
+  CONTRACT_UNRESOLVED_REFERENCE: "contract/unresolved-reference",
   SOURCE_MISSING: "source/missing",
   SOURCE_UNREADABLE: "source/unreadable",
   SOURCE_CONFLICT: "source/conflict",

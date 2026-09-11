@@ -1,18 +1,21 @@
-export const COMPILED_SCHEMA_VERSION = 6;
+export const COMPILED_SCHEMA_VERSION = 7;
 
 export const COMPILED_REQUIRED = Object.freeze([
   "schemaVersion",
   "visibility",
   "relations",
   "sources",
+  "body",
   "compiledSchemaVersion",
   "backlinks",
+  "bodyOrigin",
 ]);
 
 export const COMPILED_PROPERTIES = Object.freeze({
   compiledSchemaVersion: { const: COMPILED_SCHEMA_VERSION },
   backlinks: { $ref: "#/$defs/backlinks" },
   tokens: { $ref: "#/$defs/tokenContract" },
+  bodyOrigin: { enum: ["authored", "generated"] },
 });
 
 export const COMPILED_DEFS = Object.freeze({

@@ -331,3 +331,38 @@ export function completenessProblems(record) {
 
   return problems;
 }
+
+export function checkRuleReferences(record, records) {
+  const problems = [];
+  const contract = record.contract;
+  if (contract == null || typeof contract !== "object") return problems;
+
+  for (const { rule, path } of walkContractRules(contract)) {
+    for (const [index, reference] of (rule.references ?? []).entries()) {
+      if (!records.has(reference.id)) {
+        problems.push(
+          problem({
+            code: PROBLEM.CONTRACT_UNRESOLVED_REFERENCE,
+            message: `${record.id} rule ${rule.id} references unresolved record ${reference.id}`,
+            recordId: record.id,
+            path: `${path}/references/${index}/id`,
+          }),
+        );
+      }
+    }
+  }
+
+  return problems;
+}
+
+function* walkContractRules(contract) {
+  for (const [index, rule] of (contract.content ?? []).entries()) {
+    yield { rule, path: `/contract/content/${index}` };
+  }
+  for (const [index, rule] of (contract.behavior ?? []).entries()) {
+    yield { rule, path: `/contract/behavior/${index}` };
+  }
+  for (const [index, rule] of (contract.accessibility?.requirements ?? []).entries()) {
+    yield { rule, path: `/contract/accessibility/requirements/${index}` };
+  }
+}

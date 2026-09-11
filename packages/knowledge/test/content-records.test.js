@@ -3,15 +3,16 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
 import { test } from "vitest";
-import { parseRecord } from "../src/index.js";
+import { parseAuthoredRecord, parseRecord } from "../src/index.js";
 
 const contentRoot = join(dirname(fileURLToPath(import.meta.url)), "../content");
-const authoredRecords = globSync("**/*.md", { cwd: contentRoot }).sort();
+const authoredMarkdown = globSync("**/*.md", { cwd: contentRoot }).sort();
+const authoredYaml = globSync("**/*.spec.yaml", { cwd: contentRoot }).sort();
 
-test("parseRecord accepts every authored content record", () => {
-  assert.ok(authoredRecords.length > 0);
+test("parseRecord accepts every authored Markdown content record", () => {
+  assert.ok(authoredMarkdown.length > 0);
 
-  for (const relative of authoredRecords) {
+  for (const relative of authoredMarkdown) {
     const sourcePath = `packages/knowledge/content/${relative}`;
     const record = parseRecord(readFileSync(join(contentRoot, relative), "utf8"), {
       sourcePath,
@@ -19,6 +20,7 @@ test("parseRecord accepts every authored content record", () => {
 
     assert.equal(record.schemaVersion, 1);
     assert.ok(record.body.length > 0);
+    assert.notEqual(record.type, "component");
 
     if (record.id === "guideline.button-review") {
       assert.equal(record.checks.length, 8);
@@ -32,5 +34,25 @@ test("parseRecord accepts every authored content record", () => {
       assert.ok(Array.isArray(record.assets) && record.assets.length >= 1);
       assert.ok(Array.isArray(record.annotations) && record.annotations.length >= 1);
     }
+  }
+});
+
+test("parseAuthoredRecord accepts YAML component specs without bodies", () => {
+  assert.deepEqual(authoredYaml, [
+    "components/badge/badge.spec.yaml",
+    "components/button/button.spec.yaml",
+  ]);
+
+  for (const relative of authoredYaml) {
+    const sourcePath = `packages/knowledge/content/${relative}`;
+    const record = parseAuthoredRecord(readFileSync(join(contentRoot, relative), "utf8"), {
+      sourcePath,
+    });
+
+    assert.equal(record.schemaVersion, 1);
+    assert.equal(record.type, "component");
+    assert.equal(Object.hasOwn(record, "body"), false);
+    assert.equal(record.contract.specVersion, 5);
+    assert.ok(record.contract.usage.do.every((item) => typeof item.id === "string"));
   }
 });

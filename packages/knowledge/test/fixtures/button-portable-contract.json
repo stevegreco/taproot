@@ -1,28 +1,54 @@
 {
-  "specVersion": 4,
+  "specVersion": 5,
   "description": "Triggers an action or submits or resets a form.",
   "usage": {
     "do": [
       {
+        "id": "trigger-action",
         "situation": "Trigger an action in the current view."
       },
       {
+        "id": "submit-or-reset",
         "situation": "Submit or reset a form."
       }
     ],
     "avoid": [
       {
+        "id": "navigation",
         "situation": "Navigate to another location.",
         "instead": "Link",
         "why": "Links provide native navigation semantics."
       },
       {
+        "id": "status-or-metadata",
         "situation": "Display status or metadata.",
         "instead": "Badge",
         "why": "Button communicates an available action."
       }
     ]
   },
+  "content": [
+    {
+      "id": "label-describes-result",
+      "level": "must",
+      "statement": "Use a concise label that describes the result.",
+      "examples": {
+        "do": ["Save changes", "Delete account"],
+        "avoid": ["Click here"]
+      }
+    },
+    {
+      "id": "follow-action-hierarchy",
+      "level": "should",
+      "statement": "Apply the action hierarchy pattern when several actions appear together.",
+      "references": [
+        {
+          "id": "pattern.action-hierarchy",
+          "fragment": "assign-emphasis"
+        }
+      ]
+    }
+  ],
   "anatomy": [
     {
       "name": "control",
@@ -89,10 +115,17 @@
   },
   "states": ["default", "hover", "pressed", "focus-visible", "disabled"],
   "behavior": [
-    "Disabled prevents activation.",
-    "Submit and reset participate in a form when the host supports form association.",
-    "A disabled ancestor fieldset disables the button.",
-    "Programmatic focus and blur are forwarded to the inner native control."
+    {
+      "id": "disabled-prevents-activation",
+      "level": "must",
+      "statement": "Disabled prevents activation."
+    },
+    {
+      "id": "form-association",
+      "level": "should",
+      "statement": "Submit and reset participate in a form when the host supports form association.",
+      "applicability": "Hosts that implement form association."
+    }
   ],
   "accessibility": {
     "semantics": "Button.",
@@ -108,10 +141,26 @@
       }
     ],
     "requirements": [
-      "Keyboard focus remains visibly indicated.",
-      "Icon-only buttons have an accessible name.",
-      "The label describes the resulting action.",
-      "Meaning does not depend on color alone."
+      {
+        "id": "visible-focus",
+        "level": "must",
+        "statement": "Keyboard focus remains visibly indicated."
+      },
+      {
+        "id": "icon-accessible-name",
+        "level": "must",
+        "statement": "Icon-only buttons have an accessible name."
+      },
+      {
+        "id": "label-describes-action",
+        "level": "must",
+        "statement": "The label describes the resulting action."
+      },
+      {
+        "id": "meaning-not-color-alone",
+        "level": "must",
+        "statement": "Meaning does not depend on color alone."
+      }
     ]
   },
   "rationale": [

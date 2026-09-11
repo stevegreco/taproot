@@ -1,4 +1,3 @@
----
 id: component.button
 schemaVersion: 1
 type: component
@@ -19,7 +18,7 @@ relations:
     - component.badge
 sources:
   - kind: authored
-    path: packages/knowledge/content/components/button.md
+    path: packages/knowledge/content/components/button/button.spec.yaml
   - kind: token-source
     path: packages/tokens/src/tokens/components/button.tokens.json
   - kind: adr
@@ -29,19 +28,39 @@ tokenRef:
   namespace: component.button
   description: All visual values consume the published Button component-token contract.
 contract:
-  specVersion: 4
+  specVersion: 5
   description: Triggers an action or submits or resets a form.
   usage:
     do:
-      - situation: Trigger an action in the current view.
-      - situation: Submit or reset a form.
+      - id: trigger-action
+        situation: Trigger an action in the current view.
+      - id: submit-or-reset
+        situation: Submit or reset a form.
     avoid:
-      - situation: Navigate to another location.
+      - id: navigation
+        situation: Navigate to another location.
         instead: Link
         why: Links provide native navigation semantics.
-      - situation: Display status or metadata.
+      - id: status-or-metadata
+        situation: Display status or metadata.
         instead: Badge
         why: Button communicates an available action.
+  content:
+    - id: label-describes-result
+      level: must
+      statement: Use a concise label that describes the result.
+      examples:
+        do:
+          - Save changes
+          - Delete account
+        avoid:
+          - Click here
+    - id: follow-action-hierarchy
+      level: should
+      statement: Apply the action hierarchy pattern when several actions appear together.
+      references:
+        - id: pattern.action-hierarchy
+          fragment: assign-emphasis
   anatomy:
     - name: control
       role: interactive-surface
@@ -95,10 +114,13 @@ contract:
     - focus-visible
     - disabled
   behavior:
-    - Disabled prevents activation.
-    - Submit and reset participate in a form when the host supports form association.
-    - A disabled ancestor fieldset disables the button.
-    - Programmatic focus and blur are forwarded to the inner native control.
+    - id: disabled-prevents-activation
+      level: must
+      statement: Disabled prevents activation.
+    - id: form-association
+      level: should
+      statement: Submit and reset participate in a form when the host supports form association.
+      applicability: Hosts that implement form association.
   accessibility:
     semantics: Button.
     name: Required from visible content or accessibleName.
@@ -108,10 +130,18 @@ contract:
       - key: Space
         action: Activate.
     requirements:
-      - Keyboard focus remains visibly indicated.
-      - Icon-only buttons have an accessible name.
-      - The label describes the resulting action.
-      - Meaning does not depend on color alone.
+      - id: visible-focus
+        level: must
+        statement: Keyboard focus remains visibly indicated.
+      - id: icon-accessible-name
+        level: must
+        statement: Icon-only buttons have an accessible name.
+      - id: label-describes-action
+        level: must
+        statement: The label describes the resulting action.
+      - id: meaning-not-color-alone
+        level: must
+        statement: Meaning does not depend on color alone.
   rationale:
     - decision: Button has a published component-token namespace.
       rationale: Consumers need a stable customization boundary for variants and states.
@@ -205,20 +235,3 @@ contract:
       prefersReducedMotion:
         reduce:
           transition: none
----
-
-Button lets a person trigger an action in the current view. Use a link for navigation and Badge for
-status or metadata.
-
-## Choose a variant
-
-Use `primary` for the highest-emphasis action in a group, `secondary` for a supporting action,
-`ghost` for low-emphasis access, and `danger` for destructive or difficult-to-reverse work.
-
-Apply the [action hierarchy pattern](../patterns/action-hierarchy.md#assign-emphasis) when several
-actions appear together.
-
-## Write the label
-
-Use a concise label that describes the result, such as "Save changes" or "Delete account." Do not
-use generic labels such as "Click here."

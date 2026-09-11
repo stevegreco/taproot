@@ -32,7 +32,7 @@ export function stubRecord(id, fields = {}) {
   return {
     id,
     schemaVersion: 1,
-    compiledSchemaVersion: 6,
+    compiledSchemaVersion: 7,
     sources: [{ kind: "authored", path: `content/${id}.md`, revision: "fixture" }],
     type: "component",
     title: "Title",
@@ -44,6 +44,7 @@ export function stubRecord(id, fields = {}) {
     relations: {},
     backlinks: {},
     body: "Body text.",
+    bodyOrigin: "authored",
     ...fields,
   };
 }
@@ -52,7 +53,7 @@ export function stubManifest(recordCount, files = []) {
   return {
     content: {
       schemaVersion: 1,
-      compiledSchemaVersion: 6,
+      compiledSchemaVersion: 7,
       visibility: "public",
       knowledgeVersion: META.knowledgeVersion,
       designSystemVersion: META.designSystemVersion,

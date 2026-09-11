@@ -77,6 +77,20 @@ export function findSchemaIssues(candidate) {
   return [...schemaIssues, ...findContractSemanticIssues(candidate)].sort(compareIssues);
 }
 
+function claimUniqueId(seen, id, path, issues) {
+  if (typeof id !== "string" || id.length === 0) return;
+  const previous = seen.get(id);
+  if (previous) {
+    issues.push({
+      path,
+      keyword: "uniqueItems",
+      message: `id ${id} is already used at ${previous}`,
+    });
+    return;
+  }
+  seen.set(id, path);
+}
+
 function findContractSemanticIssues(candidate) {
   const contract = candidate?.contract;
   if (contract == null || typeof contract !== "object" || Array.isArray(contract)) {
@@ -111,6 +125,23 @@ function findContractSemanticIssues(candidate) {
         message: `must be one of ${allowed.join(", ")}`,
       });
     }
+  }
+
+  const seenIds = new Map();
+  for (const [index, item] of (contract.usage?.do ?? []).entries()) {
+    claimUniqueId(seenIds, item?.id, `/contract/usage/do/${index}/id`, issues);
+  }
+  for (const [index, item] of (contract.usage?.avoid ?? []).entries()) {
+    claimUniqueId(seenIds, item?.id, `/contract/usage/avoid/${index}/id`, issues);
+  }
+  for (const [index, rule] of (contract.content ?? []).entries()) {
+    claimUniqueId(seenIds, rule?.id, `/contract/content/${index}/id`, issues);
+  }
+  for (const [index, rule] of (contract.behavior ?? []).entries()) {
+    claimUniqueId(seenIds, rule?.id, `/contract/behavior/${index}/id`, issues);
+  }
+  for (const [index, rule] of (contract.accessibility?.requirements ?? []).entries()) {
+    claimUniqueId(seenIds, rule?.id, `/contract/accessibility/requirements/${index}/id`, issues);
   }
 
   return issues;
