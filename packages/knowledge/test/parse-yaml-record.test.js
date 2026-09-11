@@ -62,6 +62,67 @@ test("parseRecord remains a Markdown parser", () => {
   );
 });
 
+test("parseYamlRecord reports indentation errors as yaml, not uniqueKeys", () => {
+  const yaml = `id: component.yaml-button
+schemaVersion: 1
+type: component
+title: Button
+  summary: Use Button.
+`;
+  assert.throws(
+    () => parseYamlRecord(yaml, { sourcePath: buttonPath }),
+    (error) => {
+      assert.equal(error instanceof KnowledgeRecordError, true);
+      assert.ok(error.issues.length > 0, JSON.stringify(error.issues));
+      assert.equal(
+        error.issues.every((issue) => issue.keyword === "yaml"),
+        true,
+        JSON.stringify(error.issues),
+      );
+      return true;
+    },
+  );
+});
+
+test("parseYamlRecord rejects YAML aliases", () => {
+  const yaml = `id: component.yaml-button
+schemaVersion: 1
+type: component
+title: &x Button
+summary: *x
+`;
+  assert.throws(
+    () => parseYamlRecord(yaml, { sourcePath: buttonPath }),
+    (error) => {
+      assert.equal(error instanceof KnowledgeRecordError, true);
+      assert.ok(
+        error.issues.some((issue) => issue.keyword === "yaml" && /alias/i.test(issue.message)),
+        JSON.stringify(error.issues),
+      );
+      return true;
+    },
+  );
+});
+
+test("parseYamlRecord requires a contract", () => {
+  const yaml = recordYaml({
+    id: "component.yaml-button",
+    path: buttonPath,
+    sources: [{ kind: "authored", path: buttonPath }],
+  });
+  assert.throws(
+    () => parseYamlRecord(yaml, { sourcePath: buttonPath }),
+    (error) => {
+      assert.equal(error instanceof KnowledgeRecordError, true);
+      assert.ok(
+        error.issues.some((issue) => issue.path === "/contract" && issue.keyword === "required"),
+        JSON.stringify(error.issues),
+      );
+      return true;
+    },
+  );
+});
+
 test("parseYamlRecord rejects duplicate YAML keys with a path", () => {
   const yaml = `${yamlComponent()}\nid: component.other\n`;
   assert.throws(
@@ -187,8 +248,11 @@ test("YAML components coexist with Markdown records and generate a useful body",
   const note = corpus.records.get("guideline.note");
   assert.equal(button.bodyOrigin, "generated");
   assert.match(button.body, /When to use/);
+  assert.match(button.body, /When to avoid/);
   assert.match(button.body, /Trigger an action in the current view/);
   assert.match(button.body, /Use Link instead/);
+  assert.match(button.body, /\*\*must:\*\*/);
+  assert.match(button.body, /\*\*should:\*\*/);
   assert.match(button.body, /markdown\/pattern\.action-hierarchy\.md#assign-emphasis/);
   assert.doesNotMatch(button.body, /fieldset/);
   assert.equal(note.bodyOrigin, "authored");

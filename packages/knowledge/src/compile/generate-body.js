@@ -61,7 +61,13 @@ function formatAvoid(item) {
 }
 
 function formatRule(rule) {
-  const lines = [`- ${rule.statement}`];
+  const lines = [`- **${rule.level}:** ${rule.statement}`];
+  if (rule.applicability) {
+    lines.push(`  Applies when: ${rule.applicability}`);
+  }
+  if (rule.rationale) {
+    lines.push(`  Why: ${rule.rationale}`);
+  }
   for (const reference of rule.references ?? []) {
     const hash = reference.fragment ? `#${reference.fragment}` : "";
     lines.push(`  See [${referenceLabel(reference.id)}](markdown/${reference.id}.md${hash}).`);

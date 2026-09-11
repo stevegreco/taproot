@@ -15,7 +15,6 @@ export function parseYamlMapping(text) {
       uniqueKeys: true,
       strict: true,
       prettyErrors: true,
-      maxAliasCount: 0,
     });
   } catch (error) {
     return {
@@ -58,7 +57,21 @@ export function parseYamlMapping(text) {
     };
   }
 
-  const data = documents[0].toJS();
+  let data;
+  try {
+    data = documents[0].toJS({ maxAliasCount: 0 });
+  } catch (error) {
+    return {
+      ok: false,
+      issues: [
+        {
+          path: "",
+          keyword: "yaml",
+          message: error instanceof Error ? error.message : "YAML aliases are not allowed",
+        },
+      ],
+    };
+  }
   if (data == null || typeof data !== "object" || Array.isArray(data)) {
     return {
       ok: false,
@@ -69,8 +82,8 @@ export function parseYamlMapping(text) {
 }
 
 function yamlErrorIssue(error) {
-  const key = duplicateKeyName(error);
-  if (error.code === "DUPLICATE_KEY" || key) {
+  if (error.code === "DUPLICATE_KEY") {
+    const key = duplicateKeyName(error);
     return {
       path: key ? `/${key}` : "",
       keyword: "uniqueKeys",

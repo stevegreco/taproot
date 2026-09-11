@@ -595,22 +595,43 @@ function projectIntro(
   const introParts = [asString(contract.description)];
   const usage = isObject(contract.usage) ? contract.usage : {};
   const avoid = Array.isArray(usage.avoid) ? usage.avoid : [];
+  const avoidLines: string[] = [];
   for (const item of avoid) {
     if (!isObject(item)) continue;
     const situation = asString(item.situation);
     const instead = asString(item.instead);
     const why = asString(item.why);
-    introParts.push(
-      [situation, instead ? `Use ${instead} instead.` : "", why]
-        .filter((part) => part.length > 0)
-        .join(" "),
-    );
+    const line = [situation, instead ? `Use ${instead} instead.` : "", why]
+      .filter((part) => part.length > 0)
+      .join(" ");
+    if (line.length > 0) avoidLines.push(`- ${line}`);
+  }
+  if (avoidLines.length > 0) {
+    introParts.push(["### When to avoid", ...avoidLines].join("\n"));
   }
 
   const contentRules = Array.isArray(contract.content) ? contract.content : [];
   const contentBlocks = contentRules.flatMap((rule) => {
     if (!isObject(rule)) return [];
-    const lines = [`- ${asString(rule.statement)}`];
+    const level = asString(rule.level);
+    const statement = asString(rule.statement);
+    const lines = [level ? `- **${level}:** ${statement}` : `- ${statement}`];
+    if (typeof rule.applicability === "string" && rule.applicability.length > 0) {
+      lines.push(`Applies when: ${rule.applicability}`);
+    }
+    if (typeof rule.rationale === "string" && rule.rationale.length > 0) {
+      lines.push(`Why: ${rule.rationale}`);
+    }
+    const references = Array.isArray(rule.references) ? rule.references : [];
+    for (const reference of references) {
+      if (!isObject(reference)) continue;
+      const id = asString(reference.id);
+      if (!id) continue;
+      const fragment = asString(reference.fragment);
+      const hash = fragment ? `#${fragment}` : "";
+      const label = id === "pattern.action-hierarchy" ? "action hierarchy pattern" : id;
+      lines.push(`See [${label}](markdown/${id}.md${hash}).`);
+    }
     const examples = isObject(rule.examples) ? rule.examples : {};
     const doExamples = Array.isArray(examples.do)
       ? examples.do.filter((example): example is string => typeof example === "string")
@@ -623,7 +644,9 @@ function projectIntro(
     return [lines.join("\n")];
   });
   const label =
-    contentBlocks.length > 0 ? `### Write the label\n\n${contentBlocks.join("\n\n")}` : "";
+    contentBlocks.length > 0
+      ? rewriteBundleUrls(`### Write the label\n\n${contentBlocks.join("\n\n")}`, digest)
+      : "";
   const form = markdownByHeading(rewriteBundleUrls(implementationBody, digest)).sections.get(
     "set form behavior deliberately",
   );

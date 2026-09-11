@@ -174,6 +174,13 @@ export function parseYamlRecord(yamlText, options) {
       message: "YAML spec files must be type component",
     });
   }
+  if (!Object.hasOwn(candidate, "contract") || candidate.contract == null) {
+    issues.push({
+      path: "/contract",
+      keyword: "required",
+      message: "is required",
+    });
+  }
   issues.sort((left, right) => {
     const byPath = left.path.localeCompare(right.path);
     return byPath === 0 ? left.keyword.localeCompare(right.keyword) : byPath;
