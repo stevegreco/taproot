@@ -2,6 +2,7 @@ import { access, cp, mkdir, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
+import { assertSpecifier } from "./workspace-builds";
 
 export type ComponentSlug = string;
 
@@ -149,9 +150,14 @@ const EXAMPLE_LABELS: Record<string, Record<string, string>> = {
 
 function resolvePublicRoot(): string {
   try {
-    const manifestHref = import.meta.resolve("@stevegreco/design-system-knowledge/manifest");
-    return dirname(fileURLToPath(manifestHref));
+    return dirname(
+      assertSpecifier(
+        "@stevegreco/design-system-knowledge/manifest",
+        "@stevegreco/design-system-knowledge",
+      ),
+    );
   } catch (error) {
+    if (error instanceof DocsKnowledgeError) throw error;
     throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
   }
 }

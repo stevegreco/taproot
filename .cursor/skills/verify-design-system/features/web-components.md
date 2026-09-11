@@ -14,20 +14,20 @@ Button and Badge are framework-agnostic custom elements whose documentation prev
 - Open `/components/button` and use its Preview.
 - Open `/components/badge` and inspect the available variants.
 - Install and import `@stevegreco/design-system-components` as documented on either page.
-- Open the secondary local demo with `pnpm --filter @stevegreco/design-system-components dev` when no other process owns port 4500.
+- Open the secondary local demo with `pnpm exec turbo run dev --filter=@stevegreco/design-system-components` when no other process owns port 4500.
 
 ## Driving it with Playwright
 
 Preconditions:
 
 - Doctor passes for the run-owned documentation URL.
-- `pnpm --filter @stevegreco/design-system-components build` succeeds.
+- `pnpm exec turbo run build --filter=@stevegreco/design-system-components` succeeds.
 - Chromium is installed for Playwright.
 
 - **Open Button.** Navigate to `/components/button`. Require the Button heading, Preview section, and rendered component example route `/blume-examples/button/`.
 - **Use Button.** Select the primary `ds-button` inside the example surface and require its documented visible response. Capture the action and response together.
 - **Open Badge.** Navigate to `/components/badge`. Require the Badge heading, example route `/blume-examples/badge/`, and labels for default, accent, success, danger, warning, and info variants.
-- **Run behavior tests.** Execute `pnpm --filter @stevegreco/design-system-components test`. Require Chromium tests for shadow-button behavior, form association, disabled state, accessible names, badge variants, and generated token styles to pass.
+- **Run behavior tests.** Execute `pnpm exec turbo run test --filter=@stevegreco/design-system-components`. Require Chromium tests for shadow-button behavior, form association, disabled state, accessible names, badge variants, and generated token styles to pass.
 - **Proof.** Save Button interaction and Badge variant screenshots, then pair them with the component browser-test result.
 
 ## Gotchas

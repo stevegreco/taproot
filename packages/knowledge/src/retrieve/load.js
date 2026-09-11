@@ -135,7 +135,7 @@ async function readBundleFile(path, name, label, isDefault) {
   } catch (error) {
     if (error && error.code === "ENOENT") {
       const hint = isDefault
-        ? `${name} is missing; run pnpm --filter @stevegreco/design-system-knowledge build`
+        ? `${name} is missing; from the repo root run: pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`
         : `${name} is missing`;
       throw fail("bundle-missing", label, [hint]);
     }

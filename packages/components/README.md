@@ -142,10 +142,11 @@ on save.
 
 ## Tests
 
-The component contract runs in real Chromium through Vitest Browser Mode:
+The component contract runs in real Chromium through Vitest Browser Mode.
+From the repository root:
 
 ```bash
-pnpm test
+pnpm exec turbo run test --filter=@stevegreco/design-system-components
 ```
 
 The suite covers Badge content, variants, aliases and semantic token mappings, plus
@@ -155,10 +156,13 @@ focus forwarding and token wiring.
 ## Local development
 
 ```bash
-pnpm --filter @stevegreco/design-system build              # produces dist/css/tokens.css
-pnpm --filter @stevegreco/design-system-components build   # inlines src/*.css
-pnpm --filter @stevegreco/design-system-components dev     # watch + serve the demo
+pnpm exec turbo run build --filter=@stevegreco/design-system-components
+pnpm exec turbo run test --filter=@stevegreco/design-system-components
+pnpm exec turbo run dev --filter=@stevegreco/design-system-components
 ```
+
+Turbo builds the token package before the component styles and demo. `pnpm --filter`
+runs this package's script only and will fail on a clean tree when `dist/` is missing.
 
 The demo lives at `examples/button.html` and covers every variant, size, state,
 form participation and a dark-mode toggle.

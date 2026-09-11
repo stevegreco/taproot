@@ -22,3 +22,27 @@ Host bindings live in `packages/knowledge/content/bindings/`. Component runtime 
 
 Do not place design system facts only in an MCP server, documentation page, or tool-specific agent
 skill. Those are consumers or delivery adapters for the portable knowledge records.
+
+## Build and test
+
+`pnpm --filter <pkg> <script>` runs that package's script only. It does not honor the
+`dependsOn: ["^build"]` edges in `turbo.json`, so a clean clone or worktree fails with missing
+`dist/` files that look like code or dependency bugs.
+
+From the repository root:
+
+- `pnpm build` runs `turbo run build` for every package, in dependency order.
+- `pnpm test` runs `turbo run test`, which builds workspace dependencies first.
+  Token, knowledge, and component tests also wait for that package's own `build`.
+- `pnpm exec turbo run <task> --filter=<pkg>` is the way to build, test, or develop one package
+  and its workspace dependencies.
+
+```bash
+pnpm exec turbo run build --filter=documentation
+pnpm exec turbo run test --filter=@stevegreco/design-system-knowledge
+pnpm exec turbo run dev --filter=documentation
+```
+
+After packages are already built, `pnpm exec vitest run` still runs the Vitest 5 workspace from the
+repo root. Prefer `pnpm test` in a clean tree. Use `pnpm --filter <pkg> exec …` only for commands
+that are not package scripts with workspace build dependencies, such as `blume validate`.
