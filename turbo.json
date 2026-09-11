@@ -8,6 +8,11 @@
     "clean": {
       "cache": false
     },
+    "dev": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "persistent": true
+    },
     "test": {
       "dependsOn": ["^build", "^test"]
     }

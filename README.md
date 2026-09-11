@@ -154,6 +154,21 @@ pnpm run build
 
 Source tokens live in `src/tokens/`. Never edit `dist/` files directly — they are regenerated on every build.
 
+### Developing this repository
+
+`pnpm --filter <pkg> build` and `pnpm --filter <pkg> test` skip Turbo's `^build` graph. On a clean
+tree they fail looking for missing `dist/` files. From the repository root, use Turbo to build or
+test one package and its workspace dependencies:
+
+```bash
+pnpm exec turbo run build --filter=documentation
+pnpm exec turbo run test --filter=documentation
+pnpm test
+```
+
+`pnpm build` and `pnpm test` are `turbo run` wrappers. After packages are already built,
+`pnpm exec vitest run` still runs the Vitest workspace from the repo root.
+
 ## Publish checklist
 
 1. `pnpm run build`

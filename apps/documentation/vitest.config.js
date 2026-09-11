@@ -5,5 +5,6 @@ export default defineProject({
     name: "documentation",
     environment: "node",
     include: ["test/**/*.test.ts"],
+    setupFiles: ["./test/setup-workspace-builds.ts"],
   },
 });

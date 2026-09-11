@@ -26,7 +26,7 @@ PORT=4321
 node .cursor/skills/verify-design-system/scripts/control.mjs launch "$RUN_ID" "$PORT"
 ```
 
-The helper starts `pnpm --filter documentation dev --host 127.0.0.1 --port <port>` in an owned process group. Readiness requires HTTP success and the `Design System` page identity. It writes instance metadata and server logs beneath `.cursor/verification-runs/<run-id>/`.
+The helper starts `pnpm --filter documentation dev --host 127.0.0.1 --port <port>` in an owned process group after `pnpm build`. Readiness requires HTTP success and the `Design System` page identity. It writes instance metadata and server logs beneath `.cursor/verification-runs/<run-id>/`.
 
 Teardown only the instance belonging to this run:
 
@@ -34,7 +34,7 @@ Teardown only the instance belonging to this run:
 node .cursor/skills/verify-design-system/scripts/control.mjs cleanup "$RUN_ID" "$PORT"
 ```
 
-Never kill by process name. The component demo's `pnpm --filter @stevegreco/design-system-components dev` uses fixed port 4500 and is not safe for parallel verification.
+Never kill by process name. The component demo's `pnpm exec turbo run dev --filter=@stevegreco/design-system-components` uses fixed port 4500 and is not safe for parallel verification.
 
 ## Doctor
 
@@ -66,10 +66,10 @@ Package gates:
 
 ```bash
 pnpm build
-pnpm --filter @stevegreco/design-system test
-pnpm --filter @stevegreco/design-system-components test
-pnpm --filter @stevegreco/design-system-knowledge test
-pnpm --filter documentation test
+pnpm exec turbo run test --filter=@stevegreco/design-system
+pnpm exec turbo run test --filter=@stevegreco/design-system-components
+pnpm exec turbo run test --filter=@stevegreco/design-system-knowledge
+pnpm exec turbo run test --filter=documentation
 pnpm --filter documentation exec blume validate --strict
 pnpm --filter documentation exec blume check --isolated
 ```

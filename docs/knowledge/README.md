@@ -7,7 +7,7 @@ The knowledge system is independent of any one agent product or delivery protoco
 
 The knowledge package parses authored Markdown records and YAML component specs and compiles them
 into a public bundle.
-`pnpm --filter @stevegreco/design-system-knowledge build` writes `dist/public`. An internal bundle
+`pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge` writes `dist/public`. An internal bundle
 is written only when internal content is configured. The published package includes `dist/public`
 and `src` only.
 

@@ -101,7 +101,7 @@ export async function compiledMappings(recordId) {
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `${recordId} needs the compiled knowledge bundle. From the repo root run pnpm --filter @stevegreco/design-system-knowledge build (turbo test depends on ^build). ${reason}`,
+      `${recordId} needs the compiled knowledge bundle. From the repo root run: pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge. ${reason}`,
     );
   }
   const record = catalog.get(recordId);

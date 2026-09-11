@@ -1,10 +1,13 @@
 import { defineConfig, type ComponentMarkdown } from "blume";
-import { palettes } from "./lib/color-palettes";
-import {
-  componentKnowledgeMarkdown,
-  type ComponentKnowledgeSection,
-} from "./lib/component-knowledge";
-import { semanticReferenceMarkdown, type SemanticReferenceKind } from "./lib/semantic-reference";
+import type { ComponentKnowledgeSection } from "./lib/component-knowledge";
+import type { SemanticReferenceKind } from "./lib/semantic-reference";
+import { assertWorkspaceBuilds } from "./lib/workspace-builds";
+
+assertWorkspaceBuilds();
+
+const { palettes } = await import("./lib/color-palettes");
+const { componentKnowledgeMarkdown } = await import("./lib/component-knowledge");
+const { semanticReferenceMarkdown } = await import("./lib/semantic-reference");
 
 const colorFieldGuideMarkdown: ComponentMarkdown = () =>
   [

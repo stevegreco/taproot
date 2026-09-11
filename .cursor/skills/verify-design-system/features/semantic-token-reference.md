@@ -20,7 +20,7 @@ The semantic token reference groups intent-based color, typography, elevation, a
 Preconditions:
 
 - Doctor passes for the run-owned documentation URL.
-- `pnpm --filter documentation test` and `pnpm --filter documentation exec blume validate --strict` pass.
+- `pnpm exec turbo run test --filter=documentation` and `pnpm --filter documentation exec blume validate --strict` pass.
 
 - **Open reference.** Navigate to `/design-tokens/semantic`. Require the `Semantic Tokens` heading and the `Choose a semantic token` instructions.
 - **Inspect groups.** Require `.semantic-reference` regions or `.semantic-reference__row` entries beneath color, typography, elevation, and shape sections.

@@ -30,6 +30,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
+    "pretest": "pnpm run build",
     "build": "pnpm run clean && node build-tokens.js && node build-css.js && pnpm run audit",
     "audit": "node scripts/audit.js",
     "watch": "chokidar \"src/tokens/**/*.json\" -c \"pnpm run build\" --initial",
