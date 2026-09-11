@@ -33,6 +33,7 @@ From the repository root:
 
 - `pnpm build` runs `turbo run build` for every package, in dependency order.
 - `pnpm test` runs `turbo run test`, which builds workspace dependencies first.
+  Token, knowledge, and component tests also wait for that package's own `build`.
 - `pnpm exec turbo run <task> --filter=<pkg>` is the way to build, test, or develop one package
   and its workspace dependencies.
 
