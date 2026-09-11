@@ -607,7 +607,7 @@ function projectIntro(
     if (line.length > 0) avoidLines.push(`- ${line}`);
   }
   if (avoidLines.length > 0) {
-    introParts.push(["### When to avoid", ...avoidLines].join("\n"));
+    introParts.push(`### When to avoid\n\n${avoidLines.join("\n")}`);
   }
 
   const contentRules = Array.isArray(contract.content) ? contract.content : [];

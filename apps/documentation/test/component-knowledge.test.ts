@@ -32,8 +32,8 @@ test("button slice variants and api come from the public catalog contract", () =
   );
   assert.match(
     slice.introMarkdown,
-    /### When to avoid/,
-    "avoid items keep negation framing instead of reading as instructions",
+    /### When to avoid\n\n- /,
+    "avoid items keep negation framing as a heading plus list the docs renderer can parse",
   );
   assert.doesNotMatch(
     slice.introMarkdown,
