@@ -2,9 +2,11 @@ import { loadCorpusInputs } from "./inputs.js";
 import {
   assembleRecord,
   checkBindingAgreement,
+  checkRuleReferences,
   checkSourceAgreement,
   completenessProblems,
 } from "./records.js";
+import { generateComponentBody } from "./generate-body.js";
 import { rewriteBodyLinks } from "./narrative.js";
 import { PROBLEM, problem } from "./tables.js";
 import { compileContractVisuals, stripMappingSources } from "./visuals.js";
@@ -29,6 +31,12 @@ export function assembleCorpus(loaded) {
         record.contract = expanded.contract;
         visualProblems.push(...expanded.problems);
       }
+      if (typeof record.body === "string" && record.body.length > 0) {
+        record.bodyOrigin = "authored";
+      } else {
+        record.body = generateComponentBody(record);
+        record.bodyOrigin = "generated";
+      }
       return [id, record];
     }),
   );
@@ -38,6 +46,7 @@ export function assembleCorpus(loaded) {
     ...visualProblems,
     ...[...records.values()].flatMap((record) => [
       ...checkSourceAgreement(record, loaded.tokenNames),
+      ...checkRuleReferences(record, records),
       ...completenessProblems(record),
     ]),
     ...checkBindingAgreement(records),

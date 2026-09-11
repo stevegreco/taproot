@@ -1,4 +1,3 @@
----
 id: component.badge
 schemaVersion: 1
 type: component
@@ -19,25 +18,33 @@ relations:
     - component.button
 sources:
   - kind: authored
-    path: packages/knowledge/content/components/badge.md
+    path: packages/knowledge/content/components/badge/badge.spec.yaml
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:
-  specVersion: 4
+  specVersion: 5
   description: Labels status or metadata. Not a control.
   usage:
     do:
-      - situation: Display status, category, or supporting metadata.
+      - id: status-or-metadata
+        situation: Display status, category, or supporting metadata.
     avoid:
-      - situation: Trigger an action in the current view.
+      - id: trigger-action
+        situation: Trigger an action in the current view.
         instead: Button
         why: Badge is not interactive and does not communicate an available action.
-      - situation: Navigate to another location.
+      - id: navigation
+        situation: Navigate to another location.
         instead: Link
         why: Links provide native navigation semantics.
-      - situation: Announce a live status change by itself.
+      - id: live-status
+        situation: Announce a live status change by itself.
         instead: Host live-region semantics
         why: Badge sets no live-region role.
+  content:
+    - id: keep-label-short
+      level: should
+      statement: Keep the label short.
   anatomy:
     - name: surface
       role: indicator
@@ -60,16 +67,26 @@ contract:
   states:
     - default
   behavior:
-    - Badge is not focusable and does not activate.
+    - id: non-interactive
+      level: must
+      statement: Badge is not focusable and does not activate.
   accessibility:
     semantics: Non-interactive text.
     name: Visible text is the accessible name.
     keyboard: []
     requirements:
-      - The text communicates the state. Meaning does not depend on color alone.
-      - Badge is not used as a control.
-      - Badge does not set a live-region role.
-      - Changing status that must be announced is the surrounding UI's job.
+      - id: text-communicates-state
+        level: must
+        statement: The text communicates the state. Meaning does not depend on color alone.
+      - id: not-a-control
+        level: must
+        statement: Badge is not used as a control.
+      - id: no-live-region
+        level: must
+        statement: Badge does not set a live-region role.
+      - id: surrounding-ui-announces
+        level: must
+        statement: Changing status that must be announced is the surrounding UI's job.
   rationale:
     - decision: Badge consumes semantic tokens directly.
       rationale: ADR 0003. No component-token namespace.
@@ -111,21 +128,3 @@ contract:
           background: semantic.color.background.status.info.default
           foreground: semantic.color.foreground.status.info.default
           border: semantic.color.border.status.info.default
----
-
-Badge labels an item's state, category, or supporting metadata. It is not a control. Use Button to
-trigger an action in the current view. Use a link to navigate to another location.
-
-## Choose a variant
-
-Use `default` for neutral metadata, `accent` for brand emphasis without implying status, and the
-status variants for the matching condition. Badge `danger` is a failed or blocked status, not a
-destructive action.
-
-Keep the label short. Badge is not a control.
-
-Do not treat Badge as a live region. If a status change must be announced, the surrounding UI
-applies that role.
-
-Badge consumes semantic color, type, radius, and primitive spacing. It has no component-token
-namespace.

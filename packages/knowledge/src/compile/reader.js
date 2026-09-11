@@ -19,7 +19,7 @@ export function createWorkspaceReader(workspaceRoot) {
             await walk(absolute);
             continue;
           }
-          if (entry.name.endsWith(".md")) {
+          if (entry.name.endsWith(".md") || entry.name.endsWith(".spec.yaml")) {
             paths.push(relative(workspaceRoot, absolute).split(sep).join("/"));
           }
         }

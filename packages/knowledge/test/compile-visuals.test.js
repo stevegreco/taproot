@@ -303,7 +303,7 @@ test("compiled Button mappings omit visuals and preserve ghost rest fill", async
   );
   const button = corpus.records.get("component.button");
   assert.equal(Object.hasOwn(button.contract, "visuals"), false);
-  assert.equal(button.contract.specVersion, 4);
+  assert.equal(button.contract.specVersion, 5);
   assert.deepEqual(button.contract.stateResolution.suppress.disabled, ["hover", "pressed"]);
   const ghostRest = button.contract.mappings.find(
     (row) =>

@@ -39,7 +39,7 @@ test("baseline Button contract projects onto the authored component and web-comp
   assert.deepEqual(portable, authoredContract);
   assert.equal(
     button.sources.some(
-      (source) => source.path === "packages/knowledge/content/components/button.md",
+      (source) => source.path === "packages/knowledge/content/components/button/button.spec.yaml",
     ),
     true,
   );

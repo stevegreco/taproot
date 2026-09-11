@@ -1,30 +1,41 @@
 {
-  "specVersion": 4,
+  "specVersion": 5,
   "description": "Labels status or metadata. Not a control.",
   "usage": {
     "do": [
       {
+        "id": "status-or-metadata",
         "situation": "Display status, category, or supporting metadata."
       }
     ],
     "avoid": [
       {
+        "id": "trigger-action",
         "situation": "Trigger an action in the current view.",
         "instead": "Button",
         "why": "Badge is not interactive and does not communicate an available action."
       },
       {
+        "id": "navigation",
         "situation": "Navigate to another location.",
         "instead": "Link",
         "why": "Links provide native navigation semantics."
       },
       {
+        "id": "live-status",
         "situation": "Announce a live status change by itself.",
         "instead": "Host live-region semantics",
         "why": "Badge sets no live-region role."
       }
     ]
   },
+  "content": [
+    {
+      "id": "keep-label-short",
+      "level": "should",
+      "statement": "Keep the label short."
+    }
+  ],
   "anatomy": [
     {
       "name": "surface",
@@ -53,16 +64,38 @@
   },
   "events": {},
   "states": ["default"],
-  "behavior": ["Badge is not focusable and does not activate."],
+  "behavior": [
+    {
+      "id": "non-interactive",
+      "level": "must",
+      "statement": "Badge is not focusable and does not activate."
+    }
+  ],
   "accessibility": {
     "semantics": "Non-interactive text.",
     "name": "Visible text is the accessible name.",
     "keyboard": [],
     "requirements": [
-      "The text communicates the state. Meaning does not depend on color alone.",
-      "Badge is not used as a control.",
-      "Badge does not set a live-region role.",
-      "Changing status that must be announced is the surrounding UI's job."
+      {
+        "id": "text-communicates-state",
+        "level": "must",
+        "statement": "The text communicates the state. Meaning does not depend on color alone."
+      },
+      {
+        "id": "not-a-control",
+        "level": "must",
+        "statement": "Badge is not used as a control."
+      },
+      {
+        "id": "no-live-region",
+        "level": "must",
+        "statement": "Badge does not set a live-region role."
+      },
+      {
+        "id": "surrounding-ui-announces",
+        "level": "must",
+        "statement": "Changing status that must be announced is the surrounding UI's job."
+      }
     ]
   },
   "rationale": [

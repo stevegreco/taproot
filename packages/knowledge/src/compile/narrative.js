@@ -187,13 +187,12 @@ function resolveBodyUrl(url, context, allowBundlePath = false) {
     return { kind: "error" };
   }
 
-  // Existing HTML may already use bundle-relative paths. Resolve only known targets.
-  if (allowBundlePath) {
-    for (const id of context.recordIdByPath.values()) {
-      if (pathPart === `markdown/${id}.md`) {
-        return { kind: "ok", url, reference: { kind: "record", target: id } };
-      }
+  for (const id of context.recordIdByPath.values()) {
+    if (pathPart === `markdown/${id}.md`) {
+      return { kind: "ok", url, reference: { kind: "record", target: id } };
     }
+  }
+  if (allowBundlePath) {
     for (const target of context.assetPathToBundlePath.values()) {
       if (pathPart === target) {
         return { kind: "ok", url, reference: { kind: "asset", target } };

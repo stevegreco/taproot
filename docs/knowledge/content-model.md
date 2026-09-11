@@ -5,31 +5,37 @@
 ## Design goals
 
 The content model must work as readable source material in Git, deterministic build input, and a
-portable retrieval format. Narrative guidance uses Markdown. Facts that agents need to filter,
-validate, or connect use structured metadata.
+portable retrieval format. Component records that publish a contract are authored as YAML specs.
+Cross-cutting narrative guidance uses Markdown. Facts that agents need to filter, validate, or
+connect use structured metadata.
 
 The model favors small records connected by explicit relationships over one large document. A
 consumer can retrieve a focused answer and follow its relationships when it needs more context.
 
-A compiled record can combine an authored Markdown record with structured domain sources. For
-example, `component.button` authors its narrative guidance and, when it publishes one, its
-host-neutral `contract` in the same Markdown file. The compiler copies authored fields verbatim
-and composes each source kind into a reserved namespace. It does not flat-merge source fields into
-`title`, `summary`, or `status` (KNOW-002, KNOW-008).
+A compiled record can combine an authored YAML or Markdown record with structured domain sources.
+For example, `component.button` authors its host-neutral `contract` in `button.spec.yaml`. The
+compiler copies authored fields verbatim, generates a compiled body from the contract when the
+YAML file omits one, and composes each source kind into a reserved namespace. It does not
+flat-merge source fields into `title`, `summary`, or `status` (KNOW-002, KNOW-008).
 
 ## Record types
 
 ### Component
 
-The narrative hub for a design system component. When a portable contract exists, the component
-authors it as `contract`. That object has usage, anatomy, parameters, optional configuration
-axes, events, states, behavior, accessibility, optional rationale, and optional visual mappings.
-A mapping row names an anatomy
+The narrative hub for a design system component. Button and Badge are authored as
+`*.spec.yaml` files that own metadata, relationships, provenance, token references, and the
+portable `contract`. That object has usage, optional content rules, anatomy, parameters, optional
+configuration axes, events, states, behavior rules, accessibility, optional rationale, and optional
+visual mappings. Usage entries have stable IDs, a `situation`, and optional `instead` and `why`.
+Rules share a vocabulary with stable IDs, obligation levels (`must`, `should`, `may`), a statement,
+and optional applicability, rationale, record references, and `examples.do` / `examples.avoid`.
+IDs are unique within the contract. Rule `references` are dotted record IDs, not plain-language
+alternatives such as Link. A mapping row names an anatomy
 part, visual channel, configuration, state, and either a token name or a closed literal
 (`transparent`, `inherit`, `none`). Token names may be semantic, primitive, or component. Media-query
 axes such as `prefersReducedMotion` live in `configurationAxes`, not in the compiler. The
 contract has no `tagName`, slots, parts, attribute spellings, or DOM types.
-Host identity is not authored here. A later component may omit `contract`.
+Host identity is not authored here. A later component may omit `contract` and may still be Markdown.
 
 Examples: Button, Badge.
 
@@ -102,10 +108,17 @@ and one verifiable requirement. Example records can add structured `assets` and 
 schema. It uses JSON Schema 2020-12 so non-JavaScript consumers can validate the same records.
 Schema version `1` fixes the current field vocabulary and dotted ID format.
 
-The package exports `parseRecord(markdown, { sourcePath })`. It parses YAML frontmatter, adds the
-trimmed Markdown body, validates the complete authored record, and returns one flat object. Invalid
-input throws a path-aware `KnowledgeRecordError`. `sourcePath` is provenance for the authored
-source, not a format discriminator: the same bytes parse under `markdown/<id>.md` or an authored
+The package exports `parseRecord(markdown, { sourcePath })` for Markdown records and
+`parseYamlRecord(yaml, { sourcePath })` for `*.spec.yaml` component records.
+`parseAuthoredRecord(text, { sourcePath })` selects the parser from the path suffix. It does not
+infer `id` or `type` from the filename. `parseRecord` parses YAML frontmatter, adds the
+trimmed Markdown body, validates the complete authored record, and returns one flat object. YAML
+specs omit `body`; the compiler generates compiled Markdown from the structured record.
+Invalid
+input throws a path-aware `KnowledgeRecordError`. Duplicate YAML keys fail. `sourcePath` is
+provenance for the authored
+source, not a format discriminator: the same Markdown bytes parse under `markdown/<id>.md` or an
+authored
 filename when identity frontmatter plus defaults satisfy the authored schema. Compiled Markdown is
 still not a round-trip for `contract`, `host`, or `checks`. Identity-only frontmatter still
 parses; `parseRecord` fills `schemaVersion`, `relations`, and `sources`.
@@ -126,10 +139,20 @@ to compiled output. The authored schema stays `unevaluatedProperties: false`.
 
 ## Proposed authored format
 
-Cross-cutting knowledge uses Markdown with YAML frontmatter. `parseRecord` fills `schemaVersion` as
+Cross-cutting knowledge uses Markdown with YAML frontmatter. Component records that publish a
+contract use YAML specs:
+
+```text
+packages/knowledge/content/components/
+  button/button.spec.yaml
+  badge/badge.spec.yaml
+```
+
+`parseRecord` fills `schemaVersion` as
 `1`, empty `relations`, and an `authored` source path from the file. The compiler fills omitted
 `visibility` from the content root that listed the file. Authors still write `id`, `type`, `title`,
-`summary`, `status`, `jobs`, `tags`, and `body`. Folder names do not set `id` or `type`.
+`summary`, `status`, `jobs`, `tags`, and, for Markdown, `body`. YAML component specs omit `body`.
+Folder names do not set `id` or `type`.
 
 ```markdown
 ---
@@ -264,7 +287,7 @@ authored paths or existing bundle paths; unknown local destinations fail the bui
 
 A source entry identifies how a record was produced:
 
-- `authored`: Markdown maintained directly as knowledge;
+- `authored`: Markdown or YAML maintained directly as knowledge;
 - `token-source`: token definition or generated token artifact;
 - `adr`: accepted decision owned by its domain package; or
 - `generated`: deterministic output from another declared source.
@@ -273,8 +296,10 @@ An authored record declares exactly one `kind: authored` source. That path must 
 compiler is parsing. A second authored source is invalid. A missing or mismatched authored path
 fails the build. Each compiled `revision` is a digest of the bytes at that entry's declared path.
 
-A component's portable `contract` is authored in the same Markdown file. Its provenance is that
-`kind: authored` source. There is no separate contract-source field.
+A component's portable `contract` is authored in the component record. For YAML specs that is the
+`.spec.yaml` file. Its provenance is that `kind: authored` source. There is no separate
+contract-source field. Compiled `bodyOrigin` records whether the readable body was authored or
+generated from the structured record.
 
 Generated records include source paths and source revisions in their compiled metadata. The build
 must not silently treat generated output as authored truth.
@@ -358,7 +383,8 @@ The compiler writes two views of each assembled record.
   compiled owner of structured fields, including `contract`, `host`, `checks`, and `tokens`.
 - Markdown view: `markdown/<id>.md`. Frontmatter is identity and discovery (`id`, `jobs`,
   `status`, `summary`, `tags`, `title`, `type`, `visibility`). The body is the rewritten
-  narrative. The file is not a round-trip for `parseRecord`. Record-view bodies keep
+  narrative, authored for Markdown records and generated from the contract for YAML-only
+  components. The file is not a round-trip for `parseRecord`. Record-view bodies keep
   bundle-root-relative destinations (`markdown/<id>.md`, `assets/...`) so documentation can rewrite
   them. Emitted Markdown files rewrite those same destinations relative to the containing file
   (`<id>.md`, `../assets/...`). Links to other records are narrative cross-references, not
@@ -370,9 +396,9 @@ The compiler writes two views of each assembled record.
 The manifest `content` block records the schema version, compiled schema version, bundle
 visibility, knowledge version, design system version, record count, and per-file hashes. The
 digest hashes that block. Build time and git revision live in `manifest.build` and are not part
-of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `6` because
-compiled contracts carry `stateResolution` and expand `visuals` into `mappings`. Bundles
-whose compiled schema version is not 6 fail closed. The compiler always projects the internal
+of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `7` because
+compiled records carry `bodyOrigin` and contracts use structured usage IDs and rules. Bundles
+whose compiled schema version is not 7 fail closed. Portable `specVersion` is 5. The compiler always projects the internal
 bundle for validation and writes it only when internal content is configured. An internal bundle may contain only public
 records; visibility is the declared projection, not a guess from record contents.
 

@@ -27,11 +27,26 @@ test("button slice variants and api come from the public catalog contract", () =
   );
   assert.match(
     slice.introMarkdown,
-    /Use a link for navigation/,
-    "intro uses the component record body",
+    /Use Link instead/,
+    "intro uses usage guidance from the compiled contract",
+  );
+  assert.match(
+    slice.introMarkdown,
+    /### When to avoid\n\n- /,
+    "avoid items keep negation framing as a heading plus list the docs renderer can parse",
+  );
+  assert.doesNotMatch(
+    slice.introMarkdown,
+    /Triggers an action or submits or resets a form\.\n\nNavigate to another location/,
+    "avoid items are not bare intro paragraphs",
   );
   assert.match(slice.behaviorMarkdown, /Write the label/, "label guidance sits with usage");
   assert.match(slice.behaviorMarkdown, /type="submit"/, "form behavior stays with usage");
+  assert.match(
+    slice.behaviorMarkdown,
+    /action hierarchy pattern\]\(#using-together\)/,
+    "content rule references rewrite to in-page pattern anchors",
+  );
   assert.ok(
     slice.api.some((row) => row.name === "aria-label"),
     "api includes the aria-label attribute from the contract",
@@ -129,7 +144,7 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
   );
   assert.deepEqual(
     slice.accessibility.requirements,
-    record.contract.accessibility.requirements,
+    record.contract.accessibility.requirements.map((item) => item.statement),
     "accessibility tracks the compiled contract",
   );
   assert.equal(

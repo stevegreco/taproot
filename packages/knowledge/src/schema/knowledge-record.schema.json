@@ -3,7 +3,7 @@
   "$id": "urn:stevegreco:design-system:knowledge-record:1",
   "title": "Authored knowledge record",
   "type": "object",
-  "required": ["id", "type", "title", "summary", "status", "jobs", "tags", "body"],
+  "required": ["id", "type", "title", "summary", "status", "jobs", "tags"],
   "properties": {
     "id": { "$ref": "#/$defs/dottedId" },
     "schemaVersion": { "type": "integer", "const": 1 },
@@ -186,7 +186,7 @@
       "additionalProperties": false
     },
     "portableContract": {
-      "$ref": "urn:stevegreco:design-system:portable-contract:4"
+      "$ref": "urn:stevegreco:design-system:portable-contract:5"
     },
     "hostBinding": {
       "$ref": "urn:stevegreco:design-system:host-binding:1"

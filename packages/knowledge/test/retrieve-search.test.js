@@ -85,11 +85,24 @@ test("compiled contract host and checks are searchable", async () => {
   const pressedIds = catalog.search("pressed").map((hit) => hit.record.id);
   const tagIds = catalog.search("ds-button").map((hit) => hit.record.id);
 
+  const clickHereIds = catalog.search("click here").map((hit) => hit.record.id);
+  const liveRegionIds = catalog.search("live-region").map((hit) => hit.record.id);
+
   assert.equal(fullWidthIds.includes("component.button"), true);
   assert.equal(fullWidthIds.includes("spec.button"), false);
   assert.equal(accessibleNameIds.includes("component.button"), true);
   assert.equal(pressedIds.includes("component.button"), true);
   assert.equal(tagIds.includes("binding.button.web-component"), true);
+  assert.equal(
+    clickHereIds.includes("component.button"),
+    true,
+    "usage and rule examples are searchable",
+  );
+  assert.equal(
+    liveRegionIds.includes("component.badge"),
+    true,
+    "accessibility rules are searchable",
+  );
   assert.deepEqual(catalog.search("guideline"), []);
 });
 

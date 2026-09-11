@@ -533,7 +533,11 @@ function projectAccessibility(value: unknown, id: string): AccessibilitySection 
       })
     : [];
   const requirements = Array.isArray(value.requirements)
-    ? value.requirements.filter((item): item is string => typeof item === "string")
+    ? value.requirements.flatMap((item) => {
+        if (typeof item === "string") return [item];
+        if (isObject(item) && typeof item.statement === "string") return [item.statement];
+        return [];
+      })
     : [];
   return { keyboard, requirements };
 }
@@ -583,21 +587,72 @@ function projectReview(record: Record<string, unknown>): ReviewSection {
 }
 
 function projectIntro(
-  body: string,
+  record: Record<string, unknown>,
   implementationBody: string,
   digest: string,
 ): { introMarkdown: string; behaviorMarkdown: string } {
-  const { preamble, sections } = markdownByHeading(rewriteBundleUrls(body, digest));
-  const label = sections.get("write the label");
+  const contract = isObject(record.contract) ? record.contract : {};
+  const introParts = [asString(contract.description)];
+  const usage = isObject(contract.usage) ? contract.usage : {};
+  const avoid = Array.isArray(usage.avoid) ? usage.avoid : [];
+  const avoidLines: string[] = [];
+  for (const item of avoid) {
+    if (!isObject(item)) continue;
+    const situation = asString(item.situation);
+    const instead = asString(item.instead);
+    const why = asString(item.why);
+    const line = [situation, instead ? `Use ${instead} instead.` : "", why]
+      .filter((part) => part.length > 0)
+      .join(" ");
+    if (line.length > 0) avoidLines.push(`- ${line}`);
+  }
+  if (avoidLines.length > 0) {
+    introParts.push(`### When to avoid\n\n${avoidLines.join("\n")}`);
+  }
+
+  const contentRules = Array.isArray(contract.content) ? contract.content : [];
+  const contentBlocks = contentRules.flatMap((rule) => {
+    if (!isObject(rule)) return [];
+    const level = asString(rule.level);
+    const statement = asString(rule.statement);
+    const lines = [level ? `- **${level}:** ${statement}` : `- ${statement}`];
+    if (typeof rule.applicability === "string" && rule.applicability.length > 0) {
+      lines.push(`Applies when: ${rule.applicability}`);
+    }
+    if (typeof rule.rationale === "string" && rule.rationale.length > 0) {
+      lines.push(`Why: ${rule.rationale}`);
+    }
+    const references = Array.isArray(rule.references) ? rule.references : [];
+    for (const reference of references) {
+      if (!isObject(reference)) continue;
+      const id = asString(reference.id);
+      if (!id) continue;
+      const fragment = asString(reference.fragment);
+      const hash = fragment ? `#${fragment}` : "";
+      const label = id === "pattern.action-hierarchy" ? "action hierarchy pattern" : id;
+      lines.push(`See [${label}](markdown/${id}.md${hash}).`);
+    }
+    const examples = isObject(rule.examples) ? rule.examples : {};
+    const doExamples = Array.isArray(examples.do)
+      ? examples.do.filter((example): example is string => typeof example === "string")
+      : [];
+    const avoidExamples = Array.isArray(examples.avoid)
+      ? examples.avoid.filter((example): example is string => typeof example === "string")
+      : [];
+    if (doExamples.length > 0) lines.push(`Do: ${doExamples.join("; ")}.`);
+    if (avoidExamples.length > 0) lines.push(`Avoid: ${avoidExamples.join("; ")}.`);
+    return [lines.join("\n")];
+  });
+  const label =
+    contentBlocks.length > 0
+      ? rewriteBundleUrls(`### Write the label\n\n${contentBlocks.join("\n\n")}`, digest)
+      : "";
   const form = markdownByHeading(rewriteBundleUrls(implementationBody, digest)).sections.get(
     "set form behavior deliberately",
   );
   return {
-    introMarkdown: preamble,
-    behaviorMarkdown: [
-      label ? `### Write the label\n\n${label}` : "",
-      form ? `### Forms\n\n${form}` : "",
-    ]
+    introMarkdown: introParts.filter((part) => part.length > 0).join("\n\n"),
+    behaviorMarkdown: [label, form ? `### Forms\n\n${form}` : ""]
       .filter((part) => part.length > 0)
       .join("\n\n"),
   };
@@ -675,11 +730,7 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     parameters,
     patternGuidanceByVariant(patternBody),
   );
-  const { introMarkdown, behaviorMarkdown } = projectIntro(
-    asString(record.body),
-    implementationBody,
-    digest,
-  );
+  const { introMarkdown, behaviorMarkdown } = projectIntro(record, implementationBody, digest);
   const avoid = bulletItems(markdownByHeading(patternBody).sections.get("avoid") ?? "");
 
   const together =

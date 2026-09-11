@@ -29,7 +29,7 @@ test("a copied dist/public compiles authored and compiled schemas without reposi
   }
 
   const authored = ajv.getSchema("urn:stevegreco:design-system:knowledge-record:1");
-  const compiled = ajv.getSchema("urn:stevegreco:design-system:compiled-knowledge-record:3");
+  const compiled = ajv.getSchema("urn:stevegreco:design-system:compiled-knowledge-record:4");
   assert.equal(typeof authored, "function");
   assert.equal(typeof compiled, "function");
 

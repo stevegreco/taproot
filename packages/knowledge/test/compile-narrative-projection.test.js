@@ -69,7 +69,7 @@ test("parseRecord does not treat markdown/<id>.md as a special format", async ()
   assert.equal(Object.hasOwn(fromCompiledPath, "contract"), false);
   assert.deepEqual(fromCompiledPath.sources, [{ kind: "authored", path: compiledPath }]);
 
-  const authoredPath = "packages/knowledge/content/components/button.md";
+  const authoredPath = "packages/knowledge/content/components/button/button.spec.yaml";
   const parsed = parseRecord(markdown, { sourcePath: authoredPath });
   assert.equal(parsed.id, "component.button");
   assert.equal(parsed.visibility, "public");

@@ -1,6 +1,6 @@
 import { readdir, readFile } from "node:fs/promises";
 import path, { join } from "node:path";
-import { KnowledgeRecordError, parseRecord } from "../index.js";
+import { KnowledgeRecordError, parseAuthoredRecord } from "../index.js";
 import {
   allowedPrefixes,
   isLexicallyAllowed,
@@ -73,7 +73,7 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
 
       let authored;
       try {
-        authored = parseRecord(text, { sourcePath: repoPath });
+        authored = parseAuthoredRecord(text, { sourcePath: repoPath });
       } catch (error) {
         if (error instanceof KnowledgeRecordError) {
           const typedPaths = new Set(
