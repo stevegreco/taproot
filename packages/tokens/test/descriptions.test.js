@@ -19,7 +19,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import StyleDictionary from "style-dictionary";
-import { THEMES, semanticConfig } from "../style-dictionary.config.js";
+import { THEMES, semanticConfig, semanticDescriptionSources } from "../style-dictionary.config.js";
 import { flatten } from "../src/flatten.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -53,22 +53,17 @@ function describedTokens(node, parts = [], out = { tokens: [], groups: [] }) {
   return out;
 }
 
-const themeSource = (theme) => read(`src/tokens/semantic/${theme}.tokens.json`);
-const typography = read("src/tokens/semantic/typography.tokens.json");
-const shape = read("src/tokens/semantic/shape.tokens.json");
+const sourcesFor = (theme) => semanticDescriptionSources(theme).map(read);
 
 const forTheme = (theme) => {
-  const colour = describedTokens(themeSource(theme));
-  const recipes = describedTokens(typography);
-  const radii = describedTokens(shape);
+  const described = sourcesFor(theme).map((sourceFile) => describedTokens(sourceFile));
   return {
     tokens: new Map(
-      [...colour.tokens, ...recipes.tokens, ...radii.tokens].map(([path, description, type]) => [
-        path,
-        { description, type },
-      ]),
+      described.flatMap(({ tokens }) =>
+        tokens.map(([path, description, type]) => [path, { description, type }]),
+      ),
     ),
-    groups: [...colour.groups, ...recipes.groups, ...radii.groups],
+    groups: described.flatMap(({ groups }) => groups),
   };
 };
 
@@ -188,11 +183,7 @@ function semanticLeaves(node, parts = [], out = [], inherited = null) {
 
 test("every semantic token is published in semantic.meta.json", () => {
   const meta = read("dist/tokens/semantic.meta.json");
-  const source = new Map([
-    ...semanticLeaves(themeSource("light")),
-    ...semanticLeaves(typography),
-    ...semanticLeaves(shape),
-  ]);
+  const source = new Map(sourcesFor("light").flatMap((sourceFile) => semanticLeaves(sourceFile)));
 
   assert.deepEqual(
     Object.keys(meta).sort(),

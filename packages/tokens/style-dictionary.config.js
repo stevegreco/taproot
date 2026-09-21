@@ -1,7 +1,29 @@
 export const THEMES = ["light", "dark"];
 
+export const PRIMITIVES_SOURCE = "src/tokens/primitives.tokens.json";
+
+export function semanticThemeSource(theme) {
+  return `src/tokens/semantic/${theme}.tokens.json`;
+}
+
+// Shared by semanticConfig, the meta format, and descriptions.test.js.
+// A new semantic file belongs here, so the build and the group-description
+// check see it together.
+export const SHARED_SEMANTIC_SOURCES = [
+  "src/tokens/semantic/shape.tokens.json",
+  "src/tokens/semantic/typography.tokens.json",
+];
+
+export function semanticDescriptionSources(theme) {
+  return [semanticThemeSource(theme), ...SHARED_SEMANTIC_SOURCES];
+}
+
+export function semanticSources(theme) {
+  return [PRIMITIVES_SOURCE, ...semanticDescriptionSources(theme)];
+}
+
 export const primitivesConfig = {
-  source: ["src/tokens/primitives.tokens.json"],
+  source: [PRIMITIVES_SOURCE],
   platforms: {
     css: {
       transformGroup: "css",
@@ -54,12 +76,7 @@ export function semanticConfig(theme) {
   }
 
   return {
-    source: [
-      "src/tokens/primitives.tokens.json",
-      `src/tokens/semantic/${theme}.tokens.json`,
-      "src/tokens/semantic/shape.tokens.json",
-      "src/tokens/semantic/typography.tokens.json",
-    ],
+    source: semanticSources(theme),
     platforms: {
       css: {
         transformGroup: "css",
@@ -92,13 +109,7 @@ export function semanticConfig(theme) {
   };
 }
 
-const componentSources = [
-  "src/tokens/primitives.tokens.json",
-  "src/tokens/semantic/light.tokens.json",
-  "src/tokens/semantic/shape.tokens.json",
-  "src/tokens/semantic/typography.tokens.json",
-  "src/tokens/components/*.tokens.json",
-];
+const componentSources = [...semanticSources("light"), "src/tokens/components/*.tokens.json"];
 
 // Component files are discovered as a group so adding a contract does not
 // require build-configuration changes. The source-alias test verifies every

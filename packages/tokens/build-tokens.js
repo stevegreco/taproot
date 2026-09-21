@@ -1,18 +1,14 @@
 import StyleDictionary from "style-dictionary";
 import { readFileSync } from "node:fs";
 import { copyFile, mkdir } from "node:fs/promises";
-import { getAllConfigs } from "./style-dictionary.config.js";
+import { getAllConfigs, semanticDescriptionSources } from "./style-dictionary.config.js";
 
 // Style Dictionary drops a $description that sits on a group, so the format
-// cannot read recipe prose off the token. Walk the source and remember the
-// nearest described ancestor for each leaf.
+// cannot read recipe prose off the token. Walk the same semantic sources the
+// light build uses and remember the nearest described ancestor for each leaf.
 function groupDescriptionByLeaf() {
   const map = new Map();
-  const files = [
-    "src/tokens/semantic/light.tokens.json",
-    "src/tokens/semantic/shape.tokens.json",
-    "src/tokens/semantic/typography.tokens.json",
-  ];
+  const files = semanticDescriptionSources("light");
 
   const walk = (node, parts, inherited) => {
     for (const [key, value] of Object.entries(node)) {
