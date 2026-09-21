@@ -17,6 +17,7 @@ export const DIST = {
   primitives: join(ROOT, "dist/tokens/primitives.json"),
   semanticLight: join(ROOT, "dist/tokens/semantic.light.json"),
   semanticDark: join(ROOT, "dist/tokens/semantic.dark.json"),
+  semanticMeta: join(ROOT, "dist/tokens/semantic.meta.json"),
   components: join(ROOT, "dist/tokens/components.json"),
 };
 

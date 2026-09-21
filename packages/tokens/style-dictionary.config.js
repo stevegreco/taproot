@@ -75,6 +75,17 @@ export function semanticConfig(theme) {
             format: "json/nested",
             filter: (token) => token.path[0] === "semantic",
           },
+          // Descriptions are identical across themes. Emit the map once, from
+          // light, so the dark build cannot overwrite it with a second copy.
+          ...(theme === "light"
+            ? [
+                {
+                  destination: "semantic.meta.json",
+                  format: "json/semantic-meta",
+                  filter: (token) => token.path[0] === "semantic",
+                },
+              ]
+            : []),
         ],
       },
     },

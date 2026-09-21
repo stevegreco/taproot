@@ -3,80 +3,280 @@
     "typography": {
       "heading": {
         "large": {
-          "fontFamily": { "$value": "{primitives.font.display}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.2xl}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.tight}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.tight}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.display}",
+            "$type": "fontFamily",
+            "$description": "Primary page and major region headings"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.2xl}",
+            "$type": "dimension",
+            "$description": "Primary page and major region headings"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.medium}",
+            "$type": "fontWeight",
+            "$description": "Primary page and major region headings"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.tight}",
+            "$type": "number",
+            "$description": "Primary page and major region headings"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.tight}",
+            "$type": "dimension",
+            "$description": "Primary page and major region headings"
+          }
         },
         "default": {
-          "fontFamily": { "$value": "{primitives.font.display}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.xl}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.snug}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.snug}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.display}",
+            "$type": "fontFamily",
+            "$description": "Standard section and card headings"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.xl}",
+            "$type": "dimension",
+            "$description": "Standard section and card headings"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.medium}",
+            "$type": "fontWeight",
+            "$description": "Standard section and card headings"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.snug}",
+            "$type": "number",
+            "$description": "Standard section and card headings"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.snug}",
+            "$type": "dimension",
+            "$description": "Standard section and card headings"
+          }
         },
         "small": {
-          "fontFamily": { "$value": "{primitives.font.display}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.lg}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.snug}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.snug}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.display}",
+            "$type": "fontFamily",
+            "$description": "Compact headings within dense surfaces"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.lg}",
+            "$type": "dimension",
+            "$description": "Compact headings within dense surfaces"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.medium}",
+            "$type": "fontWeight",
+            "$description": "Compact headings within dense surfaces"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.snug}",
+            "$type": "number",
+            "$description": "Compact headings within dense surfaces"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.snug}",
+            "$type": "dimension",
+            "$description": "Compact headings within dense surfaces"
+          }
         }
       },
       "body": {
         "default": {
-          "fontFamily": { "$value": "{primitives.font.sans}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.base}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.regular}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.normal}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.normal}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.sans}",
+            "$type": "fontFamily",
+            "$description": "Default interface copy and prose"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.base}",
+            "$type": "dimension",
+            "$description": "Default interface copy and prose"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.regular}",
+            "$type": "fontWeight",
+            "$description": "Default interface copy and prose"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.normal}",
+            "$type": "number",
+            "$description": "Default interface copy and prose"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.normal}",
+            "$type": "dimension",
+            "$description": "Default interface copy and prose"
+          }
         },
         "small": {
-          "fontFamily": { "$value": "{primitives.font.sans}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.sm}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.regular}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.normal}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.normal}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.sans}",
+            "$type": "fontFamily",
+            "$description": "Supporting copy, descriptions, and compact interface text"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.sm}",
+            "$type": "dimension",
+            "$description": "Supporting copy, descriptions, and compact interface text"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.regular}",
+            "$type": "fontWeight",
+            "$description": "Supporting copy, descriptions, and compact interface text"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.normal}",
+            "$type": "number",
+            "$description": "Supporting copy, descriptions, and compact interface text"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.normal}",
+            "$type": "dimension",
+            "$description": "Supporting copy, descriptions, and compact interface text"
+          }
         }
       },
       "label": {
         "default": {
-          "fontFamily": { "$value": "{primitives.font.sans}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.sm}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.snug}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.normal}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.sans}",
+            "$type": "fontFamily",
+            "$description": "Control labels, buttons, tabs, and prominent metadata"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.sm}",
+            "$type": "dimension",
+            "$description": "Control labels, buttons, tabs, and prominent metadata"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.medium}",
+            "$type": "fontWeight",
+            "$description": "Control labels, buttons, tabs, and prominent metadata"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.snug}",
+            "$type": "number",
+            "$description": "Control labels, buttons, tabs, and prominent metadata"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.normal}",
+            "$type": "dimension",
+            "$description": "Control labels, buttons, tabs, and prominent metadata"
+          }
         },
         "small": {
-          "fontFamily": { "$value": "{primitives.font.sans}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.xs}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.snug}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.normal}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.sans}",
+            "$type": "fontFamily",
+            "$description": "Badges, compact metadata, and space-constrained labels"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.xs}",
+            "$type": "dimension",
+            "$description": "Badges, compact metadata, and space-constrained labels"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.medium}",
+            "$type": "fontWeight",
+            "$description": "Badges, compact metadata, and space-constrained labels"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.snug}",
+            "$type": "number",
+            "$description": "Badges, compact metadata, and space-constrained labels"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.normal}",
+            "$type": "dimension",
+            "$description": "Badges, compact metadata, and space-constrained labels"
+          }
         }
       },
       "eyebrow": {
-        "fontFamily": { "$value": "{primitives.font.sans}", "$type": "fontFamily" },
-        "fontSize": { "$value": "{primitives.text.xs}", "$type": "dimension" },
-        "fontWeight": { "$value": "{primitives.weight.medium}", "$type": "fontWeight" },
-        "lineHeight": { "$value": "{primitives.leading.snug}", "$type": "number" },
-        "letterSpacing": { "$value": "{primitives.tracking.caps}", "$type": "dimension" }
+        "fontFamily": {
+          "$value": "{primitives.font.sans}",
+          "$type": "fontFamily",
+          "$description": "Short contextual text that introduces a following heading"
+        },
+        "fontSize": {
+          "$value": "{primitives.text.xs}",
+          "$type": "dimension",
+          "$description": "Short contextual text that introduces a following heading"
+        },
+        "fontWeight": {
+          "$value": "{primitives.weight.medium}",
+          "$type": "fontWeight",
+          "$description": "Short contextual text that introduces a following heading"
+        },
+        "lineHeight": {
+          "$value": "{primitives.leading.snug}",
+          "$type": "number",
+          "$description": "Short contextual text that introduces a following heading"
+        },
+        "letterSpacing": {
+          "$value": "{primitives.tracking.caps}",
+          "$type": "dimension",
+          "$description": "Short contextual text that introduces a following heading"
+        }
       },
       "code": {
         "default": {
-          "fontFamily": { "$value": "{primitives.font.mono}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.sm}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.regular}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.normal}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.normal}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.mono}",
+            "$type": "fontFamily",
+            "$description": "Code blocks and technical values"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.sm}",
+            "$type": "dimension",
+            "$description": "Code blocks and technical values"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.regular}",
+            "$type": "fontWeight",
+            "$description": "Code blocks and technical values"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.normal}",
+            "$type": "number",
+            "$description": "Code blocks and technical values"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.normal}",
+            "$type": "dimension",
+            "$description": "Code blocks and technical values"
+          }
         },
         "small": {
-          "fontFamily": { "$value": "{primitives.font.mono}", "$type": "fontFamily" },
-          "fontSize": { "$value": "{primitives.text.xs}", "$type": "dimension" },
-          "fontWeight": { "$value": "{primitives.weight.regular}", "$type": "fontWeight" },
-          "lineHeight": { "$value": "{primitives.leading.normal}", "$type": "number" },
-          "letterSpacing": { "$value": "{primitives.tracking.normal}", "$type": "dimension" }
+          "fontFamily": {
+            "$value": "{primitives.font.mono}",
+            "$type": "fontFamily",
+            "$description": "Inline code and compact technical metadata"
+          },
+          "fontSize": {
+            "$value": "{primitives.text.xs}",
+            "$type": "dimension",
+            "$description": "Inline code and compact technical metadata"
+          },
+          "fontWeight": {
+            "$value": "{primitives.weight.regular}",
+            "$type": "fontWeight",
+            "$description": "Inline code and compact technical metadata"
+          },
+          "lineHeight": {
+            "$value": "{primitives.leading.normal}",
+            "$type": "number",
+            "$description": "Inline code and compact technical metadata"
+          },
+          "letterSpacing": {
+            "$value": "{primitives.tracking.normal}",
+            "$type": "dimension",
+            "$description": "Inline code and compact technical metadata"
+          }
         }
       }
     }
