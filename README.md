@@ -133,6 +133,12 @@ theme whose resolved values you need.
 import semantic from "@stevegreco/design-system/tokens/semantic-dark";
 ```
 
+Descriptions are theme-independent. Import the meta file to read every semantic token's type and purpose. `description` is the token's own purpose, or null when none has been written. `groupDescription` is the purpose of a parent group, used by typography recipes, or null when the token has no described group.
+
+```js
+import semanticMeta from "@stevegreco/design-system/tokens/semantic-meta";
+```
+
 The CSS build needs no such split: `dist/css/tokens.css` carries both themes and swaps at runtime.
 
 ## Build outputs
@@ -143,6 +149,7 @@ The CSS build needs no such split: `dist/css/tokens.css` carries both themes and
 | `dist/tokens/primitives.json`     | Raw primitive scale values                            |
 | `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme              |
 | `dist/tokens/semantic.dark.json`  | Resolved semantic tokens for dark theme               |
+| `dist/tokens/semantic.meta.json`  | Type and purpose for every semantic token             |
 | `dist/tokens/components.json`     | Theme-independent references to shared tokens         |
 
 ## Building from source

@@ -88,8 +88,16 @@ const PAIRS = [
     ],
   ]),
 
-  // Quiet status surfaces and their explicit content/border roles
+  // Quiet status surfaces. foreground.default's description says it is
+  // supported here, so that pairing is part of the contract, alongside the
+  // explicit status content and border roles.
   ...["success", "danger", "warning", "info"].flatMap((s) => [
+    [
+      "color.foreground.default",
+      `color.background.status.${s}.default`,
+      TEXT,
+      `body text on quiet ${s} status`,
+    ],
     [
       `color.foreground.status.${s}.default`,
       `color.background.status.${s}.default`,

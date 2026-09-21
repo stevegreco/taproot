@@ -21,6 +21,7 @@
     "./tokens/primitives": "./dist/tokens/primitives.json",
     "./tokens/semantic-light": "./dist/tokens/semantic.light.json",
     "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
+    "./tokens/semantic-meta": "./dist/tokens/semantic.meta.json",
     "./tokens/components": "./dist/tokens/components.json",
     "./read-tokens": "./dist/read-tokens.js",
     "./flatten": "./dist/flatten.js"

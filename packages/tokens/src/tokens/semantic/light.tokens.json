@@ -2,11 +2,31 @@
   "semantic": {
     "color": {
       "background": {
-        "default": { "$value": "{primitives.color.clay.50}", "$type": "color" },
-        "surface": { "$value": "{primitives.color.gray.25}", "$type": "color" },
-        "sunken": { "$value": "{primitives.color.clay.100}", "$type": "color" },
-        "muted": { "$value": "{primitives.color.blueSmoke.100}", "$type": "color" },
-        "disabled": { "$value": "{primitives.color.gray.100}", "$type": "color" },
+        "default": {
+          "$value": "{primitives.color.clay.50}",
+          "$type": "color",
+          "$description": "Page or application background"
+        },
+        "surface": {
+          "$value": "{primitives.color.gray.25}",
+          "$type": "color",
+          "$description": "Cards, panels, popovers, and containing surfaces"
+        },
+        "sunken": {
+          "$value": "{primitives.color.clay.100}",
+          "$type": "color",
+          "$description": "Wells, inset regions, and grouped control beds"
+        },
+        "muted": {
+          "$value": "{primitives.color.blueSmoke.100}",
+          "$type": "color",
+          "$description": "Quiet supporting regions and low-emphasis fills"
+        },
+        "disabled": {
+          "$value": "{primitives.color.gray.100}",
+          "$type": "color",
+          "$description": "Unavailable control or action fill"
+        },
         "brand": {
           "default": { "$value": "{primitives.color.robRoy.700}", "$type": "color" },
           "muted": { "$value": "{primitives.color.robRoy.100}", "$type": "color" }
@@ -40,9 +60,21 @@
         }
       },
       "foreground": {
-        "default": { "$value": "{primitives.color.gray.950}", "$type": "color" },
-        "muted": { "$value": "{primitives.color.gray.600}", "$type": "color" },
-        "disabled": { "$value": "{primitives.color.gray.500}", "$type": "color" },
+        "default": {
+          "$value": "{primitives.color.gray.950}",
+          "$type": "color",
+          "$description": "Primary text and icons on supported foundation and quiet status backgrounds"
+        },
+        "muted": {
+          "$value": "{primitives.color.gray.600}",
+          "$type": "color",
+          "$description": "Secondary or supporting text and icons"
+        },
+        "disabled": {
+          "$value": "{primitives.color.gray.500}",
+          "$type": "color",
+          "$description": "Unavailable text and icons"
+        },
         "brand": {
           "default": { "$value": "{primitives.color.robRoy.700}", "$type": "color" }
         },
@@ -63,11 +95,31 @@
         }
       },
       "border": {
-        "default": { "$value": "{primitives.color.gray.500}", "$type": "color" },
-        "strong": { "$value": "{primitives.color.gray.600}", "$type": "color" },
-        "subtle": { "$value": "{primitives.color.gray.200}", "$type": "color" },
-        "disabled": { "$value": "{primitives.color.gray.300}", "$type": "color" },
-        "focus": { "$value": "{primitives.color.robRoy.700}", "$type": "color" },
+        "default": {
+          "$value": "{primitives.color.gray.500}",
+          "$type": "color",
+          "$description": "Standard functional boundary for controls and other perceivable regions"
+        },
+        "strong": {
+          "$value": "{primitives.color.gray.600}",
+          "$type": "color",
+          "$description": "Emphasized functional boundary"
+        },
+        "subtle": {
+          "$value": "{primitives.color.gray.200}",
+          "$type": "color",
+          "$description": "Decorative dividers and quiet surface edges"
+        },
+        "disabled": {
+          "$value": "{primitives.color.gray.300}",
+          "$type": "color",
+          "$description": "Unavailable control boundary"
+        },
+        "focus": {
+          "$value": "{primitives.color.robRoy.700}",
+          "$type": "color",
+          "$description": "Focus indicator, whether rendered as a border or an outline"
+        },
         "action": {
           "primary": {
             "default": { "$value": "{primitives.color.robRoy.700}", "$type": "color" },
