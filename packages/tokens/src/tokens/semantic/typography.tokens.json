@@ -3,279 +3,239 @@
     "typography": {
       "heading": {
         "large": {
+          "$description": "Primary page and major region headings",
           "fontFamily": {
             "$value": "{primitives.font.display}",
-            "$type": "fontFamily",
-            "$description": "Primary page and major region headings"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.2xl}",
-            "$type": "dimension",
-            "$description": "Primary page and major region headings"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.medium}",
-            "$type": "fontWeight",
-            "$description": "Primary page and major region headings"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.tight}",
-            "$type": "number",
-            "$description": "Primary page and major region headings"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.tight}",
-            "$type": "dimension",
-            "$description": "Primary page and major region headings"
+            "$type": "dimension"
           }
         },
         "default": {
+          "$description": "Standard section and card headings",
           "fontFamily": {
             "$value": "{primitives.font.display}",
-            "$type": "fontFamily",
-            "$description": "Standard section and card headings"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.xl}",
-            "$type": "dimension",
-            "$description": "Standard section and card headings"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.medium}",
-            "$type": "fontWeight",
-            "$description": "Standard section and card headings"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.snug}",
-            "$type": "number",
-            "$description": "Standard section and card headings"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.snug}",
-            "$type": "dimension",
-            "$description": "Standard section and card headings"
+            "$type": "dimension"
           }
         },
         "small": {
+          "$description": "Compact headings within dense surfaces",
           "fontFamily": {
             "$value": "{primitives.font.display}",
-            "$type": "fontFamily",
-            "$description": "Compact headings within dense surfaces"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.lg}",
-            "$type": "dimension",
-            "$description": "Compact headings within dense surfaces"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.medium}",
-            "$type": "fontWeight",
-            "$description": "Compact headings within dense surfaces"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.snug}",
-            "$type": "number",
-            "$description": "Compact headings within dense surfaces"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.snug}",
-            "$type": "dimension",
-            "$description": "Compact headings within dense surfaces"
+            "$type": "dimension"
           }
         }
       },
       "body": {
         "default": {
+          "$description": "Default interface copy and prose",
           "fontFamily": {
             "$value": "{primitives.font.sans}",
-            "$type": "fontFamily",
-            "$description": "Default interface copy and prose"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.base}",
-            "$type": "dimension",
-            "$description": "Default interface copy and prose"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.regular}",
-            "$type": "fontWeight",
-            "$description": "Default interface copy and prose"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.normal}",
-            "$type": "number",
-            "$description": "Default interface copy and prose"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.normal}",
-            "$type": "dimension",
-            "$description": "Default interface copy and prose"
+            "$type": "dimension"
           }
         },
         "small": {
+          "$description": "Supporting copy, descriptions, and compact interface text",
           "fontFamily": {
             "$value": "{primitives.font.sans}",
-            "$type": "fontFamily",
-            "$description": "Supporting copy, descriptions, and compact interface text"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.sm}",
-            "$type": "dimension",
-            "$description": "Supporting copy, descriptions, and compact interface text"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.regular}",
-            "$type": "fontWeight",
-            "$description": "Supporting copy, descriptions, and compact interface text"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.normal}",
-            "$type": "number",
-            "$description": "Supporting copy, descriptions, and compact interface text"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.normal}",
-            "$type": "dimension",
-            "$description": "Supporting copy, descriptions, and compact interface text"
+            "$type": "dimension"
           }
         }
       },
       "label": {
         "default": {
+          "$description": "Control labels, buttons, tabs, and prominent metadata",
           "fontFamily": {
             "$value": "{primitives.font.sans}",
-            "$type": "fontFamily",
-            "$description": "Control labels, buttons, tabs, and prominent metadata"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.sm}",
-            "$type": "dimension",
-            "$description": "Control labels, buttons, tabs, and prominent metadata"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.medium}",
-            "$type": "fontWeight",
-            "$description": "Control labels, buttons, tabs, and prominent metadata"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.snug}",
-            "$type": "number",
-            "$description": "Control labels, buttons, tabs, and prominent metadata"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.normal}",
-            "$type": "dimension",
-            "$description": "Control labels, buttons, tabs, and prominent metadata"
+            "$type": "dimension"
           }
         },
         "small": {
+          "$description": "Badges, compact metadata, and space-constrained labels",
           "fontFamily": {
             "$value": "{primitives.font.sans}",
-            "$type": "fontFamily",
-            "$description": "Badges, compact metadata, and space-constrained labels"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.xs}",
-            "$type": "dimension",
-            "$description": "Badges, compact metadata, and space-constrained labels"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.medium}",
-            "$type": "fontWeight",
-            "$description": "Badges, compact metadata, and space-constrained labels"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.snug}",
-            "$type": "number",
-            "$description": "Badges, compact metadata, and space-constrained labels"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.normal}",
-            "$type": "dimension",
-            "$description": "Badges, compact metadata, and space-constrained labels"
+            "$type": "dimension"
           }
         }
       },
       "eyebrow": {
+        "$description": "Short contextual text that introduces a following heading",
         "fontFamily": {
           "$value": "{primitives.font.sans}",
-          "$type": "fontFamily",
-          "$description": "Short contextual text that introduces a following heading"
+          "$type": "fontFamily"
         },
         "fontSize": {
           "$value": "{primitives.text.xs}",
-          "$type": "dimension",
-          "$description": "Short contextual text that introduces a following heading"
+          "$type": "dimension"
         },
         "fontWeight": {
           "$value": "{primitives.weight.medium}",
-          "$type": "fontWeight",
-          "$description": "Short contextual text that introduces a following heading"
+          "$type": "fontWeight"
         },
         "lineHeight": {
           "$value": "{primitives.leading.snug}",
-          "$type": "number",
-          "$description": "Short contextual text that introduces a following heading"
+          "$type": "number"
         },
         "letterSpacing": {
           "$value": "{primitives.tracking.caps}",
-          "$type": "dimension",
-          "$description": "Short contextual text that introduces a following heading"
+          "$type": "dimension"
         }
       },
       "code": {
         "default": {
+          "$description": "Code blocks and technical values",
           "fontFamily": {
             "$value": "{primitives.font.mono}",
-            "$type": "fontFamily",
-            "$description": "Code blocks and technical values"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.sm}",
-            "$type": "dimension",
-            "$description": "Code blocks and technical values"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.regular}",
-            "$type": "fontWeight",
-            "$description": "Code blocks and technical values"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.normal}",
-            "$type": "number",
-            "$description": "Code blocks and technical values"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.normal}",
-            "$type": "dimension",
-            "$description": "Code blocks and technical values"
+            "$type": "dimension"
           }
         },
         "small": {
+          "$description": "Inline code and compact technical metadata",
           "fontFamily": {
             "$value": "{primitives.font.mono}",
-            "$type": "fontFamily",
-            "$description": "Inline code and compact technical metadata"
+            "$type": "fontFamily"
           },
           "fontSize": {
             "$value": "{primitives.text.xs}",
-            "$type": "dimension",
-            "$description": "Inline code and compact technical metadata"
+            "$type": "dimension"
           },
           "fontWeight": {
             "$value": "{primitives.weight.regular}",
-            "$type": "fontWeight",
-            "$description": "Inline code and compact technical metadata"
+            "$type": "fontWeight"
           },
           "lineHeight": {
             "$value": "{primitives.leading.normal}",
-            "$type": "number",
-            "$description": "Inline code and compact technical metadata"
+            "$type": "number"
           },
           "letterSpacing": {
             "$value": "{primitives.tracking.normal}",
-            "$type": "dimension",
-            "$description": "Inline code and compact technical metadata"
+            "$type": "dimension"
           }
         }
       }

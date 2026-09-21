@@ -1,31 +1,39 @@
 // Authored intent per semantic role.
 //
-// DTCG puts `$description` on the token itself, beside `$value`: "An object with
-// a $value property is a token", and a description on an object without one
-// describes a *group*, not the token. So descriptions live in the theme files
-// next to the values they explain.
+// DTCG puts `$description` on the token itself, beside `$value`. A description
+// on an object without `$value` describes a group. Style Dictionary drops group
+// descriptions from CSS, so a color role's purpose stays on the leaf, where the
+// comment can be emitted. A typography recipe's purpose stays on the group,
+// and semantic.meta.json publishes it as `groupDescription` instead of copying
+// the sentence onto every property.
 //
-// The cost of that is the one thing worth guarding. A semantic role is declared
-// in both light.tokens.json and dark.tokens.json, so its description is written
-// twice, and nothing in the build compares them. This is the same failure
-// audit-parity.js exists for — two themes drifting out of being one system —
-// applied to prose instead of lightness.
+// A semantic color role is declared in both theme files, so its description is
+// written twice. Nothing in the build compares them. This is the same failure
+// audit-parity.js exists for, applied to prose instead of lightness.
 
 import { test } from "vitest";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { THEMES } from "../style-dictionary.config.js";
+import StyleDictionary from "style-dictionary";
+import { THEMES, semanticConfig } from "../style-dictionary.config.js";
+import { flatten } from "../src/flatten.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const read = (path) => JSON.parse(readFileSync(join(ROOT, path), "utf-8"));
 
+const kebabCase = (segment) => segment.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+const cssVariable = (path) => "--" + path.split(".").map(kebabCase).join("-");
+
 /**
  * [dottedPath, description] for every TOKEN carrying a description — an object
  * with both `$value` and `$description`. A description on a group is reported
- * separately, because Style Dictionary drops those silently.
+ * separately. Style Dictionary drops those from CSS, and the meta file publishes
+ * them as groupDescription.
  */
 function describedTokens(node, parts = [], out = { tokens: [], groups: [] }) {
   for (const [key, value] of Object.entries(node)) {
@@ -64,20 +72,20 @@ const forTheme = (theme) => {
   };
 };
 
-test("descriptions sit on tokens, never on groups", () => {
+test("recipe prose stays on the group", () => {
   for (const theme of THEMES) {
-    // A group description is valid DTCG but says nothing about the token, and
-    // Style Dictionary emits it nowhere. Almost always a mistake.
-    assert.deepEqual(
-      forTheme(theme).groups.map(([path]) => path),
-      [],
-      `${theme}: $description on an object with no $value — that describes a group`,
-    );
+    const { tokens, groups } = forTheme(theme);
+    for (const [groupPath, description] of groups) {
+      const copied = [...tokens.keys()].filter(
+        (path) => path.startsWith(`${groupPath}.`) && tokens.get(path).description === description,
+      );
+      assert.deepEqual(copied, [], `${groupPath} description is copied onto its leaves`);
+    }
   }
 });
 
 test("a role's description is identical in both themes", () => {
-  const [light, dark] = THEMES.map((theme) => forTheme(theme).tokens);
+  const [light, dark] = THEMES.map((theme) => forTheme(theme));
 
   const onlyIn = (a, b, name) =>
     [...a.keys()]
@@ -85,19 +93,33 @@ test("a role's description is identical in both themes", () => {
       .map((path) => `${path} (described only in ${name})`);
 
   assert.deepEqual(
-    [...onlyIn(light, dark, "light"), ...onlyIn(dark, light, "dark")],
+    [...onlyIn(light.tokens, dark.tokens, "light"), ...onlyIn(dark.tokens, light.tokens, "dark")],
     [],
     "a semantic role is described in one theme but not the other",
   );
 
-  const drifted = [...light]
-    .filter(([path, entry]) => dark.get(path)?.description !== entry.description)
+  const drifted = [...light.tokens]
+    .filter(([path, entry]) => dark.tokens.get(path)?.description !== entry.description)
     .map(([path]) => path);
   assert.deepEqual(drifted, [], "description text differs between light and dark");
+
+  const lightGroups = new Map(light.groups.map(([path, description]) => [path, description]));
+  const darkGroups = new Map(dark.groups.map(([path, description]) => [path, description]));
+  assert.deepEqual(
+    [...onlyIn(lightGroups, darkGroups, "light"), ...onlyIn(darkGroups, lightGroups, "dark")],
+    [],
+    "a group is described in one theme but not the other",
+  );
+  const groupDrift = [...lightGroups]
+    .filter(([path, description]) => darkGroups.get(path) !== description)
+    .map(([path]) => path);
+  assert.deepEqual(groupDrift, [], "group description text differs between light and dark");
 });
 
 test("every description is prose the path could not carry", () => {
-  for (const [path, { description }] of forTheme("light").tokens) {
+  const { tokens, groups } = forTheme("light");
+  const described = [...tokens, ...groups.map(([path, description]) => [path, { description }])];
+  for (const [path, { description }] of described) {
     assert.equal(typeof description, "string", `${path} description is not a string`);
     assert.ok(description.trim().length > 0, `${path} has an empty description`);
     // "Muted background" on background.muted is the failure mode: a description
@@ -113,34 +135,64 @@ test("every description is prose the path could not carry", () => {
   }
 });
 
-test("descriptions reach the published stylesheet as comments", () => {
-  const css = readFileSync(join(ROOT, "dist/css/tokens.css"), "utf-8");
-  for (const [path, { description }] of forTheme("light").tokens) {
-    assert.ok(css.includes(description), `tokens.css is missing ${path}: ${description}`);
+test("leaf descriptions are comments on the light custom property", async () => {
+  // tokens.css repeats every comment in the light, system-dark, and dark
+  // blocks. Checking the light platform output leaves that file free to drop
+  // comments, and a full declaration ties the comment to one variable.
+  const dir = await mkdtemp(join(tmpdir(), "semantic-light-"));
+  try {
+    const config = semanticConfig("light");
+    const sd = new StyleDictionary({
+      source: config.source,
+      platforms: {
+        css: { ...config.platforms.css, buildPath: `${dir}/` },
+      },
+    });
+    await sd.buildAllPlatforms();
+    const css = await readFile(join(dir, "semantic.light.css"), "utf8");
+    const values = new Map(
+      flatten(read("dist/tokens/semantic.light.json")).map((token) => [token.path, token.value]),
+    );
+
+    for (const [path, { description }] of forTheme("light").tokens) {
+      const line = `${cssVariable(path)}: ${values.get(path)}; /** ${description} */`;
+      assert.ok(css.includes(line), `${path} is missing \`${line}\``);
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
   }
 });
 
-function semanticLeaves(node, parts = [], out = []) {
+function semanticLeaves(node, parts = [], out = [], inherited = null) {
   for (const [key, value] of Object.entries(node)) {
     if (key.startsWith("$")) continue;
     if (value === null || typeof value !== "object") continue;
 
     const path = [...parts, key];
-    if ("$value" in value) out.push([path.join("."), value.$description ?? null, value.$type]);
-    else semanticLeaves(value, path, out);
+    if ("$value" in value) {
+      out.push([
+        path.join("."),
+        {
+          description: value.$description ?? null,
+          type: value.$type,
+          groupDescription: inherited,
+        },
+      ]);
+    } else {
+      const next = typeof value.$description === "string" ? value.$description : inherited;
+      semanticLeaves(value, path, out, next);
+    }
   }
   return out;
 }
 
 test("every semantic token is published in semantic.meta.json", () => {
   const meta = read("dist/tokens/semantic.meta.json");
-  const source = new Map(
-    [
-      ...semanticLeaves(themeSource("light")),
-      ...semanticLeaves(typography),
-      ...semanticLeaves(shape),
-    ].map(([path, description, type]) => [path, { description, type }]),
-  );
+  const source = new Map([
+    ...semanticLeaves(themeSource("light")),
+    ...semanticLeaves(typography),
+    ...semanticLeaves(shape),
+  ]);
 
   assert.deepEqual(
     Object.keys(meta).sort(),

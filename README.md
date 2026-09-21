@@ -133,7 +133,7 @@ theme whose resolved values you need.
 import semantic from "@stevegreco/design-system/tokens/semantic-dark";
 ```
 
-Descriptions are theme-independent. Import the meta file to read every semantic token's type and purpose. `description` is null when no purpose has been written.
+Descriptions are theme-independent. Import the meta file to read every semantic token's type and purpose. `description` is the token's own purpose, or null when none has been written. `groupDescription` is the purpose of a parent group, used by typography recipes, or null when the token has no described group.
 
 ```js
 import semanticMeta from "@stevegreco/design-system/tokens/semantic-meta";
