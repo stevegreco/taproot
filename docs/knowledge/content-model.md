@@ -22,7 +22,7 @@ flat-merge source fields into `title`, `summary`, or `status` (KNOW-002, KNOW-00
 
 ### Component
 
-The narrative hub for a design system component. Button and Badge are authored as
+The narrative hub for a design system component. Button, Badge, and Text field are authored as
 `*.spec.yaml` files that own metadata, relationships, provenance, token references, and the
 portable `contract`. That object has usage, optional content rules, anatomy, parameters, optional
 configuration axes, events, states, behavior rules, accessibility, optional rationale, and optional
@@ -37,7 +37,7 @@ axes such as `prefersReducedMotion` live in `configurationAxes`, not in the comp
 contract has no `tagName`, slots, parts, attribute spellings, or DOM types.
 Host identity is not authored here. A later component may omit `contract` and may still be Markdown.
 
-Examples: Button, Badge.
+Examples: Button, Badge, Text field.
 
 ### Binding
 
@@ -146,6 +146,7 @@ contract use YAML specs:
 packages/knowledge/content/components/
   button/button.spec.yaml
   badge/badge.spec.yaml
+  text-field/text-field.spec.yaml
 ```
 
 `parseRecord` fills `schemaVersion` as
@@ -210,8 +211,8 @@ the declared kind. Each host parameter mapping names an attribute, a property, o
 `values` map on a host parameter, when present, covers every portable enum value.
 
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
-namespace must exist in the token file when a component publishes `tokenRef`. Button and Badge
-author compact `contract.visuals` grouped by anatomy part and configuration axis. The compiler
+namespace must exist in the token file when a component publishes `tokenRef`. Button, Badge, and
+Text field author compact `contract.visuals` grouped by anatomy part and configuration axis. The compiler
 expands that source into `contract.mappings` rows and omits `visuals` from compiled output.
 `base` applies regardless of state. Nested `states` replace only the channels they name. Rest
 values beside a nested `states` block compile as `state: default` when that name is in

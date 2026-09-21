@@ -41,6 +41,7 @@ test("parseAuthoredRecord accepts YAML component specs without bodies", () => {
   assert.deepEqual(authoredYaml, [
     "components/badge/badge.spec.yaml",
     "components/button/button.spec.yaml",
+    "components/text-field/text-field.spec.yaml",
   ]);
 
   for (const relative of authoredYaml) {

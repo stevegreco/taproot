@@ -39,4 +39,4 @@ Each feature file names user-visible behavior and uses exactly four H2 sections:
 - [Interactive labs](./interactive-labs.md) covers the six visual labs and the border-width interaction.
 - [Primitive color guide](./primitive-color-guide.md) covers palette browsing and copy feedback.
 - [Semantic token reference](./semantic-token-reference.md) covers grouped intent-based token tables and lab links.
-- [Web components](./web-components.md) covers Button and Badge previews plus package browser tests.
+- [Web components](./web-components.md) covers Button, Badge, and Text field previews plus package browser tests.

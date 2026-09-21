@@ -2,5 +2,5 @@ import { defineMeta } from "blume";
 
 export default defineMeta({
   title: "Components",
-  pages: ["button", "badge"],
+  pages: ["button", "badge", "text-field"],
 });

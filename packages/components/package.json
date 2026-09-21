@@ -6,6 +6,7 @@
     "badge",
     "button",
     "custom-elements",
+    "text-field",
     "design-system",
     "web-components"
   ],
@@ -34,6 +35,10 @@
     "./button": {
       "types": "./src/button.d.ts",
       "default": "./src/button.js"
+    },
+    "./text-field": {
+      "types": "./src/text-field.d.ts",
+      "default": "./src/text-field.js"
     }
   },
   "publishConfig": {
