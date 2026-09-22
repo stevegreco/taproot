@@ -32,6 +32,7 @@
       "types": "./src/*.d.ts",
       "default": "./src/*.js"
     },
+    "./index": null,
     "./internal/*": null
   },
   "publishConfig": {

@@ -40,7 +40,8 @@ defineButton("acme-button"); // <acme-button>
 
 Every `src/<name>.js` is published as the subpath `…/<name>`, with types from
 `src/<name>.d.ts`. Helpers that are not public API belong in `src/internal/`,
-which the `exports` map blocks.
+which the `exports` map blocks. `…/index` is blocked too; import the package
+root for the barrel.
 
 ## `<ds-badge>`
 
