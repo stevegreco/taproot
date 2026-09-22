@@ -189,11 +189,13 @@ stylesheet assigns every compiled mapping.
 ```bash
 pnpm exec turbo run build --filter=@stevegreco/design-system-components
 pnpm exec turbo run test --filter=@stevegreco/design-system-components
-pnpm exec turbo run dev --filter=@stevegreco/design-system-components
+pnpm exec turbo run dev --filter=documentation --filter=@stevegreco/design-system-components
 ```
 
-Turbo builds the token package before the component styles and demo. `pnpm --filter`
+Turbo builds the token package before the component styles. `pnpm --filter`
 runs this package's script only and will fail on a clean tree when `dist/` is missing.
 
-The demo lives at `examples/button.html` and covers every variant, size, state,
-form participation and a dark-mode toggle.
+This package has no standalone demo. Each component's demo is its docs example,
+`apps/documentation/examples/<name>.tsx`, shown at `/components/<name>`. The
+`dev` task above runs the docs site and rebuilds `dist/*.styles.js` whenever a
+`src/*.css` file changes.
