@@ -169,6 +169,11 @@
           "minProperties": 1,
           "additionalProperties": { "type": "string", "minLength": 1 }
         },
+        "examples": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
         "default": true,
         "description": { "type": "string", "minLength": 1 }
       },
@@ -198,7 +203,8 @@
           "then": {
             "properties": {
               "default": { "type": "boolean" },
-              "values": false
+              "values": false,
+              "examples": false
             }
           }
         },
@@ -210,7 +216,8 @@
           "then": {
             "properties": {
               "default": { "type": "string" },
-              "values": false
+              "values": false,
+              "examples": false
             }
           }
         }

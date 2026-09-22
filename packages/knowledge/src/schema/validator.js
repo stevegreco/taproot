@@ -114,9 +114,19 @@ function findContractSemanticIssues(candidate) {
   }
 
   for (const [name, parameter] of Object.entries(contract.parameters ?? {})) {
-    if (parameter?.kind !== "enum" || !Object.hasOwn(parameter, "default")) continue;
+    if (parameter?.kind !== "enum") continue;
     const values = parameter.values;
     if (values == null || typeof values !== "object" || Array.isArray(values)) continue;
+    for (const value of Object.keys(parameter.examples ?? {})) {
+      if (!Object.hasOwn(values, value)) {
+        issues.push({
+          path: `/contract/parameters/${name}/examples/${value}`,
+          keyword: "enum",
+          message: `must name one of the parameter values`,
+        });
+      }
+    }
+    if (!Object.hasOwn(parameter, "default")) continue;
     if (!Object.hasOwn(values, parameter.default)) {
       const allowed = Object.keys(values).map((value) => JSON.stringify(value));
       issues.push({

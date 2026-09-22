@@ -131,23 +131,6 @@ const SECTIONS: readonly ComponentKnowledgeSection[] = [
   "accessibility",
   "review",
 ];
-const EXAMPLE_LABELS: Record<string, Record<string, string>> = {
-  button: {
-    primary: "Save changes",
-    secondary: "Cancel",
-    ghost: "View details",
-    danger: "Delete project",
-  },
-  badge: {
-    default: "Default",
-    accent: "Accent",
-    success: "Active",
-    danger: "Failed",
-    warning: "Pending",
-    info: "Beta",
-  },
-};
-
 function resolvePublicRoot(): string {
   try {
     return dirname(
@@ -346,12 +329,24 @@ function rewriteBundleUrls(markdown: string, digest: string): string {
     );
 }
 
-function exampleLabel(slug: string, variant: string): string {
-  return EXAMPLE_LABELS[slug]?.[variant] ?? "Action";
+function exampleHtml(tagName: string, variant: string, label: string): string {
+  return `<${tagName} variant="${variant}">${label}</${tagName}>`;
 }
 
-function exampleHtml(slug: string, tagName: string, variant: string): string {
-  return `<${tagName} variant="${variant}">${exampleLabel(slug, variant)}</${tagName}>`;
+/** GitHub-style heading anchor: lowercase, runs of other characters become one hyphen. */
+function headingAnchor(heading: string): string {
+  return heading
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/** The `##` section whose heading has `anchor`, or undefined when no heading does. */
+function sectionByAnchor(body: string, anchor: string): string | undefined {
+  for (const [heading, section] of markdownByHeading(body).sections) {
+    if (headingAnchor(heading) === anchor) return section;
+  }
+  return undefined;
 }
 
 function markdownByHeading(body: string): { preamble: string; sections: Map<string, string> } {
@@ -513,7 +508,6 @@ function bindingHost(catalog: Catalog, id: string): Record<string, unknown> {
 }
 
 function projectVariants(
-  slug: string,
   tagName: string,
   parameters: Record<string, unknown>,
   guidance: Map<string, string>,
@@ -523,14 +517,22 @@ function projectVariants(
     return [];
   }
   const defaultName = asString(variant.default);
-  return Object.entries(variant.values).map(([name, description]) => ({
-    name,
-    description: asString(description),
-    guidance: guidance.get(name) ?? "",
-    isDefault: name === defaultName,
-    exampleHtml: exampleHtml(slug, tagName, name),
-    exampleLabel: exampleLabel(slug, name),
-  }));
+  const examples = isObject(variant.examples) ? variant.examples : {};
+  return Object.entries(variant.values).map(([name, description]) => {
+    // Authored on the contract's variant parameter; the value name is the fallback.
+    const label = asString(
+      examples[name],
+      name.replace(/^./, (first) => first.toUpperCase()),
+    );
+    return {
+      name,
+      description: asString(description),
+      guidance: guidance.get(name) ?? "",
+      isDefault: name === defaultName,
+      exampleHtml: exampleHtml(tagName, name, label),
+      exampleLabel: label,
+    };
+  });
 }
 
 function projectAccessibility(value: unknown, id: string): AccessibilitySection {
@@ -599,7 +601,7 @@ function projectReview(record: Record<string, unknown>): ReviewSection {
 
 function projectIntro(
   record: Record<string, unknown>,
-  implementationBody: string,
+  behaviorSection: string,
   digest: string,
 ): { introMarkdown: string; behaviorMarkdown: string } {
   const contract = isObject(record.contract) ? record.contract : {};
@@ -658,9 +660,7 @@ function projectIntro(
     contentBlocks.length > 0
       ? rewriteBundleUrls(`### Write the label\n\n${contentBlocks.join("\n\n")}`, digest)
       : "";
-  const form = markdownByHeading(rewriteBundleUrls(implementationBody, digest)).sections.get(
-    "set form behavior deliberately",
-  );
+  const form = behaviorSection ? rewriteBundleUrls(behaviorSection, digest) : "";
   return {
     introMarkdown: introParts.filter((part) => part.length > 0).join("\n\n"),
     behaviorMarkdown: [label, form ? `### Forms\n\n${form}` : ""]
@@ -703,7 +703,7 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   let patternTitle = "";
   let patternSummary = "";
   let patternBody = "";
-  let implementationBody = "";
+  let behaviorSection = "";
   let example: ExampleFigure | undefined;
   let review: ReviewSection | undefined;
 
@@ -726,22 +726,31 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
         review = projectReview(related);
         continue;
       }
-      const jobs = Array.isArray(related.jobs) ? related.jobs : [];
-      if (jobs.includes("implement")) {
-        if (implementationBody)
-          fail("unexpected-slice", `${id} has more than one related implementation guideline`);
-        implementationBody = asString(related.body);
+      const sections = isObject(related.docsSections) ? related.docsSections : {};
+      const behaviorAnchor = asString(sections.behavior);
+      if (behaviorAnchor) {
+        if (behaviorSection)
+          fail("unexpected-slice", `${id} has more than one guideline with docsSections.behavior`);
+        const section = sectionByAnchor(asString(related.body), behaviorAnchor);
+        if (section === undefined) {
+          fail(
+            "malformed-contract",
+            `${asString(related.id)} docsSections.behavior names #${behaviorAnchor}, but no ## heading has that anchor`,
+          );
+        }
+        if (!section) {
+          fail(
+            "malformed-contract",
+            `${asString(related.id)} docsSections.behavior names #${behaviorAnchor}, but that section is empty`,
+          );
+        }
+        behaviorSection = section;
       }
     }
   }
 
-  const variants = projectVariants(
-    slug,
-    tagName,
-    parameters,
-    patternGuidanceByVariant(patternBody),
-  );
-  const { introMarkdown, behaviorMarkdown } = projectIntro(record, implementationBody, digest);
+  const variants = projectVariants(tagName, parameters, patternGuidanceByVariant(patternBody));
+  const { introMarkdown, behaviorMarkdown } = projectIntro(record, behaviorSection, digest);
   const avoid = bulletItems(markdownByHeading(patternBody).sections.get("avoid") ?? "");
 
   const together =

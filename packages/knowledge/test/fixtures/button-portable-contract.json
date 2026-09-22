@@ -70,6 +70,12 @@
         "ghost": "Low-emphasis action.",
         "danger": "Destructive or difficult-to-reverse action."
       },
+      "examples": {
+        "primary": "Save changes",
+        "secondary": "Cancel",
+        "ghost": "View details",
+        "danger": "Delete project"
+      },
       "default": "primary"
     },
     "size": {

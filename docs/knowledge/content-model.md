@@ -100,7 +100,10 @@ Record types can add validated fields. For example, component records can includ
 include assets and annotations.
 
 Guidelines intended for review can add structured `checks`. Each check has a stable ID, a level,
-and one verifiable requirement. Example records can add structured `assets` and `annotations`.
+and one verifiable requirement. A guideline can add `docsSections` to name the `##` section, by
+its heading anchor, that a documentation site shows for a page section. Today the only key is
+`behavior`. The docs build fails when the anchor matches no heading, so renaming a heading cannot
+silently drop that section. Example records can add structured `assets` and `annotations`.
 
 ## Executable contract
 
@@ -206,7 +209,9 @@ and leave `tokens` absent. There is no semantic-token source kind.
 A binding `implements` exactly one component, and that component must already have `contract`.
 Host anatomy names, parameters, and events are a bijection with the portable contract. Portable
 anatomy names are unique. Enum parameters require `values`, and an enum default must name one of
-those values. Boolean and string parameters must not declare `values`, and a default must match
+those values. An enum parameter may add `examples`, a sample label for some or all values; each key
+must name one of those values. Boolean and string parameters must not declare `values` or
+`examples`, and a default must match
 the declared kind. Each host parameter mapping names an attribute, a property, or both. An enum
 `values` map on a host parameter, when present, covers every portable enum value.
 

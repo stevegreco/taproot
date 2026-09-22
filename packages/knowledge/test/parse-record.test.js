@@ -460,6 +460,30 @@ test("parseRecord rejects an enum default that is not one of its values", () => 
   );
 });
 
+test("parseRecord rejects an enum example that is not one of its values", () => {
+  const markdown = validComponentWithContract.replace(
+    "    disabled:\n      kind: boolean\n      default: false\n",
+    "    variant:\n      kind: enum\n      values:\n        primary: Highest emphasis.\n      examples:\n        ghost: View details\n      default: primary\n",
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/components/test-button.md",
+    "/contract/parameters/variant/examples/ghost",
+  );
+});
+
+test("parseRecord rejects examples on a boolean parameter", () => {
+  const markdown = validComponentWithContract.replace(
+    "      default: false\n",
+    "      default: false\n      examples:\n        true: On\n",
+  );
+  assertIssuePath(
+    markdown,
+    "packages/knowledge/content/components/test-button.md",
+    "/contract/parameters/disabled/examples",
+  );
+});
+
 test("parseRecord rejects a boolean parameter with a string default", () => {
   const markdown = validComponentWithContract.replace(
     "      default: false\n",

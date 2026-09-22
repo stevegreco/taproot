@@ -9,6 +9,8 @@ interface Props {
 
 const { component, section } = Astro.props;
 const slice = loadComponentSlice(component);
+// Astro renders a string-valued dynamic tag as that HTML element.
+const Specimen = slice.tagName;
 
 const titleCase = (value: string) =>
   value.replace(/^./, (character) => character.toUpperCase());
@@ -72,11 +74,7 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
         slice.variants.map((variant) => (
           <article class="component-knowledge__variant">
             <div class="component-knowledge__specimen">
-              {slice.tagName === "ds-badge" ? (
-                <ds-badge variant={variant.name}>{variant.exampleLabel}</ds-badge>
-              ) : (
-                <ds-button variant={variant.name}>{variant.exampleLabel}</ds-button>
-              )}
+              <Specimen variant={variant.name}>{variant.exampleLabel}</Specimen>
             </div>
             <div class="component-knowledge__variant-copy">
               <div class="component-knowledge__variant-heading">
@@ -235,16 +233,10 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
   ) : null
 }
 
-{show("variants") && slice.tagName === "ds-button" ? (
+{show("variants") && slice.variants.length > 0 ? (
   <script>
-    import { defineButton } from "@stevegreco/design-system-components/button";
-    defineButton();
-  </script>
-) : null}
-
-{show("variants") && slice.tagName === "ds-badge" ? (
-  <script>
-    import { defineBadge } from "@stevegreco/design-system-components/badge";
-    defineBadge();
+    // The barrel registers every element under its default tag, so specimens
+    // for any component upgrade without a per-tag import here.
+    import "@stevegreco/design-system-components";
   </script>
 ) : null}

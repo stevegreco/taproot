@@ -19,6 +19,7 @@ export function assembleRecord(authored, contribution, assets) {
   };
 
   if (authored.checks) record.checks = authored.checks;
+  if (authored.docsSections) record.docsSections = authored.docsSections;
   if (assets.length > 0) record.assets = assets;
   if (authored.annotations) record.annotations = authored.annotations;
   if (authored.contract) record.contract = authored.contract;
