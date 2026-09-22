@@ -88,12 +88,38 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
     "semantic.color.border.status.danger.default",
   );
 
+  const link = records.find((record) => record.id === "component.link");
+  assert.equal(Object.hasOwn(link, "tokens"), false);
+  assert.equal(Object.hasOwn(link.contract, "visuals"), false);
+  assert.equal(link.contract.parameters.variant.default, "inline");
+  const hoveredInline = resolveMappings(link.contract.mappings, link.contract.stateResolution, {
+    part: "control",
+    configuration: { variant: "inline" },
+    states: ["hover", "focus-visible"],
+  });
+  assert.equal(hoveredInline.channels.foreground.token.name, "semantic.color.foreground.default");
+  assert.equal(hoveredInline.channels.outline.token.name, "semantic.color.border.focus");
+  assert.equal(hoveredInline.channels["font-size"].token.literal, "inherit");
+  const standalone = resolveMappings(link.contract.mappings, link.contract.stateResolution, {
+    part: "control",
+    configuration: { variant: "standalone" },
+  });
+  assert.equal(
+    standalone.channels["font-size"].token.name,
+    "semantic.typography.label.default.fontSize",
+  );
+
   const binding = records.find((record) => record.id === "binding.button.web-component");
   assert.equal(binding.host.defaultTagName, "ds-button");
   const textFieldBinding = records.find(
     (record) => record.id === "binding.text-field.web-component",
   );
   assert.equal(textFieldBinding.host.defaultTagName, "ds-text-field");
+  const linkBinding = records.find((record) => record.id === "binding.link.web-component");
+  assert.equal(linkBinding.host.defaultTagName, "ds-link");
+  assert.equal(Object.hasOwn(linkBinding.host, "formAssociation"), false);
+  // Link has no accessibleName parameter, so its text is the only name source.
+  assert.equal(linkBinding.host.anatomy.content.accepts.includes("decorative-icon"), false);
 
   const buttonMarkdown = await readFile(
     join(outDir, "public/markdown/component.button.md"),

@@ -3,7 +3,7 @@ id: pattern.action-hierarchy
 schemaVersion: 1
 type: pattern
 title: Action hierarchy
-summary: Assign button emphasis according to an action's importance, support role, and risk.
+summary: Assign action emphasis by importance, support role, and risk, and choose Button or Link by what the control does.
 status: draft
 visibility: public
 jobs:
@@ -15,11 +15,14 @@ tags:
   - button
   - hierarchy
   - destructive
+  - link
 relations:
   uses:
     - component.button
+    - component.link
   guides:
     - component.button
+    - component.link
 sources:
   - kind: authored
     path: packages/knowledge/content/patterns/action-hierarchy.md
@@ -62,6 +65,26 @@ replaces the primary action.
 Do not use danger styling for an error status, warning message, or action that merely needs more
 attention.
 
+## Choose Button or Link
+
+Choose the control by what happens, not by how prominent it should look. A Button changes
+something in the current view or submits a form. A Link takes the person somewhere: another page, a
+location on this page, or a file. Do not style a Link as a Button to raise its emphasis, and do not
+use a ghost Button for navigation.
+
+A Link sits beside an action group, not inside its emphasis order. "View billing history" next to
+"Save changes" is a Link because it leaves the task without resolving it.
+
+### Inline
+
+Use an `inline` Link inside a sentence. It inherits the surrounding type and stays underlined, so
+it does not depend on color to be found.
+
+### Standalone
+
+Use a `standalone` Link on its own line or after the content it relates to, such as "View all
+projects" under a list. It uses label type and shows the underline on hover.
+
 ## Separate unrelated decisions
 
 Place destructive account or data management actions in their own labeled group. Do not mix a
@@ -79,4 +102,5 @@ make the hierarchy understandable without relying on color.
 - Danger styling used only to attract attention
 - Ghost styling for the action required to finish the task
 - Disabled actions with no nearby explanation when the reason is unclear
+- A Button that only navigates, or a Link that changes data or submits a form
 - Relying on control order or color as the only expression of importance or risk
