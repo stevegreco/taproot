@@ -1,6 +1,5 @@
 /**
- * Verify: Require labels for the default, accent, success, danger, warning, and info variants.
- * Badge is non-interactive and has no live-region role.
+ * Verify: run the steps in `badge.verify.js`. The docs tests run them against the built site.
  */
 import "@stevegreco/design-system-components";
 

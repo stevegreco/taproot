@@ -13,7 +13,7 @@ const runId = process.argv[3];
 const port = Number(process.argv[4] ?? 4321);
 
 if (!command || !runId || !/^[a-zA-Z0-9_-]+$/.test(runId)) {
-  fail("Usage: control.mjs <launch|doctor|border|cleanup> <run-id> [port]");
+  fail("Usage: control.mjs <launch|doctor|border|examples|cleanup> <run-id> [port]");
 }
 
 if (!Number.isInteger(port) || port < 1024 || port > 65535) {
@@ -182,6 +182,40 @@ async function verifyBorderLab() {
   }
 }
 
+/** Run every docs example's Verify steps against this run's server, with one screenshot each. */
+async function verifyExamples() {
+  await doctor();
+  const { exampleSlugs, verifyExample } = await import(
+    new URL("../../../../apps/documentation/examples/verify.js", import.meta.url).href
+  );
+  const evidenceDir = path.join(runDir, "examples");
+  await mkdir(evidenceDir, { recursive: true });
+
+  const browser = await chromium.launch({ headless: true });
+  const results = [];
+  try {
+    for (const slug of await exampleSlugs()) {
+      const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+      try {
+        await verifyExample(page, baseUrl, slug);
+        results.push({ slug, passed: true });
+      } catch (error) {
+        results.push({ slug, passed: false, error: error.message });
+      } finally {
+        await page.screenshot({ path: path.join(evidenceDir, `${slug}.png`), fullPage: true });
+        await page.close();
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+
+  await writeFile(path.join(evidenceDir, "result.json"), `${JSON.stringify(results, null, 2)}\n`);
+  console.log(JSON.stringify(results, null, 2));
+  if (results.some((result) => !result.passed))
+    fail(`Example verification failed; see ${evidenceDir}`);
+}
+
 async function cleanup() {
   const metadata = await readMetadata();
   if (isRunning(metadata.pid)) {
@@ -200,7 +234,7 @@ async function cleanup() {
   console.log(`Stopped run ${runId}; evidence retained at ${runDir}`);
 }
 
-const actions = { launch, doctor, border: verifyBorderLab, cleanup };
+const actions = { launch, doctor, border: verifyBorderLab, examples: verifyExamples, cleanup };
 if (!actions[command]) fail(`Unknown command: ${command}`);
 
 try {
