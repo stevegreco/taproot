@@ -1,6 +1,8 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { userEvent } from "vitest/browser";
 
 import { DsLink, defineLink } from "../src/link.js";
+import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-link";
 
@@ -72,7 +74,7 @@ describe("DsLink", () => {
     expect(link.variant).toBe("standalone");
   });
 
-  test("inline links inherit surrounding type and stay underlined", () => {
+  test("[inline-underline][a11y-not-color-alone] inline links inherit surrounding type and stay underlined", () => {
     render(
       `<p style="font-size: 23px; font-weight: 700"><${tagName} href="#x">ADR</${tagName}></p>`,
     );
@@ -85,13 +87,16 @@ describe("DsLink", () => {
 
   test("standalone links use label type and no underline at rest", () => {
     render(`
-      <p style="font-size: 23px; --semantic-typography-label-default-font-size: 14px">
+      <p style="font-size: 23px">
         <${tagName} variant="standalone" href="#x">All</${tagName}>
       </p>
     `);
     const style = getComputedStyle(anchorOf(document.querySelector(tagName)));
 
-    expect(style.fontSize).toBe("14px");
+    expect(style.fontSize).not.toBe("23px");
+    expect(style.fontSize).toBe(
+      resolvedValue("font-size", "var(--semantic-typography-label-default-font-size)"),
+    );
     expect(style.textDecorationLine).toBe("none");
   });
 
@@ -104,7 +109,7 @@ describe("DsLink", () => {
     expect(link.shadowRoot.activeElement).toBe(null);
   });
 
-  test("activating the anchor navigates natively", () => {
+  test("[native-navigation] activating the anchor navigates natively", () => {
     const link = render(`<${tagName} href="#ds-link-target">Jump</${tagName}>`);
     let clicks = 0;
     link.addEventListener("click", () => {
@@ -150,5 +155,26 @@ describe("DsLink", () => {
     const link = render(`<${tagName} hidden href="#x">Hidden</${tagName}>`);
 
     expect(getComputedStyle(link).display).toBe("none");
+  });
+
+  test("[a11y-visible-focus] shows a focus outline when reached by keyboard", async () => {
+    const link = render(`<${tagName} href="#x">Go</${tagName}>`);
+    const anchor = anchorOf(link);
+
+    await userEvent.tab();
+
+    expect(anchor.matches(":focus-visible")).toBe(true);
+    expect(getComputedStyle(anchor).outlineStyle).not.toBe("none");
+    expect(parseFloat(getComputedStyle(anchor).outlineWidth)).toBeGreaterThan(0);
+  });
+
+  test("[no-disabled-state] has no disabled state to set", () => {
+    const link = render(`<${tagName} href="#x" disabled>Go</${tagName}>`);
+    const anchor = anchorOf(link);
+
+    expect("disabled" in link).toBe(false);
+    expect(anchor.hasAttribute("aria-disabled")).toBe(false);
+    link.focus();
+    expect(link.shadowRoot.activeElement).toBe(anchor);
   });
 });

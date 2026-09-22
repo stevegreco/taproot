@@ -1,4 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
+import { userEvent } from "vitest/browser";
 
 import { DsButton, defineButton } from "../src/button.js";
 
@@ -47,7 +48,7 @@ describe("DsButton", () => {
     expect(control.disabled).toBe(true);
   });
 
-  test("blocks programmatic activation while its fieldset is disabled", () => {
+  test("[disabled-prevents-activation] blocks programmatic activation while its fieldset is disabled", () => {
     const form = render(`
       <form>
         <fieldset disabled>
@@ -98,7 +99,7 @@ describe("DsButton", () => {
     expect(form.elements.query.value).toBe("initial");
   });
 
-  test("mirrors its accessible label and forwards focus", () => {
+  test("[icon-accessible-name] mirrors its accessible label and forwards focus", () => {
     const button = render(
       `<${tagName} aria-label="Continue"><svg aria-hidden="true"></svg></${tagName}>`,
     );
@@ -110,5 +111,16 @@ describe("DsButton", () => {
 
     button.removeAttribute("aria-label");
     expect(control.hasAttribute("aria-label")).toBe(false);
+  });
+
+  test("[visible-focus] shows a focus outline when reached by keyboard", async () => {
+    const button = render(`<${tagName}>Save</${tagName}>`);
+    const control = button.shadowRoot.querySelector("button");
+
+    await userEvent.tab();
+
+    expect(control.matches(":focus-visible")).toBe(true);
+    expect(getComputedStyle(control).outlineStyle).not.toBe("none");
+    expect(parseFloat(getComputedStyle(control).outlineWidth)).toBeGreaterThan(0);
   });
 });

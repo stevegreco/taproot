@@ -51,4 +51,25 @@ describe("DsBadge", () => {
 
     expect(getComputedStyle(badge).display).toBe("none");
   });
+
+  test("[non-interactive][not-a-control] takes no focus and exposes no control", () => {
+    document.body.innerHTML = `<${tagName}>New</${tagName}>`;
+    const badge = document.querySelector(tagName);
+
+    badge.focus();
+    expect(document.activeElement).not.toBe(badge);
+    expect(badge.shadowRoot.activeElement).toBe(null);
+    expect(
+      badge.shadowRoot.querySelector("a[href], button, input, select, textarea, [tabindex]"),
+    ).toBe(null);
+  });
+
+  test("[no-live-region] sets no role or live region", () => {
+    document.body.innerHTML = `<${tagName} variant="success">Active</${tagName}>`;
+    const badge = document.querySelector(tagName);
+
+    expect(badge.hasAttribute("role")).toBe(false);
+    expect(badge.hasAttribute("aria-live")).toBe(false);
+    expect(badge.shadowRoot.querySelector("[role], [aria-live]")).toBe(null);
+  });
 });
