@@ -6,8 +6,8 @@
     "badge",
     "button",
     "custom-elements",
-    "text-field",
     "design-system",
+    "text-field",
     "web-components"
   ],
   "license": "ISC",

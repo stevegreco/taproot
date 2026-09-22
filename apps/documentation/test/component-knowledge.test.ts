@@ -209,7 +209,9 @@ test("text field slice has no variant axis and publishes label, hint, and error"
     "api includes the input event",
   );
   assert.ok(
-    slice.accessibility.requirements.some((item) => /aria|accessible description|describe/i.test(item)),
+    slice.accessibility.requirements.some((item) =>
+      /aria|accessible description|describe/i.test(item),
+    ),
     "accessibility keeps the description rule",
   );
   assert.match(slice.behaviorMarkdown, /type="email"/, "form behavior stays with usage");
