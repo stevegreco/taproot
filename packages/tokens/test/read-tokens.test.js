@@ -51,12 +51,16 @@ test("loadTokens returns tokens for both themes", () => {
       tokens.some((t) => t.tier === "component"),
       `${theme} loaded no component tokens`,
     );
-    assert.ok(
-      tokens
-        .filter((t) => t.tier === "component")
-        .every((t) => t.path.startsWith("component.button.")),
-      `${theme} exposed a component contract other than Button`,
-    );
+    // Each component-token file owns exactly one namespace named after it.
+    const namespaces = readdirSync(new URL("../src/tokens/components/", import.meta.url))
+      .filter((file) => file.endsWith(".tokens.json"))
+      .map((file) => `component.${file.slice(0, -".tokens.json".length)}.`);
+    for (const token of tokens.filter((t) => t.tier === "component")) {
+      assert.ok(
+        namespaces.some((namespace) => token.path.startsWith(namespace)),
+        `${theme}: ${token.path} is outside every component-token file's namespace`,
+      );
+    }
   }
 });
 

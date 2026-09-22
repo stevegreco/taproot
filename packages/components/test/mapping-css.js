@@ -94,22 +94,32 @@ export function declarationContains(styles, property, value) {
   return pattern.test(styles);
 }
 
+export async function componentRecords() {
+  const catalog = await openBuiltCatalog("Component records");
+  const records = catalog.list({ type: "component" });
+  if (records.length === 0) throw new Error("compiled catalog has no component records");
+  return records;
+}
+
 export async function compiledMappings(recordId) {
-  let catalog;
-  try {
-    catalog = await openCatalog();
-  } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    throw new Error(
-      `${recordId} needs the compiled knowledge bundle. From the repo root run: pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge. ${reason}`,
-    );
-  }
+  const catalog = await openBuiltCatalog(recordId);
   const record = catalog.get(recordId);
   const mappings = record?.contract?.mappings;
   if (!Array.isArray(mappings) || mappings.length === 0) {
     throw new Error(`${recordId} compiled contract has no mappings`);
   }
   return mappings;
+}
+
+async function openBuiltCatalog(subject) {
+  try {
+    return await openCatalog();
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `${subject} needs the compiled knowledge bundle. From the repo root run: pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge. ${reason}`,
+    );
+  }
 }
 
 function escapeRegExp(value) {

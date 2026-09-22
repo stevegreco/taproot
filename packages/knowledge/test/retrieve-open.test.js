@@ -74,7 +74,8 @@ test("openCatalog accepts default, path, URL, and in-memory sources", async () =
   assert.equal(fromDefault.info.digest, fromMemory.info.digest);
   assert.equal(fromDefault.info.visibility, "public");
   assert.equal(fromDefault.info.compiledSchemaVersion, 7);
-  assert.equal(fromDefault.info.recordCount, 11);
+  assert.ok(fromDefault.info.recordCount > 0);
+  assert.equal(fromDefault.info.recordCount, fromDefault.list().length);
 });
 
 test("openCatalog does not export tokenize, createCatalog, or openDefaultCatalog", async () => {
