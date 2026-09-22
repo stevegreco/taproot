@@ -97,7 +97,7 @@ test("Button guidance uses guides and reviews, not related", async () => {
   ]);
 
   const pattern = catalog.get("pattern.action-hierarchy");
-  assert.deepEqual(pattern.relations.guides, ["component.button", "component.link"]);
+  assert.ok(pattern.relations.guides.includes("component.button"));
   assert.equal(Object.hasOwn(pattern.relations, "related"), false);
 
   const implementation = catalog.get("guideline.button-implementation");

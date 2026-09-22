@@ -7,22 +7,17 @@
 
 // Generated from src/link.css by build-styles.js (run `pnpm run build`).
 import { styles } from "../dist/link.styles.js";
+import {
+  Base,
+  ForwardsFocus,
+  defineElement,
+  focusTarget,
+  lazyStyleSheet,
+} from "./internal/element.js";
 
-/** Shared across every instance; built lazily so importing this module is safe on a server. */
-let sheet;
+const styleSheet = lazyStyleSheet(styles);
 
-function styleSheet() {
-  if (!sheet) {
-    sheet = new CSSStyleSheet();
-    sheet.replaceSync(styles);
-  }
-  return sheet;
-}
-
-/** Importing on a server must not throw, so fall back to an inert base class. */
-const Base = typeof HTMLElement === "undefined" ? class {} : HTMLElement;
-
-export class DsLink extends Base {
+export class DsLink extends ForwardsFocus(Base) {
   static observedAttributes = ["href"];
 
   #anchor;
@@ -45,13 +40,8 @@ export class DsLink extends Base {
     else this.#anchor.setAttribute("href", value);
   }
 
-  /** Forward programmatic focus to the real anchor inside the shadow root. */
-  focus(options) {
-    this.#anchor.focus(options);
-  }
-
-  blur() {
-    this.#anchor.blur();
+  get [focusTarget]() {
+    return this.#anchor;
   }
 
   /**
@@ -80,13 +70,5 @@ export class DsLink extends Base {
   }
 }
 
-/**
- * Register the element. Safe to call more than once.
- * @param {string} [tagName] custom tag name, defaults to "ds-link".
- */
-export function defineLink(tagName = "ds-link") {
-  if (typeof customElements === "undefined") return;
-  if (!customElements.get(tagName)) {
-    customElements.define(tagName, class extends DsLink {});
-  }
-}
+/** Register the element. Safe to call more than once. Defaults to "ds-link". */
+export const defineLink = defineElement("ds-link", DsLink);
