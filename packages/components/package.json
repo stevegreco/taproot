@@ -44,8 +44,7 @@
     "pretest": "pnpm run build",
     "test": "vitest run",
     "watch": "chokidar \"src/**/*.css\" -c \"node build-styles.js\" --initial",
-    "serve": "live-server --port=4500 --open=examples/button.html .",
-    "dev": "concurrently -n build,serve -c blue,green \"pnpm run watch\" \"pnpm run serve\"",
+    "dev": "pnpm run watch",
     "prepack": "pnpm run build"
   },
   "dependencies": {
@@ -55,8 +54,6 @@
     "@stevegreco/design-system-knowledge": "workspace:*",
     "@vitest/browser-playwright": "^5.0.0",
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^9.1.0",
-    "live-server": "^1.2.2",
     "vitest": "^5.0.0"
   }
 }

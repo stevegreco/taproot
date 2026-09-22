@@ -34,7 +34,7 @@ Teardown only the instance belonging to this run:
 node .cursor/skills/verify-design-system/scripts/control.mjs cleanup "$RUN_ID" "$PORT"
 ```
 
-Never kill by process name. The component demo's `pnpm exec turbo run dev --filter=@stevegreco/design-system-components` uses fixed port 4500 and is not safe for parallel verification.
+Never kill by process name.
 
 ## Doctor
 

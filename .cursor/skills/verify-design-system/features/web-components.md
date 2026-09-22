@@ -12,7 +12,6 @@ Every component in `@stevegreco/design-system-components` is a framework-agnosti
 
 - Open `/components/<slug>` for each example and use its Preview.
 - Install and import `@stevegreco/design-system-components` as documented on those pages.
-- Open the secondary local demo with `pnpm exec turbo run dev --filter=@stevegreco/design-system-components` when no other process owns port 4500.
 
 ## Driving it with Playwright
 
@@ -33,4 +32,3 @@ Preconditions:
 - Component internals use shadow DOM; target the custom element or explicitly enter its shadow root.
 - The docs preview may be hosted in Blume's example surface, so locate its frame or linked `/blume-examples/*/` route before querying the custom element.
 - An example without a `Verify:` block only needs the page, Preview, and example route checks.
-- The component demo uses fixed port 4500 and must not be started when another run or user session owns it.
