@@ -70,8 +70,8 @@ Existing domain decisions remain authoritative:
 `packages/knowledge/content/` are the input. Extra files are included only when a record lists them
 in `sources[]`.
 
-Button and Badge are the first-slice records that do that. Button also names
-`button.tokens.json`. Badge omits token-source because it has no component-token namespace. The
+Component records do that. Button also names `button.tokens.json` because it publishes a
+component-token namespace. A component without one, such as Badge, omits token-source. The
 portable contract is authored on the YAML component record. The web-component mapping is a
 `type: binding` record.
 The other Markdown files compile as authored narrative plus their own frontmatter.
@@ -154,20 +154,12 @@ index `id`, `type`, or `jobs`.
 
 ## First content slice
 
-The executable schema, authored Markdown parser, and knowledge compiler validate these draft
-records:
+The executable schema, authored Markdown parser, and knowledge compiler validate every record under
+[`packages/knowledge/content/`](../../packages/knowledge/content/):
 
-- [Button](../../packages/knowledge/content/components/button/button.spec.yaml)
-- [Button web-component binding](../../packages/knowledge/content/bindings/button.web-component.md)
-- [Badge](../../packages/knowledge/content/components/badge/badge.spec.yaml)
-- [Badge web-component binding](../../packages/knowledge/content/bindings/badge.web-component.md)
-- [Text field](../../packages/knowledge/content/components/text-field/text-field.spec.yaml)
-- [Text field web-component binding](../../packages/knowledge/content/bindings/text-field.web-component.md)
-- [Text field implementation](../../packages/knowledge/content/guidelines/text-field-implementation.md)
-- [Action hierarchy](../../packages/knowledge/content/patterns/action-hierarchy.md)
-- [Button implementation](../../packages/knowledge/content/guidelines/button-implementation.md)
-- [Button review](../../packages/knowledge/content/guidelines/button-review.md)
-- [Settings action hierarchy example](../../packages/knowledge/content/examples/action-hierarchy-settings.md)
+- [`components/`](../../packages/knowledge/content/components/) holds one `<name>/<name>.spec.yaml` per component.
+- [`bindings/`](../../packages/knowledge/content/bindings/) holds host bindings such as `<name>.web-component.md`.
+- [`guidelines/`](../../packages/knowledge/content/guidelines/), [`patterns/`](../../packages/knowledge/content/patterns/), and [`examples/`](../../packages/knowledge/content/examples/) hold the narrative records.
 
 ## Working agreement
 

@@ -1,3 +1,7 @@
+/**
+ * Verify: Select the primary `ds-button` inside the example surface and require its documented
+ * visible response. Capture the action and response together.
+ */
 import { useState } from "react";
 import "@stevegreco/design-system-components";
 
