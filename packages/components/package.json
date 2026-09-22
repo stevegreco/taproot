@@ -28,18 +28,11 @@
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
     },
-    "./badge": {
-      "types": "./src/badge.d.ts",
-      "default": "./src/badge.js"
+    "./*": {
+      "types": "./src/*.d.ts",
+      "default": "./src/*.js"
     },
-    "./button": {
-      "types": "./src/button.d.ts",
-      "default": "./src/button.js"
-    },
-    "./text-field": {
-      "types": "./src/text-field.d.ts",
-      "default": "./src/text-field.js"
-    }
+    "./internal/*": null
   },
   "publishConfig": {
     "access": "public"

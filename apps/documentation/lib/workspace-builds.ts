@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,15 +31,21 @@ export function assertSpecifier(specifier: string, packageName: string): string 
   }
 }
 
+/** Every `src/*.css` must have the `dist/*.styles.js` that build-styles.js emits for it. */
 function assertComponentStyles(): void {
-  const buttonSrc = assertSpecifier(
-    "@stevegreco/design-system-components/button",
+  const indexSrc = assertSpecifier(
+    "@stevegreco/design-system-components",
     "@stevegreco/design-system-components",
   );
-  const dist = join(dirname(buttonSrc), "../dist");
-  for (const file of ["button.styles.js", "badge.styles.js", "text-field.styles.js"]) {
-    if (!existsSync(join(dist, file))) {
-      throw new MissingWorkspaceBuildError("@stevegreco/design-system-components", `dist/${file}`);
+  const src = dirname(indexSrc);
+  const dist = join(src, "../dist");
+  for (const file of readdirSync(src).filter((name) => name.endsWith(".css"))) {
+    const styles = file.replace(/\.css$/, ".styles.js");
+    if (!existsSync(join(dist, styles))) {
+      throw new MissingWorkspaceBuildError(
+        "@stevegreco/design-system-components",
+        `dist/${styles}`,
+      );
     }
   }
 }

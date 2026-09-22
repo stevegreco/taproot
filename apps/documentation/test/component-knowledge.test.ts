@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "vitest";
 import { fileURLToPath } from "node:url";
 import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 import {
   componentKnowledgeMarkdown,
+  componentSlugs,
   DocsKnowledgeError,
   loadComponentSlice,
 } from "../lib/component-knowledge";
@@ -276,4 +277,22 @@ test("button.mdx frontmatter matches the slice title and summary", () => {
   assert.match(source, /^## Attributes$/m);
   assert.match(source, /^## Accessibility$/m);
   assert.match(source, /section="review"/, "review stays available without a TOC heading");
+});
+
+test("every component record has a docs page and every docs page has a record", () => {
+  const pages = readdirSync(join(docsRoot, "docs/components"))
+    .filter((file) => file.endsWith(".mdx"))
+    .map((file) => file.slice(0, -".mdx".length))
+    .sort();
+  const records = [...componentSlugs()].sort();
+
+  for (const slug of records) {
+    assert.ok(pages.includes(slug), `component.${slug} has no docs/components/${slug}.mdx`);
+  }
+  for (const slug of pages) {
+    assert.ok(
+      records.includes(slug),
+      `docs/components/${slug}.mdx has no component.${slug} record`,
+    );
+  }
 });
