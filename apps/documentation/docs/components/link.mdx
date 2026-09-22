@@ -1,0 +1,56 @@
+---
+title: Link
+description: Use Link to navigate to another page, a location on the page, or a resource.
+---
+
+<Badge variant="accent">Web component</Badge>
+
+<ComponentKnowledge component="link" section="intro" />
+
+## Preview
+
+The example below uses the published `<ds-link>` custom element next to Button.
+Select **View billing history** to follow the link, or tab through the example
+to see the focus indicator on each link.
+
+<Component path="link" />
+
+## Import
+
+<CodeBlock
+  lang="bash"
+  code={`pnpm add @stevegreco/design-system @stevegreco/design-system-components`}
+/>
+
+<CodeBlock
+  lang="js"
+  code={`import { defineLink } from "@stevegreco/design-system-components/link";
+
+defineLink();`}
+/>
+
+## Usage
+
+<CodeBlock
+  lang="html"
+  code={`<p>Themes resolve through the <ds-link href="/adr/0003">token tier ADR</ds-link>.</p>
+<ds-link variant="standalone" href="/projects">View all projects</ds-link>`}
+/>
+
+<ComponentKnowledge component="link" section="behavior" />
+
+## Variants
+
+<ComponentKnowledge component="link" section="variants" />
+
+## Using together
+
+<ComponentKnowledge component="link" section="together" />
+
+## Attributes
+
+<ComponentKnowledge component="link" section="api" />
+
+## Accessibility
+
+<ComponentKnowledge component="link" section="accessibility" />

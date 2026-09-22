@@ -149,6 +149,7 @@ contract use YAML specs:
 packages/knowledge/content/components/
   button/button.spec.yaml
   badge/badge.spec.yaml
+  link/link.spec.yaml
   text-field/text-field.spec.yaml
 ```
 

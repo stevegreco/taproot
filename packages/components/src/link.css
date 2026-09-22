@@ -1,0 +1,61 @@
+/**
+ * <ds-link> styles.
+ *
+ * Built into dist/link.styles.js by build-styles.js — this file is the source.
+ * Visual values are published semantic tokens. There is no component-token
+ * namespace. The underline is fixed component behavior, not a token.
+ */
+
+:host {
+  display: inline;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.link {
+  color: var(--semantic-color-foreground-brand-default);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.15em;
+}
+
+/* Without href the anchor is text, so it gets no pointer or hover response. */
+.link[href] {
+  cursor: pointer;
+}
+
+.link[href]:hover {
+  color: var(--semantic-color-foreground-default);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--semantic-color-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--semantic-radius-control);
+}
+
+:host([variant="standalone"]) .link {
+  font-family: var(--semantic-typography-label-default-font-family);
+  font-size: var(--semantic-typography-label-default-font-size);
+  font-weight: var(--semantic-typography-label-default-font-weight);
+  line-height: var(--semantic-typography-label-default-line-height);
+  letter-spacing: var(--semantic-typography-label-default-letter-spacing);
+  text-decoration-line: none;
+}
+
+:host([variant="standalone"]) .link[href]:hover {
+  text-decoration-line: underline;
+}
+
+::slotted(svg) {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+}

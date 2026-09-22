@@ -63,6 +63,23 @@ Badge deliberately provides no button behavior or live-region role. Use a
 button for actions, and add an appropriate ARIA role only when a changing badge
 needs to be announced.
 
+## `<ds-link>`
+
+Links navigate. Use Button for actions. The inner native anchor handles
+navigation, so middle-click, modifier keys, and the context menu keep working:
+
+```html
+<p>Read the <ds-link href="/adr/0003">token tier ADR</ds-link> first.</p>
+<ds-link variant="standalone" href="/projects">View all projects</ds-link>
+```
+
+`variant` accepts `inline` (the default) or `standalone`. An inline link
+inherits the surrounding type and is always underlined; a standalone link uses
+label type and is underlined on hover. Without `href` the anchor has no link
+role and cannot take focus. There is no disabled state. The anchor is exposed
+as `::part(link)`. Visual values come directly from semantic brand foreground,
+default foreground on hover, and the focus border.
+
 ## `<ds-text-field>`
 
 Text fields collect one line of text. The label, hint, and error are attributes

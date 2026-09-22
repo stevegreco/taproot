@@ -1,5 +1,6 @@
 import type { DsBadge } from "@stevegreco/design-system-components/badge";
 import type { DsButton } from "@stevegreco/design-system-components/button";
+import type { DsLink } from "@stevegreco/design-system-components/link";
 import type { DsTextField } from "@stevegreco/design-system-components/text-field";
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
 
@@ -13,6 +14,11 @@ type DsButtonAttributes = DetailedHTMLProps<HTMLAttributes<DsButton>, DsButton> 
 
 type DsBadgeAttributes = DetailedHTMLProps<HTMLAttributes<DsBadge>, DsBadge> & {
   variant?: "default" | "accent" | "success" | "danger" | "warning" | "info";
+};
+
+type DsLinkAttributes = DetailedHTMLProps<HTMLAttributes<DsLink>, DsLink> & {
+  href?: string;
+  variant?: "inline" | "standalone";
 };
 
 type DsTextFieldAttributes = DetailedHTMLProps<HTMLAttributes<DsTextField>, DsTextField> & {
@@ -33,6 +39,7 @@ declare module "react" {
     interface IntrinsicElements {
       "ds-badge": DsBadgeAttributes;
       "ds-button": DsButtonAttributes;
+      "ds-link": DsLinkAttributes;
       "ds-text-field": DsTextFieldAttributes;
     }
   }

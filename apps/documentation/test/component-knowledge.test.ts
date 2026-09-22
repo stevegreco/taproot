@@ -224,6 +224,44 @@ test("text field slice has no variant axis and publishes label, hint, and error"
   assert.doesNotMatch(source, /section="variants"/);
 });
 
+test("link slice ties placement variants and Button to the action hierarchy", () => {
+  const slice = loadComponentSlice("link");
+  const source = readFileSync(join(docsRoot, "docs/components/link.mdx"), "utf8");
+  const banner = source.match(/^---\n([\s\S]*?)\n---/);
+
+  assert.equal(slice.tagName, "ds-link");
+  assert.deepEqual(
+    slice.variants.map((variant) => variant.name),
+    ["inline", "standalone"],
+  );
+  assert.match(
+    slice.variants.find((variant) => variant.name === "inline")?.guidance ?? "",
+    /inside a sentence/,
+    "inline guidance comes from the action hierarchy pattern",
+  );
+  assert.equal(slice.together?.title, "Action hierarchy");
+  assert.match(slice.introMarkdown, /Use Button instead\./, "Button is the stated alternative");
+  assert.match(
+    slice.behaviorMarkdown,
+    /\[action hierarchy pattern\]\(#using-together\)/,
+    "the content rule points at the action hierarchy on this page",
+  );
+  assert.ok(
+    slice.api.some((row) => row.name === "href"),
+    "api includes href",
+  );
+  assert.equal(
+    slice.api.some((row) => row.name === "disabled"),
+    false,
+    "Link has no disabled state",
+  );
+  assert.ok(banner, "link.mdx has YAML frontmatter");
+  const title = banner[1].match(/^title:\s*(.+)$/m)?.[1]?.trim();
+  const description = banner[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
+  assert.equal(title, slice.title);
+  assert.equal(description, slice.summary);
+});
+
 test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
   assert.throws(
     () => loadComponentSlice("component.button"),
