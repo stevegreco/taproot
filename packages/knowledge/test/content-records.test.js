@@ -38,13 +38,11 @@ test("parseRecord accepts every authored Markdown content record", () => {
 });
 
 test("parseAuthoredRecord accepts YAML component specs without bodies", () => {
-  assert.deepEqual(authoredYaml, [
-    "components/badge/badge.spec.yaml",
-    "components/button/button.spec.yaml",
-    "components/text-field/text-field.spec.yaml",
-  ]);
+  assert.ok(authoredYaml.length > 0);
 
   for (const relative of authoredYaml) {
+    assert.match(relative, /^components\/([^/]+)\/\1\.spec\.yaml$/);
+
     const sourcePath = `packages/knowledge/content/${relative}`;
     const record = parseAuthoredRecord(readFileSync(join(contentRoot, relative), "utf8"), {
       sourcePath,

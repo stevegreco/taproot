@@ -1,14 +1,17 @@
+import { readdirSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-import { styles as badgeStyles } from "../dist/badge.styles.js";
 import { styles as buttonStyles } from "../dist/button.styles.js";
-import { styles as textFieldStyles } from "../dist/text-field.styles.js";
 import {
   compiledMappings,
+  componentRecords,
   cssVariableFromTokenName,
   declarationContains,
   stylesheetContains,
 } from "./mapping-css.js";
+
+const components = await componentRecords();
+const srcFiles = readdirSync(new URL("../src/", import.meta.url));
 
 describe("compiled mapping stylesheet coverage", () => {
   test("token names use flatten() CSS variables", () => {
@@ -42,42 +45,52 @@ describe("compiled mapping stylesheet coverage", () => {
     expect(declarationContains(".button { transition: none; }", "transition", "none")).toBe(true);
   });
 
-  test("Button stylesheet assigns every compiled mapping in a matching declaration", async () => {
-    const mappings = await compiledMappings("component.button");
-    for (const mapping of mappings) {
-      expect(
-        stylesheetContains(buttonStyles, mapping),
-        coverMessage("component.button", mapping),
-      ).toBe(true);
-    }
-    expect(buttonStyles).not.toContain("var(--semantic-");
-    expect(buttonStyles).not.toContain("var(--primitives-");
+  test.each(components.map((record) => [record.id, record]))(
+    "%s stylesheet assigns every compiled mapping in a matching declaration",
+    async (id, record) => {
+      const { styles } = await import(`../dist/${slugOf(id)}.styles.js`);
+      const mappings = await compiledMappings(id);
+      for (const mapping of mappings) {
+        expect(stylesheetContains(styles, mapping), coverMessage(id, mapping)).toBe(true);
+      }
+
+      // Token ADR 0003: a component that publishes a component-token namespace
+      // consumes only that namespace; every other component consumes semantic
+      // tokens and must not reach for a component tier it does not own.
+      if (record.tokenRef?.tier === "component") {
+        expect(styles).not.toContain("var(--semantic-");
+        expect(styles).not.toContain("var(--primitives-");
+      } else {
+        expect(styles).not.toContain("--component-");
+      }
+    },
+  );
+
+  test("Button stylesheet has no state layer", () => {
     expect(buttonStyles).not.toContain("state-layer");
     expect(buttonStyles).not.toContain(".button::before");
   });
+});
 
-  test("Badge stylesheet assigns every compiled mapping in a matching declaration", async () => {
-    const mappings = await compiledMappings("component.badge");
-    for (const mapping of mappings) {
-      expect(
-        stylesheetContains(badgeStyles, mapping),
-        coverMessage("component.badge", mapping),
-      ).toBe(true);
-    }
-    expect(badgeStyles).not.toContain("--component-");
+describe("component records and runtime files agree", () => {
+  const cssSlugs = srcFiles
+    .filter((file) => file.endsWith(".css"))
+    .map((file) => file.slice(0, -4));
+  const recordSlugs = components.map((record) => slugOf(record.id));
+
+  test.each(recordSlugs)("component.%s has src/%s.js and src/%s.css", (slug) => {
+    expect(srcFiles, `missing src/${slug}.js`).toContain(`${slug}.js`);
+    expect(srcFiles, `missing src/${slug}.css`).toContain(`${slug}.css`);
   });
 
-  test("Text field stylesheet assigns every compiled mapping in a matching declaration", async () => {
-    const mappings = await compiledMappings("component.text-field");
-    for (const mapping of mappings) {
-      expect(
-        stylesheetContains(textFieldStyles, mapping),
-        coverMessage("component.text-field", mapping),
-      ).toBe(true);
-    }
-    expect(textFieldStyles).not.toContain("--component-");
+  test.each(cssSlugs)("src/%s.css has a component record", (slug) => {
+    expect(recordSlugs, `src/${slug}.css has no component.${slug} record`).toContain(slug);
   });
 });
+
+function slugOf(id) {
+  return id.slice("component.".length);
+}
 
 function coverMessage(recordId, mapping) {
   const config = mapping.configuration
