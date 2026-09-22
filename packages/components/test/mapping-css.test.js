@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { styles as badgeStyles } from "../dist/badge.styles.js";
 import { styles as buttonStyles } from "../dist/button.styles.js";
+import { styles as textFieldStyles } from "../dist/text-field.styles.js";
 import {
   compiledMappings,
   cssVariableFromTokenName,
@@ -64,6 +65,17 @@ describe("compiled mapping stylesheet coverage", () => {
       ).toBe(true);
     }
     expect(badgeStyles).not.toContain("--component-");
+  });
+
+  test("Text field stylesheet assigns every compiled mapping in a matching declaration", async () => {
+    const mappings = await compiledMappings("component.text-field");
+    for (const mapping of mappings) {
+      expect(
+        stylesheetContains(textFieldStyles, mapping),
+        coverMessage("component.text-field", mapping),
+      ).toBe(true);
+    }
+    expect(textFieldStyles).not.toContain("--component-");
   });
 });
 

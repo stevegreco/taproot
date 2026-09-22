@@ -515,7 +515,7 @@ function projectVariants(
 ): Variant[] {
   const variant = parameters.variant;
   if (!isObject(variant) || !isObject(variant.values) || Object.keys(variant.values).length === 0) {
-    fail("malformed-contract", "component contract is missing parameters.variant values");
+    return [];
   }
   const defaultName = asString(variant.default);
   return Object.entries(variant.values).map(([name, description]) => ({

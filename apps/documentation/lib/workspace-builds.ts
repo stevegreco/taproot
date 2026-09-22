@@ -37,7 +37,7 @@ function assertComponentStyles(): void {
     "@stevegreco/design-system-components",
   );
   const dist = join(dirname(buttonSrc), "../dist");
-  for (const file of ["button.styles.js", "badge.styles.js"]) {
+  for (const file of ["button.styles.js", "badge.styles.js", "text-field.styles.js"]) {
     if (!existsSync(join(dist, file))) {
       throw new MissingWorkspaceBuildError("@stevegreco/design-system-components", `dist/${file}`);
     }

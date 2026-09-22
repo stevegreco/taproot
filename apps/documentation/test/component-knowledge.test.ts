@@ -189,6 +189,40 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
   );
 });
 
+test("text field slice has no variant axis and publishes label, hint, and error", () => {
+  const slice = loadComponentSlice("text-field");
+  const source = readFileSync(join(docsRoot, "docs/components/text-field.mdx"), "utf8");
+  const banner = source.match(/^---\n([\s\S]*?)\n---/);
+
+  assert.equal(slice.tagName, "ds-text-field");
+  assert.deepEqual(slice.variants, []);
+  assert.ok(
+    slice.api.some((row) => row.name === "label"),
+    "api includes the label attribute",
+  );
+  assert.ok(
+    slice.api.some((row) => row.name === "error"),
+    "api includes the error attribute",
+  );
+  assert.ok(
+    slice.api.some((row) => row.name === "input" && row.kind === "event"),
+    "api includes the input event",
+  );
+  assert.ok(
+    slice.accessibility.requirements.some((item) =>
+      /aria|accessible description|describe/i.test(item),
+    ),
+    "accessibility keeps the description rule",
+  );
+  assert.match(slice.behaviorMarkdown, /type="email"/, "form behavior stays with usage");
+  assert.ok(banner, "text-field.mdx has YAML frontmatter");
+  const title = banner[1].match(/^title:\s*(.+)$/m)?.[1]?.trim();
+  const description = banner[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
+  assert.equal(title, slice.title);
+  assert.equal(description, slice.summary);
+  assert.doesNotMatch(source, /section="variants"/);
+});
+
 test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
   assert.throws(
     () => loadComponentSlice("component.button"),

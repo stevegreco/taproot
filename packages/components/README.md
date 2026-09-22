@@ -58,6 +58,31 @@ Badge deliberately provides no button behavior or live-region role. Use a
 button for actions, and add an appropriate ARIA role only when a changing badge
 needs to be announced.
 
+## `<ds-text-field>`
+
+Text fields collect one line of text. The label, hint, and error are attributes
+so the control can associate them inside its shadow root:
+
+```html
+<form>
+  <ds-text-field
+    label="Email"
+    name="email"
+    type="email"
+    hint="Used for sign-in."
+    required
+  ></ds-text-field>
+  <ds-button type="submit">Continue</ds-button>
+</form>
+```
+
+`type` accepts `text`, `email`, `password`, `search`, `url`, or `tel`, and
+defaults to `text`. A non-empty `error` sets `aria-invalid`, includes the
+message in `aria-describedby`, and blocks submit until it is cleared. The inner
+input is exposed as `::part(control)`. Visual values come directly from
+published semantic tokens for surface, text, focus, invalid, and disabled, plus
+primitive spacing where no semantic role exists.
+
 ## `<ds-button>`
 
 ### Attributes
@@ -117,8 +142,8 @@ ds-button::part(button) {
 Button consumes its published `--component-button-*` contract. Every Button
 token aliases a current semantic or primitive token, so themes still flow
 through the semantic layer while consumers gain a stable Button customization
-boundary. Badge deliberately has no component token contract and consumes
-`--semantic-*` tokens directly.
+boundary. Badge and Text field deliberately have no component token contract
+and consume `--semantic-*` tokens directly.
 
 ## Styles are authored as real CSS
 
@@ -149,9 +174,10 @@ From the repository root:
 pnpm exec turbo run test --filter=@stevegreco/design-system-components
 ```
 
-The suite covers Badge content, variants, aliases and semantic token mappings, plus
+The suite covers Badge content, variants, aliases and semantic token mappings,
 Button registration, disabled fieldsets, form behavior, accessible labels,
-focus forwarding and token wiring.
+focus forwarding and token wiring, and Text field label, hint, error, and form
+submission.
 
 ## Local development
 

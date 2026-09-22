@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "vitest";
-import { compile } from "../src/compile/index.js";
+import { compile, resolveMappings } from "../src/compile/index.js";
 import { repoRoot } from "./helpers/workspace.js";
 
 const contentRoot = join(dirname(fileURLToPath(import.meta.url)), "../content");
@@ -57,8 +57,43 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
     true,
   );
 
+  const textField = records.find((record) => record.id === "component.text-field");
+  assert.equal(Object.hasOwn(textField, "tokens"), false);
+  assert.equal(Object.hasOwn(textField.contract, "visuals"), false);
+  assert.equal(textField.contract.specVersion, 5);
+  assert.ok(textField.contract.mappings.length > 0);
+  const invalidControl = resolveMappings(
+    textField.contract.mappings,
+    textField.contract.stateResolution,
+    { part: "control", states: ["hover", "invalid"] },
+  );
+  assert.equal(
+    invalidControl.channels.border.token.name,
+    "semantic.color.border.status.danger.default",
+  );
+  const disabledControl = resolveMappings(
+    textField.contract.mappings,
+    textField.contract.stateResolution,
+    { part: "control", states: ["hover", "invalid", "disabled"] },
+  );
+  assert.equal(disabledControl.channels.border.token.name, "semantic.color.border.disabled");
+  const focusedInvalid = resolveMappings(
+    textField.contract.mappings,
+    textField.contract.stateResolution,
+    { part: "control", states: ["invalid", "focus-visible"] },
+  );
+  assert.equal(focusedInvalid.channels.outline.token.name, "semantic.color.border.focus");
+  assert.equal(
+    focusedInvalid.channels.border.token.name,
+    "semantic.color.border.status.danger.default",
+  );
+
   const binding = records.find((record) => record.id === "binding.button.web-component");
   assert.equal(binding.host.defaultTagName, "ds-button");
+  const textFieldBinding = records.find(
+    (record) => record.id === "binding.text-field.web-component",
+  );
+  assert.equal(textFieldBinding.host.defaultTagName, "ds-text-field");
 
   const buttonMarkdown = await readFile(
     join(outDir, "public/markdown/component.button.md"),

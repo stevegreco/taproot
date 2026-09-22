@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>&lt;ds-text-field&gt; — Design System Components</title>
+
+    <link rel="stylesheet" href="/node_modules/@stevegreco/design-system/dist/css/tokens.css" />
+    <script type="module" src="../src/index.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: var(--primitives-space-8);
+        background-color: var(--semantic-color-background-default);
+        color: var(--semantic-color-foreground-default);
+        font-family: var(--primitives-font-sans);
+      }
+
+      h1 {
+        margin: 0 0 var(--primitives-space-2);
+        font-size: var(--primitives-text-2xl);
+      }
+
+      p {
+        margin: 0 0 var(--primitives-space-6);
+        max-width: 40rem;
+        color: var(--semantic-color-foreground-muted);
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--primitives-space-4);
+        max-width: 24rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>&lt;ds-text-field&gt;</h1>
+    <p>A single-line field with a label, hint, and error, submitted with Button.</p>
+
+    <form>
+      <ds-text-field
+        label="Email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        placeholder="you@example.com"
+        hint="Used for sign-in and account recovery."
+        required
+      ></ds-text-field>
+      <ds-text-field
+        label="Workspace"
+        name="workspace"
+        error="Choose a workspace name."
+      ></ds-text-field>
+      <ds-text-field label="API token" name="token" value="hidden" disabled></ds-text-field>
+      <ds-button type="submit">Continue</ds-button>
+    </form>
+  </body>
+</html>

@@ -69,6 +69,7 @@ test("Button guidance uses guides and reviews, not related", async () => {
     [
       "binding.button.web-component",
       "component.badge",
+      "component.text-field",
       "example.action-hierarchy.settings",
       "guideline.button-implementation",
       "guideline.button-review",

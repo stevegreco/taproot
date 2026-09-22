@@ -23,8 +23,8 @@ for that component. Component tokens must reference current semantic or primitiv
 not introduce independent values, replace semantic intent, or require every component to have a
 component namespace.
 
-Button is currently the only component with a published component contract. Badge continues to use
-semantic tokens directly.
+Button is currently the only component with a published component contract. Badge and Text field
+use semantic tokens directly.
 
 ### Primitive use is allowed when it is honest
 
