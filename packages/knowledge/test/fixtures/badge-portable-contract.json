@@ -59,6 +59,14 @@
         "warning": "Condition that needs attention.",
         "info": "Informational state or feature label."
       },
+      "examples": {
+        "default": "Default",
+        "accent": "Accent",
+        "success": "Active",
+        "danger": "Failed",
+        "warning": "Pending",
+        "info": "Beta"
+      },
       "default": "default"
     }
   },

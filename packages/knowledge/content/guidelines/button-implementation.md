@@ -18,6 +18,8 @@ relations:
     - pattern.action-hierarchy
   guides:
     - component.button
+docsSections:
+  behavior: set-form-behavior-deliberately
 sources:
   - kind: authored
     path: packages/knowledge/content/guidelines/button-implementation.md
