@@ -144,11 +144,12 @@ ds-button::part(button) {
 
 ## Tokens consumed
 
-Button consumes its published `--component-button-*` contract. Every Button
-token aliases a current semantic or primitive token, so themes still flow
-through the semantic layer while consumers gain a stable Button customization
-boundary. Badge and Text field deliberately have no component token contract
-and consume `--semantic-*` tokens directly.
+A component whose knowledge record declares `tokenRef` consumes its published
+`--component-<name>-*` contract; Button is the example. Every component token
+aliases a current semantic or primitive token, so themes still flow through the
+semantic layer while consumers gain a stable customization boundary. Every other
+component consumes `--semantic-*` tokens directly. `test/mapping-css.test.js`
+enforces both rules for every component record.
 
 ## Styles are authored as real CSS
 
@@ -179,10 +180,9 @@ From the repository root:
 pnpm exec turbo run test --filter=@stevegreco/design-system-components
 ```
 
-The suite covers Badge content, variants, aliases and semantic token mappings,
-Button registration, disabled fieldsets, form behavior, accessible labels,
-focus forwarding and token wiring, and Text field label, hint, error, and form
-submission.
+Each component has its own `test/<name>.test.js` for behavior. `test/mapping-css.test.js`
+runs for every component record in the knowledge catalog and checks that its
+stylesheet assigns every compiled mapping.
 
 ## Local development
 

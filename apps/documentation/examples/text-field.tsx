@@ -1,3 +1,10 @@
+/**
+ * Verify: Find `[data-text-field-form]`. Submit it with Continue while Email is empty and require
+ * `[data-text-field-status]` to stay on the prompt and the field error to read
+ * `Enter an email address with an @ sign.` Type `ada@example.com` into the email control, submit
+ * again, and require `[data-text-field-status]` to read `Submitted ada@example.com.` The label,
+ * hint, and error live in shadow DOM; query the host, then the inner input.
+ */
 import { useState } from "react";
 import "@stevegreco/design-system-components";
 

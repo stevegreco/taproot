@@ -1,3 +1,7 @@
+/**
+ * Verify: Require labels for the default, accent, success, danger, warning, and info variants.
+ * Badge is non-interactive and has no live-region role.
+ */
 import "@stevegreco/design-system-components";
 
 export default function BadgeExample() {

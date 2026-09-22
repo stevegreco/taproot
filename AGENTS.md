@@ -16,7 +16,7 @@ implementation changes an accepted requirement or decision.
 
 Domain-owned sources remain authoritative. Token decisions live in `packages/tokens/docs/adr/`.
 Portable component contracts live on component records in `packages/knowledge/content/components/`.
-YAML `*.spec.yaml` files are the component records for Button and Badge; they are not `type: spec`.
+YAML `*.spec.yaml` files are the component records; they are not `type: spec`.
 Host bindings live in `packages/knowledge/content/bindings/`. Component runtime lives in
 `packages/components`.
 
