@@ -23,8 +23,8 @@ flat-merge source fields into `title`, `summary`, or `status` (KNOW-002, KNOW-00
 ### Component
 
 The narrative hub for a design system component. Each component is authored as a
-`components/<name>/<name>.spec.yaml` file that own metadata, relationships, provenance, token references, and the
-portable `contract`. That object has usage, optional content rules, anatomy, parameters, optional
+`components/<name>/<name>.spec.yaml` file that owns metadata, relationships, provenance, token
+references, and the portable `contract`. That object has usage, optional content rules, anatomy, parameters, optional
 configuration axes, events, states, behavior rules, accessibility, optional rationale, and optional
 visual mappings. Usage entries have stable IDs, a `situation`, and optional `instead` and `why`.
 Rules share a vocabulary with stable IDs, obligation levels (`must`, `should`, `may`), a statement,
