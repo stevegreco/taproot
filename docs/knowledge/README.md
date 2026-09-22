@@ -44,6 +44,8 @@ opened `records.jsonl` by path or assumed compiled schema 3.
    compact visual authoring and state resolution. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md)
    remains the host-neutrality decision. [ADR 0001](../adr/0001-portable-design-system-knowledge.md)
    is superseded.
+4. [New component definition of done](new-component.md) lists the build path, the states and
+   options each component must decide on, and the checks that prove the contract.
 
 ## Accepted proposals
 
