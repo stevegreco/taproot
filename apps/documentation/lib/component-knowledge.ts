@@ -336,11 +336,12 @@ function headingAnchor(heading: string): string {
     .replace(/^-|-$/g, "");
 }
 
-function sectionByAnchor(body: string, anchor: string): string {
+/** The `##` section whose heading has `anchor`, or undefined when no heading does. */
+function sectionByAnchor(body: string, anchor: string): string | undefined {
   for (const [heading, section] of markdownByHeading(body).sections) {
     if (headingAnchor(heading) === anchor) return section;
   }
-  return "";
+  return undefined;
 }
 
 function markdownByHeading(body: string): { preamble: string; sections: Map<string, string> } {
@@ -725,13 +726,20 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
       if (behaviorAnchor) {
         if (behaviorSection)
           fail("unexpected-slice", `${id} has more than one guideline with docsSections.behavior`);
-        behaviorSection = sectionByAnchor(asString(related.body), behaviorAnchor);
-        if (!behaviorSection) {
+        const section = sectionByAnchor(asString(related.body), behaviorAnchor);
+        if (section === undefined) {
           fail(
             "malformed-contract",
             `${asString(related.id)} docsSections.behavior names #${behaviorAnchor}, but no ## heading has that anchor`,
           );
         }
+        if (!section) {
+          fail(
+            "malformed-contract",
+            `${asString(related.id)} docsSections.behavior names #${behaviorAnchor}, but that section is empty`,
+          );
+        }
+        behaviorSection = section;
       }
     }
   }
