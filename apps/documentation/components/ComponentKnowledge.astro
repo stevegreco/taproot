@@ -97,7 +97,14 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
 {
   show("together") && slice.together ? (
     <div class="component-knowledge component-knowledge--together">
-      <p>{slice.together.summary}</p>
+      {
+        slice.together.patterns.map((pattern) => (
+          <>
+            {slice.together!.patterns.length > 1 ? <h3>{pattern.title}</h3> : null}
+            <p>{pattern.summary}</p>
+          </>
+        ))
+      }
       {
         slice.together.example ? (
           <figure class="component-knowledge__figure">
@@ -123,16 +130,22 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
         ) : null
       }
       {
-        slice.together.avoid.length > 0 ? (
-          <>
-            <h3>Avoid</h3>
-            <ul>
-              {slice.together.avoid.map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-          </>
-        ) : null
+        slice.together.patterns
+          .filter((pattern) => pattern.avoid.length > 0)
+          .map((pattern) => (
+            <>
+              {slice.together!.patterns.length > 1 ? (
+                <h4>Avoid: {pattern.title}</h4>
+              ) : (
+                <h3>Avoid</h3>
+              )}
+              <ul>
+                {pattern.avoid.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </>
+          ))
       }
     </div>
   ) : null

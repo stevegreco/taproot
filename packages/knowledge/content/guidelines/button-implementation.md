@@ -19,7 +19,9 @@ relations:
   guides:
     - component.button
 docsSections:
-  behavior: set-form-behavior-deliberately
+  behavior:
+    section: set-form-behavior-deliberately
+    heading: Forms
 sources:
   - kind: authored
     path: packages/knowledge/content/guidelines/button-implementation.md
