@@ -203,6 +203,11 @@ export function loadComponentSlice(slug: string): ComponentSlice {
   return slice;
 }
 
+/** Slugs of every public component record, in catalog order. */
+export function componentSlugs(): readonly ComponentSlug[] {
+  return [...slices.keys()];
+}
+
 export function componentKnowledgeMarkdown(slug: string, section?: string): string {
   const slice = loadComponentSlice(slug);
   if (section == null) {
