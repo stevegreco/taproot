@@ -70,6 +70,11 @@ host:
       description: Supporting guidance. Hidden when empty.
     error:
       description: The error message. Hidden when empty.
+  example: |
+    <form>
+      <ds-text-field label="Email" name="email" type="email" hint="Used for sign-in." required></ds-text-field>
+      <ds-button type="submit">Continue</ds-button>
+    </form>
   rationale:
     - decision: Text field is form-associated.
       rationale: The value must submit and reset across the shadow boundary.

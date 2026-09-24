@@ -68,6 +68,8 @@ host:
   parts:
     button:
       description: The inner native button control.
+  example: |
+    <ds-button variant="primary">Save changes</ds-button>
   rationale:
     - decision: Button is form-associated.
       rationale: Submit and reset behavior must work across the shadow boundary.

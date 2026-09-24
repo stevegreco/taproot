@@ -78,6 +78,12 @@ host:
       description: Supporting guidance. Hidden when empty.
     error:
       description: The error message. Hidden when empty.
+  example: |
+    <form>
+      <ds-checkbox label="Email me product updates" name="updates" hint="About one email a month." checked></ds-checkbox>
+      <ds-checkbox label="I agree to the terms" name="terms" required></ds-checkbox>
+      <ds-button type="submit">Continue</ds-button>
+    </form>
   rationale:
     - decision: Checkbox is form-associated.
       rationale: The checked value must submit and reset across the shadow boundary.

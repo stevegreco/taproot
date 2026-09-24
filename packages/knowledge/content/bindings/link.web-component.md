@@ -44,6 +44,9 @@ host:
   parts:
     link:
       description: The inner native anchor.
+  example: |
+    <p>Themes resolve through the <ds-link href="/adr/0003">token tier ADR</ds-link>.</p>
+    <ds-link variant="standalone" href="/projects">View all projects</ds-link>
   rationale:
     - decision: Link is not form-associated.
       rationale: A link navigates. It never submits or resets a form.

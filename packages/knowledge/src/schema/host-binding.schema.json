@@ -48,6 +48,11 @@
     "rationale": {
       "type": "array",
       "items": { "$ref": "#/$defs/rationaleItem" }
+    },
+    "example": {
+      "description": "Markup that shows typical use of the element, such as the usage snippet on its docs page.",
+      "type": "string",
+      "minLength": 1
     }
   },
   "$defs": {

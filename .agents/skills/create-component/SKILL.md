@@ -39,7 +39,7 @@ user only about decisions that change public API. Decide the rest and record the
   stable ID and level.
 - `packages/knowledge/content/bindings/<slug>.web-component.md`: tag, registration, anatomy
   element and part per anatomy name, events, `properties`, `formAssociation` if it is a form
-  control, and `focus.forwardsTo`. Add `parameters` and `parts` entries only for exceptions (see
+  control, `focus.forwardsTo`, and an `example` of typical markup for the docs usage snippet. Add `parameters` and `parts` entries only for exceptions (see
   gotchas).
 - If a pattern should guide its variants, add the component to the pattern's `relations.guides`
   and `variantGuidance`.
@@ -75,8 +75,11 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 
 ### 5. Document and verify
 
-- `apps/documentation/docs/components/<slug>.mdx`: follow `link.mdx`. Sections come from
-  `<ComponentKnowledge component="<slug>" section="…" />`. Do not restate the contract in prose.
+- The `/components/<slug>` page renders from the catalog (`apps/documentation/lib/component-pages.ts`):
+  title, import, the binding's `example` as the usage snippet, the live example, and each
+  `<ComponentKnowledge>` section with content. Give the binding an `example`.
+- `apps/documentation/docs/components/<slug>.mdx` (optional): only the preview introduction, as
+  plain prose with no front matter. Do not restate the contract.
 - `apps/documentation/examples/<slug>.tsx`: one realistic demo with `data-<slug>-*` handles and
   the standard `Verify:` header.
 - `apps/documentation/examples/<slug>.verify.js`: named steps that exercise the demo the way a

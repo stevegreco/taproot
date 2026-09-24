@@ -226,7 +226,8 @@ compiled record. A contract parameter with no `host.parameters` entry maps to at
 `kebab-case(name)` and property `name`. An entry replaces the default whole, so Button's
 `fullWidth: { attribute: full-width }` has no property. A part with no `host.parts` entry takes
 the description of the anatomy entry that renders it. A `host.parts` override must name a part the
-host anatomy renders.
+host anatomy renders. A binding may also author `example`, typical markup for the element; the docs site uses it
+as the component page's usage snippet.
 
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
 namespace must exist in the token file when a component publishes `tokenRef`. Components author

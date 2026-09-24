@@ -40,13 +40,20 @@ const files = [
   `packages/components/src/${slug}.js`,
   `packages/components/src/${slug}.css`,
   `packages/components/test/${slug}.test.js`,
-  `apps/documentation/docs/components/${slug}.mdx`,
   `apps/documentation/examples/${slug}.tsx`,
   `apps/documentation/examples/${slug}.verify.js`,
 ];
 for (const file of files) row(existsSync(path.join(root, file)), file);
 
 console.log("\nGlue (the build generates src/<slug>.d.ts, src/index.js, and src/index.d.ts)");
+const prose = existsSync(path.join(root, `apps/documentation/docs/components/${slug}.mdx`));
+row(
+  prose ? true : "warn",
+  `docs/components/${slug}.mdx preview prose`,
+  prose ? "" : "optional; the page renders from the catalog",
+);
+const bindingSource = read(`packages/knowledge/content/bindings/${slug}.web-component.md`) ?? "";
+row(/^  example:/m.test(bindingSource), "binding example (the docs usage snippet)");
 const nav = read("apps/documentation/docs/components/meta.ts") ?? "";
 row(
   nav.includes(`"${slug}"`) ? true : "warn",

@@ -101,6 +101,9 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 - A component can relate to several patterns; each shows in "Using together".
 - A guideline shows under the page's usage through `docsSections.behavior: { section, heading }`.
   `section` is a `##` anchor in the guideline body; `heading` is what the page prints.
+- The page itself is generated. A section heading appears only when its section has content, so
+  there is nothing to add or remove by hand. `docs/components/<slug>.mdx` holds only preview
+  prose; a prose file with no matching component fails the docs build.
 
 ## Docs example and Verify steps
 

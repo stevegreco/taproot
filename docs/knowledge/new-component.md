@@ -11,8 +11,9 @@ This replaces the definition of done in #95. Use it for every component after Li
 3. Binding: `packages/knowledge/content/bindings/<name>.web-component.md`.
 4. Runtime: `packages/components/src/<name>.{js,css}`. The build generates `src/<name>.d.ts` and
    the package-root barrel (`src/index.js`, `src/index.d.ts`) from the binding and contract.
-5. Docs: `apps/documentation/docs/components/<name>.mdx` and the example
-   `apps/documentation/examples/<name>.tsx`.
+5. Docs: the example `apps/documentation/examples/<name>.tsx` and its Verify steps. The
+   `/components/<name>` page renders from the catalog. `docs/components/<name>.mdx` is optional
+   preview prose.
 
 ## Decide what it does not ship
 

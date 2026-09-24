@@ -36,6 +36,8 @@ host:
       accepts:
         - text
   events: {}
+  example: |
+    <ds-badge variant="success">Active</ds-badge>
 ---
 
 Register with `defineBadge()`. The default tag is `ds-badge`. Aliases are allowed. `::part(badge)` is
