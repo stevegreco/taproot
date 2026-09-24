@@ -9,7 +9,8 @@ This replaces the definition of done in #95. Use it for every component after Li
 2. Component record: `packages/knowledge/content/components/<name>/<name>.spec.yaml`, with a
    contract and explicit `visuals`.
 3. Binding: `packages/knowledge/content/bindings/<name>.web-component.md`.
-4. Runtime: `packages/components/src/<name>.{js,css,d.ts}`, plus the one-line barrel entries.
+4. Runtime: `packages/components/src/<name>.{js,css,d.ts}`. The build generates the package-root
+   barrel (`src/index.js`, `src/index.d.ts`) from the bindings.
 5. Docs: `apps/documentation/docs/components/<name>.mdx` and the example
    `apps/documentation/examples/<name>.tsx`.
 

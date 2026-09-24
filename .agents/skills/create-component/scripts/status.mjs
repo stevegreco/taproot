@@ -49,9 +49,8 @@ const files = [
 for (const file of files) row(existsSync(path.join(root, file)), file);
 
 console.log("\nHand-listed glue (the only lists a new component edits)");
+console.log("  The build generates src/index.js and src/index.d.ts from the binding.");
 const glue = [
-  ["packages/components/src/index.js", [`define${pascal}()`, `./${slug}.js`]],
-  ["packages/components/src/index.d.ts", [`Ds${pascal}, define${pascal}`]],
   ["apps/documentation/examples/custom-elements.d.ts", [`"${tag}": Ds${pascal}Attributes`]],
   ["packages/components/test/upgrade.test.js", [`define${pascal}`]],
 ];

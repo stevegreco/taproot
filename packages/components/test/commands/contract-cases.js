@@ -61,6 +61,7 @@ function componentCases(record, binding) {
   return {
     id: record.id,
     slug: record.id.slice("component.".length),
+    tagName: host.defaultTagName,
     defineExport: host.registration.export,
     parts: Object.fromEntries(
       Object.entries(host.anatomy)

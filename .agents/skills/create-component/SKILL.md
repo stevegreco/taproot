@@ -53,10 +53,10 @@ Check: `pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`.
 component's behavior. CSS uses only the tokens the spec maps. Put pseudo-classes on the inner
 control named by `focus.forwardsTo`.
 
-Add the glue. These are the only lists a component edits:
+The build writes the package-root barrel, `src/index.js` and `src/index.d.ts`, from the bindings.
+Do not edit them; commit what the build writes. Add the glue. These are the only lists a
+component edits:
 
-- `src/index.js`: import, export, and `define<Name>()` call.
-- `src/index.d.ts`: export line, plus any enum type aliases.
 - `apps/documentation/examples/custom-elements.d.ts`: JSX attributes type and `IntrinsicElements`
   entry.
 - `test/upgrade.test.js`: one "reach <Name>" case.
