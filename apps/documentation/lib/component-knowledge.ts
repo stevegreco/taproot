@@ -97,6 +97,12 @@ export interface ComponentSlice {
   readonly summary: string;
   readonly status: RecordStatus;
   readonly tagName: string;
+  /** npm package that publishes the element, from the binding. */
+  readonly packageName: string;
+  /** The binding's registration function, exported from `<packageName>/<slug>`. */
+  readonly defineExport: string;
+  /** The binding's usage markup, or empty when it has none. */
+  readonly usageHtml: string;
   readonly introMarkdown: string;
   readonly behaviorMarkdown: string;
   readonly variants: readonly Variant[];
@@ -782,6 +788,12 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   const host = bindingHost(catalog, id);
   const tagName = asString(host.defaultTagName);
   if (!tagName) fail("malformed-contract", `${id} binding is missing defaultTagName`);
+  const packageName = asString(host.package);
+  const registration = isObject(host.registration) ? host.registration : {};
+  const defineExport = asString(registration.export);
+  if (!packageName || !defineExport) {
+    fail("malformed-contract", `${id} binding is missing its package or registration export`);
+  }
   const parameters = record.contract.parameters;
   if (!isObject(parameters)) {
     fail("malformed-contract", `${id} contract is missing parameters`);
@@ -860,6 +872,9 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     summary: asString(record.summary),
     status: status as RecordStatus,
     tagName,
+    packageName,
+    defineExport,
+    usageHtml: asString(host.example).trim(),
     introMarkdown,
     behaviorMarkdown,
     variants,

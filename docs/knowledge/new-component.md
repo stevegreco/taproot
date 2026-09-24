@@ -9,9 +9,11 @@ This replaces the definition of done in #95. Use it for every component after Li
 2. Component record: `packages/knowledge/content/components/<name>/<name>.spec.yaml`, with a
    contract and explicit `visuals`.
 3. Binding: `packages/knowledge/content/bindings/<name>.web-component.md`.
-4. Runtime: `packages/components/src/<name>.{js,css,d.ts}`, plus the one-line barrel entries.
-5. Docs: `apps/documentation/docs/components/<name>.mdx` and the example
-   `apps/documentation/examples/<name>.tsx`.
+4. Runtime: `packages/components/src/<name>.{js,css}`. The build generates `src/<name>.d.ts` and
+   the package-root barrel (`src/index.js`, `src/index.d.ts`) from the binding and contract.
+5. Docs: the example `apps/documentation/examples/<name>.tsx` and its Verify steps. The
+   `/components/<name>` page renders from the catalog. `docs/components/<name>.mdx` is optional
+   preview prose.
 
 ## Decide what it does not ship
 
@@ -50,9 +52,13 @@ touched.
   `packages/components/test/<name>.test.js` whose title starts with the rule ID in brackets, or a
   reason in `packages/components/test/unautomated-rules.js`. The rule census enforces this.
 - The computed-style mapping test renders the component in each configuration and state.
-  Anything a state needs before it can apply (Link needs an `href`) goes in that test's fixtures.
-- `src/<name>.d.ts` and `apps/documentation/examples/custom-elements.d.ts` match the binding and
-  contract. The element-types test enforces this.
+  Anything a state needs before it can apply (Link needs an `href`) goes in
+  `packages/components/test/helpers/fixtures.js`.
+- The shared host checks cover registration aliases, `hidden`, focus forwarding, visible focus,
+  and properties set before registration for every binding. The component's own test file covers
+  only its behavior.
+- The docs examples type-check against the generated element types. The example-types test
+  enforces this.
 - `examples/<name>.tsx` has a `Verify:` header naming `examples/<name>.verify.js`, and the docs
   tests run those steps against the built site.
 

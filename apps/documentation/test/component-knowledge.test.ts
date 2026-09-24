@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "vitest";
 import { fileURLToPath } from "node:url";
@@ -12,8 +12,17 @@ import {
   projectTogether,
   variantGuidance,
 } from "../lib/component-knowledge";
+import { componentPageEntries } from "../lib/component-pages";
 
 const docsRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+const pages = new Map(componentPageEntries().map((entry) => [entry.slug, entry.raw ?? ""]));
+
+/** The generated MDX source of `/components/<slug>`, front matter included. */
+function pageSource(slug: string): string {
+  const source = pages.get(slug);
+  assert.ok(source, `component.${slug} has a generated page`);
+  return source;
+}
 
 test("button slice variants and api come from the public catalog contract", () => {
   const slice = loadComponentSlice("button");
@@ -126,7 +135,7 @@ test("badge variant examples use the host tag and status labels", () => {
   );
 });
 
-test("badge.mdx renders variants, api, and accessibility from the catalog", async () => {
+test("the badge page renders variants, api, and accessibility from the catalog", async () => {
   const publicRoot = dirname(
     fileURLToPath(import.meta.resolve("@stevegreco/design-system-knowledge/manifest")),
   );
@@ -136,7 +145,7 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
   const slice = loadComponentSlice("badge");
   const danger = slice.variants.find((variant) => variant.name === "danger");
   const markdown = componentKnowledgeMarkdown("badge");
-  const source = readFileSync(join(docsRoot, "docs/components/badge.mdx"), "utf8");
+  const source = pageSource("badge");
   const banner = source.match(/^---\n([\s\S]*?)\n---/);
 
   assert.ok(danger, "contract includes danger");
@@ -171,7 +180,7 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
     "accessibility keeps the live-region rule from the contract",
   );
 
-  assert.ok(banner, "badge.mdx has YAML frontmatter");
+  assert.ok(banner, "the badge page has YAML frontmatter");
   const title = banner[1].match(/^title:\s*(.+)$/m)?.[1]?.trim();
   const description = banner[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
   assert.equal(title, slice.title, "frontmatter title matches the record title");
@@ -183,7 +192,7 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
   assert.doesNotMatch(
     source,
     /destructive states/,
-    "authored MDX must not recommend Badge danger for destructive actions",
+    "the page must not recommend Badge danger for destructive actions",
   );
   assert.doesNotMatch(
     source,
@@ -194,7 +203,7 @@ test("badge.mdx renders variants, api, and accessibility from the catalog", asyn
 
 test("text field slice has no variant axis and publishes label, hint, and error", () => {
   const slice = loadComponentSlice("text-field");
-  const source = readFileSync(join(docsRoot, "docs/components/text-field.mdx"), "utf8");
+  const source = pageSource("text-field");
   const banner = source.match(/^---\n([\s\S]*?)\n---/);
 
   assert.equal(slice.tagName, "ds-text-field");
@@ -218,7 +227,7 @@ test("text field slice has no variant axis and publishes label, hint, and error"
     "accessibility keeps the description rule",
   );
   assert.match(slice.behaviorMarkdown, /type="email"/, "form behavior stays with usage");
-  assert.ok(banner, "text-field.mdx has YAML frontmatter");
+  assert.ok(banner, "the text-field page has YAML frontmatter");
   const title = banner[1].match(/^title:\s*(.+)$/m)?.[1]?.trim();
   const description = banner[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
   assert.equal(title, slice.title);
@@ -228,7 +237,7 @@ test("text field slice has no variant axis and publishes label, hint, and error"
 
 test("link slice ties placement variants and Button to the action hierarchy", () => {
   const slice = loadComponentSlice("link");
-  const source = readFileSync(join(docsRoot, "docs/components/link.mdx"), "utf8");
+  const source = pageSource("link");
   const banner = source.match(/^---\n([\s\S]*?)\n---/);
 
   assert.equal(slice.tagName, "ds-link");
@@ -260,7 +269,7 @@ test("link slice ties placement variants and Button to the action hierarchy", ()
     false,
     "Link has no disabled state",
   );
-  assert.ok(banner, "link.mdx has YAML frontmatter");
+  assert.ok(banner, "the link page has YAML frontmatter");
   const title = banner[1].match(/^title:\s*(.+)$/m)?.[1]?.trim();
   const description = banner[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
   assert.equal(title, slice.title);
@@ -306,11 +315,11 @@ test("component record bodies keep bundle-root destinations for docs rewriting",
   );
 });
 
-test("button.mdx frontmatter matches the slice title and summary", () => {
+test("the button page frontmatter matches the slice title and summary", () => {
   const slice = loadComponentSlice("button");
-  const source = readFileSync(join(docsRoot, "docs/components/button.mdx"), "utf8");
+  const source = pageSource("button");
   const banner = source.match(/^---\n([\s\S]*?)\n---/);
-  assert.ok(banner, "button.mdx has YAML frontmatter");
+  assert.ok(banner, "the button page has YAML frontmatter");
   const title = banner[1].match(/^title:\s*(.+)$/m)?.[1]?.trim();
   const description = banner[1].match(/^description:\s*(.+)$/m)?.[1]?.trim();
   assert.equal(title, slice.title, "frontmatter title matches the record title");
@@ -322,22 +331,36 @@ test("button.mdx frontmatter matches the slice title and summary", () => {
   assert.match(source, /section="review"/, "review stays available without a TOC heading");
 });
 
-test("every component record has a docs page and every docs page has a record", () => {
-  const pages = readdirSync(join(docsRoot, "docs/components"))
+test("every component record has a page, and every prose file has a record", () => {
+  const prose = readdirSync(join(docsRoot, "docs/components"))
     .filter((file) => file.endsWith(".mdx"))
-    .map((file) => file.slice(0, -".mdx".length))
-    .sort();
+    .map((file) => file.slice(0, -".mdx".length));
   const records = [...componentSlugs()].sort();
 
-  for (const slug of records) {
-    assert.ok(pages.includes(slug), `component.${slug} has no docs/components/${slug}.mdx`);
-  }
-  for (const slug of pages) {
+  assert.deepEqual([...pages.keys()].sort(), records);
+  for (const slug of prose) {
     assert.ok(
       records.includes(slug),
       `docs/components/${slug}.mdx has no component.${slug} record`,
     );
   }
+});
+
+test("a page imports, registers, and shows usage from the binding", () => {
+  const source = pageSource("checkbox");
+
+  assert.match(source, /pnpm add @stevegreco\/design-system @stevegreco\/design-system-components/);
+  assert.match(
+    source,
+    /import \{ defineCheckbox \} from "@stevegreco\/design-system-components\/checkbox";\n\ndefineCheckbox\(\);/,
+  );
+  assert.match(
+    source,
+    /lang="html"\n  code=\{`<form>\n  <ds-checkbox label="Email me product updates"/,
+  );
+  assert.match(source, /<Component path="checkbox" \/>/);
+  assert.match(source, /The parent checkbox shows indeterminate/, "prose from checkbox.mdx");
+  assert.doesNotMatch(source, /^## Variants$/m, "no heading for a section without content");
 });
 
 const scratchPattern = {

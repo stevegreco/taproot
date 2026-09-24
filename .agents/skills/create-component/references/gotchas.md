@@ -35,10 +35,16 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 - Every `must` rule in `behavior` and `accessibility.requirements` needs a test or a reason in
   `unautomated-rules.js`. Write rules you can test. Keep rules about authored wording in
   `content`, which the census does not enforce.
-- Binding `parameters` need both `attribute` and `property` unless there is a reason (Button's
-  `full-width` and `aria-label` are attribute-only). Enum value remaps go in `values`.
-- `host.properties` holds read-only extras such as `form`. Its `type` string must match the
-  `.d.ts` exactly.
+- Binding `parameters` list only exceptions. With no entry, a parameter maps to attribute
+  `kebab-case(name)` and property `name`. An entry replaces that default whole: Button's
+  `fullWidth: { attribute: full-width }` is attribute-only, and `action` restates attribute and
+  property because it adds `values`.
+- Binding `parts` list only host detail the anatomy description lacks ("Hidden when empty.",
+  "The inner native input."). Other parts take the anatomy description.
+- `host.properties` holds read-only extras such as `form`. Its `type` string is copied into the
+  generated `.d.ts`, so write it as TypeScript.
+- A form control that contributes a value sets `formAssociation.submitsValue: true`. The generated
+  type then declares `formResetCallback` and `formStateRestoreCallback`.
 
 ## Runtime
 
@@ -56,18 +62,18 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
   the inner control as the anchor.
 - Events: a native `input` event is composed and reaches the host. `change` is not composed;
   re-dispatch it from the host.
-- Honor `:host([hidden]) { display: none; }` and add a test for it.
+- Honor `:host([hidden]) { display: none; }`. The shared host checks test it.
 
 ## Component tests
 
 - Title each test for a rule with its ID in brackets: `test("[rule-id] …")`. Several IDs can share
   a title. Tags must name rules that exist in the contract, or the census fails.
-- Visible focus: `await userEvent.tab()` from `vitest/browser`, then assert `:focus-visible` and a
-  non-`none` outline on the inner control.
+- Visible focus, alias registration, `hidden`, focus forwarding, and properties set before
+  registration are in `test/host-checks.test.js`, which runs for every binding. Its visible-focus
+  title carries `[a11y-visible-focus]`, and the census credits that tag to every component whose
+  contract has the rule. Use the same rule ID in a new contract.
 - Token values: never set `--semantic-*` inline. The setup file loads the real `tokens.css`.
   Compare with `resolvedValue(property, "var(--token)")` from `test/helpers/tokens.js`.
-- Add one case to `test/upgrade.test.js` (property set before `define*()` reaches the shadow DOM).
-  It is the one test file that lists components.
 
 ## Computed-style mapping test
 
@@ -80,8 +86,8 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
   `error`. Any other attribute-driven state needs a driver added in `stateAttributes()`.
 - A configuration axis that is not a parameter must be a media feature listed in `MEDIA_AXES`
   (only `prefersReducedMotion` today).
-- If a state needs content before it applies (Link needs `href` for `:hover`), add it to
-  `FIXTURES` in the test.
+- If a state needs content before it applies (Link needs `href` for `:hover` and focus), add it
+  to `FIXTURES` in `test/helpers/fixtures.js`. The host checks use the same fixtures.
 - `inherit` is compared against the part's parent inside a container with distinctive type. Relative
   values resolve against the part's own font size.
 - A failure names component, part, channel, configuration, state, and theme. Fix the stylesheet
@@ -95,6 +101,9 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 - A component can relate to several patterns; each shows in "Using together".
 - A guideline shows under the page's usage through `docsSections.behavior: { section, heading }`.
   `section` is a `##` anchor in the guideline body; `heading` is what the page prints.
+- The page itself is generated. A section heading appears only when its section has content, so
+  there is nothing to add or remove by hand. `docs/components/<slug>.mdx` holds only preview
+  prose; a prose file with no matching component fails the docs build.
 
 ## Docs example and Verify steps
 
@@ -111,10 +120,12 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 
 ## Types
 
-- `src/<slug>.d.ts` and the JSX entry in `examples/custom-elements.d.ts` are checked against the
-  binding and contract: property kinds, exact enum values, no extras, `HTMLElementTagNameMap`
-  entry. `aria-*` attributes are skipped in JSX because React already types them.
-- Export enum aliases (`export type LinkVariant = …`) and re-export them from `index.d.ts`.
+- `pnpm build` writes `src/<slug>.d.ts` from the binding and contract: a property per mapped
+  property, an attribute per mapped attribute (`aria-*` skipped, since frameworks type them), an
+  enum alias `<Slug><Property>` (`LinkVariant`), property prose from the parameter description,
+  and `HTMLElementTagNameMap`. Fix a wrong type in the records, not the file.
+- `examples/custom-elements.d.ts` maps the generated `ElementAttributes` onto JSX once. A new
+  component needs no edit there.
 
 ## Build and test commands
 

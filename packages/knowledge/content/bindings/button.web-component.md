@@ -38,12 +38,6 @@ host:
         - decorative-icon
         - text-and-decorative-icon
   parameters:
-    variant:
-      attribute: variant
-      property: variant
-    size:
-      attribute: size
-      property: size
     action:
       attribute: type
       property: type
@@ -51,9 +45,6 @@ host:
         activate: button
         submit: submit
         reset: reset
-    disabled:
-      attribute: disabled
-      property: disabled
     fullWidth:
       attribute: full-width
     accessibleName:
@@ -77,6 +68,8 @@ host:
   parts:
     button:
       description: The inner native button control.
+  example: |
+    <ds-button variant="primary">Save changes</ds-button>
   rationale:
     - decision: Button is form-associated.
       rationale: Submit and reset behavior must work across the shadow boundary.

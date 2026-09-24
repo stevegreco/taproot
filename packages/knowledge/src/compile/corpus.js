@@ -5,6 +5,7 @@ import {
   checkRuleReferences,
   checkSourceAgreement,
   completenessProblems,
+  resolveBindingDefaults,
 } from "./records.js";
 import { generateComponentBody } from "./generate-body.js";
 import { rewriteBodyLinks } from "./narrative.js";
@@ -40,10 +41,12 @@ export function assembleCorpus(loaded) {
       return [id, record];
     }),
   );
+  const bindingProblems = resolveBindingDefaults(records);
   const validation = validateRelations(records);
   const problems = [
     ...loaded.problems,
     ...visualProblems,
+    ...bindingProblems,
     ...[...records.values()].flatMap((record) => [
       ...checkSourceAgreement(record, loaded.tokenNames),
       ...checkRuleReferences(record, records),

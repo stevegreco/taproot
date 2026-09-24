@@ -49,34 +49,6 @@ host:
     error:
       element: p
       part: error
-  parameters:
-    label:
-      attribute: label
-      property: label
-    hint:
-      attribute: hint
-      property: hint
-    error:
-      attribute: error
-      property: error
-    checked:
-      attribute: checked
-      property: checked
-    indeterminate:
-      attribute: indeterminate
-      property: indeterminate
-    name:
-      attribute: name
-      property: name
-    value:
-      attribute: value
-      property: value
-    disabled:
-      attribute: disabled
-      property: disabled
-    required:
-      attribute: required
-      property: required
   events:
     input:
       event: input
@@ -94,23 +66,24 @@ host:
     fieldsetDisables: true
     submitRunsConstraintValidation: true
     resetResetsAssociatedForm: true
+    submitsValue: true
   focus:
     forwardsTo: control
   parts:
-    field:
-      description: The stack of the choice row, hint, and error.
-    choice:
-      description: The box and label row.
     control:
       description: The inner native checkbox, restyled as the box.
     indicator:
       description: The check mark or dash drawn over the box. Hidden when neither applies.
-    label:
-      description: The visible label.
     hint:
       description: Supporting guidance. Hidden when empty.
     error:
       description: The error message. Hidden when empty.
+  example: |
+    <form>
+      <ds-checkbox label="Email me product updates" name="updates" hint="About one email a month." checked></ds-checkbox>
+      <ds-checkbox label="I agree to the terms" name="terms" required></ds-checkbox>
+      <ds-button type="submit">Continue</ds-button>
+    </form>
   rationale:
     - decision: Checkbox is form-associated.
       rationale: The checked value must submit and reset across the shadow boundary.

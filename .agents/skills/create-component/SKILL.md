@@ -38,8 +38,9 @@ user only about decisions that change public API. Decide the rest and record the
   `accessibility.requirements`, `rationale`, `stateResolution`, and `visuals`. Give every rule a
   stable ID and level.
 - `packages/knowledge/content/bindings/<slug>.web-component.md`: tag, registration, anatomy
-  element and part per anatomy name, parameter attribute/property, events, `properties`,
-  `formAssociation` if it is a form control, `focus.forwardsTo`, and parts.
+  element and part per anatomy name, events, `properties`, `formAssociation` if it is a form
+  control, `focus.forwardsTo`, and an `example` of typical markup for the docs usage snippet. Add `parameters` and `parts` entries only for exceptions (see
+  gotchas).
 - If a pattern should guide its variants, add the component to the pattern's `relations.guides`
   and `variantGuidance`.
 
@@ -47,26 +48,25 @@ Check: `pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`.
 
 ### 3. Write the runtime
 
-`packages/components/src/<slug>.{js,css,d.ts}`. Use `./internal/element.js` (`Base`,
+`packages/components/src/<slug>.{js,css}`. Use `./internal/element.js` (`Base`,
 `ForwardsFocus`, `focusTarget`, `lazyStyleSheet`, `defineElement`). The file holds only this
 component's behavior. CSS uses only the tokens the spec maps. Put pseudo-classes on the inner
 control named by `focus.forwardsTo`.
 
-Add the glue. These are the only lists a component edits:
-
-- `src/index.js`: import, export, and `define<Name>()` call.
-- `src/index.d.ts`: export line, plus any enum type aliases.
-- `apps/documentation/examples/custom-elements.d.ts`: JSX attributes type and `IntrinsicElements`
-  entry.
-- `test/upgrade.test.js`: one "reach <Name>" case.
-- `apps/documentation/docs/components/meta.ts`: nav order (optional).
+The build writes `src/<slug>.d.ts` and the package-root barrel, `src/index.js` and
+`src/index.d.ts`, from the binding and contract. JSX types in the docs follow from them. Do not
+edit these files; commit what the build writes. The only list a component may edit is
+`apps/documentation/docs/components/meta.ts`, for nav order, and that is optional.
 
 ### 4. Prove the contract
 
 - `packages/components/test/<slug>.test.js`. Tag each test covering a rule:
   `test("[rule-id] …")`. A `must` rule that no test can prove (authored wording, consumer
   responsibility) gets a reason in `test/unautomated-rules.js` instead.
-- The mapping, census, and element-type checks run on their own from the records. Do not edit
+- `test/host-checks.test.js` covers alias registration, `hidden`, focus forwarding, visible focus
+  (`[a11y-visible-focus]`), and properties set before registration for every binding. Do not
+  repeat them in `<slug>.test.js`.
+- The mapping, census, host, and example-types checks run on their own from the records. Do not edit
   them for one component. If one fails, fix the spec, CSS, or types. Extend the harness
   (`test/commands/contract-cases.js`) only when a new kind of state or axis appears, and make the
   extension generic.
@@ -75,8 +75,11 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 
 ### 5. Document and verify
 
-- `apps/documentation/docs/components/<slug>.mdx`: follow `link.mdx`. Sections come from
-  `<ComponentKnowledge component="<slug>" section="…" />`. Do not restate the contract in prose.
+- The `/components/<slug>` page renders from the catalog (`apps/documentation/lib/component-pages.ts`):
+  title, import, the binding's `example` as the usage snippet, the live example, and each
+  `<ComponentKnowledge>` section with content. Give the binding an `example`.
+- `apps/documentation/docs/components/<slug>.mdx` (optional): only the preview introduction, as
+  plain prose with no front matter. Do not restate the contract.
 - `apps/documentation/examples/<slug>.tsx`: one realistic demo with `data-<slug>-*` handles and
   the standard `Verify:` header.
 - `apps/documentation/examples/<slug>.verify.js`: named steps that exercise the demo the way a

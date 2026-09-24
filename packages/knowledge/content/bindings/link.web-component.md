@@ -36,13 +36,6 @@ host:
       accepts:
         - text
         - text-and-decorative-icon
-  parameters:
-    href:
-      attribute: href
-      property: href
-    variant:
-      attribute: variant
-      property: variant
   events:
     activate:
       event: click
@@ -51,6 +44,9 @@ host:
   parts:
     link:
       description: The inner native anchor.
+  example: |
+    <p>Themes resolve through the <ds-link href="/adr/0003">token tier ADR</ds-link>.</p>
+    <ds-link variant="standalone" href="/projects">View all projects</ds-link>
   rationale:
     - decision: Link is not form-associated.
       rationale: A link navigates. It never submits or resets a form.
@@ -65,4 +61,4 @@ an escape hatch. The host honors the native `hidden` attribute; that is not a co
 
 The host is `display: inline`, so an inline link wraps with the text around it. `href` is mirrored
 onto the inner anchor; removing it removes the anchor's `href`, which drops link semantics and
-focusability.
+focusability. `click()` activates the inner anchor, as a native `<a>.click()` would.

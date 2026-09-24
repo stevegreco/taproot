@@ -66,5 +66,8 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Check generated sources are committed
+        run: git diff --exit-code
+
       - name: Test
         run: pnpm test

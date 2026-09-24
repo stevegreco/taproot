@@ -43,37 +43,6 @@ host:
     error:
       element: p
       part: error
-  parameters:
-    label:
-      attribute: label
-      property: label
-    hint:
-      attribute: hint
-      property: hint
-    error:
-      attribute: error
-      property: error
-    type:
-      attribute: type
-      property: type
-    name:
-      attribute: name
-      property: name
-    value:
-      attribute: value
-      property: value
-    placeholder:
-      attribute: placeholder
-      property: placeholder
-    autocomplete:
-      attribute: autocomplete
-      property: autocomplete
-    disabled:
-      attribute: disabled
-      property: disabled
-    required:
-      attribute: required
-      property: required
   events:
     input:
       event: input
@@ -91,19 +60,21 @@ host:
     fieldsetDisables: true
     submitRunsConstraintValidation: true
     resetResetsAssociatedForm: true
+    submitsValue: true
   focus:
     forwardsTo: control
   parts:
-    field:
-      description: The stack of label, control, hint, and error.
-    label:
-      description: The visible label.
     control:
       description: The inner native input.
     hint:
       description: Supporting guidance. Hidden when empty.
     error:
       description: The error message. Hidden when empty.
+  example: |
+    <form>
+      <ds-text-field label="Email" name="email" type="email" hint="Used for sign-in." required></ds-text-field>
+      <ds-button type="submit">Continue</ds-button>
+    </form>
   rationale:
     - decision: Text field is form-associated.
       rationale: The value must submit and reset across the shadow boundary.

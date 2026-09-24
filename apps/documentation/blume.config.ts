@@ -7,6 +7,7 @@ assertWorkspaceBuilds();
 
 const { palettes } = await import("./lib/color-palettes");
 const { componentKnowledgeMarkdown } = await import("./lib/component-knowledge");
+const { componentPagesSource, PROSE_FOLDER } = await import("./lib/component-pages");
 const { semanticReferenceMarkdown } = await import("./lib/semantic-reference");
 
 const colorFieldGuideMarkdown: ComponentMarkdown = () =>
@@ -45,6 +46,14 @@ const componentKnowledge: ComponentMarkdown = ({ props }) => {
 export default defineConfig({
   title: "Design System",
   description: "A token-first design system for consistent, themeable interfaces.",
+  content: {
+    sources: [
+      // Component pages render from the catalog. Their optional prose files
+      // live in docs/components/ but render only through that source.
+      { type: "filesystem", root: "docs", exclude: ["**/_*", "**/.*", `${PROSE_FOLDER}/*.mdx`] },
+      { type: "custom", source: componentPagesSource() },
+    ],
+  },
   examples: {
     css: "theme.css",
   },

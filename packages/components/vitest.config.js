@@ -2,6 +2,7 @@ import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
 import { contractCases } from "./test/commands/contract-cases.js";
+import { hostElements } from "./test/commands/host-elements.js";
 
 const nodeTests = ["test/mapping-css.test.js", "test/contract-rules.test.js"];
 
@@ -23,7 +24,7 @@ export default defineConfig({
             headless: true,
             instances: [{ browser: "chromium" }],
             provider: playwright(),
-            commands: { contractCases },
+            commands: { contractCases, hostElements },
           },
         },
       },

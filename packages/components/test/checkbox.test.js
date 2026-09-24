@@ -2,7 +2,7 @@ import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { cdp, userEvent } from "vitest/browser";
 
 import { defineButton } from "../src/button.js";
-import { DsCheckbox, defineCheckbox } from "../src/checkbox.js";
+import { defineCheckbox } from "../src/checkbox.js";
 
 const tagName = "test-ds-checkbox";
 const buttonTag = "test-ds-checkbox-button";
@@ -39,15 +39,6 @@ function recordEvents(checkbox) {
 }
 
 describe("DsCheckbox", () => {
-  test("can be registered under more than one tag name", () => {
-    const alias = "test-ds-checkbox-alias";
-
-    expect(() => defineCheckbox(alias)).not.toThrow();
-    expect(customElements.get(alias)).toBeDefined();
-    expect(document.createElement(alias)).toBeInstanceOf(DsCheckbox);
-    expect(() => defineCheckbox(alias)).not.toThrow();
-  });
-
   test("[a11y-visible-label][a11y-invalid-message][a11y-required] associates the label, hint, error, and required state", () => {
     const checkbox = render(`
       <${tagName}
@@ -292,23 +283,5 @@ describe("DsCheckbox", () => {
     checkbox.removeAttribute("checked");
     checkbox.setAttribute("checked", "");
     expect(checkbox.checked).toBe(false);
-  });
-
-  test("honors the native hidden attribute", () => {
-    const checkbox = render(`<${tagName} label="Updates" hidden></${tagName}>`);
-
-    expect(getComputedStyle(checkbox).display).toBe("none");
-  });
-
-  test("[a11y-visible-focus] shows a focus outline when reached by keyboard", async () => {
-    const checkbox = render(`<${tagName} label="Updates"></${tagName}>`);
-    const input = controlOf(checkbox);
-
-    await userEvent.tab();
-
-    expect(checkbox.shadowRoot.activeElement).toBe(input);
-    expect(input.matches(":focus-visible")).toBe(true);
-    expect(getComputedStyle(input).outlineStyle).not.toBe("none");
-    expect(parseFloat(getComputedStyle(input).outlineWidth)).toBeGreaterThan(0);
   });
 });

@@ -1,7 +1,6 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
-import { userEvent } from "vitest/browser";
 
-import { DsLink, defineLink } from "../src/link.js";
+import { defineLink } from "../src/link.js";
 import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-link";
@@ -25,14 +24,6 @@ function anchorOf(link) {
 }
 
 describe("DsLink", () => {
-  test("can be registered under more than one tag name", () => {
-    const alias = "test-ds-link-alias";
-
-    expect(() => defineLink(alias)).not.toThrow();
-    expect(document.createElement(alias)).toBeInstanceOf(DsLink);
-    expect(() => defineLink(alias)).not.toThrow();
-  });
-
   test("renders slotted content inside a native anchor exposed as a part", () => {
     const link = render(`<${tagName} href="/billing">View billing history</${tagName}>`);
     const anchor = anchorOf(link);
@@ -100,15 +91,6 @@ describe("DsLink", () => {
     expect(style.textDecorationLine).toBe("none");
   });
 
-  test("forwards focus to the anchor", () => {
-    const link = render(`<${tagName} href="#x">Go</${tagName}>`);
-
-    link.focus();
-    expect(link.shadowRoot.activeElement).toBe(anchorOf(link));
-    link.blur();
-    expect(link.shadowRoot.activeElement).toBe(null);
-  });
-
   test("[native-navigation] activating the anchor navigates natively", () => {
     const link = render(`<${tagName} href="#ds-link-target">Jump</${tagName}>`);
     let clicks = 0;
@@ -149,23 +131,6 @@ describe("DsLink", () => {
     link.click();
 
     expect(location.hash).toBe("");
-  });
-
-  test("honors the native hidden attribute", () => {
-    const link = render(`<${tagName} hidden href="#x">Hidden</${tagName}>`);
-
-    expect(getComputedStyle(link).display).toBe("none");
-  });
-
-  test("[a11y-visible-focus] shows a focus outline when reached by keyboard", async () => {
-    const link = render(`<${tagName} href="#x">Go</${tagName}>`);
-    const anchor = anchorOf(link);
-
-    await userEvent.tab();
-
-    expect(anchor.matches(":focus-visible")).toBe(true);
-    expect(getComputedStyle(anchor).outlineStyle).not.toBe("none");
-    expect(parseFloat(getComputedStyle(anchor).outlineWidth)).toBeGreaterThan(0);
   });
 
   test("[no-disabled-state] has no disabled state to set", () => {

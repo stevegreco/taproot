@@ -221,6 +221,14 @@ must name one of those values. Boolean and string parameters must not declare `v
 the declared kind. Each host parameter mapping names an attribute, a property, or both. An enum
 `values` map on a host parameter, when present, covers every portable enum value.
 
+A binding authors only the exceptions to two defaults, and the compiler resolves both into the
+compiled record. A contract parameter with no `host.parameters` entry maps to attribute
+`kebab-case(name)` and property `name`. An entry replaces the default whole, so Button's
+`fullWidth: { attribute: full-width }` has no property. A part with no `host.parts` entry takes
+the description of the anatomy entry that renders it. A `host.parts` override must name a part the
+host anatomy renders. A binding may also author `example`, typical markup for the element; the docs site uses it
+as the component page's usage snippet.
+
 Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
 namespace must exist in the token file when a component publishes `tokenRef`. Components author
 compact `contract.visuals` grouped by anatomy part and configuration axis. The compiler
