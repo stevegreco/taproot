@@ -12,7 +12,6 @@
     "defaultTagName",
     "registration",
     "anatomy",
-    "parameters",
     "events"
   ],
   "properties": {
@@ -27,6 +26,7 @@
       "additionalProperties": { "$ref": "#/$defs/anatomyMap" }
     },
     "parameters": {
+      "description": "Exceptions only. A contract parameter with no entry maps to attribute kebab-case(name) and property name. An entry is the whole mapping for its parameter. Compiled records carry the resolved map.",
       "type": "object",
       "additionalProperties": { "$ref": "#/$defs/parameterMap" }
     },
@@ -41,6 +41,7 @@
     "formAssociation": { "$ref": "#/$defs/formAssociation" },
     "focus": { "$ref": "#/$defs/focus" },
     "parts": {
+      "description": "Overrides only. A part with no entry uses its contract anatomy description. Compiled records carry the resolved map.",
       "type": "object",
       "additionalProperties": { "$ref": "#/$defs/part" }
     },

@@ -35,8 +35,12 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 - Every `must` rule in `behavior` and `accessibility.requirements` needs a test or a reason in
   `unautomated-rules.js`. Write rules you can test. Keep rules about authored wording in
   `content`, which the census does not enforce.
-- Binding `parameters` need both `attribute` and `property` unless there is a reason (Button's
-  `full-width` and `aria-label` are attribute-only). Enum value remaps go in `values`.
+- Binding `parameters` list only exceptions. With no entry, a parameter maps to attribute
+  `kebab-case(name)` and property `name`. An entry replaces that default whole: Button's
+  `fullWidth: { attribute: full-width }` is attribute-only, and `action` restates attribute and
+  property because it adds `values`.
+- Binding `parts` list only host detail the anatomy description lacks ("Hidden when empty.",
+  "The inner native input."). Other parts take the anatomy description.
 - `host.properties` holds read-only extras such as `form`. Its `type` string must match the
   `.d.ts` exactly.
 

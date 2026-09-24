@@ -1,5 +1,8 @@
 import { PROBLEM, problem } from "./tables.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
+import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
+
+const HOST_KEYS = Object.freeze(Object.keys(hostBindingSchema.properties));
 
 export function assembleRecord(authored, contribution, assets) {
   const record = {
@@ -29,6 +32,73 @@ export function assembleRecord(authored, contribution, assets) {
   if (contribution.fields.tokens) record.tokens = contribution.fields.tokens;
 
   return record;
+}
+
+/**
+ * Fill each binding's parameter and part maps from the contract it implements.
+ * Authored bindings list only exceptions. A parameter with no entry maps to
+ * attribute kebab-case(name) and property name; an entry is the whole mapping,
+ * so `{ attribute: full-width }` alone means there is no property. A part with
+ * no entry uses its anatomy description. Compiled records carry the resolved
+ * maps, so consumers never apply these defaults themselves.
+ */
+export function resolveBindingDefaults(records) {
+  const problems = [];
+
+  for (const [id, record] of records) {
+    if (record.type !== "binding" || record.host == null) continue;
+    const target = records.get(record.relations?.implements?.[0]);
+    // checkBindingAgreement reports a binding without a component contract.
+    if (target?.type !== "component" || !target.contract) continue;
+
+    const host = record.host;
+    const contract = target.contract;
+    const parameters = {};
+    for (const name of Object.keys(contract.parameters ?? {})) {
+      parameters[name] = host.parameters?.[name] ?? { attribute: kebabCase(name), property: name };
+    }
+    for (const [name, mapped] of Object.entries(host.parameters ?? {})) {
+      // Not a contract parameter. checkBindingAgreement reports it.
+      if (!Object.hasOwn(parameters, name)) parameters[name] = mapped;
+    }
+
+    const descriptions = new Map(
+      (contract.anatomy ?? []).map((part) => [part.name, part.description]),
+    );
+    const parts = {};
+    for (const [name, anatomy] of Object.entries(host.anatomy ?? {})) {
+      if (!anatomy.part) continue;
+      const description = host.parts?.[anatomy.part]?.description ?? descriptions.get(name);
+      if (description) parts[anatomy.part] = { description };
+    }
+    for (const name of Object.keys(host.parts ?? {})) {
+      if (Object.hasOwn(parts, name)) continue;
+      problems.push(
+        problem({
+          code: PROBLEM.SOURCE_CONFLICT,
+          message: `${id} host parts has unknown ${name}`,
+          recordId: id,
+          path: "/host/parts",
+        }),
+      );
+    }
+
+    const resolved = { ...host, parameters, parts };
+    if (Object.keys(parts).length === 0) delete resolved.parts;
+    records.set(id, { ...record, host: inSchemaOrder(resolved) });
+  }
+
+  return problems;
+}
+
+function inSchemaOrder(host) {
+  return Object.fromEntries(
+    HOST_KEYS.filter((key) => Object.hasOwn(host, key)).map((key) => [key, host[key]]),
+  );
+}
+
+function kebabCase(name) {
+  return name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 }
 
 export function checkBindingAgreement(records) {

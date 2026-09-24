@@ -43,37 +43,6 @@ host:
     error:
       element: p
       part: error
-  parameters:
-    label:
-      attribute: label
-      property: label
-    hint:
-      attribute: hint
-      property: hint
-    error:
-      attribute: error
-      property: error
-    type:
-      attribute: type
-      property: type
-    name:
-      attribute: name
-      property: name
-    value:
-      attribute: value
-      property: value
-    placeholder:
-      attribute: placeholder
-      property: placeholder
-    autocomplete:
-      attribute: autocomplete
-      property: autocomplete
-    disabled:
-      attribute: disabled
-      property: disabled
-    required:
-      attribute: required
-      property: required
   events:
     input:
       event: input
@@ -94,10 +63,6 @@ host:
   focus:
     forwardsTo: control
   parts:
-    field:
-      description: The stack of label, control, hint, and error.
-    label:
-      description: The visible label.
     control:
       description: The inner native input.
     hint:

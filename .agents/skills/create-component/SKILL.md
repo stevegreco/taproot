@@ -38,8 +38,9 @@ user only about decisions that change public API. Decide the rest and record the
   `accessibility.requirements`, `rationale`, `stateResolution`, and `visuals`. Give every rule a
   stable ID and level.
 - `packages/knowledge/content/bindings/<slug>.web-component.md`: tag, registration, anatomy
-  element and part per anatomy name, parameter attribute/property, events, `properties`,
-  `formAssociation` if it is a form control, `focus.forwardsTo`, and parts.
+  element and part per anatomy name, events, `properties`, `formAssociation` if it is a form
+  control, and `focus.forwardsTo`. Add `parameters` and `parts` entries only for exceptions (see
+  gotchas).
 - If a pattern should guide its variants, add the component to the pattern's `relations.guides`
   and `variantGuidance`.
 

@@ -35,14 +35,7 @@ host:
       required: true
       accepts:
         - text
-  parameters:
-    variant:
-      attribute: variant
-      property: variant
   events: {}
-  parts:
-    badge:
-      description: The inner label surface.
 ---
 
 Register with `defineBadge()`. The default tag is `ds-badge`. Aliases are allowed. `::part(badge)` is

@@ -36,13 +36,6 @@ host:
       accepts:
         - text
         - text-and-decorative-icon
-  parameters:
-    href:
-      attribute: href
-      property: href
-    variant:
-      attribute: variant
-      property: variant
   events:
     activate:
       event: click

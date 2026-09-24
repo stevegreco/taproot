@@ -49,34 +49,6 @@ host:
     error:
       element: p
       part: error
-  parameters:
-    label:
-      attribute: label
-      property: label
-    hint:
-      attribute: hint
-      property: hint
-    error:
-      attribute: error
-      property: error
-    checked:
-      attribute: checked
-      property: checked
-    indeterminate:
-      attribute: indeterminate
-      property: indeterminate
-    name:
-      attribute: name
-      property: name
-    value:
-      attribute: value
-      property: value
-    disabled:
-      attribute: disabled
-      property: disabled
-    required:
-      attribute: required
-      property: required
   events:
     input:
       event: input
@@ -97,16 +69,10 @@ host:
   focus:
     forwardsTo: control
   parts:
-    field:
-      description: The stack of the choice row, hint, and error.
-    choice:
-      description: The box and label row.
     control:
       description: The inner native checkbox, restyled as the box.
     indicator:
       description: The check mark or dash drawn over the box. Hidden when neither applies.
-    label:
-      description: The visible label.
     hint:
       description: Supporting guidance. Hidden when empty.
     error:

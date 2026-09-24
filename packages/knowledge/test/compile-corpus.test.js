@@ -560,6 +560,98 @@ test("SOURCE_CONFLICT fires when a binding parameter is not a bijection", async 
   );
 });
 
+function defaultedBinding(host) {
+  return createMemoryReader({
+    "content/defaulted.md": recordMarkdown({
+      id: "component.defaulted",
+      sources: [{ kind: "authored", path: "content/defaulted.md" }],
+      contract: portableContract({
+        description: "Maps by default.",
+        anatomy: [
+          { name: "control", role: "interactive-surface", description: "Control." },
+          { name: "hint", role: "label", description: "Hint." },
+        ],
+        parameters: {
+          disabled: { kind: "boolean", default: false },
+          fullWidth: { kind: "boolean", default: false },
+          accessibleName: { kind: "string" },
+        },
+        events: {},
+      }),
+    }),
+    "content/bindings/defaulted.md": recordMarkdown({
+      id: "binding.defaulted.web-component",
+      type: "binding",
+      sources: [{ kind: "authored", path: "content/bindings/defaulted.md" }],
+      relations: { implements: ["component.defaulted"] },
+      host: {
+        specVersion: 1,
+        platform: "web-component",
+        package: "@stevegreco/design-system-components",
+        export: "DsDefaulted",
+        defaultTagName: "ds-defaulted",
+        registration: { export: "defineDefaulted", supportsAliases: true },
+        anatomy: {
+          control: { element: "button", part: "button" },
+          hint: { element: "p", part: "hint" },
+        },
+        events: {},
+        ...host,
+      },
+    }),
+  });
+}
+
+test("binding parameters default to kebab-case attributes and same-name properties", async () => {
+  const corpus = await buildCorpus(
+    defaultedBinding({ parameters: { accessibleName: { attribute: "aria-label" } } }),
+    [publicRoot],
+  );
+  assert.deepEqual(corpus.problems, []);
+  const { host } = corpus.records.get("binding.defaulted.web-component");
+  assert.deepEqual(host.parameters, {
+    disabled: { attribute: "disabled", property: "disabled" },
+    fullWidth: { attribute: "full-width", property: "fullWidth" },
+    accessibleName: { attribute: "aria-label" },
+  });
+  assert.deepEqual(Object.keys(host), [
+    "specVersion",
+    "platform",
+    "package",
+    "export",
+    "defaultTagName",
+    "registration",
+    "anatomy",
+    "parameters",
+    "events",
+    "parts",
+  ]);
+});
+
+test("binding parts default to the anatomy description unless overridden", async () => {
+  const corpus = await buildCorpus(
+    defaultedBinding({ parts: { hint: { description: "Hint. Hidden when empty." } } }),
+    [publicRoot],
+  );
+  assert.deepEqual(corpus.problems, []);
+  assert.deepEqual(corpus.records.get("binding.defaulted.web-component").host.parts, {
+    button: { description: "Control." },
+    hint: { description: "Hint. Hidden when empty." },
+  });
+});
+
+test("SOURCE_CONFLICT fires when a binding overrides a part it does not render", async () => {
+  const corpus = await buildCorpus(
+    defaultedBinding({ parts: { missing: { description: "Nowhere." } } }),
+    [publicRoot],
+  );
+  assert.ok(
+    codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) =>
+      /host parts has unknown missing/.test(item.message),
+    ),
+  );
+});
+
 test("RECORD_INVALID fires for contradictory contracts and empty host mappings", async () => {
   const reader = createMemoryReader({
     "content/enum.md": recordMarkdown({
