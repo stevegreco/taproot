@@ -62,7 +62,35 @@
             "additionalProperties": false,
             "minProperties": 1,
             "properties": {
-              "behavior": { "$ref": "#/$defs/slug" }
+              "behavior": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["section", "heading"],
+                "properties": {
+                  "section": { "$ref": "#/$defs/slug" },
+                  "heading": { "type": "string", "minLength": 1 }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "pattern" } },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "variantGuidance": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": { "$ref": "#/$defs/dottedId" },
+            "additionalProperties": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": { "$ref": "#/$defs/slug" }
             }
           }
         }

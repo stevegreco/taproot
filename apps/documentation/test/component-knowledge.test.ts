@@ -9,6 +9,8 @@ import {
   componentSlugs,
   DocsKnowledgeError,
   loadComponentSlice,
+  projectTogether,
+  variantGuidance,
 } from "../lib/component-knowledge";
 
 const docsRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -74,7 +76,7 @@ test("button slice variants and api come from the public catalog contract", () =
     "example image is a docs URL, not a bundlePath",
   );
   assert.ok(
-    slice.together && slice.together.avoid.length > 0,
+    slice.together && slice.together.patterns[0].avoid.length > 0,
     "pattern Avoid items stay with using-together",
   );
   assert.equal(slice.review?.checks.length, 8, "review uses guideline checks, not body prose");
@@ -239,7 +241,10 @@ test("link slice ties placement variants and Button to the action hierarchy", ()
     /inside a sentence/,
     "inline guidance comes from the action hierarchy pattern",
   );
-  assert.equal(slice.together?.title, "Action hierarchy");
+  assert.deepEqual(
+    slice.together?.patterns.map((pattern) => pattern.title),
+    ["Action hierarchy"],
+  );
   assert.match(slice.introMarkdown, /Use Button instead\./, "Button is the stated alternative");
   assert.match(
     slice.behaviorMarkdown,
@@ -333,4 +338,81 @@ test("every component record has a docs page and every docs page has a record", 
       `docs/components/${slug}.mdx has no component.${slug} record`,
     );
   }
+});
+
+const scratchPattern = {
+  id: "pattern.scratch",
+  title: "Scratch",
+  summary: "Scratch summary.",
+  relations: { guides: ["component.scratch"] },
+  body: "## Assign emphasis\n\n### Primary\n\nScratch primary guidance.\n\n## Avoid\n\n- Scratch item",
+};
+const scratchParameters = { variant: { kind: "enum", values: { primary: "Scratch." } } };
+
+test("variant guidance is opt-in, not inferred from pattern headings", () => {
+  assert.equal(
+    variantGuidance("component.scratch", scratchParameters, [scratchPattern]).size,
+    0,
+    "a ### Primary heading alone guides nothing",
+  );
+
+  const optedIn = {
+    ...scratchPattern,
+    variantGuidance: { "component.scratch": { primary: "primary" } },
+  };
+  assert.equal(
+    variantGuidance("component.scratch", scratchParameters, [optedIn]).get("primary"),
+    "Scratch primary guidance.",
+  );
+  assert.equal(
+    variantGuidance("component.other", scratchParameters, [optedIn]).size,
+    0,
+    "another component with the same variant name gets nothing",
+  );
+});
+
+test("variant guidance fails on anchors, variants, or components the records do not have", () => {
+  const withGuidance = (guidance: Record<string, unknown>) => [
+    { ...scratchPattern, variantGuidance: { "component.scratch": guidance } },
+  ];
+  assert.throws(
+    () =>
+      variantGuidance("component.scratch", scratchParameters, withGuidance({ primary: "missing" })),
+    /names #missing, but no ### heading/,
+  );
+  assert.throws(
+    () =>
+      variantGuidance("component.scratch", scratchParameters, withGuidance({ ghost: "primary" })),
+    /variant ghost, which its contract does not have/,
+  );
+  assert.throws(
+    () =>
+      variantGuidance("component.scratch", scratchParameters, [
+        {
+          ...scratchPattern,
+          relations: {},
+          variantGuidance: { "component.scratch": { primary: "primary" } },
+        },
+      ]),
+    /which it does not guide/,
+  );
+  const twice = withGuidance({ primary: "primary" });
+  assert.throws(
+    () => variantGuidance("component.scratch", scratchParameters, [...twice, ...twice]),
+    /more than one pattern/,
+  );
+});
+
+test("using-together keeps every related pattern", () => {
+  const together = projectTogether(
+    [scratchPattern, { ...scratchPattern, id: "pattern.second", title: "Second" }],
+    undefined,
+  );
+  assert.deepEqual(
+    together?.patterns.map((pattern) => [pattern.id, pattern.avoid]),
+    [
+      ["pattern.scratch", ["Scratch item"]],
+      ["pattern.second", ["Scratch item"]],
+    ],
+  );
 });

@@ -16,7 +16,9 @@ relations:
   guides:
     - component.text-field
 docsSections:
-  behavior: set-form-behavior-deliberately
+  behavior:
+    section: set-form-behavior-deliberately
+    heading: Forms
 sources:
   - kind: authored
     path: packages/knowledge/content/guidelines/text-field-implementation.md

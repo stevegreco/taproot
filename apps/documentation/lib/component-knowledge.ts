@@ -67,10 +67,16 @@ export interface ExampleFigure {
   readonly annotations: readonly ExampleAnnotation[];
 }
 
-export interface TogetherSection {
+export interface TogetherPattern {
+  readonly id: string;
   readonly title: string;
   readonly summary: string;
   readonly avoid: readonly string[];
+}
+
+export interface TogetherSection {
+  /** Every pattern that relates to the component, in catalog order. */
+  readonly patterns: readonly TogetherPattern[];
   readonly example: ExampleFigure | undefined;
 }
 
@@ -119,6 +125,12 @@ export class DocsKnowledgeError extends Error {
 }
 
 type Catalog = Awaited<ReturnType<typeof openCatalog>>;
+
+/** A guideline section shown under the page's usage, with the heading it declares. */
+interface BehaviorSection {
+  readonly heading: string;
+  readonly markdown: string;
+}
 
 const SLUG = /^[a-z][a-z0-9-]*$/;
 const DIGEST_PREFIX_LENGTH = 12;
@@ -247,7 +259,13 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
         .join("\n\n");
     case "together": {
       if (!slice.together) return "";
-      const parts = [slice.together.summary];
+      const { patterns } = slice.together;
+      const titled = patterns.length > 1;
+      const parts: string[] = [];
+      for (const pattern of patterns) {
+        if (titled) parts.push(`### ${pattern.title}`);
+        parts.push(pattern.summary);
+      }
       if (slice.together.example) {
         parts.push(
           `![${slice.together.example.alt}](${slice.together.example.src})`,
@@ -256,8 +274,12 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
           ),
         );
       }
-      if (slice.together.avoid.length > 0) {
-        parts.push("### Avoid", ...slice.together.avoid.map((item) => `- ${item}`));
+      for (const pattern of patterns) {
+        if (pattern.avoid.length === 0) continue;
+        parts.push(
+          titled ? `#### Avoid: ${pattern.title}` : "### Avoid",
+          ...pattern.avoid.map((item) => `- ${item}`),
+        );
       }
       return parts.filter((part) => part.length > 0).join("\n\n");
     }
@@ -368,12 +390,13 @@ function markdownByHeading(body: string): { preamble: string; sections: Map<stri
   return { preamble, sections };
 }
 
-function patternGuidanceByVariant(body: string): Map<string, string> {
-  const guidance = new Map<string, string>();
+/** Each `###` subsection's text, keyed by its heading anchor. */
+function subsectionsByAnchor(body: string): Map<string, string> {
+  const subsections = new Map<string, string>();
   const matches = [...body.matchAll(/^###\s+(.+)$/gm)];
   for (let index = 0; index < matches.length; index += 1) {
     const match = matches[index];
-    const heading = match[1]?.trim().toLowerCase();
+    const heading = match[1]?.trim();
     if (!heading) continue;
     const start = (match.index ?? 0) + match[0].length;
     const end =
@@ -381,7 +404,64 @@ function patternGuidanceByVariant(body: string): Map<string, string> {
     let text = body.slice(start, end).trim();
     const cut = text.search(/^##\s+/m);
     if (cut !== -1) text = text.slice(0, cut).trim();
-    guidance.set(heading, text);
+    subsections.set(headingAnchor(heading), text);
+  }
+  return subsections;
+}
+
+/**
+ * Variant guidance a component opts into. A pattern's `variantGuidance` maps a
+ * component ID to its variant values, each naming a `###` subsection of the
+ * pattern body by anchor. A pattern without an entry for the component
+ * contributes nothing, whatever its headings are called.
+ */
+export function variantGuidance(
+  id: string,
+  parameters: Record<string, unknown>,
+  patterns: readonly Record<string, unknown>[],
+): Map<string, string> {
+  const guidance = new Map<string, string>();
+  const values =
+    isObject(parameters.variant) && isObject(parameters.variant.values)
+      ? parameters.variant.values
+      : {};
+  for (const pattern of patterns) {
+    const patternId = asString(pattern.id);
+    const declared = isObject(pattern.variantGuidance) ? pattern.variantGuidance[id] : undefined;
+    if (declared === undefined) continue;
+    if (!isObject(declared)) {
+      fail("malformed-contract", `${patternId} variantGuidance.${id} must map variants to anchors`);
+    }
+    const guides = isObject(pattern.relations) ? pattern.relations.guides : undefined;
+    if (!Array.isArray(guides) || !guides.includes(id)) {
+      fail(
+        "malformed-contract",
+        `${patternId} variantGuidance names ${id}, which it does not guide`,
+      );
+    }
+    const subsections = subsectionsByAnchor(asString(pattern.body));
+    for (const [variant, anchor] of Object.entries(declared)) {
+      if (!Object.hasOwn(values, variant)) {
+        fail(
+          "malformed-contract",
+          `${patternId} variantGuidance names ${id} variant ${variant}, which its contract does not have`,
+        );
+      }
+      const text = subsections.get(asString(anchor));
+      if (!text) {
+        fail(
+          "malformed-contract",
+          `${patternId} variantGuidance.${id}.${variant} names #${asString(anchor)}, but no ### heading with text has that anchor`,
+        );
+      }
+      if (guidance.has(variant)) {
+        fail(
+          "unexpected-slice",
+          `${id} variant ${variant} has guidance from more than one pattern`,
+        );
+      }
+      guidance.set(variant, text);
+    }
   }
   return guidance;
 }
@@ -599,9 +679,26 @@ function projectReview(record: Record<string, unknown>): ReviewSection {
   };
 }
 
+/** "Using together": each related pattern's summary and Avoid list, plus the example. */
+export function projectTogether(
+  patterns: readonly Record<string, unknown>[],
+  example: ExampleFigure | undefined,
+): TogetherSection | undefined {
+  if (patterns.length === 0 && !example) return undefined;
+  return {
+    patterns: patterns.map((pattern) => ({
+      id: asString(pattern.id),
+      title: asString(pattern.title),
+      summary: asString(pattern.summary),
+      avoid: bulletItems(markdownByHeading(asString(pattern.body)).sections.get("avoid") ?? ""),
+    })),
+    example,
+  };
+}
+
 function projectIntro(
   record: Record<string, unknown>,
-  behaviorSection: string,
+  behaviorSection: BehaviorSection | undefined,
   digest: string,
 ): { introMarkdown: string; behaviorMarkdown: string } {
   const contract = isObject(record.contract) ? record.contract : {};
@@ -660,12 +757,12 @@ function projectIntro(
     contentBlocks.length > 0
       ? rewriteBundleUrls(`### Write the label\n\n${contentBlocks.join("\n\n")}`, digest)
       : "";
-  const form = behaviorSection ? rewriteBundleUrls(behaviorSection, digest) : "";
+  const behavior = behaviorSection
+    ? `### ${behaviorSection.heading}\n\n${rewriteBundleUrls(behaviorSection.markdown, digest)}`
+    : "";
   return {
     introMarkdown: introParts.filter((part) => part.length > 0).join("\n\n"),
-    behaviorMarkdown: [label, form ? `### Forms\n\n${form}` : ""]
-      .filter((part) => part.length > 0)
-      .join("\n\n"),
+    behaviorMarkdown: [label, behavior].filter((part) => part.length > 0).join("\n\n"),
   };
 }
 
@@ -700,10 +797,8 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     fail("malformed-contract", `${id} has an unknown status`);
   }
 
-  let patternTitle = "";
-  let patternSummary = "";
-  let patternBody = "";
-  let behaviorSection = "";
+  const patterns: Record<string, unknown>[] = [];
+  let behaviorSection: BehaviorSection | undefined;
   let example: ExampleFigure | undefined;
   let review: ReviewSection | undefined;
 
@@ -712,10 +807,7 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     if (!isObject(related)) continue;
     const type = related.type;
     if (type === "pattern") {
-      if (patternTitle) fail("unexpected-slice", `${id} has more than one related pattern`);
-      patternTitle = asString(related.title);
-      patternSummary = asString(related.summary);
-      patternBody = asString(related.body);
+      patterns.push(related);
     } else if (type === "example") {
       if (example) fail("unexpected-slice", `${id} has more than one related example`);
       example = projectExample(related, digest);
@@ -727,7 +819,8 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
         continue;
       }
       const sections = isObject(related.docsSections) ? related.docsSections : {};
-      const behaviorAnchor = asString(sections.behavior);
+      const behavior = isObject(sections.behavior) ? sections.behavior : {};
+      const behaviorAnchor = asString(behavior.section);
       if (behaviorAnchor) {
         if (behaviorSection)
           fail("unexpected-slice", `${id} has more than one guideline with docsSections.behavior`);
@@ -744,24 +837,22 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
             `${asString(related.id)} docsSections.behavior names #${behaviorAnchor}, but that section is empty`,
           );
         }
-        behaviorSection = section;
+        const heading = asString(behavior.heading);
+        if (!heading) {
+          fail(
+            "malformed-contract",
+            `${asString(related.id)} docsSections.behavior has no heading`,
+          );
+        }
+        behaviorSection = { heading, markdown: section };
       }
     }
   }
 
-  const variants = projectVariants(tagName, parameters, patternGuidanceByVariant(patternBody));
+  const variants = projectVariants(tagName, parameters, variantGuidance(id, parameters, patterns));
   const { introMarkdown, behaviorMarkdown } = projectIntro(record, behaviorSection, digest);
-  const avoid = bulletItems(markdownByHeading(patternBody).sections.get("avoid") ?? "");
 
-  const together =
-    patternTitle || example
-      ? {
-          title: patternTitle,
-          summary: patternSummary,
-          avoid,
-          example,
-        }
-      : undefined;
+  const together = projectTogether(patterns, example);
 
   return {
     slug,

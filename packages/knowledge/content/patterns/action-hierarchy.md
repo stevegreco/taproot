@@ -23,6 +23,15 @@ relations:
   guides:
     - component.button
     - component.link
+variantGuidance:
+  component.button:
+    primary: primary
+    secondary: secondary
+    ghost: ghost
+    danger: danger
+  component.link:
+    inline: inline
+    standalone: standalone
 sources:
   - kind: authored
     path: packages/knowledge/content/patterns/action-hierarchy.md

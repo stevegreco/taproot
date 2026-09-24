@@ -100,10 +100,18 @@ Record types can add validated fields. For example, component records can includ
 include assets and annotations.
 
 Guidelines intended for review can add structured `checks`. Each check has a stable ID, a level,
-and one verifiable requirement. A guideline can add `docsSections` to name the `##` section, by
-its heading anchor, that a documentation site shows for a page section. Today the only key is
-`behavior`. The docs build fails when the anchor matches no heading, so renaming a heading cannot
-silently drop that section. Example records can add structured `assets` and `annotations`.
+and one verifiable requirement. A guideline can add `docsSections` to name the `##` section that a
+documentation site shows for a page section. Today the only key is `behavior`, which takes the
+section's heading anchor and the heading the page shows it under
+(`{ section: set-form-behavior-deliberately, heading: Forms }`). The docs build fails when the
+anchor matches no heading, so renaming a heading cannot silently drop that section.
+
+A pattern can add `variantGuidance` to opt a component's variants into guidance from its body. It
+maps a component ID the pattern `guides` to variant values, each naming a `###` subsection by
+anchor. Headings alone guide nothing: a component with a `primary` variant gets no guidance from a
+`### Primary` heading unless the pattern names it. The docs build fails when an anchor, variant, or
+component does not exist, or when two patterns guide the same variant. A component can relate to
+more than one pattern. Example records can add structured `assets` and `annotations`.
 
 ## Executable contract
 
