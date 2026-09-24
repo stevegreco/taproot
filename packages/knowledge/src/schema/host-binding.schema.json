@@ -128,7 +128,11 @@
         "mechanism": { "const": "FACE" },
         "fieldsetDisables": { "type": "boolean" },
         "submitRunsConstraintValidation": { "type": "boolean" },
-        "resetResetsAssociatedForm": { "type": "boolean" }
+        "resetResetsAssociatedForm": { "type": "boolean" },
+        "submitsValue": {
+          "description": "The element contributes a value to its form, so form reset and state restore apply to it.",
+          "type": "boolean"
+        }
       }
     },
     "focus": {

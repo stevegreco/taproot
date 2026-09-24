@@ -39,8 +39,10 @@ defineButton("acme-button"); // <acme-button>
 ```
 
 Every `src/<name>.js` is published as the subpath `…/<name>`, with types from
-`src/<name>.d.ts`. The build generates the package-root barrel, `src/index.js`
-and `src/index.d.ts`, from the knowledge bindings; do not edit them by hand. Helpers that are not public API belong in `src/internal/`,
+`src/<name>.d.ts`. The build generates those types and the package-root barrel,
+`src/index.js` and `src/index.d.ts`, from the knowledge bindings and contracts;
+do not edit them by hand. For JSX, map `ElementAttributes` (exported from the
+package root) onto your framework's intrinsic elements. Helpers that are not public API belong in `src/internal/`,
 which the `exports` map blocks. `…/index` is blocked too; import the package
 root for the barrel.
 

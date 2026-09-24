@@ -40,7 +40,6 @@ const files = [
   `packages/knowledge/content/bindings/${slug}.web-component.md`,
   `packages/components/src/${slug}.js`,
   `packages/components/src/${slug}.css`,
-  `packages/components/src/${slug}.d.ts`,
   `packages/components/test/${slug}.test.js`,
   `apps/documentation/docs/components/${slug}.mdx`,
   `apps/documentation/examples/${slug}.tsx`,
@@ -49,11 +48,8 @@ const files = [
 for (const file of files) row(existsSync(path.join(root, file)), file);
 
 console.log("\nHand-listed glue (the only lists a new component edits)");
-console.log("  The build generates src/index.js and src/index.d.ts from the binding.");
-const glue = [
-  ["apps/documentation/examples/custom-elements.d.ts", [`"${tag}": Ds${pascal}Attributes`]],
-  ["packages/components/test/upgrade.test.js", [`define${pascal}`]],
-];
+console.log("  The build generates src/<slug>.d.ts, src/index.js, and src/index.d.ts.");
+const glue = [["packages/components/test/upgrade.test.js", [`define${pascal}`]]];
 for (const [file, needles] of glue) {
   const source = read(file) ?? "";
   const absent = needles.filter((needle) => !source.includes(needle));

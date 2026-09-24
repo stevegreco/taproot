@@ -48,17 +48,16 @@ Check: `pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`.
 
 ### 3. Write the runtime
 
-`packages/components/src/<slug>.{js,css,d.ts}`. Use `./internal/element.js` (`Base`,
+`packages/components/src/<slug>.{js,css}`. Use `./internal/element.js` (`Base`,
 `ForwardsFocus`, `focusTarget`, `lazyStyleSheet`, `defineElement`). The file holds only this
 component's behavior. CSS uses only the tokens the spec maps. Put pseudo-classes on the inner
 control named by `focus.forwardsTo`.
 
-The build writes the package-root barrel, `src/index.js` and `src/index.d.ts`, from the bindings.
-Do not edit them; commit what the build writes. Add the glue. These are the only lists a
-component edits:
+The build writes `src/<slug>.d.ts` and the package-root barrel, `src/index.js` and
+`src/index.d.ts`, from the binding and contract. JSX types in the docs follow from them. Do not
+edit these files; commit what the build writes. Add the glue. These are the only lists a component
+edits:
 
-- `apps/documentation/examples/custom-elements.d.ts`: JSX attributes type and `IntrinsicElements`
-  entry.
 - `test/upgrade.test.js`: one "reach <Name>" case.
 - `apps/documentation/docs/components/meta.ts`: nav order (optional).
 
@@ -67,7 +66,7 @@ component edits:
 - `packages/components/test/<slug>.test.js`. Tag each test covering a rule:
   `test("[rule-id] …")`. A `must` rule that no test can prove (authored wording, consumer
   responsibility) gets a reason in `test/unautomated-rules.js` instead.
-- The mapping, census, and element-type checks run on their own from the records. Do not edit
+- The mapping, census, and example-types checks run on their own from the records. Do not edit
   them for one component. If one fails, fix the spec, CSS, or types. Extend the harness
   (`test/commands/contract-cases.js`) only when a new kind of state or axis appears, and make the
   extension generic.

@@ -60,6 +60,7 @@ host:
     fieldsetDisables: true
     submitRunsConstraintValidation: true
     resetResetsAssociatedForm: true
+    submitsValue: true
   focus:
     forwardsTo: control
   parts:

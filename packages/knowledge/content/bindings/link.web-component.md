@@ -58,4 +58,4 @@ an escape hatch. The host honors the native `hidden` attribute; that is not a co
 
 The host is `display: inline`, so an inline link wraps with the text around it. `href` is mirrored
 onto the inner anchor; removing it removes the anchor's `href`, which drops link semantics and
-focusability.
+focusability. `click()` activates the inner anchor, as a native `<a>.click()` would.

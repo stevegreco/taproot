@@ -41,8 +41,10 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
   property because it adds `values`.
 - Binding `parts` list only host detail the anatomy description lacks ("Hidden when empty.",
   "The inner native input."). Other parts take the anatomy description.
-- `host.properties` holds read-only extras such as `form`. Its `type` string must match the
-  `.d.ts` exactly.
+- `host.properties` holds read-only extras such as `form`. Its `type` string is copied into the
+  generated `.d.ts`, so write it as TypeScript.
+- A form control that contributes a value sets `formAssociation.submitsValue: true`. The generated
+  type then declares `formResetCallback` and `formStateRestoreCallback`.
 
 ## Runtime
 
@@ -115,10 +117,12 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 
 ## Types
 
-- `src/<slug>.d.ts` and the JSX entry in `examples/custom-elements.d.ts` are checked against the
-  binding and contract: property kinds, exact enum values, no extras, `HTMLElementTagNameMap`
-  entry. `aria-*` attributes are skipped in JSX because React already types them.
-- Export enum aliases (`export type LinkVariant = …`) and re-export them from `index.d.ts`.
+- `pnpm build` writes `src/<slug>.d.ts` from the binding and contract: a property per mapped
+  property, an attribute per mapped attribute (`aria-*` skipped, since frameworks type them), an
+  enum alias `<Slug><Property>` (`LinkVariant`), property prose from the parameter description,
+  and `HTMLElementTagNameMap`. Fix a wrong type in the records, not the file.
+- `examples/custom-elements.d.ts` maps the generated `ElementAttributes` onto JSX once. A new
+  component needs no edit there.
 
 ## Build and test commands
 
