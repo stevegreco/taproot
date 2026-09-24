@@ -1,8 +1,7 @@
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
-import { userEvent } from "vitest/browser";
 
 import { defineButton } from "../src/button.js";
-import { DsTextField, defineTextField } from "../src/text-field.js";
+import { defineTextField } from "../src/text-field.js";
 
 const tagName = "test-ds-text-field";
 const buttonTag = "test-ds-text-field-button";
@@ -26,15 +25,6 @@ function controlOf(field) {
 }
 
 describe("DsTextField", () => {
-  test("can be registered under more than one tag name", () => {
-    const alias = "test-ds-text-field-alias";
-
-    expect(() => defineTextField(alias)).not.toThrow();
-    expect(customElements.get(alias)).toBeDefined();
-    expect(document.createElement(alias)).toBeInstanceOf(DsTextField);
-    expect(() => defineTextField(alias)).not.toThrow();
-  });
-
   test("[a11y-visible-label][a11y-invalid-message][a11y-required] associates the label, hint, error, and required state", () => {
     const field = render(`
       <${tagName}
@@ -102,14 +92,12 @@ describe("DsTextField", () => {
     expect(input.disabled).toBe(true);
   });
 
-  test("forwards focus and falls back to text for an unknown type", () => {
+  test("mirrors input attributes and falls back to text for an unknown type", () => {
     const field = render(
       `<${tagName} label="Query" type="search" placeholder="Search" autocomplete="off"></${tagName}>`,
     );
     const input = controlOf(field);
 
-    field.focus();
-    expect(field.shadowRoot.activeElement).toBe(input);
     expect(input.type).toBe("search");
     expect(input.placeholder).toBe("Search");
     expect(input.autocomplete).toBe("off");
@@ -157,22 +145,5 @@ describe("DsTextField", () => {
     form.reset();
     expect(field.value).toBe("first@example.com");
     expect(new FormData(form).get("email")).toBe("first@example.com");
-  });
-
-  test("honors the native hidden attribute", () => {
-    const field = render(`<${tagName} label="Email" hidden></${tagName}>`);
-
-    expect(getComputedStyle(field).display).toBe("none");
-  });
-
-  test("[a11y-visible-focus] shows a focus outline when reached by keyboard", async () => {
-    const field = render(`<${tagName} label="Email"></${tagName}>`);
-    const input = controlOf(field);
-
-    await userEvent.tab();
-
-    expect(input.matches(":focus-visible")).toBe(true);
-    expect(getComputedStyle(input).outlineStyle).not.toBe("none");
-    expect(parseFloat(getComputedStyle(input).outlineWidth)).toBeGreaterThan(0);
   });
 });

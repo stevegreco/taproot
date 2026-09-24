@@ -13,6 +13,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { cdp, commands, userEvent } from "vitest/browser";
 
+import { FIXTURES } from "./helpers/fixtures.js";
+
 const PSEUDO_STATES = Object.freeze({
   hover: "hover",
   pressed: "active",
@@ -43,11 +45,6 @@ const CHANNELS = Object.freeze({
   ],
   "transition-duration": ["transition-duration", ["transition-duration"]],
   "transition-timing-function": ["transition-timing-function", ["transition-timing-function"]],
-});
-
-/** Content a component needs before its mapped states can apply. */
-const FIXTURES = Object.freeze({
-  "component.link": { href: "#contract" },
 });
 
 /** Distinct inherited type, so `inherit` cannot pass by matching a token by accident. */

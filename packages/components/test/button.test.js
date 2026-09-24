@@ -1,7 +1,6 @@
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
-import { userEvent } from "vitest/browser";
 
-import { DsButton, defineButton } from "../src/button.js";
+import { defineButton } from "../src/button.js";
 
 const tagName = "test-ds-button";
 
@@ -19,15 +18,6 @@ function render(markup) {
 }
 
 describe("DsButton", () => {
-  test("can be registered under more than one tag name", () => {
-    const alias = "test-ds-button-alias";
-
-    expect(() => defineButton(alias)).not.toThrow();
-    expect(customElements.get(alias)).toBeDefined();
-    expect(document.createElement(alias)).toBeInstanceOf(DsButton);
-    expect(() => defineButton(alias)).not.toThrow();
-  });
-
   test("follows disabled fieldset state", () => {
     const fieldset = render(`<fieldset><${tagName}>Save</${tagName}></fieldset>`);
     const button = fieldset.querySelector(tagName);
@@ -111,16 +101,5 @@ describe("DsButton", () => {
 
     button.removeAttribute("aria-label");
     expect(control.hasAttribute("aria-label")).toBe(false);
-  });
-
-  test("[visible-focus] shows a focus outline when reached by keyboard", async () => {
-    const button = render(`<${tagName}>Save</${tagName}>`);
-    const control = button.shadowRoot.querySelector("button");
-
-    await userEvent.tab();
-
-    expect(control.matches(":focus-visible")).toBe(true);
-    expect(getComputedStyle(control).outlineStyle).not.toBe("none");
-    expect(parseFloat(getComputedStyle(control).outlineWidth)).toBeGreaterThan(0);
   });
 });

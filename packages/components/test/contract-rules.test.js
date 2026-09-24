@@ -3,6 +3,9 @@
  * requirements has a test in test/<name>.test.js whose title carries the rule ID
  * in brackets, for example `test("[inline-underline] …")`, or a written reason in
  * test/unautomated-rules.js. `should` and `may` rules are reported, not enforced.
+ *
+ * test/host-checks.test.js runs once per component. A tag in one of its titles
+ * counts for every component whose contract has that rule.
  */
 import { readFileSync } from "node:fs";
 import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
@@ -13,7 +16,10 @@ import { unautomatedRules } from "./unautomated-rules.js";
 const catalog = await openCatalog();
 const components = catalog.list({ type: "component" }).map((summary) => catalog.get(summary.id));
 
-const TITLE = /\btest(?:\.\w+)*\(\s*(["'`])((?:\\.|(?!\1).)*)\1/g;
+const SHARED_TESTS = "host-checks.test.js";
+/** A `test(`, `test.each(…)(`, or similar call, then its string title. */
+const TITLE =
+  /\btest(?:\.\w+(?:\([^()]*(?:\([^()]*\)[^()]*)*\))?)*\(\s*(["'`])((?:\\.|(?!\1).)*)\1/g;
 const TAG = /\[([a-z0-9-]+)\]/g;
 
 function rulesOf(record) {
@@ -25,9 +31,9 @@ function slugOf(id) {
   return id.slice("component.".length);
 }
 
-/** Rule IDs tagged in the titles of test/<name>.test.js. */
-function taggedRules(slug) {
-  const source = readFileSync(new URL(`./${slug}.test.js`, import.meta.url), "utf8");
+/** Rule IDs tagged in the test titles of a file in test/. */
+function taggedRules(file) {
+  const source = readFileSync(new URL(`./${file}`, import.meta.url), "utf8");
   const tags = new Set();
   for (const [, , title] of source.matchAll(TITLE)) {
     for (const [, id] of title.matchAll(TAG)) tags.add(id);
@@ -35,13 +41,18 @@ function taggedRules(slug) {
   return tags;
 }
 
+const sharedTags = taggedRules(SHARED_TESTS);
+
 const census = components.map((record) => {
   const rules = rulesOf(record);
+  const known = new Set(rules.map((rule) => rule.id));
+  const own = taggedRules(`${slugOf(record.id)}.test.js`);
   return {
     id: record.id,
     slug: slugOf(record.id),
     rules,
-    tagged: taggedRules(slugOf(record.id)),
+    own,
+    tagged: new Set([...own, ...[...sharedTags].filter((tag) => known.has(tag))]),
     unautomated: unautomatedRules[record.id] ?? {},
   };
 });
@@ -71,10 +82,16 @@ describe("contract rule census", () => {
     "%s test tags name rules in its contract",
     (id, entry) => {
       const known = new Set(entry.rules.map((rule) => rule.id));
-      const stale = [...entry.tagged].filter((tag) => !known.has(tag));
+      const stale = [...entry.own].filter((tag) => !known.has(tag));
       expect(stale, `test/${entry.slug}.test.js tags rules ${id} no longer has`).toEqual([]);
     },
   );
+
+  test(`${SHARED_TESTS} tags name rules some contract has`, () => {
+    const known = new Set(census.flatMap((entry) => entry.rules.map((rule) => rule.id)));
+    expect([...sharedTags].filter((tag) => !known.has(tag))).toEqual([]);
+    expect(sharedTags.size, `${SHARED_TESTS} titles carry rule tags`).toBeGreaterThan(0);
+  });
 
   test("unautomated rules name must rules that exist", () => {
     const stale = [];

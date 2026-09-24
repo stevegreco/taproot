@@ -55,18 +55,18 @@ control named by `focus.forwardsTo`.
 
 The build writes `src/<slug>.d.ts` and the package-root barrel, `src/index.js` and
 `src/index.d.ts`, from the binding and contract. JSX types in the docs follow from them. Do not
-edit these files; commit what the build writes. Add the glue. These are the only lists a component
-edits:
-
-- `test/upgrade.test.js`: one "reach <Name>" case.
-- `apps/documentation/docs/components/meta.ts`: nav order (optional).
+edit these files; commit what the build writes. The only list a component may edit is
+`apps/documentation/docs/components/meta.ts`, for nav order, and that is optional.
 
 ### 4. Prove the contract
 
 - `packages/components/test/<slug>.test.js`. Tag each test covering a rule:
   `test("[rule-id] …")`. A `must` rule that no test can prove (authored wording, consumer
   responsibility) gets a reason in `test/unautomated-rules.js` instead.
-- The mapping, census, and example-types checks run on their own from the records. Do not edit
+- `test/host-checks.test.js` covers alias registration, `hidden`, focus forwarding, visible focus
+  (`[a11y-visible-focus]`), and properties set before registration for every binding. Do not
+  repeat them in `<slug>.test.js`.
+- The mapping, census, host, and example-types checks run on their own from the records. Do not edit
   them for one component. If one fails, fix the spec, CSS, or types. Extend the harness
   (`test/commands/contract-cases.js`) only when a new kind of state or axis appears, and make the
   extension generic.

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Report what a component still needs: authored files, hand-listed glue, and
+ * Report what a component still needs: authored files, docs glue, and
  * the definition-of-done checklist in docs/knowledge/new-component.md.
  *
  *   node .agents/skills/create-component/scripts/status.mjs <slug>
  *
- * Exits 1 when a required file or glue entry is missing. Checklist rows are a
+ * Exits 1 when a required file is missing. Checklist rows are a
  * keyword scan of the spec; confirm each by reading the spec.
  */
 import { existsSync, readFileSync } from "node:fs";
@@ -20,7 +20,6 @@ if (!slug || !/^[a-z][a-z0-9-]*$/.test(slug)) {
   process.exit(2);
 }
 
-const pascal = slug.replace(/(^|-)([a-z])/g, (_m, _dash, c) => c.toUpperCase());
 const tag = `ds-${slug}`;
 const read = (file) => {
   const full = path.join(root, file);
@@ -47,14 +46,7 @@ const files = [
 ];
 for (const file of files) row(existsSync(path.join(root, file)), file);
 
-console.log("\nHand-listed glue (the only lists a new component edits)");
-console.log("  The build generates src/<slug>.d.ts, src/index.js, and src/index.d.ts.");
-const glue = [["packages/components/test/upgrade.test.js", [`define${pascal}`]]];
-for (const [file, needles] of glue) {
-  const source = read(file) ?? "";
-  const absent = needles.filter((needle) => !source.includes(needle));
-  row(absent.length === 0, file, absent.length ? `missing ${absent.join(", ")}` : "");
-}
+console.log("\nGlue (the build generates src/<slug>.d.ts, src/index.js, and src/index.d.ts)");
 const nav = read("apps/documentation/docs/components/meta.ts") ?? "";
 row(
   nav.includes(`"${slug}"`) ? true : "warn",

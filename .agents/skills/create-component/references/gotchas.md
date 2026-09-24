@@ -62,18 +62,18 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
   the inner control as the anchor.
 - Events: a native `input` event is composed and reaches the host. `change` is not composed;
   re-dispatch it from the host.
-- Honor `:host([hidden]) { display: none; }` and add a test for it.
+- Honor `:host([hidden]) { display: none; }`. The shared host checks test it.
 
 ## Component tests
 
 - Title each test for a rule with its ID in brackets: `test("[rule-id] …")`. Several IDs can share
   a title. Tags must name rules that exist in the contract, or the census fails.
-- Visible focus: `await userEvent.tab()` from `vitest/browser`, then assert `:focus-visible` and a
-  non-`none` outline on the inner control.
+- Visible focus, alias registration, `hidden`, focus forwarding, and properties set before
+  registration are in `test/host-checks.test.js`, which runs for every binding. Its visible-focus
+  title carries `[a11y-visible-focus]`, and the census credits that tag to every component whose
+  contract has the rule. Use the same rule ID in a new contract.
 - Token values: never set `--semantic-*` inline. The setup file loads the real `tokens.css`.
   Compare with `resolvedValue(property, "var(--token)")` from `test/helpers/tokens.js`.
-- Add one case to `test/upgrade.test.js` (property set before `define*()` reaches the shadow DOM).
-  It is the one test file that lists components.
 
 ## Computed-style mapping test
 
@@ -86,8 +86,8 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
   `error`. Any other attribute-driven state needs a driver added in `stateAttributes()`.
 - A configuration axis that is not a parameter must be a media feature listed in `MEDIA_AXES`
   (only `prefersReducedMotion` today).
-- If a state needs content before it applies (Link needs `href` for `:hover`), add it to
-  `FIXTURES` in the test.
+- If a state needs content before it applies (Link needs `href` for `:hover` and focus), add it
+  to `FIXTURES` in `test/helpers/fixtures.js`. The host checks use the same fixtures.
 - `inherit` is compared against the part's parent inside a container with distinctive type. Relative
   values resolve against the part's own font size.
 - A failure names component, part, channel, configuration, state, and theme. Fix the stylesheet

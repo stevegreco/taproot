@@ -51,7 +51,11 @@ touched.
   `packages/components/test/<name>.test.js` whose title starts with the rule ID in brackets, or a
   reason in `packages/components/test/unautomated-rules.js`. The rule census enforces this.
 - The computed-style mapping test renders the component in each configuration and state.
-  Anything a state needs before it can apply (Link needs an `href`) goes in that test's fixtures.
+  Anything a state needs before it can apply (Link needs an `href`) goes in
+  `packages/components/test/helpers/fixtures.js`.
+- The shared host checks cover registration aliases, `hidden`, focus forwarding, visible focus,
+  and properties set before registration for every binding. The component's own test file covers
+  only its behavior.
 - The docs examples type-check against the generated element types. The example-types test
   enforces this.
 - `examples/<name>.tsx` has a `Verify:` header naming `examples/<name>.verify.js`, and the docs
