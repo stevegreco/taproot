@@ -68,7 +68,7 @@ function componentCases(record, binding) {
         .map(([name, node]) => [name, node.part]),
     ),
     focusPart: host.focus?.forwardsTo ?? null,
-    stateAttributes: stateAttributes(host),
+    stateAttributes: stateAttributes(contract, host),
     cases,
   };
 }
@@ -137,11 +137,18 @@ function stateSets(contract) {
   return sets;
 }
 
-/** Host attributes that put the element into an attribute-driven state. */
-function stateAttributes(host) {
+/**
+ * Host attributes that put the element into an attribute-driven state. A state
+ * named after a boolean parameter (disabled, checked) is driven by that
+ * parameter's attribute.
+ */
+function stateAttributes(contract, host) {
   const attributes = {};
-  if (host.parameters?.disabled?.attribute) {
-    attributes.disabled = { name: host.parameters.disabled.attribute, value: "" };
+  for (const state of contract.states ?? []) {
+    const attribute = host.parameters?.[state]?.attribute;
+    if (contract.parameters?.[state]?.kind === "boolean" && attribute) {
+      attributes[state] = { name: attribute, value: "" };
+    }
   }
   // A non-empty error message is what marks the control invalid.
   if (host.parameters?.error?.attribute) {

@@ -8,15 +8,18 @@
 
 import { defineBadge } from "./badge.js";
 import { defineButton } from "./button.js";
+import { defineCheckbox } from "./checkbox.js";
 import { defineLink } from "./link.js";
 import { defineTextField } from "./text-field.js";
 
 export { DsBadge, defineBadge } from "./badge.js";
 export { DsButton, defineButton } from "./button.js";
+export { DsCheckbox, defineCheckbox } from "./checkbox.js";
 export { DsLink, defineLink } from "./link.js";
 export { DsTextField, defineTextField } from "./text-field.js";
 
 defineBadge();
 defineButton();
+defineCheckbox();
 defineLink();
 defineTextField();

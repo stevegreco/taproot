@@ -4,9 +4,10 @@
  * the token the contract resolves there, in light and dark themes.
  *
  * States are forced, not reached with the pointer: hover, pressed, and
- * focus-visible through CDP pseudo-state forcing on the focus target, and
- * disabled and invalid through host attributes. Literals (`transparent`,
- * `inherit`, `none`) are compared as computed values.
+ * focus-visible through CDP pseudo-state forcing on the focus target; states
+ * named after a boolean parameter (disabled, checked) and invalid through host
+ * attributes. Literals (`transparent`, `inherit`, `none`) are compared as
+ * computed values.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { cdp, commands } from "vitest/browser";
