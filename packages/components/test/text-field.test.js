@@ -35,7 +35,7 @@ describe("DsTextField", () => {
     expect(() => defineTextField(alias)).not.toThrow();
   });
 
-  test("[label-names-control][required-is-exposed][a11y-visible-label][a11y-invalid-message][a11y-required] associates the label, hint, error, and required state", () => {
+  test("[a11y-visible-label][a11y-invalid-message][a11y-required] associates the label, hint, error, and required state", () => {
     const field = render(`
       <${tagName}
         label="Email"
@@ -60,7 +60,7 @@ describe("DsTextField", () => {
     );
   });
 
-  test("[described-by-messages][a11y-described-by][error-marks-invalid] describes only the messages that have text", () => {
+  test("[a11y-described-by][error-marks-invalid] describes only the messages that have text", () => {
     const field = render(`<${tagName} label="Email" hint="Work email"></${tagName}>`);
     const input = controlOf(field);
 
