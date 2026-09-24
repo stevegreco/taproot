@@ -4,12 +4,14 @@
  * the token the contract resolves there, in light and dark themes.
  *
  * States are forced, not reached with the pointer: hover, pressed, and
- * focus-visible through CDP pseudo-state forcing on the focus target, and
- * disabled and invalid through host attributes. Literals (`transparent`,
- * `inherit`, `none`) are compared as computed values.
+ * focus-visible through CDP pseudo-state forcing on the focus target; states
+ * named after a boolean parameter (disabled, checked) and invalid through host
+ * attributes. The pointer is parked away from the cases first, so a pointer an
+ * earlier test file left over a control cannot add a real hover. Literals
+ * (`transparent`, `inherit`, `none`) are compared as computed values.
  */
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
-import { cdp, commands } from "vitest/browser";
+import { cdp, commands, userEvent } from "vitest/browser";
 
 const PSEUDO_STATES = Object.freeze({
   hover: "hover",
@@ -59,6 +61,7 @@ const session = cdp();
 beforeAll(async () => {
   await session.send("DOM.enable");
   await session.send("CSS.enable");
+  await parkPointer();
 });
 
 afterEach(async () => {
@@ -92,6 +95,15 @@ describe.each(components.map((component) => [component.id, component]))(
     });
   },
 );
+
+/** Moves the pointer to the bottom edge of the viewport, below every rendered case. */
+async function parkPointer() {
+  const parking = document.createElement("div");
+  parking.setAttribute("style", "position: fixed; inset: auto 0 0; height: 8px");
+  document.body.append(parking);
+  await userEvent.hover(parking);
+  parking.remove();
+}
 
 async function checkCase(component, tagName, testCase, theme) {
   const where = `${component.id} ${describeConfiguration(testCase.configuration)} ${describeStates(testCase.states)} theme=${theme}`;

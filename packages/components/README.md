@@ -67,6 +67,7 @@ this under `formAssociation`.
 ```html
 <form>
   <ds-text-field label="Email" name="email" type="email" required></ds-text-field>
+  <ds-checkbox label="Send me the weekly digest" name="digest" checked></ds-checkbox>
   <ds-button type="submit">Subscribe</ds-button>
   <ds-button type="reset" variant="secondary">Clear</ds-button>
 </form>

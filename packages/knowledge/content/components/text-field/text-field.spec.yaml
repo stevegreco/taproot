@@ -133,18 +133,9 @@ contract:
     - disabled
     - invalid
   behavior:
-    - id: label-names-control
-      level: must
-      statement: The visible label names the control.
-    - id: described-by-messages
-      level: must
-      statement: Hint and error are part of the accessible description when they have text.
     - id: error-marks-invalid
       level: must
       statement: A non-empty error marks the control invalid, and clearing the error removes that state.
-    - id: required-is-exposed
-      level: must
-      statement: Required is exposed to assistive technology and is not conveyed by color alone.
     - id: disabled-blocks-editing
       level: must
       statement: Disabled prevents editing.
@@ -163,7 +154,7 @@ contract:
     requirements:
       - id: a11y-visible-label
         level: must
-        statement: The field has a visible label. Placeholder text is not the accessible name.
+        statement: The field has a visible label, and that label is the accessible name. Placeholder text is not.
       - id: a11y-described-by
         level: must
         statement: Hint and error are associated so assistive technology can describe the field.

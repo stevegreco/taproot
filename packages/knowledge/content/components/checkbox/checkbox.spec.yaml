@@ -1,0 +1,293 @@
+id: component.checkbox
+schemaVersion: 1
+type: component
+title: Checkbox
+summary: Use Checkbox to turn one independent option on or off, with a label, hint, and error.
+status: draft
+visibility: public
+jobs:
+  - design
+  - implement
+  - review
+tags:
+  - checkbox
+  - form
+  - selection
+relations:
+  related:
+    - component.button
+    - component.text-field
+sources:
+  - kind: authored
+    path: packages/knowledge/content/components/checkbox/checkbox.spec.yaml
+  - kind: adr
+    path: packages/tokens/docs/adr/0003-token-tier-consumption.md
+contract:
+  specVersion: 5
+  description: Turns one independent option on or off, and associates a label, optional hint, and optional error with the control.
+  usage:
+    do:
+      - id: independent-option
+        situation: Turn one option on or off in a form that is submitted later.
+      - id: several-of-a-list
+        situation: Choose any number of options from a short list, one checkbox per option.
+      - id: acknowledge
+        situation: Confirm an agreement or acknowledgement before submit.
+      - id: parent-of-a-list
+        situation: Select or clear a list of options at once, showing indeterminate when only some are selected.
+    avoid:
+      - id: one-of-a-list
+        situation: Choose exactly one option from a list.
+        instead: Radio group
+        why: Checkboxes are independent. Nothing stops two being checked.
+      - id: immediate-setting
+        situation: Apply a setting as soon as it is toggled, with no submit.
+        instead: Switch
+        why: A checkbox value takes effect when its form is submitted.
+      - id: trigger-action
+        situation: Trigger an action by itself.
+        instead: Button
+        why: Checkbox records a choice.
+  content:
+    - id: visible-label
+      level: must
+      statement: Provide a visible label that names the option when checked.
+    - id: label-states-positive
+      level: should
+      statement: Word the label so that checked means yes. Avoid negatives that make unchecked a double negative.
+      examples:
+        do:
+          - Email me product updates
+          - I agree to the terms
+        avoid:
+          - Don't email me
+    - id: hint-adds-guidance
+      level: should
+      statement: Use a hint for consequence or detail that the label does not already state.
+    - id: error-says-what-to-fix
+      level: must
+      statement: Write the error as what to fix.
+      examples:
+        do:
+          - Agree to the terms to continue.
+        avoid:
+          - Required
+  anatomy:
+    - name: field
+      role: container
+      description: The choice row, then hint and error, stacked together.
+    - name: choice
+      role: container
+      description: Box and label side by side. The whole row is the click target.
+    - name: control
+      role: interactive-surface
+      description: The box. A native checkbox that owns checked state and focus.
+    - name: indicator
+      role: indicator
+      description: Check mark when checked, dash when indeterminate. Drawn inside the box and hidden from assistive technology.
+    - name: label
+      role: label
+      description: Visible name for the option.
+    - name: hint
+      role: label
+      description: Optional supporting guidance.
+    - name: error
+      role: indicator
+      description: Optional message that says what to fix.
+  parameters:
+    label:
+      kind: string
+      description: Visible label. This is the accessible name.
+    hint:
+      kind: string
+      description: Supporting guidance. Included in the accessible description when set.
+    error:
+      kind: string
+      description: What to fix. A non-empty value marks the control invalid and is included in the accessible description.
+    checked:
+      kind: boolean
+      default: false
+      description: Whether the option is on. The attribute sets the initial state; form reset restores it.
+    indeterminate:
+      kind: boolean
+      default: false
+      description: Shows a mixed state, for a parent whose options are partly selected. Presentational only; it does not change the submitted value.
+    name:
+      kind: string
+      description: Form field name. The value is submitted under this name when checked.
+    value:
+      kind: string
+      description: Value submitted when checked. Defaults to "on", as for a native checkbox.
+    disabled:
+      kind: boolean
+      default: false
+      description: Prevents toggling. A disabled checkbox does not submit its value.
+    required:
+      kind: boolean
+      default: false
+      description: The checkbox must be checked before submit. Conveyed by more than color.
+  events:
+    input:
+      description: The checked state changed from user interaction.
+    change:
+      description: The checked state was committed from user interaction.
+  states:
+    - default
+    - hover
+    - focus-visible
+    - checked
+    - indeterminate
+    - disabled
+    - invalid
+  behavior:
+    - id: toggle-on-activate
+      level: must
+      statement: Clicking the box or the label, or pressing Space on the focused box, toggles checked and fires input then change.
+    - id: indeterminate-clears-on-activate
+      level: must
+      statement: Activating an indeterminate checkbox clears indeterminate and toggles checked, as a native checkbox does.
+    - id: indeterminate-not-a-value
+      level: must
+      statement: Indeterminate does not change checked or the submitted value.
+    - id: programmatic-no-events
+      level: must
+      statement: Setting checked or indeterminate from script does not fire input or change.
+    - id: error-marks-invalid
+      level: must
+      statement: A non-empty error marks the control invalid, and clearing the error removes that state.
+    - id: disabled-blocks-toggle
+      level: must
+      statement: Disabled prevents toggling from pointer and keyboard.
+    - id: form-value
+      level: should
+      statement: When checked, the value submits under the name. Unchecked submits nothing. Reset restores the initial checked state and clears indeterminate.
+      applicability: Hosts that implement form association.
+  accessibility:
+    semantics: Checkbox.
+    name: Required from the visible label.
+    keyboard:
+      - key: Tab
+        action: Move focus to or from the checkbox.
+      - key: Space
+        action: Toggle checked.
+    requirements:
+      - id: a11y-visible-label
+        level: must
+        statement: The checkbox has a visible label that is its accessible name, and clicking the label toggles it.
+      - id: a11y-mixed-state
+        level: must
+        statement: Indeterminate is exposed to assistive technology as mixed.
+      - id: a11y-described-by
+        level: must
+        statement: Hint and error are associated so assistive technology can describe the checkbox.
+      - id: a11y-invalid-message
+        level: must
+        statement: Invalid state includes a text message. Meaning does not depend on color alone.
+      - id: a11y-required
+        level: must
+        statement: Required is announced and is not conveyed by color alone.
+      - id: a11y-state-not-color-alone
+        level: must
+        statement: Checked and indeterminate are shown by the indicator's shape, not by fill color alone.
+      - id: a11y-forced-colors
+        level: must
+        statement: Under forced colors, the box outline, the indicator, and focus stay visible in every state.
+      - id: a11y-visible-focus
+        level: must
+        statement: Keyboard focus remains visibly indicated.
+  rationale:
+    - decision: Checkbox consumes semantic tokens directly, plus one radius primitive.
+      rationale: ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is already audited against them. No semantic radius fits a small box (control radius is 10px), so the box uses primitives.radius.xs. No component-token namespace.
+    - decision: Checked and indeterminate are states driven by their parameters.
+      rationale: They change the same box fill, and indeterminate wins over checked. As states, stateResolution says so. As two boolean axes they would assign the fill in overlapping rules.
+    - decision: A checked or indeterminate box does not change on hover.
+      rationale: The resolver has no combined hover-and-checked state, and the indicator already confirms the state. Hover strengthens the unchecked border only.
+    - decision: Disabled suppresses checked and indeterminate fills, not the indicator.
+      rationale: A disabled box uses disabled colors in every state. The indicator shape still shows whether it is checked.
+    - decision: Label, hint, and error belong to the checkbox.
+      rationale: Same decision as Text field. A separate field shell does not exist yet. Association stays on this control until that shell lands.
+    - decision: One size, no density variant, no pressed state.
+      rationale: The box is a fixed 16px square aligned to the first line of the label. Box size is component geometry, not a token channel. The label row is the click target, so compact layouts change spacing around the checkbox, not the checkbox. Activation commits on release, so there is no separate pressed styling.
+    - decision: No icon-only or unlabeled checkbox.
+      rationale: The visible label is the accessible name and part of the click target. A checkbox in a table row still gets a label; hiding it visually is the consumer's choice.
+    - decision: No loading state, nothing mirrors under right-to-left, and no animation.
+      rationale: Toggling is local until submit, so there is no work to wait on; settings that save immediately belong to Switch. The check mark and dash are not directional, and box and label order follows the inline direction. State changes swap colors and the indicator instantly, so there is nothing to reduce under prefers-reduced-motion.
+    - decision: Checkbox groups are not part of this component.
+      rationale: Group a list with a native fieldset and legend. A group-level label and error belong to a field shell.
+  stateResolution:
+    suppress:
+      disabled:
+        - checked
+        - hover
+        - indeterminate
+        - invalid
+      indeterminate:
+        - checked
+    overlay:
+      - hover
+    independent:
+      - focus-visible
+  visuals:
+    field:
+      base:
+        gap: primitives.space.1
+    choice:
+      base:
+        gap: primitives.space.2
+    control:
+      base:
+        background: semantic.color.background.surface
+        border: semantic.color.border.default
+        radius: primitives.radius.xs
+      states:
+        hover:
+          border: semantic.color.border.strong
+        focus-visible:
+          outline: semantic.color.border.focus
+        checked:
+          background: semantic.color.background.action.primary.default
+          border: semantic.color.border.action.primary.default
+        indeterminate:
+          background: semantic.color.background.action.primary.default
+          border: semantic.color.border.action.primary.default
+        disabled:
+          background: semantic.color.background.disabled
+          border: semantic.color.border.disabled
+        invalid:
+          border: semantic.color.border.status.danger.default
+    indicator:
+      base:
+        foreground: semantic.color.foreground.on.action.primary
+      states:
+        disabled:
+          foreground: semantic.color.foreground.disabled
+    label:
+      base:
+        foreground: semantic.color.foreground.default
+        font-family: semantic.typography.body.default.fontFamily
+        font-size: semantic.typography.body.default.fontSize
+        font-weight: semantic.typography.body.default.fontWeight
+        line-height: semantic.typography.body.default.lineHeight
+        letter-spacing: semantic.typography.body.default.letterSpacing
+      states:
+        disabled:
+          foreground: semantic.color.foreground.disabled
+    hint:
+      base:
+        foreground: semantic.color.foreground.muted
+        font-family: semantic.typography.body.small.fontFamily
+        font-size: semantic.typography.body.small.fontSize
+        font-weight: semantic.typography.body.small.fontWeight
+        line-height: semantic.typography.body.small.lineHeight
+        letter-spacing: semantic.typography.body.small.letterSpacing
+      states:
+        disabled:
+          foreground: semantic.color.foreground.disabled
+    error:
+      base:
+        foreground: semantic.color.foreground.status.danger.default
+        font-family: semantic.typography.body.small.fontFamily
+        font-size: semantic.typography.body.small.fontSize
+        font-weight: semantic.typography.body.small.fontWeight
+        line-height: semantic.typography.body.small.lineHeight
+        letter-spacing: semantic.typography.body.small.letterSpacing
