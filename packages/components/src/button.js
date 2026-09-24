@@ -9,22 +9,17 @@
 
 // Generated from src/button.css by build-styles.js (run `pnpm run build`).
 import { styles } from "../dist/button.styles.js";
+import {
+  Base,
+  ForwardsFocus,
+  defineElement,
+  focusTarget,
+  lazyStyleSheet,
+} from "./internal/element.js";
 
-/** Shared across every instance; built lazily so importing this module is safe on a server. */
-let sheet;
+const styleSheet = lazyStyleSheet(styles);
 
-function styleSheet() {
-  if (!sheet) {
-    sheet = new CSSStyleSheet();
-    sheet.replaceSync(styles);
-  }
-  return sheet;
-}
-
-/** Importing on a server must not throw, so fall back to an inert base class. */
-const Base = typeof HTMLElement === "undefined" ? class {} : HTMLElement;
-
-export class DsButton extends Base {
+export class DsButton extends ForwardsFocus(Base) {
   /** Lets ElementInternals find the containing <form> across the shadow boundary. */
   static formAssociated = true;
 
@@ -63,13 +58,8 @@ export class DsButton extends Base {
     this.#syncDisabled();
   }
 
-  /** Forward programmatic focus to the real control inside the shadow root. */
-  focus(options) {
-    this.#button.focus(options);
-  }
-
-  blur() {
-    this.#button.blur();
+  get [focusTarget]() {
+    return this.#button;
   }
 
   /** The <form> this button belongs to, or null. */
@@ -130,15 +120,5 @@ export class DsButton extends Base {
   };
 }
 
-/**
- * Register the element. Safe to call more than once.
- * @param {string} [tagName] custom tag name, defaults to "ds-button".
- */
-export function defineButton(tagName = "ds-button") {
-  if (typeof customElements === "undefined") return;
-  if (!customElements.get(tagName)) {
-    // A CustomElementRegistry can only associate a constructor with one name.
-    // A trivial subclass preserves instanceof DsButton while allowing aliases.
-    customElements.define(tagName, class extends DsButton {});
-  }
-}
+/** Register the element. Safe to call more than once. Defaults to "ds-button". */
+export const defineButton = defineElement("ds-button", DsButton);

@@ -8,6 +8,13 @@
 
 // Generated from src/text-field.css by build-styles.js (run `pnpm run build`).
 import { styles } from "../dist/text-field.styles.js";
+import {
+  Base,
+  ForwardsFocus,
+  defineElement,
+  focusTarget,
+  lazyStyleSheet,
+} from "./internal/element.js";
 
 const TYPES = new Set(["text", "email", "password", "search", "url", "tel"]);
 
@@ -23,21 +30,9 @@ const VALIDITY_FLAGS = [
   "valueMissing",
 ];
 
-/** Shared across every instance; built lazily so importing this module is safe on a server. */
-let sheet;
+const styleSheet = lazyStyleSheet(styles);
 
-function styleSheet() {
-  if (!sheet) {
-    sheet = new CSSStyleSheet();
-    sheet.replaceSync(styles);
-  }
-  return sheet;
-}
-
-/** Importing on a server must not throw, so fall back to an inert base class. */
-const Base = typeof HTMLElement === "undefined" ? class {} : HTMLElement;
-
-export class DsTextField extends Base {
+export class DsTextField extends ForwardsFocus(Base) {
   /** Lets ElementInternals submit the value across the shadow boundary. */
   static formAssociated = true;
 
@@ -141,13 +136,8 @@ export class DsTextField extends Base {
     this.#syncValidity();
   }
 
-  /** Forward programmatic focus to the real control inside the shadow root. */
-  focus(options) {
-    this.#input.focus(options);
-  }
-
-  blur() {
-    this.#input.blur();
+  get [focusTarget]() {
+    return this.#input;
   }
 
   /** The <form> this field belongs to, or null. */
@@ -331,15 +321,5 @@ export class DsTextField extends Base {
   };
 }
 
-/**
- * Register the element. Safe to call more than once.
- * @param {string} [tagName] custom tag name, defaults to "ds-text-field".
- */
-export function defineTextField(tagName = "ds-text-field") {
-  if (typeof customElements === "undefined") return;
-  if (!customElements.get(tagName)) {
-    // A CustomElementRegistry can only associate a constructor with one name.
-    // A trivial subclass preserves instanceof DsTextField while allowing aliases.
-    customElements.define(tagName, class extends DsTextField {});
-  }
-}
+/** Register the element. Safe to call more than once. Defaults to "ds-text-field". */
+export const defineTextField = defineElement("ds-text-field", DsTextField);

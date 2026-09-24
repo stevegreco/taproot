@@ -147,10 +147,7 @@ contract use YAML specs:
 
 ```text
 packages/knowledge/content/components/
-  button/button.spec.yaml
-  badge/badge.spec.yaml
-  link/link.spec.yaml
-  text-field/text-field.spec.yaml
+  <name>/<name>.spec.yaml
 ```
 
 `parseRecord` fills `schemaVersion` as

@@ -43,115 +43,38 @@ Every `src/<name>.js` is published as the subpath `…/<name>`, with types from
 which the `exports` map blocks. `…/index` is blocked too; import the package
 root for the barrel.
 
-## `<ds-badge>`
+## Components
 
-Badges are non-interactive labels for metadata and status. Their content comes
-from the default slot:
+Each component's attributes, parts, and guidance come from its knowledge record
+(`packages/knowledge/content/components/<name>/`) and binding
+(`packages/knowledge/content/bindings/<name>.web-component.md`). The docs site
+renders them at `/components/<name>`, with the live example from
+`apps/documentation/examples/<name>.tsx`.
 
-```html
-<ds-badge>Default</ds-badge>
-<ds-badge variant="success">Active</ds-badge>
-<ds-badge variant="warning">Pending</ds-badge>
-```
+Every attribute in a binding has a matching property (`el.variant`,
+`el.disabled`, …). Programmatic `focus()` and `blur()` forward to the inner
+control. The host honors the native `hidden` attribute.
 
-The `variant` attribute accepts `default`, `accent`, `success`, `danger`,
-`warning`, or `info`, and defaults to `default`. The rendered surface is exposed
-as `::part(badge)`. Its visual values come directly from published semantic
-background, foreground, and border tokens.
-
-Badge deliberately provides no button behavior or live-region role. Use a
-button for actions, and add an appropriate ARIA role only when a changing badge
-needs to be announced.
-
-## `<ds-link>`
-
-Links navigate. Use Button for actions. The inner native anchor handles
-navigation, so middle-click, modifier keys, and the context menu keep working:
-
-```html
-<p>Read the <ds-link href="/adr/0003">token tier ADR</ds-link> first.</p>
-<ds-link variant="standalone" href="/projects">View all projects</ds-link>
-```
-
-`variant` accepts `inline` (the default) or `standalone`. An inline link
-inherits the surrounding type and is always underlined; a standalone link uses
-label type and is underlined on hover. Without `href` the anchor has no link
-role and cannot take focus. There is no disabled state. The anchor is exposed
-as `::part(link)`. Visual values come directly from semantic brand foreground,
-default foreground on hover, and the focus border.
-
-## `<ds-text-field>`
-
-Text fields collect one line of text. The label, hint, and error are attributes
-so the control can associate them inside its shadow root:
-
-```html
-<form>
-  <ds-text-field
-    label="Email"
-    name="email"
-    type="email"
-    hint="Used for sign-in."
-    required
-  ></ds-text-field>
-  <ds-button type="submit">Continue</ds-button>
-</form>
-```
-
-`type` accepts `text`, `email`, `password`, `search`, `url`, or `tel`, and
-defaults to `text`. A non-empty `error` sets `aria-invalid`, includes the
-message in `aria-describedby`, and blocks submit until it is cleared. The inner
-input is exposed as `::part(control)`. Visual values come directly from
-published semantic tokens for surface, text, focus, invalid, and disabled, plus
-primitive spacing where no semantic role exists.
-
-## `<ds-button>`
-
-### Attributes
-
-| Attribute    | Values                                    | Default   | Notes                                                                   |
-| ------------ | ----------------------------------------- | --------- | ----------------------------------------------------------------------- |
-| `variant`    | `primary`, `secondary`, `ghost`, `danger` | `primary` |                                                                         |
-| `size`       | `md`, `sm`                                | `md`      |                                                                         |
-| `full-width` | boolean                                   | off       | Fills its container                                                     |
-| `disabled`   | boolean                                   | off       | Blocks activation and focus; also follows an ancestor disabled fieldset |
-| `type`       | `button`, `submit`, `reset`               | `button`  | Works inside a `<form>`                                                 |
-| `aria-label` | string                                    | —         | Mirrored onto the inner control; use for icon-only buttons              |
-
-Each attribute has a matching property (`el.variant`, `el.disabled`, …). The
-read-only `el.form` property resolves the containing `<form>`.
-
-### Forms
+## Forms
 
 `<form>` association does not cross shadow boundaries, so a naive web-component
-button silently fails to submit. `<ds-button>` is a
-[form-associated custom element](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals)
-— it uses `ElementInternals` to find its form and calls `requestSubmit()` or
-`reset()` itself.
+control silently fails to submit. Form controls here are
+[form-associated custom elements](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals):
+they use `ElementInternals` to find their form, contribute a value, report
+validity, and follow an ancestor disabled `<fieldset>`. Their bindings declare
+this under `formAssociation`.
 
 ```html
 <form>
-  <input name="email" type="email" required />
+  <ds-text-field label="Email" name="email" type="email" required></ds-text-field>
   <ds-button type="submit">Subscribe</ds-button>
   <ds-button type="reset" variant="secondary">Clear</ds-button>
 </form>
 ```
 
-### Content
+## Styling escape hatch
 
-The default slot uses `display: contents`, so slotted icons and text become flex
-items of the button and pick up the token-driven gap automatically:
-
-```html
-<ds-button>
-  <svg aria-hidden="true"><!-- … --></svg>
-  Continue
-</ds-button>
-```
-
-### Styling escape hatch
-
-The inner control is exposed as a CSS part:
+Each component exposes its inner surface as a CSS part named in its binding:
 
 ```css
 ds-button::part(button) {
