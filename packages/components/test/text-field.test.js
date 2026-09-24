@@ -1,4 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
+import { userEvent } from "vitest/browser";
 
 import { defineButton } from "../src/button.js";
 import { DsTextField, defineTextField } from "../src/text-field.js";
@@ -34,7 +35,7 @@ describe("DsTextField", () => {
     expect(() => defineTextField(alias)).not.toThrow();
   });
 
-  test("associates the label, hint, error, and required state", () => {
+  test("[label-names-control][required-is-exposed][a11y-visible-label][a11y-invalid-message][a11y-required] associates the label, hint, error, and required state", () => {
     const field = render(`
       <${tagName}
         label="Email"
@@ -59,7 +60,7 @@ describe("DsTextField", () => {
     );
   });
 
-  test("describes only the messages that have text", () => {
+  test("[described-by-messages][a11y-described-by][error-marks-invalid] describes only the messages that have text", () => {
     const field = render(`<${tagName} label="Email" hint="Work email"></${tagName}>`);
     const input = controlOf(field);
 
@@ -78,7 +79,7 @@ describe("DsTextField", () => {
     expect(input.hasAttribute("aria-describedby")).toBe(false);
   });
 
-  test("follows disabled fieldset state and keeps an explicit disabled field disabled", () => {
+  test("[disabled-blocks-editing] follows disabled fieldset state and keeps an explicit disabled field disabled", () => {
     const fieldset = render(`
       <fieldset>
         <${tagName} label="Email"></${tagName}>
@@ -162,5 +163,16 @@ describe("DsTextField", () => {
     const field = render(`<${tagName} label="Email" hidden></${tagName}>`);
 
     expect(getComputedStyle(field).display).toBe("none");
+  });
+
+  test("[a11y-visible-focus] shows a focus outline when reached by keyboard", async () => {
+    const field = render(`<${tagName} label="Email"></${tagName}>`);
+    const input = controlOf(field);
+
+    await userEvent.tab();
+
+    expect(input.matches(":focus-visible")).toBe(true);
+    expect(getComputedStyle(input).outlineStyle).not.toBe("none");
+    expect(parseFloat(getComputedStyle(input).outlineWidth)).toBeGreaterThan(0);
   });
 });

@@ -120,9 +120,27 @@ From the repository root:
 pnpm exec turbo run test --filter=@stevegreco/design-system-components
 ```
 
-Each component has its own `test/<name>.test.js` for behavior. `test/mapping-css.test.js`
-runs for every component record in the knowledge catalog and checks that its
-stylesheet assigns every compiled mapping.
+Browser tests load the published token stylesheet (`test/setup/tokens.js`), so
+every `var(--…)` resolves as it does on a page. Three checks run for every
+component record in the knowledge catalog:
+
+- `test/contract-mappings.test.js` renders each configuration in each mapped
+  state, in light and dark themes, and compares each part's computed value per
+  channel with the token `resolveMappings()` picks. Hover, pressed, and
+  focus-visible are forced through CDP; disabled and invalid are host
+  attributes.
+- `test/mapping-css.test.js` checks that the stylesheet names each mapped token
+  in a matching declaration, and that it stays on its token tier. This stays
+  alongside the computed check: a hard-coded value equal to the token in both
+  themes would pass the computed check but fail this one.
+- `test/contract-rules.test.js` is the rule census. Every `must` rule in a
+  contract's behavior and accessibility requirements needs a test in
+  `test/<name>.test.js` whose title starts with the rule ID in brackets, for
+  example `test("[inline-underline] …")`. A rule no test can prove needs a
+  reason in `test/unautomated-rules.js` instead. `should` and `may` rules are
+  reported, not enforced.
+
+Each component also has its own `test/<name>.test.js` for behavior.
 
 ## Local development
 
