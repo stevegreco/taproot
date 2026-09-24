@@ -1,6 +1,5 @@
 /**
- * Verify: Select the primary `ds-button` inside the example surface and require its documented
- * visible response. Capture the action and response together.
+ * Verify: run the steps in `button.verify.js`. The docs tests run them against the built site.
  */
 import { useState } from "react";
 import "@stevegreco/design-system-components";

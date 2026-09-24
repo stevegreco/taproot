@@ -60,6 +60,17 @@ This opens `/labs/border`, finds the lab by `aria-label="Semantic border lab"`, 
 - The thin control changes to `aria-pressed="true"`.
 - The thick control changes to `aria-pressed="false"`.
 
+Run every component example's Verify steps against the same instance:
+
+```bash
+node .cursor/skills/verify-design-system/scripts/control.mjs examples "$RUN_ID" "$PORT"
+```
+
+This runs `apps/documentation/examples/<slug>.verify.js` for each example, the same steps the
+docs tests run in CI against the built site. It writes one screenshot per example and
+`result.json` to `.cursor/verification-runs/<run-id>/examples/`, and names the example and step
+that failed.
+
 For other mapped documentation features, use Playwright with the exact routes and stable ARIA or `data-*` handles in their feature files. Avoid coordinates, tab order, generated classes, and fixed sleeps.
 
 Package gates:
@@ -111,6 +122,7 @@ test -f ".cursor/verification-runs/$RUN_ID/border-lab/result.json"
 control.mjs launch  <run-id> [port]
 control.mjs doctor  <run-id> [port]
 control.mjs border  <run-id> [port]
+control.mjs examples <run-id> [port]
 control.mjs cleanup <run-id> [port]
 ```
 

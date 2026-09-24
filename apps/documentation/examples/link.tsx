@@ -1,8 +1,5 @@
 /**
- * Verify: Find `[data-link-example]`. Require its inline `ds-link` to render an inner `a` with
- * `href="#link-billing"` and an underline, and its standalone `ds-link` to have no underline at
- * rest. Click View billing history and require `[data-link-status]` to read
- * `Followed #link-billing.` The anchor lives in shadow DOM; query the host, then the inner `a`.
+ * Verify: run the steps in `link.verify.js`. The docs tests run them against the built site.
  */
 import { useEffect, useState } from "react";
 import "@stevegreco/design-system-components";

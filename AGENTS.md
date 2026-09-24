@@ -33,7 +33,8 @@ From the repository root:
 
 - `pnpm build` runs `turbo run build` for every package, in dependency order.
 - `pnpm test` runs `turbo run test`, which builds workspace dependencies first.
-  Token, knowledge, and component tests also wait for that package's own `build`.
+  Token, knowledge, component, and documentation tests also wait for that package's own `build`.
+  The documentation tests run each example's `examples/<slug>.verify.js` against the built site.
 - `pnpm exec turbo run <task> --filter=<pkg>` is the way to build, test, or develop one package
   and its workspace dependencies.
 
