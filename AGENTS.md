@@ -20,7 +20,9 @@ YAML `*.spec.yaml` files are the component records; they are not `type: spec`.
 Host bindings live in `packages/knowledge/content/bindings/`. Component runtime lives in
 `packages/components`.
 
-Before adding a component, follow `docs/knowledge/new-component.md`. Decide each state and option
+Before adding a component or variant, check
+`packages/knowledge/content/guidelines/compose-or-propose.md`, then follow
+`docs/knowledge/new-component.md`. Decide each state and option
 on its checklist, and record the ones the component does not ship in `contract.rationale`.
 
 Do not place design system facts only in an MCP server, documentation page, or tool-specific agent

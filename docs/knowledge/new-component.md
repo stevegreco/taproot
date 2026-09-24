@@ -2,6 +2,9 @@
 
 This replaces the definition of done in #95. Use it for every component after Link.
 
+First confirm the need is a new component. `guideline.compose-or-propose` says when to compose
+existing components, open an issue, or write an RFC instead.
+
 ## Build path
 
 1. Tokens, only if no semantic role fits. See
