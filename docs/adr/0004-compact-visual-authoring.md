@@ -134,8 +134,10 @@ not fail compilation in this slice.
 
 - Button and Badge author grouped visuals. Compiled `get("component.button").contract.mappings`
   stays the consumer table.
-- `packages/components` stylesheet tests still generate needles from compiled mappings. Changing
-  a mapped token or literal in CSS still fails those tests.
+- Component CSS is the runtime copy of these facts, not a second authored source. Two tests keep
+  it honest: `contract-mappings.test.js` checks every compiled mapping by computed style, and
+  `mapping-css.test.js` fails when a stylesheet reads a token variable no mapping names.
+  (Amended 2026-09: these replaced the earlier regex needle check.)
 - Host custom properties that copy an inherited value into a state-specific variable
   (`--_border-hover: transparent` or Ghost `--_background-disabled: transparent`) are no longer
   asserted once the repeated mapping row is gone. Confirm those copies visually or by reading
@@ -149,7 +151,7 @@ not fail compilation in this slice.
 2. Edit the component contract `visuals` (and `stateResolution` if interaction rules change) and
    token sources when new names or values are required.
 3. Update component CSS and any other host implementation to match.
-4. Run knowledge compile, mapping stylesheet tests, and token build gates.
+4. Run knowledge compile, the component mapping tests, and token build gates.
 5. Check Figma by hand until an adapter exists.
 6. Release token, knowledge, and component packages together when the published contract or CSS
    references change.

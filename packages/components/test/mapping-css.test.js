@@ -6,14 +6,20 @@ import {
   compiledMappings,
   componentRecords,
   cssVariableFromTokenName,
-  declarationContains,
-  stylesheetContains,
+  tokenVariables,
 } from "./mapping-css.js";
+
+/**
+ * Token variables a stylesheet may read without a contract mapping, keyed by
+ * component id, each with the reason. test/contract-mappings.test.js checks
+ * that every mapping applies; this list keeps the other direction honest.
+ */
+const UNMAPPED_TOKENS = Object.freeze({});
 
 const components = await componentRecords();
 const srcFiles = readdirSync(new URL("../src/", import.meta.url));
 
-describe("compiled mapping stylesheet coverage", () => {
+describe("stylesheets read only the tokens their contract maps", () => {
   test("token names use flatten() CSS variables", () => {
     expect(cssVariableFromTokenName("component.button.size.medium.paddingInline")).toBe(
       "--component-button-size-medium-padding-inline",
@@ -23,36 +29,23 @@ describe("compiled mapping stylesheet coverage", () => {
     );
   });
 
-  test("literal needles are scoped to a declaration, not a bare token", () => {
-    expect(
-      stylesheetContains("--_background: transparent;\ntransition: none;", {
-        channel: "background",
-        token: { literal: "transparent" },
-      }),
-    ).toBe(true);
-    expect(
-      stylesheetContains("--_background: white;\n--_background-disabled: transparent;", {
-        channel: "background",
-        token: { literal: "transparent" },
-      }),
-    ).toBe(false);
-    expect(
-      stylesheetContains("transition: none;", {
-        channel: "background",
-        token: { literal: "transparent" },
-      }),
-    ).toBe(false);
-    expect(declarationContains(".button { transition: none; }", "transition", "none")).toBe(true);
-  });
-
   test.each(components.map((record) => [record.id, record]))(
-    "%s stylesheet assigns every compiled mapping in a matching declaration",
+    "%s stylesheet reads no token outside its compiled mappings",
     async (id, record) => {
       const { styles } = await import(`../dist/${slugOf(id)}.styles.js`);
-      const mappings = await compiledMappings(id);
-      for (const mapping of mappings) {
-        expect(stylesheetContains(styles, mapping), coverMessage(id, mapping)).toBe(true);
-      }
+      const mapped = new Set(
+        (await compiledMappings(id))
+          .filter((mapping) => mapping.token?.name)
+          .map((mapping) => cssVariableFromTokenName(mapping.token.name)),
+      );
+      const allowed = Object.keys(UNMAPPED_TOKENS[id] ?? {});
+      const unmapped = [...tokenVariables(styles)].filter(
+        (variable) => !mapped.has(variable) && !allowed.includes(variable),
+      );
+      expect(
+        unmapped,
+        `${id}: map these in the spec's visuals or list them in UNMAPPED_TOKENS`,
+      ).toEqual([]);
 
       // Token ADR 0003: a component that publishes a component-token namespace
       // consumes only that namespace; every other component consumes semantic
@@ -90,14 +83,4 @@ describe("component records and runtime files agree", () => {
 
 function slugOf(id) {
   return id.slice("component.".length);
-}
-
-function coverMessage(recordId, mapping) {
-  const config = mapping.configuration
-    ? Object.entries(mapping.configuration)
-        .map(([key, value]) => `${key}=${value}`)
-        .join(",")
-    : "shared";
-  const state = mapping.state ?? "any";
-  return `${recordId} ${mapping.part} ${mapping.channel} ${config} ${state}`;
 }

@@ -11,6 +11,7 @@ import { styles } from "../dist/badge.styles.js";
 import { Base, defineElement, lazyStyleSheet } from "./internal/element.js";
 
 const styleSheet = lazyStyleSheet(styles);
+const VARIANTS = new Set(["default", "accent", "success", "danger", "warning", "info"]);
 
 export class DsBadge extends Base {
   constructor() {
@@ -22,7 +23,8 @@ export class DsBadge extends Base {
   }
 
   get variant() {
-    return this.getAttribute("variant") ?? "default";
+    const variant = this.getAttribute("variant");
+    return VARIANTS.has(variant) ? variant : "default";
   }
 
   set variant(value) {

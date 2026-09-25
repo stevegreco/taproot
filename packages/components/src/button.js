@@ -18,6 +18,7 @@ import {
 } from "./internal/element.js";
 
 const styleSheet = lazyStyleSheet(styles);
+const VARIANTS = new Set(["primary", "secondary", "ghost", "danger"]);
 
 export class DsButton extends ForwardsFocus(Base) {
   /** Lets ElementInternals find the containing <form> across the shadow boundary. */
@@ -85,7 +86,8 @@ export class DsButton extends ForwardsFocus(Base) {
   }
 
   get variant() {
-    return this.getAttribute("variant") ?? "primary";
+    const variant = this.getAttribute("variant");
+    return VARIANTS.has(variant) ? variant : "primary";
   }
 
   set variant(value) {

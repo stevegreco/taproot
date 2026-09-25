@@ -137,6 +137,7 @@ contract:
           foreground: semantic.color.foreground.default
         focus-visible:
           outline: semantic.color.border.focus
+          radius: semantic.radius.control
       variant:
         inline:
           font-family: inherit
