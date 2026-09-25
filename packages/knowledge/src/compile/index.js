@@ -79,9 +79,15 @@ export async function compile(options) {
     const corpus = await buildCorpus(reader, roots, { workspaceRoot });
     const meta = { knowledgeVersion, designSystemVersion, buildTime, revision };
     const publicBundle = projectBundle(corpus, "public", meta);
-    const internalBundle = projectBundle(corpus, "internal", meta);
+    const internalBundle = options.internalContent
+      ? projectBundle(corpus, "internal", meta)
+      : undefined;
 
-    const problems = [...corpus.problems, ...publicBundle.problems, ...internalBundle.problems];
+    const problems = [
+      ...corpus.problems,
+      ...publicBundle.problems,
+      ...(internalBundle?.problems ?? []),
+    ];
     const errors = problems.filter((item) => item.severity === "error");
     const warnings = problems.filter((item) => item.severity === "warning");
     if (errors.length > 0) {
@@ -91,7 +97,7 @@ export async function compile(options) {
     staging = `${outDir}.tmp-${process.pid}-${randomBytes(8).toString("hex")}`;
     await mkdir(staging, { recursive: true });
     const bundles = [];
-    const written = options.internalContent ? [publicBundle, internalBundle] : [publicBundle];
+    const written = internalBundle ? [publicBundle, internalBundle] : [publicBundle];
     for (const bundle of written) {
       bundles.push(await writeBundle(join(staging, bundle.visibility), bundle));
     }

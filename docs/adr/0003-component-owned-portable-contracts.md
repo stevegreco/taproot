@@ -1,6 +1,7 @@
 # ADR 0003: Component-owned portable contracts
 
-**Status:** Accepted
+**Status:** Accepted; Markdown authoring and narrative projection superseded by
+[ADR 0005](./0005-yaml-component-specs.md)
 
 This decision supersedes the spec-record half of
 [ADR 0002](./0002-knowledge-owned-portable-contracts.md). ADR 0002 remains the record of
@@ -30,12 +31,21 @@ authored object that may name those. `checkBindingAgreement` is the enforcement 
 anatomy names, parameters, and events must be a bijection with the component contract they
 implement.
 
+Amended by [#137](https://github.com/stevegreco/design-system/issues/137): the bijection holds on the
+compiled binding, not the authored one. An authored binding may omit a `host.parameters` entry; the
+compiler maps it to attribute `kebab-case(name)` and property `name`. Omitting a parameter is
+therefore not an authoring error. Unknown host parameters and parts still are. See
+[content model](../knowledge/content-model.md) for the full defaulting rule.
+
 The component body is when and why, and host-neutral. FACE, `fieldset`, and inner-native-button
 how-to live on the binding and the implementation guideline.
 
 Compiled `contract` is legal only on `type: component`. A later component may omit `contract`.
-Compiled schema version is 6. Authored `schemaVersion` stays 1. Bundles whose compiled schema
-version is not 6 fail closed. Portable `specVersion` is 4. Compact `visuals` compile into mapping
+At acceptance, compiled schema version was 6 and portable `specVersion` was 4. Authored
+`schemaVersion` stays 1. Bundles whose compiled schema version does not match the compiler fail
+closed. Later decisions bump these versions; the current values are `COMPILED_SCHEMA_VERSION` in
+`packages/knowledge/src/schema/compiled-extensions.js` and `specVersion` in
+`packages/knowledge/src/schema/portable-contract.schema.json`. Compact `visuals` compile into mapping
 rows; see [ADR 0004](./0004-compact-visual-authoring.md).
 
 Provenance of a contract is the component's `kind: authored` source.

@@ -26,11 +26,14 @@ would remain separate because a component can have more than one host implementa
 
 ## Status of existing decisions
 
-This proposal does not change the current system while its status is `Proposed`. ADR 0002 remains
-accepted, and KNOW-002, KNOW-006, and KNOW-008 remain authoritative.
+This section records the state when the RFC was written. It has since been accepted:
+[ADR 0003](../adr/0003-component-owned-portable-contracts.md) supersedes the spec-record half of
+ADR 0002, and [ADR 0005](../adr/0005-yaml-component-specs.md) later replaced the Markdown authoring
+of Option B with YAML component specs.
 
-If this RFC is accepted, a new ADR must supersede the affected parts of ADR 0002. The same change
-must update the requirements, content model, schema, compiler, records, tests, and agent guidance.
+While the RFC was `Proposed`, it did not change the current system. ADR 0002 remained accepted, and
+KNOW-002, KNOW-006, and KNOW-008 remained authoritative. On acceptance, a new ADR had to supersede
+the affected parts of ADR 0002, and the same change had to update the requirements, content model, schema, compiler, records, tests, and agent guidance.
 
 ## Evidence
 
