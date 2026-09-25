@@ -1,7 +1,8 @@
 # Knowledge architecture review and agent handoff
 
 **Date:** 2026-09-04
-**Status:** Review findings and proposed work. No implementation changes made.
+**Status:** Review findings and proposed work. The review itself made no implementation changes;
+items marked Done were implemented afterward.
 
 ## Purpose
 
@@ -20,8 +21,10 @@ Read these before changing the knowledge system:
 
 1. [Requirements](requirements.md)
 2. [Content model](content-model.md)
-3. [ADR 0003: Component-owned portable contracts](../adr/0003-component-owned-portable-contracts.md)
-4. [ADR 0002: Knowledge-owned portable contracts](../adr/0002-knowledge-owned-portable-contracts.md),
+3. [ADR 0005: YAML component specs](../adr/0005-yaml-component-specs.md), which supersedes the
+   authoring parts of ADR 0003 (added after this review)
+4. [ADR 0003: Component-owned portable contracts](../adr/0003-component-owned-portable-contracts.md)
+5. [ADR 0002: Knowledge-owned portable contracts](../adr/0002-knowledge-owned-portable-contracts.md),
    for the host-neutrality decision that ADR 0003 retains
 
 Preserve these parts unless the assigned work explicitly revisits them:

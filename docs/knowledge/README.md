@@ -42,7 +42,8 @@ opened `records.jsonl` by path or assumed compiled schema 3.
    narrative. [ADR 0003](../adr/0003-component-owned-portable-contracts.md) remains the
    component-ownership decision. [ADR 0004](../adr/0004-compact-visual-authoring.md) records
    compact visual authoring and state resolution. [ADR 0002](../adr/0002-knowledge-owned-portable-contracts.md)
-   remains the host-neutrality decision. [ADR 0001](../adr/0001-portable-design-system-knowledge.md)
+   remains the host-neutrality decision. [ADR 0006](../adr/0006-okf-alignment.md) records which
+   Open Knowledge Format principles the catalog shares. [ADR 0001](../adr/0001-portable-design-system-knowledge.md)
    is superseded.
 4. [New component definition of done](new-component.md) lists the build path, the states and
    options each component must decide on, and the checks that prove the contract.

@@ -26,8 +26,9 @@ Author compact `contract.visuals` grouped by anatomy part and configuration axis
 source into the existing `contract.mappings` rows. Do not keep a second authored copy of the same
 facts.
 
-Portable `specVersion` is 4. Compiled schema version is 6. Bundles whose compiled schema version
-is not 6 fail closed.
+At acceptance, portable `specVersion` was 4 and compiled schema version was 6. Bundles whose
+compiled schema version does not match the compiler fail closed. [ADR 0005](./0005-yaml-component-specs.md)
+bumps both.
 
 ### Authored source
 

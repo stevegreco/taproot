@@ -1,6 +1,7 @@
 # ADR 0002: Knowledge-owned portable contracts
 
-**Status:** Accepted
+**Status:** Accepted; spec-record authoring superseded by
+[ADR 0003](./0003-component-owned-portable-contracts.md)
 
 This decision supersedes [ADR 0001](./0001-portable-design-system-knowledge.md). ADR 0001 remains
 the record of the original catalog architecture. This ADR changes ownership of portable component
@@ -52,7 +53,7 @@ the spec.
   `get("binding.button.web-component").host.defaultTagName`.
 - Authors write specs and bindings as the same Markdown records they already write.
 - A second host, such as React, does not belong under `packages/components`.
-- Compiled schema version becomes 2 because the contract shape changed.
+- At acceptance, compiled schema version became 2 because the contract shape changed.
 - KNOW-002, KNOW-006, KNOW-008, the content model, and `AGENTS.md` must name the same owners.
 
 ## Alternatives considered

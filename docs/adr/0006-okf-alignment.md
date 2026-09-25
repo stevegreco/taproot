@@ -1,6 +1,9 @@
-# ADR 0004: Alignment with Open Knowledge Format principles
+# ADR 0006: Alignment with Open Knowledge Format principles
 
 **Status:** Accepted
+
+Originally numbered 0004. Renumbered to 0006 because it shared that number with
+[ADR 0004](./0004-compact-visual-authoring.md).
 
 This decision does not change the knowledge schema, compiler, content, or
 `openCatalog`. It records which [Open Knowledge Format (OKF)
@@ -31,7 +34,9 @@ Do not rewrite existing records to OKF shape.
 The principles we share:
 
 1. Knowledge is Markdown with YAML frontmatter. It is git-diffable and readable
-   by humans and agents.
+   by humans and agents. [ADR 0005](./0005-yaml-component-specs.md) later made
+   component records plain YAML specs with generated narrative. The principle
+   that survives is plain-text, git-diffable authoring.
 2. Producer is not consumer. The authored corpus is owned by the design system.
    MCP servers, skills, CLIs, and any future OKF-shaped views are adapters, not
    sources of truth (KNOW-001, KNOW-016, KNOW-027).
