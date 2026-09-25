@@ -25,6 +25,7 @@ const escapeHtml = (value: string) =>
 const inlineMarkdown = (value: string) =>
   escapeHtml(value)
     .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 
 const markdownToHtml = (markdown: string) => {
@@ -35,13 +36,14 @@ const markdownToHtml = (markdown: string) => {
       if (heading) {
         return `<h3>${inlineMarkdown(heading[2])}</h3>`;
       }
-      const listItems = block.match(/^[-*]\s+/m) ? block.split("\n") : null;
-      if (listItems && listItems.every((line) => /^[-*]\s+/.test(line) || line.trim() === "")) {
-        const items = listItems
-          .filter((line) => line.trim().length > 0)
-          .map((line) => `<li>${inlineMarkdown(line.replace(/^[-*]\s+/, ""))}</li>`)
-          .join("");
-        return `<ul>${items}</ul>`;
+      // A list item may continue on indented lines, as rule details do.
+      if (/^[-*]\s+/.test(block)) {
+        const items: string[] = [];
+        for (const line of block.split("\n")) {
+          if (/^[-*]\s+/.test(line)) items.push(line.replace(/^[-*]\s+/, ""));
+          else if (line.trim()) items[items.length - 1] += ` ${line.trim()}`;
+        }
+        return `<ul>${items.map((item) => `<li>${inlineMarkdown(item)}</li>`).join("")}</ul>`;
       }
       if (block.startsWith("```")) {
         const fenced = block.replace(/^```[a-z]*\n?/, "").replace(/```$/, "");

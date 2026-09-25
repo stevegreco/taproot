@@ -1,7 +1,7 @@
 import { access, cp, mkdir, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
+import { formatAvoid, formatRule, openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 import { assertSpecifier } from "./workspace-builds";
 
 export type ComponentSlug = string;
@@ -291,9 +291,10 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
     }
     case "api":
       return markdownTable(
-        ["Name", "Type", "Default", "Description"],
+        ["Name", "Kind", "Type", "Default", "Description"],
         slice.api.map((row) => [
           row.name,
+          row.kind,
           row.typeDisplay,
           row.defaultDisplay ?? "",
           apiDescription(row),
@@ -316,7 +317,10 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
     }
     case "review":
       if (!slice.review) return "";
-      return slice.review.checks.map((check) => `- ${check.requirement}`).join("\n");
+      return [
+        `### ${slice.review.title}`,
+        slice.review.checks.map((check) => `- ${check.requirement}`).join("\n"),
+      ].join("\n\n");
   }
 }
 
@@ -677,58 +681,17 @@ function projectIntro(
   const contract = isObject(record.contract) ? record.contract : {};
   const introParts = [asString(contract.description)];
   const usage = isObject(contract.usage) ? contract.usage : {};
-  const avoid = Array.isArray(usage.avoid) ? usage.avoid : [];
-  const avoidLines: string[] = [];
-  for (const item of avoid) {
-    if (!isObject(item)) continue;
-    const situation = asString(item.situation);
-    const instead = asString(item.instead);
-    const why = asString(item.why);
-    const line = [situation, instead ? `Use ${instead} instead.` : "", why]
-      .filter((part) => part.length > 0)
-      .join(" ");
-    if (line.length > 0) avoidLines.push(`- ${line}`);
-  }
+  const avoid = Array.isArray(usage.avoid) ? usage.avoid.filter(isObject) : [];
+  const avoidLines = avoid.map((item) => formatAvoid(item));
   if (avoidLines.length > 0) {
     introParts.push(`### When to avoid\n\n${avoidLines.join("\n")}`);
   }
 
-  const contentRules = Array.isArray(contract.content) ? contract.content : [];
-  const contentBlocks = contentRules.flatMap((rule) => {
-    if (!isObject(rule)) return [];
-    const level = asString(rule.level);
-    const statement = asString(rule.statement);
-    const lines = [level ? `- **${level}:** ${statement}` : `- ${statement}`];
-    if (typeof rule.applicability === "string" && rule.applicability.length > 0) {
-      lines.push(`Applies when: ${rule.applicability}`);
-    }
-    if (typeof rule.rationale === "string" && rule.rationale.length > 0) {
-      lines.push(`Why: ${rule.rationale}`);
-    }
-    const references = Array.isArray(rule.references) ? rule.references : [];
-    for (const reference of references) {
-      if (!isObject(reference)) continue;
-      const id = asString(reference.id);
-      if (!id) continue;
-      const fragment = asString(reference.fragment);
-      const hash = fragment ? `#${fragment}` : "";
-      const label = id === "pattern.action-hierarchy" ? "action hierarchy pattern" : id;
-      lines.push(`See [${label}](markdown/${id}.md${hash}).`);
-    }
-    const examples = isObject(rule.examples) ? rule.examples : {};
-    const doExamples = Array.isArray(examples.do)
-      ? examples.do.filter((example): example is string => typeof example === "string")
-      : [];
-    const avoidExamples = Array.isArray(examples.avoid)
-      ? examples.avoid.filter((example): example is string => typeof example === "string")
-      : [];
-    if (doExamples.length > 0) lines.push(`Do: ${doExamples.join("; ")}.`);
-    if (avoidExamples.length > 0) lines.push(`Avoid: ${avoidExamples.join("; ")}.`);
-    return [lines.join("\n")];
-  });
+  const contentRules = Array.isArray(contract.content) ? contract.content.filter(isObject) : [];
+  const contentLines = contentRules.flatMap((rule) => formatRule(rule));
   const label =
-    contentBlocks.length > 0
-      ? rewriteBundleUrls(`### Write the label\n\n${contentBlocks.join("\n\n")}`, digest)
+    contentLines.length > 0
+      ? rewriteBundleUrls(`### Write the label\n\n${contentLines.join("\n")}`, digest)
       : "";
   const behavior = behaviorSection
     ? `### ${behaviorSection.heading}\n\n${rewriteBundleUrls(behaviorSection.markdown, digest)}`

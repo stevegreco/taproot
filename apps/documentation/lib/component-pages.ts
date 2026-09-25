@@ -78,7 +78,7 @@ export function componentPageBody(
 
   if (slice.variants.length > 0) parts.push("## Variants", knowledge(slug, "variants"));
   if (slice.together) parts.push("## Using together", knowledge(slug, "together"));
-  parts.push("## Attributes", knowledge(slug, "api"));
+  parts.push("## API", knowledge(slug, "api"));
   parts.push("## Accessibility", knowledge(slug, "accessibility"));
   if (slice.review) parts.push(knowledge(slug, "review"));
 

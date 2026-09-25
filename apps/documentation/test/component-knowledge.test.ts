@@ -326,7 +326,7 @@ test("the button page frontmatter matches the slice title and summary", () => {
   assert.equal(description, slice.summary, "frontmatter description matches the record summary");
   assert.match(source, /^## Variants$/m);
   assert.match(source, /^## Using together$/m);
-  assert.match(source, /^## Attributes$/m);
+  assert.match(source, /^## API$/m);
   assert.match(source, /^## Accessibility$/m);
   assert.match(source, /section="review"/, "review stays available without a TOC heading");
 });

@@ -8,6 +8,7 @@ import { compiledSchema, findCompiledIssues } from "../schema/compiled-record.js
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import { sha256Hex } from "./digest.js";
 import { buildSearchIndex } from "./search-index.js";
+import { generateReferenceSections } from "./generate-body.js";
 import { rewriteEmittedMarkdownUrls } from "./narrative.js";
 import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
 
@@ -197,7 +198,9 @@ function projectNarrativeFrontmatter(record) {
 
 function emitMarkdown(record) {
   const frontmatter = projectNarrativeFrontmatter(record);
-  const body = rewriteEmittedMarkdownUrls(record.body);
+  const body = rewriteEmittedMarkdownUrls(
+    [record.body, ...generateReferenceSections(record)].join("\n\n"),
+  );
   return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${body}\n`;
 }
 
