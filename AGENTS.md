@@ -2,23 +2,21 @@
 
 ## Design system knowledge
 
-Before changing the agent-facing knowledge system, read:
+`packages/knowledge` is the source of truth for components. Its
+[README](packages/knowledge/README.md) says which file to edit for each change, how to check it,
+and defines the terms. To answer how a component should be used, read its compiled record with
+`openCatalog` from `@stevegreco/design-system-knowledge/retrieve`, or
+`packages/knowledge/dist/public/markdown/<id>.md` after a build.
 
-1. `docs/knowledge/requirements.md`
-2. `docs/knowledge/content-model.md`
-3. `docs/adr/0005-yaml-component-specs.md`
-
-ADR 0001 is superseded by 0002. ADR 0003 supersedes the spec-record half of ADR 0002. ADR 0005
-supersedes the Markdown-authoring and narrative-projection portions of ADR 0003 while preserving
-component ownership and host separation. Use the
-stable `KNOW-*` requirement IDs in plans, issues, and pull requests. Update the documents when an
-implementation changes an accepted requirement or decision.
+Before changing how the knowledge system itself works, read `docs/knowledge/requirements.md` and
+`docs/knowledge/content-model.md`. Current decisions are ADRs 0002 through 0006 in `docs/adr/`;
+0001 is superseded, and later ADRs note what they replace in earlier ones. Use the stable `KNOW-*`
+requirement IDs in plans, issues, and pull requests. Update the documents when an implementation
+changes an accepted requirement or decision.
 
 Domain-owned sources remain authoritative. Token decisions live in `packages/tokens/docs/adr/`.
-Portable component contracts live on component records in `packages/knowledge/content/components/`.
-YAML `*.spec.yaml` files are the component records; they are not `type: spec`.
-Host bindings live in `packages/knowledge/content/bindings/`. Component runtime lives in
-`packages/components`.
+Component specs live in `packages/knowledge/content/components/`, host bindings in
+`packages/knowledge/content/bindings/`, and the component runtime in `packages/components`.
 
 Before adding a component or variant, check
 `packages/knowledge/content/guidelines/compose-or-propose.md`, then follow
@@ -37,9 +35,8 @@ skill. Those are consumers or delivery adapters for the portable knowledge recor
 From the repository root:
 
 - `pnpm build` runs `turbo run build` for every package, in dependency order.
-- `pnpm test` runs `turbo run test`, which builds each package (and its workspace dependencies) once before
-  testing it.
-  The documentation tests run each example's `examples/<slug>.verify.js` against the built site.
+- `pnpm test` runs `turbo run test`, which builds each package and its workspace dependencies once
+  before testing it. The documentation tests run each example's `examples/<slug>.verify.js` against the built site.
 - `pnpm exec turbo run <task> --filter=<pkg>` is the way to build, test, or develop one package
   and its workspace dependencies.
 

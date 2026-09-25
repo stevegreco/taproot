@@ -420,9 +420,9 @@ visibility, knowledge version, design system version, record count, and per-file
 digest hashes that block. Build time and git revision live in `manifest.build` and are not part
 of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `7` because
 compiled records carry `bodyOrigin` and contracts use structured usage IDs and rules. Bundles
-whose compiled schema version is not 7 fail closed. Portable `specVersion` is 5. The compiler always projects the internal
-bundle for validation and writes it only when internal content is configured. An internal bundle may contain only public
-records; visibility is the declared projection, not a guess from record contents.
+whose compiled schema version is not 7 fail closed. Portable `specVersion` is 5. The compiler
+projects and writes the internal bundle only when internal content is configured. An internal bundle
+may contain only public records; visibility is the declared projection, not a guess from record contents.
 
 Consumers query a compiled bundle through `openCatalog` in
 `@stevegreco/design-system-knowledge/retrieve`. `search`, `get`, `list`, and `related` read

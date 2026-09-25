@@ -1,7 +1,10 @@
 # Design system knowledge
 
-This directory defines the requirements and content model for agent-facing Ember & Sage knowledge.
-The knowledge system is independent of any one agent product or delivery protocol.
+This directory defines the requirements and content model for Ember & Sage knowledge. The
+knowledge system is independent of any one agent product or delivery protocol.
+
+To edit knowledge, start with the [package README](../../packages/knowledge/README.md). It says
+which file to change, how to check it, and defines the terms used here.
 
 ## Status
 
@@ -12,25 +15,12 @@ is written only when internal content is configured. The published package inclu
 and `src` only.
 
 `openCatalog` from `@stevegreco/design-system-knowledge/retrieve` answers `search`, `get`, `list`,
-and `related` against one compiled bundle (KNOW-015). The documentation site consumes the Button
-slice through that interface (KNOW-004). Tests cover schema validation, visibility isolation,
+and `related` against one compiled bundle (KNOW-015). The documentation site renders every component
+page through that interface (KNOW-004). Tests cover schema validation, visibility isolation,
 relationship integrity, deterministic compiler output, and the retrieval interface (KNOW-025). MCP
 adapters are not implemented (KNOW-028).
 
-## Compatibility
-
-`@stevegreco/design-system-knowledge` `0.0.1` is a breaking change relative to earlier compiled
-bundles in this stack:
-
-- `compiledSchemaVersion` is 7. Bundles at 3, 4, 5, or 6 fail closed.
-- Portable `specVersion` is 5. Usage entries have stable IDs. Component rules use a shared
-  vocabulary in `content`, `behavior`, and `accessibility.requirements`.
-- `dist/public/records.jsonl` is no longer written or published. Read `records.json`.
-- Compiled records no longer include `decisions[]`. ADR provenance is a `sources[]` entry with
-  `kind: adr`.
-
-The next published version of this package must be treated as incompatible with any consumer that
-opened `records.jsonl` by path or assumed compiled schema 3.
+Format changes are listed in the package [CHANGELOG](../../packages/knowledge/CHANGELOG.md).
 
 ## Reading order
 
@@ -82,8 +72,7 @@ The other Markdown files compile as authored narrative plus their own frontmatte
 ```mermaid
 flowchart TB
   subgraph authored["button.spec.yaml owns"]
-    FM["Frontmatter: id, title, summary, status, jobs, tags, relations, contract"]
-    BODY["Body: host-neutral when/why"]
+    FM["Fields: id, title, summary, status, jobs, tags, relations, contract with visuals"]
     SRC["sources[]: pointers, not content"]
   end
 
@@ -99,7 +88,7 @@ flowchart TB
   end
 
   subgraph record["One object: component.button"]
-    R["Authored fields + body<br/>+ contract + tokens<br/>+ backlinks from siblings"]
+    R["Authored fields + generated body<br/>+ contract with mappings + tokens<br/>+ backlinks from siblings"]
   end
 
   subgraph dist["dist/public/  (same record, different views)"]
@@ -110,7 +99,6 @@ flowchart TB
   end
 
   FM --> R
-  BODY --> R
   SRC --> TOK
   SRC --> ADR
   BIND -->|"implements"| R
@@ -134,8 +122,8 @@ IDs. After the corpus exists, Button gains `backlinks.usedBy`, `backlinks.guided
 bodies are not copied into Button. The diagram traces Button. Badge follows the same path without
 a token-source. Button and Badge point at each other with `related`.
 
-`dist/internal/` uses the same layout. Today it holds the same public records as `dist/public/`. An
-extra internal root would add records there only.
+An internal bundle, `dist/internal/`, uses the same layout. The build writes it only when an
+internal content root is configured. None is today.
 
 ## Retrieval
 
@@ -174,7 +162,7 @@ The executable schema, authored Markdown parser, and knowledge compiler validate
   requirement or decision.
 - Do not make an MCP server, documentation site, or agent skill the sole source of knowledge.
 - Visual change workflow: accept the design intent; edit compact `visuals` and token sources as
-  needed; update CSS and Figma; run knowledge compile and mapping stylesheet tests; release
+  needed; update CSS and Figma; run knowledge compile and the component mapping tests; release
   token, knowledge, and component packages together when the published contract or CSS references
   change. Token-value-only changes normally need no mapping or CSS-reference edits. Figma
   agreement is manual until an adapter exists.

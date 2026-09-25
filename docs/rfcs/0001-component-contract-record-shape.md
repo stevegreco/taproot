@@ -3,6 +3,8 @@
 **Status:** Accepted
 **Created:** 2026-09-02
 **Accepted in:** [ADR 0003](../adr/0003-component-owned-portable-contracts.md)
+**Authoring changed by:** [ADR 0005](../adr/0005-yaml-component-specs.md). Component records are
+now `content/components/<name>/<name>.spec.yaml`, not Markdown under `content/specs/`.
 **Discussion:** [#46](https://github.com/stevegreco/design-system/issues/46)
 
 ## Summary
