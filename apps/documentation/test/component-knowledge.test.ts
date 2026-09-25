@@ -370,11 +370,10 @@ const scratchPattern = {
   relations: { guides: ["component.scratch"] },
   body: "## Assign emphasis\n\n### Primary\n\nScratch primary guidance.\n\n## Avoid\n\n- Scratch item",
 };
-const scratchParameters = { variant: { kind: "enum", values: { primary: "Scratch." } } };
 
 test("variant guidance is opt-in, not inferred from pattern headings", () => {
   assert.equal(
-    variantGuidance("component.scratch", scratchParameters, [scratchPattern]).size,
+    variantGuidance("component.scratch", [scratchPattern]).size,
     0,
     "a ### Primary heading alone guides nothing",
   );
@@ -384,45 +383,13 @@ test("variant guidance is opt-in, not inferred from pattern headings", () => {
     variantGuidance: { "component.scratch": { primary: "primary" } },
   };
   assert.equal(
-    variantGuidance("component.scratch", scratchParameters, [optedIn]).get("primary"),
+    variantGuidance("component.scratch", [optedIn]).get("primary"),
     "Scratch primary guidance.",
   );
   assert.equal(
-    variantGuidance("component.other", scratchParameters, [optedIn]).size,
+    variantGuidance("component.other", [optedIn]).size,
     0,
     "another component with the same variant name gets nothing",
-  );
-});
-
-test("variant guidance fails on anchors, variants, or components the records do not have", () => {
-  const withGuidance = (guidance: Record<string, unknown>) => [
-    { ...scratchPattern, variantGuidance: { "component.scratch": guidance } },
-  ];
-  assert.throws(
-    () =>
-      variantGuidance("component.scratch", scratchParameters, withGuidance({ primary: "missing" })),
-    /names #missing, but no ### heading/,
-  );
-  assert.throws(
-    () =>
-      variantGuidance("component.scratch", scratchParameters, withGuidance({ ghost: "primary" })),
-    /variant ghost, which its contract does not have/,
-  );
-  assert.throws(
-    () =>
-      variantGuidance("component.scratch", scratchParameters, [
-        {
-          ...scratchPattern,
-          relations: {},
-          variantGuidance: { "component.scratch": { primary: "primary" } },
-        },
-      ]),
-    /which it does not guide/,
-  );
-  const twice = withGuidance({ primary: "primary" });
-  assert.throws(
-    () => variantGuidance("component.scratch", scratchParameters, [...twice, ...twice]),
-    /more than one pattern/,
   );
 });
 

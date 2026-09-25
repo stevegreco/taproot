@@ -419,54 +419,21 @@ function subsectionsByAnchor(body: string): Map<string, string> {
  * Variant guidance a component opts into. A pattern's `variantGuidance` maps a
  * component ID to its variant values, each naming a `###` subsection of the
  * pattern body by anchor. A pattern without an entry for the component
- * contributes nothing, whatever its headings are called.
+ * contributes nothing, whatever its headings are called. The knowledge compile
+ * rejects anchors, variants, and components that do not exist.
  */
 export function variantGuidance(
   id: string,
-  parameters: Record<string, unknown>,
   patterns: readonly Record<string, unknown>[],
 ): Map<string, string> {
   const guidance = new Map<string, string>();
-  const values =
-    isObject(parameters.variant) && isObject(parameters.variant.values)
-      ? parameters.variant.values
-      : {};
   for (const pattern of patterns) {
-    const patternId = asString(pattern.id);
     const declared = isObject(pattern.variantGuidance) ? pattern.variantGuidance[id] : undefined;
-    if (declared === undefined) continue;
-    if (!isObject(declared)) {
-      fail("malformed-contract", `${patternId} variantGuidance.${id} must map variants to anchors`);
-    }
-    const guides = isObject(pattern.relations) ? pattern.relations.guides : undefined;
-    if (!Array.isArray(guides) || !guides.includes(id)) {
-      fail(
-        "malformed-contract",
-        `${patternId} variantGuidance names ${id}, which it does not guide`,
-      );
-    }
+    if (!isObject(declared)) continue;
     const subsections = subsectionsByAnchor(asString(pattern.body));
     for (const [variant, anchor] of Object.entries(declared)) {
-      if (!Object.hasOwn(values, variant)) {
-        fail(
-          "malformed-contract",
-          `${patternId} variantGuidance names ${id} variant ${variant}, which its contract does not have`,
-        );
-      }
       const text = subsections.get(asString(anchor));
-      if (!text) {
-        fail(
-          "malformed-contract",
-          `${patternId} variantGuidance.${id}.${variant} names #${asString(anchor)}, but no ### heading with text has that anchor`,
-        );
-      }
-      if (guidance.has(variant)) {
-        fail(
-          "unexpected-slice",
-          `${id} variant ${variant} has guidance from more than one pattern`,
-        );
-      }
-      guidance.set(variant, text);
+      if (text) guidance.set(variant, text);
     }
   }
   return guidance;
@@ -857,11 +824,15 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
           );
         }
         behaviorSection = { heading, markdown: section };
+      } else if (guides(related, id)) {
+        console.warn(
+          `${asString(related.id)} guides ${id} but has no checks or docsSections.behavior, so the ${slug} page does not show it`,
+        );
       }
     }
   }
 
-  const variants = projectVariants(tagName, parameters, variantGuidance(id, parameters, patterns));
+  const variants = projectVariants(tagName, parameters, variantGuidance(id, patterns));
   const { introMarkdown, behaviorMarkdown } = projectIntro(record, behaviorSection, digest);
 
   const together = projectTogether(patterns, example);
@@ -883,6 +854,11 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     together,
     review,
   };
+}
+
+function guides(record: Record<string, unknown>, id: string): boolean {
+  const targets = isObject(record.relations) ? record.relations.guides : undefined;
+  return Array.isArray(targets) && targets.includes(id);
 }
 
 function deepFreeze<T>(value: T): T {

@@ -108,9 +108,10 @@ anchor matches no heading, so renaming a heading cannot silently drop that secti
 
 A pattern can add `variantGuidance` to opt a component's variants into guidance from its body. It
 maps a component ID the pattern `guides` to variant values, each naming a `###` subsection by
-anchor. Headings alone guide nothing: a component with a `primary` variant gets no guidance from a
-`### Primary` heading unless the pattern names it. The docs build fails when an anchor, variant, or
-component does not exist, or when two patterns guide the same variant. A component can relate to
+anchor. A list (`component.button: [primary, danger]`) is shorthand for anchors named after each
+variant. Headings alone guide nothing: a component with a `primary` variant gets no guidance from a
+`### Primary` heading unless the pattern names it. The knowledge compile fails when an anchor,
+variant, or component does not exist, or when two patterns guide the same variant. A component can relate to
 more than one pattern. Example records can add structured `assets` and `annotations`.
 
 ## Executable contract

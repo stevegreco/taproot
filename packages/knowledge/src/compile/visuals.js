@@ -72,6 +72,7 @@ export function compileContractVisuals(contract, recordId) {
     problems.push(...expanded.problems);
     next.mappings = expanded.mappings;
     next.visualCoverage = buildVisualCoverage(next);
+    problems.push(...missingValueWarnings(next.visualCoverage, recordId));
     delete next.visuals;
   }
 
@@ -756,4 +757,21 @@ function conflict(recordId, path, message) {
     recordId,
     path,
   });
+}
+
+/** A new axis value with no visuals compiles, but should not do so silently. */
+function missingValueWarnings(coverage, recordId) {
+  return Object.entries(coverage.parts ?? {}).flatMap(([part, { missingValues }]) =>
+    Object.entries(missingValues ?? {}).flatMap(([axis, values]) =>
+      values.map((value) =>
+        problem({
+          code: PROBLEM.VISUAL_MISSING_VALUE,
+          message: `${recordId} part ${part} has visuals for ${axis} but none for ${axis}=${value}`,
+          recordId,
+          path: `/contract/visuals/${part}/${axis}`,
+          severity: "warning",
+        }),
+      ),
+    ),
+  );
 }

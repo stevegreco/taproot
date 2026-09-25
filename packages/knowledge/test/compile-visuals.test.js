@@ -417,6 +417,13 @@ test("an extra contract size compiles from compact visuals", async () => {
   assert.equal(record.contract.mappings[0].configuration.size, "lg");
   assert.equal(Object.hasOwn(record.contract, "visuals"), false);
   assert.deepEqual(record.contract.visualCoverage.parts.control.missingValues.size, ["md", "sm"]);
+  assert.deepEqual(
+    codes(corpus, PROBLEM.VISUAL_MISSING_VALUE).map((item) => [item.severity, item.message]),
+    [
+      ["warning", "component.size-visual part control has visuals for size but none for size=md"],
+      ["warning", "component.size-visual part control has visuals for size but none for size=sm"],
+    ],
+  );
   assert.equal(Object.hasOwn(record.contract.mappings[0], "source"), false);
 });
 

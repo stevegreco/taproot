@@ -1,4 +1,4 @@
-import { parseAllDocuments } from "yaml";
+import { LineCounter, isMap, parseAllDocuments, parseDocument } from "yaml";
 
 /**
  * Parse a single YAML mapping and fail on duplicate keys, aliases, and
@@ -109,4 +109,44 @@ function duplicateKeyName(error) {
     if (match) return match[1].trim().replace(/^["']|["']$/g, "");
   }
   return null;
+}
+
+/**
+ * Map JSON Pointers into a YAML text to 1-based line numbers, so schema issues
+ * can name the line. A pointer to a missing key resolves to its nearest
+ * existing parent.
+ *
+ * @param {string} text
+ * @returns {(pointer: string) => number | null}
+ */
+export function yamlLocator(text) {
+  const lineCounter = new LineCounter();
+  let document;
+  try {
+    document = parseDocument(text, { lineCounter });
+  } catch {
+    return () => null;
+  }
+  const lineAt = (offset) => lineCounter.linePos(offset).line;
+
+  return (pointer) => {
+    const segments = pointer
+      .split("/")
+      .slice(1)
+      .map((segment) => segment.replaceAll("~1", "/").replaceAll("~0", "~"));
+    while (segments.length > 0) {
+      const parent =
+        segments.length === 1 ? document.contents : document.getIn(segments.slice(0, -1), true);
+      const key = segments.at(-1);
+      if (isMap(parent)) {
+        const pair = parent.items.find((item) => String(item.key?.value ?? item.key) === key);
+        if (pair?.key?.range) return lineAt(pair.key.range[0]);
+      } else {
+        const node = document.getIn(segments, true);
+        if (node?.range) return lineAt(node.range[0]);
+      }
+      segments.pop();
+    }
+    return document.contents?.range ? lineAt(document.contents.range[0]) : null;
+  };
 }

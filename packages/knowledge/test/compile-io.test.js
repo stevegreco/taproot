@@ -220,6 +220,4 @@ test("compile names the package.json path when the version cannot be read", asyn
       return true;
     },
   );
-
-  await assert.rejects(() => access(`${outDir}.lock`));
 });

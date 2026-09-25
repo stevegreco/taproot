@@ -24,14 +24,8 @@ relations:
     - component.button
     - component.link
 variantGuidance:
-  component.button:
-    primary: primary
-    secondary: secondary
-    ghost: ghost
-    danger: danger
-  component.link:
-    inline: inline
-    standalone: standalone
+  component.button: [primary, secondary, ghost, danger]
+  component.link: [inline, standalone]
 sources:
   - kind: authored
     path: packages/knowledge/content/patterns/action-hierarchy.md

@@ -27,8 +27,29 @@ test("RECORD_INVALID fires once per parseRecord issue", async () => {
   const problems = codes(corpus, PROBLEM.RECORD_INVALID);
 
   assert.ok(problems.length >= 1);
-  assert.equal(problems[0].path, "content/invalid.md /title");
+  assert.equal(problems[0].path, "content/invalid.md:2 /title");
   assert.equal(corpus.records.size, 0);
+});
+
+test("references to a record that failed validation are not reported again", async () => {
+  const invalid = "content/invalid.md";
+  const pattern = "content/uses-invalid.md";
+  const reader = createMemoryReader({
+    [invalid]: authored(invalid, { id: "component.invalid" }).replace("\ntitle: Fixture\n", "\n"),
+    [pattern]: authored(pattern, {
+      id: "pattern.uses-invalid",
+      type: "pattern",
+      relations: { uses: ["component.invalid"], related: ["component.missing"] },
+    }),
+  });
+
+  const corpus = await buildCorpus(reader, [publicRoot]);
+
+  assert.deepEqual(
+    corpus.problems.map((item) => item.code),
+    [PROBLEM.RECORD_INVALID, PROBLEM.CORPUS_UNRESOLVED_RELATION],
+  );
+  assert.match(corpus.problems[1].message, /component\.missing/);
 });
 
 test("RECORD_SCHEMA_UNSUPPORTED fires when schemaVersion is not 1", async () => {
@@ -41,7 +62,7 @@ test("RECORD_SCHEMA_UNSUPPORTED fires when schemaVersion is not 1", async () => 
   const problems = codes(corpus, PROBLEM.RECORD_SCHEMA_UNSUPPORTED);
 
   assert.equal(problems.length, 1);
-  assert.equal(problems[0].path, "content/unsupported.md /schemaVersion");
+  assert.equal(problems[0].path, "content/unsupported.md:2 /schemaVersion");
   assert.equal(codes(corpus, PROBLEM.RECORD_INVALID).length, 0);
 });
 
@@ -55,7 +76,7 @@ test("RECORD_INVALID fires when schemaVersion has the wrong type", async () => {
   const problems = codes(corpus, PROBLEM.RECORD_INVALID);
 
   assert.equal(problems.length, 1);
-  assert.equal(problems[0].path, "content/typed.md /schemaVersion");
+  assert.equal(problems[0].path, "content/typed.md:2 /schemaVersion");
   assert.equal(codes(corpus, PROBLEM.RECORD_SCHEMA_UNSUPPORTED).length, 0);
 });
 
@@ -87,7 +108,7 @@ test("RECORD_INVALID fires when a record declares two authored sources", async (
   const corpus = await buildCorpus(reader, [publicRoot]);
   const problems = codes(corpus, PROBLEM.RECORD_INVALID);
 
-  assert.ok(problems.some((item) => item.path === "content/two.md /sources"));
+  assert.ok(problems.some((item) => /^content\/two.md:\d+ \/sources$/.test(item.path)));
   assert.match(problems[0].message, /exactly one authored source/);
   assert.equal(corpus.records.size, 0);
 });

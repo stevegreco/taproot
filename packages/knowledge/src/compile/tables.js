@@ -23,6 +23,8 @@ export const PROBLEM = Object.freeze({
   CORPUS_INCOMPLETE_EXAMPLE: "corpus/incomplete-example",
   CORPUS_INCOMPLETE_CHECKS: "corpus/incomplete-checks",
   CONTRACT_UNRESOLVED_REFERENCE: "contract/unresolved-reference",
+  VARIANT_GUIDANCE_INVALID: "pattern/variant-guidance",
+  VISUAL_MISSING_VALUE: "contract/missing-visual-value",
   SOURCE_MISSING: "source/missing",
   SOURCE_UNREADABLE: "source/unreadable",
   SOURCE_CONFLICT: "source/conflict",
