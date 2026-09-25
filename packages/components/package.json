@@ -38,7 +38,6 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "node build-styles.js && node build-sources.js",
-    "pretest": "pnpm run build",
     "test": "vitest run",
     "watch": "chokidar \"src/**/*.css\" -c \"node build-styles.js\" --initial",
     "dev": "pnpm run watch",

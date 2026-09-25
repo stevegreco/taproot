@@ -33,7 +33,6 @@ export const PROBLEM = Object.freeze({
   VISIBILITY_INTERNAL_PUBLIC: "visibility/internal-declares-public",
   PATH_OUTSIDE_ROOT: "path/outside-root",
   COMPILED_INVALID: "compiled/invalid",
-  COMPILE_LOCK_HELD: "compile/lock-held",
   COMPILE_PACKAGE_UNREADABLE: "compile/package-unreadable",
 });
 
