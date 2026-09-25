@@ -1,4 +1,5 @@
 import { PROBLEM, problem } from "./tables.js";
+import { configurationValues, mappingIdentity } from "./visuals.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
 
@@ -296,8 +297,6 @@ function bijectionProblems(recordId, label, expected, actual) {
   return problems;
 }
 
-const BOOLEAN_CONFIGURATION_VALUES = Object.freeze(["true", "false"]);
-
 export function checkSourceAgreement(record, tokenNames = null) {
   const problems = [];
   const tokens = record.tokens;
@@ -417,32 +416,6 @@ export function checkMappingAgreement(record, tokenNames = null) {
   }
 
   return problems;
-}
-
-function configurationValues(key, parameters, configurationAxes) {
-  if (Object.hasOwn(configurationAxes, key)) {
-    return new Set(configurationAxes[key].values ?? []);
-  }
-  const parameter = parameters[key];
-  if (!parameter) return null;
-  if (parameter.kind === "enum") {
-    return new Set(Object.keys(parameter.values ?? {}));
-  }
-  if (parameter.kind === "boolean") {
-    return new Set(BOOLEAN_CONFIGURATION_VALUES);
-  }
-  if (parameter.kind === "string") {
-    return { has: () => true };
-  }
-  return null;
-}
-
-function mappingIdentity(mapping) {
-  const configuration = Object.entries(mapping.configuration ?? {})
-    .sort(([left], [right]) => left.localeCompare(right))
-    .map(([key, value]) => `${key}=${value}`)
-    .join(",");
-  return `${mapping.part}\0${mapping.channel}\0${configuration}\0${mapping.state ?? ""}`;
 }
 
 function tokenIdentity(token) {

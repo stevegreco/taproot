@@ -271,23 +271,20 @@ test("unknown parts, axes, states, and literals fail closed", () => {
   assert.equal(named.token.name, "currentColor");
 });
 
-test("authoring visuals and mappings together is a conflict", () => {
-  const { problems } = compileContractVisuals(
-    visualContract(
-      { control: { base: { radius: "component.fixture.radius" } } },
-      {
-        mappings: [
-          {
-            part: "control",
-            channel: "radius",
-            token: { name: "component.fixture.other" },
-          },
-        ],
-      },
-    ),
+test("mappings and visualCoverage cannot be authored", () => {
+  const { contract, problems } = compileContractVisuals(
+    portableContract({
+      anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
+      mappings: [{ part: "control", channel: "radius", token: { name: "component.fixture.r" } }],
+      visualCoverage: { parts: {}, uncoveredParts: [], uncoveredAxes: [] },
+    }),
     "component.fixture",
   );
-  assert.ok(problems.some((item) => /both visuals and mappings/.test(item.message)));
+  assert.deepEqual(
+    problems.map((item) => item.path),
+    ["/contract/mappings", "/contract/visualCoverage"],
+  );
+  assert.equal(Object.hasOwn(contract, "mappings"), false);
 });
 
 test("compiled Button mappings omit visuals and preserve ghost rest fill", async () => {

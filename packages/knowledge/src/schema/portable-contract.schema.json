@@ -57,8 +57,12 @@
       "additionalProperties": { "$ref": "#/$defs/visualPart" }
     },
     "stateResolution": { "$ref": "#/$defs/stateResolution" },
-    "visualCoverage": { "$ref": "#/$defs/visualCoverage" },
+    "visualCoverage": {
+      "description": "Compiler output from visuals. The compiler rejects an authored value.",
+      "$ref": "#/$defs/visualCoverage"
+    },
     "mappings": {
+      "description": "Compiler output from visuals. The compiler rejects an authored value.",
       "type": "array",
       "items": { "$ref": "#/$defs/visualMapping" }
     }
