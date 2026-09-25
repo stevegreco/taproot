@@ -37,8 +37,8 @@ export function generateComponentBody(record) {
   const accessibility = contract.accessibility;
   if (accessibility) {
     const lines = ["## Accessibility"];
-    if (accessibility.semantics) lines.push(accessibility.semantics);
-    if (accessibility.name) lines.push(accessibility.name);
+    if (accessibility.semantics) lines.push(`- Semantics: ${accessibility.semantics}`);
+    if (accessibility.name) lines.push(`- Accessible name: ${accessibility.name}`);
     for (const rule of accessibility.requirements ?? []) {
       lines.push(...formatRule(rule));
     }

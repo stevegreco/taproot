@@ -1,9 +1,14 @@
 import authoredSchema from "./index.js";
 import { PROBLEM, problem } from "../compile/tables.js";
 import { createKnowledgeAjv } from "./ajv.js";
-import { COMPILED_DEFS, COMPILED_PROPERTIES, COMPILED_REQUIRED } from "./compiled-extensions.js";
+import {
+  COMPILED_DEFS,
+  COMPILED_PROPERTIES,
+  COMPILED_REQUIRED,
+  COMPILED_SCHEMA_VERSION,
+} from "./compiled-extensions.js";
 
-const COMPILED_ID = "urn:stevegreco:design-system:compiled-knowledge-record:4";
+export const COMPILED_ID = `urn:stevegreco:design-system:compiled-knowledge-record:${COMPILED_SCHEMA_VERSION}`;
 
 function deriveCompiledSchema(authoredSchema) {
   const schema = structuredClone(authoredSchema);

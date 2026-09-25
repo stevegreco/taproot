@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "vitest";
 import Ajv2020 from "ajv/dist/2020.js";
+import { COMPILED_ID } from "../src/schema/compiled-record.js";
 
 const Ajv = Ajv2020.default ?? Ajv2020;
 const publicDir = join(dirname(fileURLToPath(import.meta.url)), "../dist/public");
@@ -29,7 +30,7 @@ test("a copied dist/public compiles authored and compiled schemas without reposi
   }
 
   const authored = ajv.getSchema("urn:stevegreco:design-system:knowledge-record:1");
-  const compiled = ajv.getSchema("urn:stevegreco:design-system:compiled-knowledge-record:4");
+  const compiled = ajv.getSchema(COMPILED_ID);
   assert.equal(typeof authored, "function");
   assert.equal(typeof compiled, "function");
 
