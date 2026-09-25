@@ -64,7 +64,7 @@ function applyAuthoredDefaults(data, sourcePath) {
     return source;
   });
   if (!next.sources.some((source) => source?.kind === "authored")) {
-    next.sources = [...next.sources, { kind: "authored", path: sourcePath }];
+    next.sources = [{ kind: "authored", path: sourcePath }, ...next.sources];
   }
   return next;
 }

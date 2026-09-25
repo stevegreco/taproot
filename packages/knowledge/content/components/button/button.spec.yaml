@@ -1,10 +1,8 @@
 id: component.button
-schemaVersion: 1
 type: component
 title: Button
 summary: Use Button to trigger an action or to submit or reset a form.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -17,8 +15,6 @@ relations:
   related:
     - component.badge
 sources:
-  - kind: authored
-    path: packages/knowledge/content/components/button/button.spec.yaml
   - kind: token-source
     path: packages/tokens/src/tokens/components/button.tokens.json
   - kind: adr
@@ -130,21 +126,20 @@ contract:
     semantics: Button.
     name: Required from visible content or accessibleName.
     keyboard:
+      - key: Tab
+        action: Move focus to or from the button.
       - key: Enter
         action: Activate.
       - key: Space
         action: Activate.
     requirements:
-      - id: visible-focus
+      - id: a11y-visible-focus
         level: must
         statement: Keyboard focus remains visibly indicated.
-      - id: icon-accessible-name
+      - id: a11y-icon-accessible-name
         level: must
         statement: Icon-only buttons have an accessible name.
-      - id: label-describes-action
-        level: must
-        statement: The label describes the resulting action.
-      - id: meaning-not-color-alone
+      - id: a11y-not-color-alone
         level: must
         statement: Meaning does not depend on color alone.
   rationale:

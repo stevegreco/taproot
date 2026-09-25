@@ -78,7 +78,7 @@ test("button slice variants and api come from the public catalog contract", () =
     ["primary", "secondary", "ghost", "danger"],
   );
   assert.equal(variant.description, "", "enum members keep value text off the row description");
-  assert.equal(slice.accessibility.keyboard.length, 2, "keyboard bindings come from the contract");
+  assert.equal(slice.accessibility.keyboard.length, 3, "keyboard bindings come from the contract");
   assert.ok(slice.together, "related pattern and example project into using-together");
   assert.ok(
     slice.together?.example?.src.startsWith("/knowledge-assets/"),

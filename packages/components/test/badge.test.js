@@ -37,7 +37,7 @@ describe("DsBadge", () => {
     expect(badge.variant).toBe("success");
   });
 
-  test("[non-interactive][not-a-control] takes no focus and exposes no control", () => {
+  test("[non-interactive][a11y-not-a-control] takes no focus and exposes no control", () => {
     document.body.innerHTML = `<${tagName}>New</${tagName}>`;
     const badge = document.querySelector(tagName);
 
@@ -49,7 +49,7 @@ describe("DsBadge", () => {
     ).toBe(null);
   });
 
-  test("[no-live-region] sets no role or live region", () => {
+  test("[a11y-no-live-region] sets no role or live region", () => {
     document.body.innerHTML = `<${tagName} variant="success">Active</${tagName}>`;
     const badge = document.querySelector(tagName);
 

@@ -1,11 +1,9 @@
 ---
 id: binding.link.web-component
-schemaVersion: 1
 type: binding
 title: Link web component
 summary: Maps the Link contract onto ds-link, an inner native anchor, a slot, and a part.
 status: draft
-visibility: public
 jobs:
   - implement
 tags:
@@ -14,9 +12,6 @@ tags:
 relations:
   implements:
     - component.link
-sources:
-  - kind: authored
-    path: packages/knowledge/content/bindings/link.web-component.md
 host:
   specVersion: 1
   platform: web-component

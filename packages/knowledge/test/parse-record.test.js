@@ -232,8 +232,8 @@ test("parseRecord injects an authored source when only an adr source is declared
   );
 
   const record = parseRecord(markdown, { sourcePath: "test-button.md" });
-  assert.equal(record.sources[0].kind, "adr");
-  assert.deepEqual(record.sources[1], { kind: "authored", path: "test-button.md" });
+  assert.deepEqual(record.sources[0], { kind: "authored", path: "test-button.md" });
+  assert.equal(record.sources[1].kind, "adr");
 });
 
 test("parseRecord rejects a frontmatter body key", () => {

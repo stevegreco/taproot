@@ -1,11 +1,9 @@
 ---
 id: example.action-hierarchy.settings
-schemaVersion: 1
 type: example
 title: Settings action hierarchy
 summary: A settings screen separates routine profile actions from destructive account deletion.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -22,9 +20,6 @@ relations:
     - guideline.button-review
   uses:
     - component.button
-sources:
-  - kind: authored
-    path: packages/knowledge/content/examples/action-hierarchy-settings.md
 assets:
   - id: example.action-hierarchy.settings.light
     path: packages/knowledge/content/examples/assets/action-hierarchy-settings.svg

@@ -1,11 +1,9 @@
 ---
 id: pattern.action-hierarchy
-schemaVersion: 1
 type: pattern
 title: Action hierarchy
 summary: Assign action emphasis by importance, support role, and risk, and choose Button or Link by what the control does.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -26,9 +24,6 @@ relations:
 variantGuidance:
   component.button: [primary, secondary, ghost, danger]
   component.link: [inline, standalone]
-sources:
-  - kind: authored
-    path: packages/knowledge/content/patterns/action-hierarchy.md
 ---
 
 Action hierarchy helps a person identify the next action without making every available action

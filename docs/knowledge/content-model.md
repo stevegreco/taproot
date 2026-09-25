@@ -145,7 +145,7 @@ The derived schema retains the authored conditional definitions of `contract`, `
 and retrieval use the same compiled-record validator; retrieval separately checks manifest/index
 consistency (KNOW-008, KNOW-015, KNOW-023).
 
-Authored records must declare exactly one `kind: authored` source. They cannot declare the
+Authored records have exactly one `kind: authored` source, filled from the file path when omitted. They cannot declare the
 compiler-only `generated` source kind. Unknown fields fail validation rather than passing through
 to compiled output. The authored schema stays `unevaluatedProperties: false`.
 
@@ -161,8 +161,9 @@ packages/knowledge/content/components/
 
 `parseRecord` fills `schemaVersion` as
 `1`, empty `relations`, and an `authored` source path from the file. The compiler fills omitted
-`visibility` from the content root that listed the file. Authors still write `id`, `type`, `title`,
-`summary`, `status`, `jobs`, `tags`, and, for Markdown, `body`. YAML component specs omit `body`.
+`visibility` from the content root that listed the file. Content files omit `schemaVersion`,
+`visibility`, and the authored source. Authors write `id`, `type`, `title`, `summary`, `status`,
+`jobs`, `tags`, and, for Markdown, `body`. YAML component specs omit `body`. `sources` lists only external inputs, such as token files or ADRs.
 Folder names do not set `id` or `type`.
 
 ```markdown
@@ -313,8 +314,8 @@ A source entry identifies how a record was produced:
 - `adr`: accepted decision owned by its domain package; or
 - `generated`: deterministic output from another declared source.
 
-An authored record declares exactly one `kind: authored` source. That path must be the file the
-compiler is parsing. A second authored source is invalid. A missing or mismatched authored path
+An authored record has exactly one `kind: authored` source, filled from the file path when omitted.
+When written out, that path must be the file the compiler is parsing. A second authored source is invalid. A missing or mismatched authored path
 fails the build. Each compiled `revision` is a digest of the bytes at that entry's declared path.
 
 A component's portable `contract` is authored in the component record. For YAML specs that is the

@@ -1,10 +1,8 @@
 id: component.text-field
-schemaVersion: 1
 type: component
 title: Text field
 summary: Use Text field to collect a single line of text with a label, hint, and error.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -18,8 +16,6 @@ relations:
     - component.badge
     - component.button
 sources:
-  - kind: authored
-    path: packages/knowledge/content/components/text-field/text-field.spec.yaml
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:

@@ -2,18 +2,17 @@
  * Host-binding guarantees, checked once for every web-component binding in the
  * catalog: alias registration, the native `hidden` attribute, focus forwarding
  * to `host.focus.forwardsTo`, visible keyboard focus, binding events reaching
- * the host, and properties set before registration. A component's own test file covers only its behavior.
+ * the host, enum properties, and properties set before registration. A
+ * component's own test file covers only its behavior.
  *
  * The rule census credits a tag in a title here to every component whose
- * contract has that rule, so these titles carry each component's rule ID for
- * visible focus.
+ * contract has that rule, so the visible-focus title carries
+ * `[a11y-visible-focus]`.
  */
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
 import { commands, userEvent } from "vitest/browser";
 
 import { FIXTURES } from "./helpers/fixtures.js";
-
-const VISIBLE_FOCUS_RULES = Object.freeze(["a11y-visible-focus", "visible-focus"]);
 
 const elements = await commands.hostElements();
 const modules = new Map();
@@ -95,7 +94,7 @@ describe("host checks", () => {
   );
 
   test.each(rows(focusable))(
-    "[a11y-visible-focus][visible-focus] <%s> shows a focus outline when reached by keyboard",
+    "[a11y-visible-focus] <%s> shows a focus outline when reached by keyboard",
     async (_tagName, element) => {
       const host = render(element);
       const target = focusTarget(element, host);
@@ -133,7 +132,7 @@ describe("host checks", () => {
 
   test("every component with a visible-focus rule has a focus target", () => {
     const uncovered = elements
-      .filter((element) => element.ruleIds.some((id) => VISIBLE_FOCUS_RULES.includes(id)))
+      .filter((element) => element.ruleIds.includes("a11y-visible-focus"))
       .filter((element) => !element.focusPart)
       .map((element) => element.id);
 

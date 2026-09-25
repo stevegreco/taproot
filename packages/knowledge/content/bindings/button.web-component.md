@@ -1,11 +1,9 @@
 ---
 id: binding.button.web-component
-schemaVersion: 1
 type: binding
 title: Button web component
 summary: Maps the Button contract onto ds-button, FACE, slots, and parts.
 status: draft
-visibility: public
 jobs:
   - implement
 tags:
@@ -14,9 +12,6 @@ tags:
 relations:
   implements:
     - component.button
-sources:
-  - kind: authored
-    path: packages/knowledge/content/bindings/button.web-component.md
 host:
   specVersion: 1
   platform: web-component

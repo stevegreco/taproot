@@ -1,10 +1,8 @@
 id: component.checkbox
-schemaVersion: 1
 type: component
 title: Checkbox
 summary: Use Checkbox to turn one independent option on or off, with a label, hint, and error.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -18,8 +16,6 @@ relations:
     - component.button
     - component.text-field
 sources:
-  - kind: authored
-    path: packages/knowledge/content/components/checkbox/checkbox.spec.yaml
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:

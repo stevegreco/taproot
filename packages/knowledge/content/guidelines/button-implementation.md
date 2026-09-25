@@ -1,11 +1,9 @@
 ---
 id: guideline.button-implementation
-schemaVersion: 1
 type: guideline
 title: Implement button actions
 summary: Implement actions with the Button contract, explicit form behavior, and semantic variants.
 status: draft
-visibility: public
 jobs:
   - implement
 tags:
@@ -22,9 +20,6 @@ docsSections:
   behavior:
     section: set-form-behavior-deliberately
     heading: Forms
-sources:
-  - kind: authored
-    path: packages/knowledge/content/guidelines/button-implementation.md
 ---
 
 ## Register and render Button

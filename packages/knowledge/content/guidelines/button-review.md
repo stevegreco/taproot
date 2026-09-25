@@ -1,11 +1,9 @@
 ---
 id: guideline.button-review
-schemaVersion: 1
 type: guideline
 title: Review button actions
 summary: Check button semantics, hierarchy, labels, form behavior, accessibility, and token use.
 status: draft
-visibility: public
 jobs:
   - review
 tags:
@@ -17,9 +15,6 @@ relations:
   reviews:
     - component.button
     - pattern.action-hierarchy
-sources:
-  - kind: authored
-    path: packages/knowledge/content/guidelines/button-review.md
 checks:
   - id: button-review-semantics
     level: error
@@ -31,7 +26,7 @@ checks:
     level: error
     requirement: Danger is limited to destructive or difficult-to-reverse actions.
   - id: button-review-label
-    level: warning
+    level: error
     requirement: The accessible label describes the result of the action.
   - id: button-review-form-type
     level: error

@@ -1,11 +1,9 @@
 ---
 id: binding.checkbox.web-component
-schemaVersion: 1
 type: binding
 title: Checkbox web component
 summary: Maps the Checkbox contract onto ds-checkbox, FACE, a native checkbox, label, hint, and error.
 status: draft
-visibility: public
 jobs:
   - implement
 tags:
@@ -15,9 +13,6 @@ tags:
 relations:
   implements:
     - component.checkbox
-sources:
-  - kind: authored
-    path: packages/knowledge/content/bindings/checkbox.web-component.md
 host:
   specVersion: 1
   platform: web-component
@@ -108,4 +103,6 @@ required mark that is `aria-hidden`; the inner input carries `required`.
 
 The inner input has `appearance: none` and draws the box with the mapped tokens. The indicator is an
 inline SVG, `aria-hidden`, drawn in `currentColor` so forced colors repaint it. Under
-`forced-colors: active` the box keeps a system-color border and the indicator uses `CanvasText`.
+`forced-colors: active` the box keeps a `CanvasText` border on `Canvas`. Checked and
+indeterminate boxes fill with `Highlight` and draw the indicator in `HighlightText`. Disabled uses
+`GrayText`.

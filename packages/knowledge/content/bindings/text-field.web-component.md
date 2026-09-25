@@ -1,11 +1,9 @@
 ---
 id: binding.text-field.web-component
-schemaVersion: 1
 type: binding
 title: Text field web component
 summary: Maps the Text field contract onto ds-text-field, FACE, label, hint, and error.
 status: draft
-visibility: public
 jobs:
   - implement
 tags:
@@ -15,9 +13,6 @@ tags:
 relations:
   implements:
     - component.text-field
-sources:
-  - kind: authored
-    path: packages/knowledge/content/bindings/text-field.web-component.md
 host:
   specVersion: 1
   platform: web-component
