@@ -52,6 +52,8 @@ Existing domain decisions remain authoritative:
 
 ## Reviews and planned work
 
+- [Knowledge layer simplification plan, 2026-09-28](simplification-plan.md) is the current plan.
+  It replaces the open items in the architecture review below.
 - [Architecture review and agent handoff, 2026-09-04](architecture-review-2026-09-04.md) records
   simplification proposals, evidence, requirement impacts, and verification steps. It does not
   supersede accepted requirements or decisions.
