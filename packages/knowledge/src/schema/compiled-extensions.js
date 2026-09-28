@@ -18,6 +18,12 @@ export const COMPILED_REQUIRED = Object.freeze([
 
 export const COMPILED_PROPERTIES = Object.freeze({
   compiledSchemaVersion: { const: COMPILED_SCHEMA_VERSION },
+  sources: {
+    ...recordSchema.properties.sources,
+    description: "Every file the record read, starting with its authored file.",
+    minItems: 1,
+    minContains: 1,
+  },
   relations: {
     description: "The record's authored links. backlinks holds the links other records declare.",
     type: "object",

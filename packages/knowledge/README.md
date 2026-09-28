@@ -9,19 +9,26 @@ read.
 
 | To change | Edit |
 | --- | --- |
-| A component's variants, states, rules, or tokens | `content/components/<name>/<name>.spec.yaml` |
-| How the web component exposes it (tag, attributes, events) | `content/bindings/<name>.web-component.md` |
+| A component: usage, rules, parameters, states, tokens, and its web element | `content/components/<name>/<name>.spec.yaml` |
 | Guidance across components, such as action hierarchy | `content/patterns/*.md` |
-| Implementation or review guidance | `content/guidelines/*.md` |
+| How-to guidance for one job, such as implementing Button | `content/guidelines/*.md` |
 | An annotated example | `content/examples/*.md` |
+
+A spec reads top to bottom by audience. Usage and content rules come first, then the contract,
+then the `web:` section. Designers and writers can stop before `web:`.
 
 Before adding a component or variant, read `content/guidelines/compose-or-propose.md`, then
 [`docs/knowledge/new-component.md`](../../docs/knowledge/new-component.md). The Checkbox spec is
 the most complete one to copy.
 
-Write only what you mean. The build fills `schemaVersion`, `visibility`, and the file's own
-`sources` entry. List other files in `sources` only when the record reads them, such as a token
-file.
+Write only what you mean. Each record needs `id`, `type`, `title`, and `summary`. The build fills
+the rest: `status` defaults to `draft`, `jobs` follows from the type, the record's own name is
+added to its `tags`, and the file itself becomes its authored source. List other files in
+`sources` only when the record reads them, such as a token file.
+
+Each spec starts with a `yaml-language-server` comment that names the schema. With the YAML
+extension that `.vscode/extensions.json` recommends, the editor completes fields and marks
+mistakes as you type.
 
 ## Build and check
 
@@ -33,9 +40,9 @@ pnpm exec turbo run test --filter=@stevegreco/design-system-components
 pnpm exec turbo run dev --filter=documentation
 ```
 
-The first command validates every record. Errors name the file, line, and field. The second checks
-that the web components still match their specs. The third serves the docs site, where a component
-page such as `/components/button` renders from the bundle.
+The first command validates every record. Each error names the file, line, and field, once. The
+second checks that the web components still match their specs. The third serves the docs site,
+where a component page such as `/components/button` renders from the bundle.
 
 ## Authored and generated
 
@@ -51,12 +58,15 @@ import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 
 const catalog = await openCatalog();
 catalog.get("component.button"); // the full compiled record
-catalog.related("component.button"); // its binding, patterns, guidelines, and examples
+catalog.related("component.button"); // records it lists in related, and records that list it
 catalog.search("destructive button"); // ranked hits
 catalog.list({ type: "guideline" });
+catalog.markdownPath("component.button"); // the readable Markdown file
 ```
 
-`dist/public/markdown/<id>.md` has a readable version of each record.
+`markdown/<id>.md` is a readable page for each record, and is also exported as
+`@stevegreco/design-system-knowledge/markdown/<id>.md`. A component page is enough to design,
+build, or review with the component.
 
 ## Terms
 
@@ -64,24 +74,16 @@ catalog.list({ type: "guideline" });
 | --- | --- |
 | Record | One file in `content/`, compiled to one object with an id such as `component.button`. |
 | Spec | A component record, written as `<name>.spec.yaml`. |
-| Contract | The part of a spec that holds for every platform: parameters, states, events, rules, visuals. |
-| Parameter | An input to a component, such as `variant` or `disabled`. |
-| Visuals | Which token each part uses for each variant and state. Compiled into `mappings`. |
-| Binding | How one platform implements a spec. Today the only platform is the web component. |
-| Host | The binding's platform-specific details: tag name, attributes, events, and parts. |
-| Pattern | Guidance that spans components, such as choosing between Button and Link. |
-| Guideline | Guidance for one job, such as implementing or reviewing a component. Review guidelines have `checks`. |
-| Relations | Links a record declares, such as `guides` or `uses`. |
-| Backlinks | The reverse of relations, filled in by the build. |
+| Contract | The part of a spec that holds on every platform, in Figma and in code: parameters, anatomy, states, rules, and visuals. |
+| Visuals | Which token each part uses for each variant and state. The build expands them into `mappings`. |
+| States | A component's states, highest priority first. When two set the same channel, the earlier wins. |
+| Web section | The `web:` part of a spec: the element's tag, attributes, events, and parts. |
+| Related | The records to read alongside this one. A link in either record counts for both. |
 | Bundle | The build output in `dist/public`: `records.json`, `search-index.json`, `manifest.json`, and Markdown. |
-| Catalog | The bundle opened with `openCatalog`. |
-| Jobs | Who a record serves: `design`, `implement`, or `review`. |
-| Visibility | `public` or `internal`. All content today is public, which is the default. |
 
-Three version numbers track three formats. `schemaVersion` (1) is the authored record format.
-`specVersion` (5) is the contract format. `compiledSchemaVersion` (7) is the bundle format, and
-`openCatalog` refuses a bundle built with another one. See [CHANGELOG.md](CHANGELOG.md) for format
-changes.
+`schemaVersion` (1) is the authored format and the build fills it. `compiledSchemaVersion` (8) is
+the bundle format, and `openCatalog` refuses a bundle built with another one. See
+[CHANGELOG.md](CHANGELOG.md) for format changes.
 
 ## Design documents
 

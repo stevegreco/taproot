@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../src/schema/knowledge-record.schema.json
 id: component.button
 type: component
 title: Button

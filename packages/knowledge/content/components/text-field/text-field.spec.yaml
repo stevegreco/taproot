@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../src/schema/knowledge-record.schema.json
 id: component.text-field
 type: component
 title: Text field
