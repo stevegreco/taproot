@@ -19,7 +19,6 @@ sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:
-  specVersion: 5
   description: Collects one line of text and associates a label, optional hint, and optional error with the control.
   usage:
     do:
@@ -228,3 +227,69 @@ contract:
         font-weight: semantic.typography.body.small.fontWeight
         line-height: semantic.typography.body.small.lineHeight
         letter-spacing: semantic.typography.body.small.letterSpacing
+web:
+  package: "@stevegreco/design-system-components"
+  export: DsTextField
+  defaultTagName: ds-text-field
+  registration:
+    export: defineTextField
+    supportsAliases: true
+  anatomy:
+    field:
+      element: div
+      part: field
+    label:
+      element: label
+      part: label
+    control:
+      element: input
+      part: control
+    hint:
+      element: p
+      part: hint
+    error:
+      element: p
+      part: error
+  events:
+    input:
+      event: input
+      suppressedWhen: effectively-disabled
+    change:
+      event: change
+      suppressedWhen: effectively-disabled
+  properties:
+    form:
+      type: "HTMLFormElement | null"
+      readonly: true
+      description: The associated form, including association across the shadow boundary.
+  formAssociation:
+    mechanism: FACE
+    fieldsetDisables: true
+    submitRunsConstraintValidation: true
+    resetResetsAssociatedForm: true
+    submitsValue: true
+  focus:
+    forwardsTo: control
+  parts:
+    control:
+      description: The inner native input.
+    hint:
+      description: Supporting guidance. Hidden when empty.
+    error:
+      description: The error message. Hidden when empty.
+  example: |
+    <form>
+      <ds-text-field label="Email" name="email" type="email" hint="Used for sign-in." required></ds-text-field>
+      <ds-button type="submit">Continue</ds-button>
+    </form>
+  rationale:
+    - decision: Text field is form-associated.
+      rationale: The value must submit and reset across the shadow boundary.
+    - decision: Label, hint, and error live in the shadow root.
+      rationale: Association uses ids inside one shadow root, so it does not depend on light-DOM ids.
+  notes: |
+    The host honors the native `hidden` attribute; that is not a contract parameter.
+
+    The visible label is the `label` attribute. Hint and error text are the `hint` and `error`
+    attributes. A non-empty `error` sets `aria-invalid` and includes the message in `aria-describedby`.
+    The required mark is `aria-hidden`; the inner input carries `required`.

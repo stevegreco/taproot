@@ -1,4 +1,4 @@
-import contractSchema from "../schema/portable-contract.schema.json" with { type: "json" };
+import recordSchema from "../schema/knowledge-record.schema.json" with { type: "json" };
 import { PROBLEM, problem } from "./tables.js";
 import { byCodeUnit } from "../sort.js";
 
@@ -6,7 +6,7 @@ export const VISUAL_LITERALS = Object.freeze(["transparent", "inherit", "none"])
 
 /** Channel names, in display order. The schema's `channelMapProperties` is the one list. */
 export const VISUAL_CHANNELS = Object.freeze(
-  Object.keys(contractSchema.$defs.channelMapProperties.properties),
+  Object.keys(recordSchema.$defs.channelMapProperties.properties),
 );
 
 /** The CSS property each channel sets on the web. */

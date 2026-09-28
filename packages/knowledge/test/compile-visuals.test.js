@@ -294,7 +294,6 @@ test("compiled Button mappings omit visuals and preserve ghost rest fill", async
   );
   const button = corpus.records.get("component.button");
   assert.equal(Object.hasOwn(button.contract, "visuals"), false);
-  assert.equal(button.contract.specVersion, 5);
   assert.deepEqual(button.contract.states, ["disabled", "pressed", "hover", "focus", "default"]);
   const ghostRest = button.contract.mappings.find(
     (row) =>
@@ -346,7 +345,7 @@ test("a visuals token missing from the token package fails the build", async () 
     codes(corpus, PROBLEM.SOURCE_CONFLICT).find((item) =>
       /semantic\.color\.does\.not\.exist/.test(item.message),
     ).path,
-    "content/missing-visual.md:57 /contract/visuals/control/base/background",
+    "content/missing-visual.md:56 /contract/visuals/control/base/background",
   );
 });
 

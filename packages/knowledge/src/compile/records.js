@@ -1,9 +1,9 @@
 import { PROBLEM, problem } from "./tables.js";
 import { headingAnchors, subsectionAnchors } from "./anchors.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
-import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
+import recordSchema from "../schema/knowledge-record.schema.json" with { type: "json" };
 
-const HOST_KEYS = Object.freeze(Object.keys(hostBindingSchema.properties));
+const WEB_KEYS = Object.freeze(Object.keys(recordSchema.$defs.web.properties));
 
 export function assembleRecord(authored, contribution, assets) {
   const record = {
@@ -29,7 +29,7 @@ export function assembleRecord(authored, contribution, assets) {
   if (assets.length > 0) record.assets = assets;
   if (authored.annotations) record.annotations = authored.annotations;
   if (authored.contract) record.contract = authored.contract;
-  if (authored.host) record.host = authored.host;
+  if (authored.web) record.web = authored.web;
   if (authored.tokenRef) record.tokenRef = authored.tokenRef;
   if (contribution.fields.tokens) record.tokens = contribution.fields.tokens;
 
@@ -94,30 +94,24 @@ export function checkVariantGuidance(records, invalidIds = new Set()) {
 }
 
 /**
- * Fill each binding's parameter and part maps from the contract it implements.
- * Authored bindings list only exceptions. A parameter with no entry maps to
- * attribute kebab-case(name) and property name; an entry is the whole mapping,
- * so `{ attribute: full-width }` alone means there is no property. A part with
- * no entry uses its anatomy description. Compiled records carry the resolved
- * maps, so consumers never apply these defaults themselves.
+ * Fill each component's web parameter and part maps from its contract. The `web` section
+ * lists only exceptions. A parameter with no entry maps to attribute kebab-case(name) and
+ * property name; an entry is the whole mapping, so `{ attribute: full-width }` alone means
+ * there is no property. A part with no entry uses its anatomy description. Compiled records
+ * carry the resolved maps, so consumers never apply these defaults themselves.
  */
-export function resolveBindingDefaults(records) {
+export function resolveWebDefaults(records) {
   const problems = [];
 
   for (const [id, record] of records) {
-    if (record.type !== "binding" || record.host == null) continue;
-    const target = records.get(record.relations?.implements?.[0]);
-    // checkBindingAgreement reports a binding without a component contract.
-    if (target?.type !== "component" || !target.contract) continue;
-
-    const host = record.host;
-    const contract = target.contract;
+    if (record.web == null || record.contract == null) continue;
+    const { web, contract } = record;
     const parameters = {};
     for (const name of Object.keys(contract.parameters ?? {})) {
-      parameters[name] = host.parameters?.[name] ?? { attribute: kebabCase(name), property: name };
+      parameters[name] = web.parameters?.[name] ?? { attribute: kebabCase(name), property: name };
     }
-    for (const [name, mapped] of Object.entries(host.parameters ?? {})) {
-      // Not a contract parameter. checkBindingAgreement reports it.
+    for (const [name, mapped] of Object.entries(web.parameters ?? {})) {
+      // Not a contract parameter. checkWebAgreement reports it.
       if (!Object.hasOwn(parameters, name)) parameters[name] = mapped;
     }
 
@@ -125,34 +119,34 @@ export function resolveBindingDefaults(records) {
       (contract.anatomy ?? []).map((part) => [part.name, part.description]),
     );
     const parts = {};
-    for (const [name, anatomy] of Object.entries(host.anatomy ?? {})) {
+    for (const [name, anatomy] of Object.entries(web.anatomy ?? {})) {
       if (!anatomy.part) continue;
-      const description = host.parts?.[anatomy.part]?.description ?? descriptions.get(name);
+      const description = web.parts?.[anatomy.part]?.description ?? descriptions.get(name);
       if (description) parts[anatomy.part] = { description };
     }
-    for (const name of Object.keys(host.parts ?? {})) {
+    for (const name of Object.keys(web.parts ?? {})) {
       if (Object.hasOwn(parts, name)) continue;
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `${id} host parts has unknown ${name}`,
+          message: `${id} web parts has unknown ${name}`,
           recordId: id,
-          path: "/host/parts",
+          path: "/web/parts",
         }),
       );
     }
 
-    const resolved = { ...host, parameters, parts };
+    const resolved = { ...web, parameters, parts };
     if (Object.keys(parts).length === 0) delete resolved.parts;
-    records.set(id, { ...record, host: inSchemaOrder(resolved) });
+    records.set(id, { ...record, web: inSchemaOrder(resolved) });
   }
 
   return problems;
 }
 
-function inSchemaOrder(host) {
+function inSchemaOrder(web) {
   return Object.fromEntries(
-    HOST_KEYS.filter((key) => Object.hasOwn(host, key)).map((key) => [key, host[key]]),
+    WEB_KEYS.filter((key) => Object.hasOwn(web, key)).map((key) => [key, web[key]]),
   );
 }
 
@@ -160,76 +154,57 @@ function kebabCase(name) {
   return name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 }
 
-export function checkBindingAgreement(records, invalidIds = new Set()) {
+/** A component's `web` section names exactly the contract's parts, parameters, and events. */
+export function checkWebAgreement(records) {
   const problems = [];
 
   for (const record of records.values()) {
-    if (record.type !== "binding") continue;
-    const implementsIds = record.relations?.implements ?? [];
-    if (implementsIds.length !== 1) {
+    if (record.web == null) continue;
+    if (record.contract == null) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `${record.id} must implement exactly one component`,
+          message: `${record.id} has a web section but no contract`,
           recordId: record.id,
-          path: "/relations/implements",
+          path: "/web",
         }),
       );
       continue;
     }
 
-    if (invalidIds.has(implementsIds[0])) continue;
-    const target = records.get(implementsIds[0]);
-    if (!target || target.type !== "component" || !target.contract) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `${record.id} must implement a component that has a contract`,
-          recordId: record.id,
-          path: "/relations/implements",
-        }),
-      );
-      continue;
-    }
-
-    const host = record.host ?? {};
-    const contract = target.contract;
+    const { web, contract } = record;
     problems.push(
       ...bijectionProblems(
         record.id,
         "anatomy",
         namesOfList(contract.anatomy),
-        namesOfMap(host.anatomy),
+        namesOfMap(web.anatomy),
       ),
-    );
-    problems.push(
       ...bijectionProblems(
         record.id,
         "parameters",
         namesOfMap(contract.parameters),
-        namesOfMap(host.parameters),
+        namesOfMap(web.parameters),
       ),
-    );
-    problems.push(
       ...bijectionProblems(
         record.id,
         "events",
         namesOfMap(contract.events),
-        namesOfMap(host.events),
+        namesOfMap(web.events),
       ),
     );
 
     for (const [name, portable] of Object.entries(contract.parameters ?? {})) {
-      const mapped = host.parameters?.[name];
+      const mapped = web.parameters?.[name];
       if (!mapped?.values || portable.kind !== "enum") continue;
       for (const value of Object.keys(portable.values ?? {})) {
         if (!Object.hasOwn(mapped.values, value)) {
           problems.push(
             problem({
               code: PROBLEM.SOURCE_CONFLICT,
-              message: `${record.id} host parameter ${name} is missing enum value ${value}`,
+              message: `${record.id} web parameter ${name} is missing enum value ${value}`,
               recordId: record.id,
-              path: `/host/parameters/${name}/values`,
+              path: `/web/parameters/${name}/values`,
             }),
           );
         }
@@ -255,9 +230,9 @@ function bijectionProblems(recordId, label, expected, actual) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `${recordId} host ${label} is missing ${name}`,
+          message: `${recordId} web ${label} is missing ${name}`,
           recordId,
-          path: `/host/${label}`,
+          path: `/web/${label}`,
         }),
       );
     }
@@ -267,9 +242,9 @@ function bijectionProblems(recordId, label, expected, actual) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `${recordId} host ${label} has unknown ${name}`,
+          message: `${recordId} web ${label} has unknown ${name}`,
           recordId,
-          path: `/host/${label}`,
+          path: `/web/${label}`,
         }),
       );
     }

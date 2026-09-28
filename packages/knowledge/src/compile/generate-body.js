@@ -93,30 +93,23 @@ function formatMapping(mapping) {
 }
 
 /**
- * Sections the emitted Markdown file adds after a record's body, so each file
- * answers the next question without opening JSON: a component links its
- * implementations, and a binding lists its web-component API and example.
+ * Sections the emitted Markdown file adds after a record's body, so each file answers the
+ * next question without opening JSON: a component lists its web-component API and example.
  *
  * @param {object} record
  * @returns {string[]}
  */
 export function generateReferenceSections(record) {
-  if (record.type === "component") {
-    const bindings = record.backlinks?.implementedBy ?? [];
-    if (bindings.length === 0) return [];
-    return [
-      ["## Implementations", ...bindings.map((id) => `- [${id}](markdown/${id}.md)`)].join("\n"),
-    ];
-  }
-  if (record.type !== "binding" || !record.host) return [];
+  if (record.type !== "component" || !record.web) return [];
 
-  const host = record.host;
+  const host = record.web;
   const sections = [];
   const summary = [];
   if (host.defaultTagName) summary.push(`- Tag: \`<${host.defaultTagName}>\``);
   if (host.package) summary.push(`- Package: \`${host.package}\``);
   if (host.registration?.export) summary.push(`- Register: \`${host.registration.export}()\``);
   if (summary.length > 0) sections.push(["## Web component", ...summary].join("\n"));
+  if (host.notes) sections.push(host.notes.trim());
 
   const parameters = Object.entries(host.parameters ?? {});
   if (parameters.length > 0) {

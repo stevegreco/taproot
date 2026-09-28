@@ -44,7 +44,7 @@ test("non-ASCII letters are separators, not indexed terms", () => {
   assert.equal(tokenize("日本語").size, 0);
 });
 
-test("contract host and checks add terms without stringifying the record", () => {
+test("contract, web, and checks add terms without stringifying the record", () => {
   const record = {
     id: "component.secret",
     type: "guideline",
@@ -67,7 +67,7 @@ test("contract host and checks add terms without stringifying the record", () =>
       states: ["pressed", "focus"],
       accessibility: { requirements: ["Icon-only buttons have an accessibleName."] },
     },
-    host: {
+    web: {
       defaultTagName: "ds-button",
       anatomy: { content: { slot: "default", part: "button" } },
       parts: { button: { description: "unused part prose" } },

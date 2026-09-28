@@ -97,11 +97,11 @@ export interface ComponentSlice {
   readonly summary: string;
   readonly status: RecordStatus;
   readonly tagName: string;
-  /** npm package that publishes the element, from the binding. */
+  /** npm package that publishes the element, from the web section. */
   readonly packageName: string;
-  /** The binding's registration function, exported from `<packageName>/<slug>`. */
+  /** The registration function, exported from `<packageName>/<slug>`. */
   readonly defineExport: string;
-  /** The binding's usage markup, or empty when it has none. */
+  /** The web section's usage markup, or empty when it has none. */
   readonly usageHtml: string;
   readonly introMarkdown: string;
   readonly behaviorMarkdown: string;
@@ -552,16 +552,9 @@ function projectApi(contract: Record<string, unknown>, host: Record<string, unkn
   return [...attributes, ...projectMembers(host.properties, "property"), ...events];
 }
 
-function bindingHost(catalog: Catalog, id: string): Record<string, unknown> {
-  const bindings = catalog.related(id).flatMap((neighbor) => {
-    const related = neighbor.record;
-    if (!isObject(related) || related.type !== "binding" || !isObject(related.host)) return [];
-    return [related.host];
-  });
-  const web = bindings.find((host) => host.platform === "web-component");
-  const host = web ?? bindings[0];
-  if (!host) fail("malformed-contract", `${id} has no host binding`);
-  return host;
+function webSection(record: Record<string, unknown>, id: string): Record<string, unknown> {
+  if (!isObject(record.web)) fail("malformed-contract", `${id} has no web section`);
+  return record.web;
 }
 
 function projectVariants(
@@ -715,14 +708,14 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   if (!isObject(record.contract)) {
     fail("malformed-contract", `${id} is missing a contract`);
   }
-  const host = bindingHost(catalog, id);
+  const host = webSection(record, id);
   const tagName = asString(host.defaultTagName);
-  if (!tagName) fail("malformed-contract", `${id} binding is missing defaultTagName`);
+  if (!tagName) fail("malformed-contract", `${id} web section is missing defaultTagName`);
   const packageName = asString(host.package);
   const registration = isObject(host.registration) ? host.registration : {};
   const defineExport = asString(registration.export);
   if (!packageName || !defineExport) {
-    fail("malformed-contract", `${id} binding is missing its package or registration export`);
+    fail("malformed-contract", `${id} web section is missing its package or registration export`);
   }
   const parameters = record.contract.parameters;
   if (!isObject(parameters)) {

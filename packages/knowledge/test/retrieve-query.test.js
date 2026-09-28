@@ -65,7 +65,6 @@ test("Button guidance uses guides and reviews, not related", async () => {
   const byId = Object.fromEntries(neighbors.map((neighbor) => [neighbor.record.id, neighbor]));
 
   for (const id of [
-    "binding.button.web-component",
     "component.badge",
     "example.action-hierarchy.settings",
     "guideline.button-implementation",
@@ -89,9 +88,6 @@ test("Button guidance uses guides and reviews, not related", async () => {
     { relation: "reviews", direction: "inbound" },
   ]);
   assert.deepEqual(byId["component.badge"].via, [{ relation: "related", direction: "symmetric" }]);
-  assert.deepEqual(byId["binding.button.web-component"].via, [
-    { relation: "implements", direction: "inbound" },
-  ]);
   assert.deepEqual(byId["example.action-hierarchy.settings"].via, [
     { relation: "uses", direction: "inbound" },
   ]);
@@ -217,8 +213,7 @@ test("every public component record has a contract", async () => {
     assert.equal(Object.hasOwn(record.contract, "tagName"), false);
     assert.ok(record.contract.parameters);
   }
-  const binding = catalog.get("binding.button.web-component");
-  assert.equal(binding.host.defaultTagName, "ds-button");
+  assert.equal(catalog.get("component.button").web.defaultTagName, "ds-button");
 });
 
 test("list visibility narrows an internal catalog and never widens a public one", async () => {

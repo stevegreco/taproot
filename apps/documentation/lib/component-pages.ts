@@ -1,9 +1,9 @@
 /**
  * `/components/<slug>` pages, rendered from the catalog.
  *
- * Every public component with a binding gets a page: title and description
- * from the record, the import snippet from the binding's package and
- * registration export, the usage snippet from the binding's `example`, the
+ * Every public component with a web section gets a page: title and description
+ * from the record, the import snippet from its package and
+ * registration export, the usage snippet from its `example`, the
  * live example from `examples/<slug>.tsx`, and the `<ComponentKnowledge>`
  * sections that have content.
  *
@@ -111,7 +111,7 @@ export function componentPageEntries(): SourceEntry[] {
   const orphans = [...prose.keys()].filter((slug) => !slugs.includes(slug));
   if (orphans.length > 0) {
     throw new Error(
-      `docs/${PROSE_FOLDER}/ has prose for ${orphans.join(", ")}, but the catalog has no public component with a binding for it. Component pages render from the catalog; that folder holds only optional preview prose.`,
+      `docs/${PROSE_FOLDER}/ has prose for ${orphans.join(", ")}, but the catalog has no public component with a web section for it. Component pages render from the catalog; that folder holds only optional preview prose.`,
     );
   }
   return slugs.map((slug) => pageEntry(slug, prose.get(slug)));

@@ -1,4 +1,4 @@
-import contractSchema from "./portable-contract.schema.json" with { type: "json" };
+import recordSchema from "./knowledge-record.schema.json" with { type: "json" };
 
 export const COMPILED_SCHEMA_VERSION = 8;
 
@@ -109,7 +109,7 @@ export const COMPILED_CONTRACT_DEFS = Object.freeze({
     required: ["part", "channel", "token"],
     properties: {
       part: { type: "string", minLength: 1 },
-      channel: { enum: Object.keys(contractSchema.$defs.channelMapProperties.properties) },
+      channel: { enum: Object.keys(recordSchema.$defs.channelMapProperties.properties) },
       configuration: {
         type: "object",
         additionalProperties: { type: "string", minLength: 1 },

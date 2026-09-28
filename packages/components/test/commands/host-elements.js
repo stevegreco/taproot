@@ -1,20 +1,19 @@
 /**
  * Browser command (runs in Node): what test/host-checks.test.js needs from
- * each web-component binding in the compiled catalog.
+ * each component's web section in the compiled catalog.
  */
 import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 
 export async function hostElements() {
   const catalog = await openCatalog();
-  const bindings = catalog
-    .list({ type: "binding" })
+  const components = catalog
+    .list({ type: "component" })
     .map((summary) => catalog.get(summary.id))
-    .filter((binding) => binding.host.platform === "web-component");
-  if (bindings.length === 0) throw new Error("compiled catalog has no web-component bindings");
+    .filter((component) => component.web);
+  if (components.length === 0) throw new Error("compiled catalog has no web components");
 
-  return bindings.map(({ host, relations }) => {
-    const component = catalog.get(relations.implements[0]);
-    const { contract } = component;
+  return components.map((component) => {
+    const { contract, web: host } = component;
     return {
       id: component.id,
       slug: component.id.slice("component.".length),

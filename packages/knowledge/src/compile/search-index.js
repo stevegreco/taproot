@@ -68,7 +68,7 @@ export function collectSearchText(record) {
     (record.tags ?? []).join(" "),
     record.body,
     ...collectContractTerms(record.contract),
-    ...collectHostTerms(record.host),
+    ...collectHostTerms(record.web),
     ...collectCheckTerms(record.checks),
   ]
     .filter((part) => typeof part === "string" && part.length > 0)

@@ -75,7 +75,6 @@ export function codes(corpus, code) {
 
 export function portableContract(overrides = {}) {
   return {
-    specVersion: 5,
     description: "A fixture contract.",
     usage: { do: [], avoid: [] },
     anatomy: [],

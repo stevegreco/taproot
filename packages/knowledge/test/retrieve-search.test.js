@@ -78,7 +78,7 @@ test("search guideline is empty on the real slice because type is not indexed", 
   assert.deepEqual(catalog.search("guideline"), []);
 });
 
-test("compiled contract host and checks are searchable", async () => {
+test("compiled contract, web section, and checks are searchable", async () => {
   const catalog = await openCatalog();
   const fullWidthIds = catalog.search("fullWidth").map((hit) => hit.record.id);
   const accessibleNameIds = catalog.search("accessibleName").map((hit) => hit.record.id);
@@ -92,7 +92,7 @@ test("compiled contract host and checks are searchable", async () => {
   assert.equal(fullWidthIds.includes("spec.button"), false);
   assert.equal(accessibleNameIds.includes("component.button"), true);
   assert.equal(pressedIds.includes("component.button"), true);
-  assert.equal(tagIds.includes("binding.button.web-component"), true);
+  assert.equal(tagIds[0], "component.button");
   assert.equal(
     clickHereIds.includes("component.button"),
     true,

@@ -7,7 +7,7 @@ import {
   rewriteEmittedMarkdownUrls,
   toMarkdownFileUrl,
 } from "../src/compile/narrative.js";
-import { createMemoryReader, recordMarkdown, portableContract } from "./helpers/workspace.js";
+import { createMemoryReader, recordMarkdown } from "./helpers/workspace.js";
 
 test("HTML destinations share resolution and preserve unrelated markup", () => {
   const result = rewriteBodyLinks(

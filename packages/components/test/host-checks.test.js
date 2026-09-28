@@ -1,7 +1,7 @@
 /**
- * Host-binding guarantees, checked once for every web-component binding in the
- * catalog: alias registration, the native `hidden` attribute, focus forwarding
- * to `host.focus.forwardsTo`, visible keyboard focus, binding events reaching
+ * Web-section guarantees, checked once for every component with a web section
+ * in the catalog: alias registration, the native `hidden` attribute, focus
+ * forwarding to `web.focus.forwardsTo`, visible keyboard focus, events reaching
  * the host, enum properties, and properties set before registration. A
  * component's own test file covers only its behavior.
  *
@@ -49,7 +49,7 @@ function focusTarget(element, host) {
   return host.shadowRoot.querySelector(`[part="${element.focusPart}"]`);
 }
 
-/** Fire a binding event the way a user would, from its native control. */
+/** Fire a web event the way a user would, from its native control. */
 async function trigger(event, target) {
   if (event === "click" || target.type === "checkbox") {
     await userEvent.click(target);

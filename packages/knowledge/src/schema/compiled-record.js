@@ -1,8 +1,6 @@
 import authoredSchema from "./index.js";
 import { PROBLEM, problem } from "../compile/tables.js";
 import { createKnowledgeAjv } from "./ajv.js";
-import hostBinding from "./host-binding.schema.json" with { type: "json" };
-import portableContract from "./portable-contract.schema.json" with { type: "json" };
 import {
   COMPILED_CONTRACT_DEFS,
   COMPILED_CONTRACT_PROPERTIES,
@@ -14,30 +12,15 @@ import {
 
 export const COMPILED_ID = `urn:stevegreco:design-system:compiled-knowledge-record:${COMPILED_SCHEMA_VERSION}`;
 
-/**
- * The compiled record schema is self-contained: the contract and host schemas are embedded
- * under `$defs` with their own ids, so a reader outside this package can resolve every `$ref`.
- */
 function deriveCompiledSchema(authoredSchema) {
   const schema = structuredClone(authoredSchema);
   schema.$id = COMPILED_ID;
   schema.title = "Compiled knowledge record";
   schema.properties = { ...schema.properties, ...COMPILED_PROPERTIES };
   schema.required = [...schema.required, ...COMPILED_REQUIRED];
-
-  const { $schema: _contractDialect, ...contract } = structuredClone(portableContract);
-  contract.$id = `urn:stevegreco:design-system:compiled-portable-contract:${COMPILED_SCHEMA_VERSION}`;
+  schema.$defs = { ...schema.$defs, ...COMPILED_DEFS, ...COMPILED_CONTRACT_DEFS };
+  const contract = schema.$defs.contract;
   contract.properties = { ...contract.properties, ...COMPILED_CONTRACT_PROPERTIES };
-  contract.$defs = { ...contract.$defs, ...COMPILED_CONTRACT_DEFS };
-  const { $schema: _hostDialect, ...host } = structuredClone(hostBinding);
-  host.$id = `urn:stevegreco:design-system:compiled-host-binding:${COMPILED_SCHEMA_VERSION}`;
-
-  schema.$defs = {
-    ...schema.$defs,
-    ...COMPILED_DEFS,
-    portableContract: contract,
-    hostBinding: host,
-  };
   return schema;
 }
 

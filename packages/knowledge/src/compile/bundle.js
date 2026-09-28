@@ -2,8 +2,6 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import yaml from "js-yaml";
 import authoredSchema from "../schema/index.js";
-import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
-import portableContractSchema from "../schema/portable-contract.schema.json" with { type: "json" };
 import { compiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import { sha256Hex } from "./digest.js";
@@ -69,12 +67,6 @@ export function projectBundle(corpus, visibility, meta) {
     "schema/compiled-knowledge-record.json",
     `${JSON.stringify(compiledSchema, null, 2)}\n`,
   );
-  putText(
-    files,
-    "schema/portable-contract.json",
-    `${JSON.stringify(portableContractSchema, null, 2)}\n`,
-  );
-  putText(files, "schema/host-binding.json", `${JSON.stringify(hostBindingSchema, null, 2)}\n`);
 
   for (const [path, text] of markdown) {
     putText(files, path, text);

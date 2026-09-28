@@ -1,12 +1,12 @@
 import { loadCorpusInputs } from "./inputs.js";
 import {
   assembleRecord,
-  checkBindingAgreement,
+  checkWebAgreement,
   checkRuleReferences,
   checkSourceAgreement,
   checkVariantGuidance,
   completenessProblems,
-  resolveBindingDefaults,
+  resolveWebDefaults,
 } from "./records.js";
 import { generateComponentBody } from "./generate-body.js";
 import { rewriteBodyLinks } from "./narrative.js";
@@ -44,19 +44,19 @@ export function assembleCorpus(loaded) {
       return [id, record];
     }),
   );
-  const bindingProblems = resolveBindingDefaults(records);
+  const webProblems = resolveWebDefaults(records);
   const invalidIds = loaded.invalidIds ?? new Set();
   const validation = validateRelations(records, invalidIds);
   const problems = [
     ...loaded.problems,
     ...visualProblems,
-    ...bindingProblems,
+    ...webProblems,
     ...[...records.values()].flatMap((record) => [
       ...checkSourceAgreement(record),
       ...checkRuleReferences(record, records, invalidIds),
       ...completenessProblems(record),
     ]),
-    ...checkBindingAgreement(records, invalidIds),
+    ...checkWebAgreement(records),
     ...checkVariantGuidance(records, invalidIds),
     ...validation.problems,
   ];

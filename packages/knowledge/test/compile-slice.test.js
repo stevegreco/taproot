@@ -28,8 +28,7 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const manifest = JSON.parse(await readFile(join(outDir, "public/manifest.json"), "utf8"));
   assert.equal(manifest.content.recordCount, authoredCount);
   assert.equal(manifest.content.visibility, "public");
-  assert.ok(manifest.content.files.some((entry) => entry.path === "schema/portable-contract.json"));
-  assert.ok(manifest.content.files.some((entry) => entry.path === "schema/host-binding.json"));
+  assert.ok(manifest.content.files.some((entry) => entry.path === "schema/knowledge-record.json"));
   assert.equal(records.length, authoredCount);
 
   const button = records.find((record) => record.id === "component.button");
@@ -43,7 +42,6 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   );
   assert.equal(ghostRestFill.token.literal, "transparent");
   assert.equal(Object.hasOwn(button.contract, "visuals"), false);
-  assert.equal(button.contract.specVersion, 5);
 
   const badge = records.find((record) => record.id === "component.badge");
   assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
@@ -60,7 +58,6 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const textField = records.find((record) => record.id === "component.text-field");
   assert.equal(Object.hasOwn(textField, "tokens"), false);
   assert.equal(Object.hasOwn(textField.contract, "visuals"), false);
-  assert.equal(textField.contract.specVersion, 5);
   assert.ok(textField.contract.mappings.length > 0);
   const invalidControl = resolveMappings(textField.contract.mappings, textField.contract.states, {
     part: "control",
@@ -106,17 +103,18 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
     "semantic.typography.label.default.fontSize",
   );
 
-  const binding = records.find((record) => record.id === "binding.button.web-component");
-  assert.equal(binding.host.defaultTagName, "ds-button");
-  const textFieldBinding = records.find(
-    (record) => record.id === "binding.text-field.web-component",
-  );
-  assert.equal(textFieldBinding.host.defaultTagName, "ds-text-field");
-  const linkBinding = records.find((record) => record.id === "binding.link.web-component");
-  assert.equal(linkBinding.host.defaultTagName, "ds-link");
-  assert.equal(Object.hasOwn(linkBinding.host, "formAssociation"), false);
+  const byId = (id) => records.find((record) => record.id === id);
+  assert.equal(byId("component.button").web.defaultTagName, "ds-button");
+  assert.equal(byId("component.text-field").web.defaultTagName, "ds-text-field");
+  const linkWeb = byId("component.link").web;
+  assert.equal(linkWeb.defaultTagName, "ds-link");
+  assert.equal(Object.hasOwn(linkWeb, "formAssociation"), false);
   // Link has no accessibleName parameter, so its text is the only name source.
-  assert.equal(linkBinding.host.anatomy.content.accepts.includes("decorative-icon"), false);
+  assert.equal(linkWeb.anatomy.content.accepts.includes("decorative-icon"), false);
+  assert.equal(
+    records.some((record) => record.type === "binding"),
+    false,
+  );
 
   const buttonMarkdown = await readFile(
     join(outDir, "public/markdown/component.button.md"),
@@ -136,24 +134,11 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
     buttonMarkdown,
     /^\| control \| background \| variant=danger, hover \| `component\.button\.danger\.background\.hover` \|$/m,
   );
-  assert.match(
-    buttonMarkdown,
-    /^- \[binding\.button\.web-component\]\(binding\.button\.web-component\.md\)$/m,
-  );
-
-  const bindingMarkdown = await readFile(
-    join(outDir, "public/markdown/binding.button.web-component.md"),
-    "utf8",
-  );
-  assert.doesNotMatch(bindingMarkdown, /^host:/m);
-  assert.doesNotMatch(bindingMarkdown, /^contract:/m);
-  assert.match(bindingMarkdown, /^- Tag: `<ds-button>`$/m);
-  assert.match(bindingMarkdown, /^\| action \| `type` \| `type` \| activate → `button`/m);
-  assert.match(
-    bindingMarkdown,
-    /^- `click` for activate\. Not fired when effectively-disabled\.$/m,
-  );
-  assert.match(bindingMarkdown, /## Example\n\n```html\n<ds-button variant="primary">/);
+  assert.doesNotMatch(buttonMarkdown, /^web:/m);
+  assert.match(buttonMarkdown, /^- Tag: `<ds-button>`$/m);
+  assert.match(buttonMarkdown, /^\| action \| `type` \| `type` \| activate → `button`/m);
+  assert.match(buttonMarkdown, /^- `click` for activate\. Not fired when effectively-disabled\.$/m);
+  assert.match(buttonMarkdown, /## Example\n\n```html\n<ds-button variant="primary">/);
 
   const reviewMarkdown = await readFile(
     join(outDir, "public/markdown/guideline.button-review.md"),

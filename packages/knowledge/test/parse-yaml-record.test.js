@@ -47,7 +47,6 @@ test("parseYamlRecord accepts a YAML-only component without a body", () => {
   assert.equal(record.id, "component.yaml-button");
   assert.equal(record.type, "component");
   assert.equal(Object.hasOwn(record, "body"), false);
-  assert.equal(record.contract.specVersion, 5);
   assert.equal(record.contract.usage.avoid[0].instead, "Link");
 });
 

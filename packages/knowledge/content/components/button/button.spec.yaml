@@ -24,7 +24,6 @@ tokenRef:
   namespace: component.button
   description: All visual values consume the published Button component-token contract.
 contract:
-  specVersion: 5
   description: Triggers an action or submits or resets a form.
   usage:
     do:
@@ -226,3 +225,57 @@ contract:
       reducedMotion:
         reduce:
           motion: none
+web:
+  package: "@stevegreco/design-system-components"
+  export: DsButton
+  defaultTagName: ds-button
+  registration:
+    export: defineButton
+    supportsAliases: true
+  anatomy:
+    control:
+      element: button
+      part: button
+    content:
+      slot: default
+      required: true
+      accepts:
+        - text
+        - decorative-icon
+        - text-and-decorative-icon
+  parameters:
+    action:
+      attribute: type
+      property: type
+      values:
+        activate: button
+        submit: submit
+        reset: reset
+    fullWidth:
+      attribute: full-width
+    accessibleName:
+      attribute: aria-label
+  events:
+    activate:
+      event: click
+      suppressedWhen: effectively-disabled
+  properties:
+    form:
+      type: "HTMLFormElement | null"
+      readonly: true
+      description: The associated form, including association across the shadow boundary.
+  formAssociation:
+    mechanism: FACE
+    fieldsetDisables: true
+    submitRunsConstraintValidation: true
+    resetResetsAssociatedForm: true
+  focus:
+    forwardsTo: control
+  parts:
+    button:
+      description: The inner native button control.
+  example: |
+    <ds-button variant="primary">Save changes</ds-button>
+  rationale:
+    - decision: Button is form-associated.
+      rationale: Submit and reset behavior must work across the shadow boundary.

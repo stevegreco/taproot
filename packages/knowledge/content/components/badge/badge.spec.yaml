@@ -18,7 +18,6 @@ sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:
-  specVersion: 5
   description: Labels status or metadata. Not a control.
   usage:
     do:
@@ -131,3 +130,24 @@ contract:
           background: semantic.color.background.status.info.default
           foreground: semantic.color.foreground.status.info.default
           border: semantic.color.border.status.info.default
+web:
+  package: "@stevegreco/design-system-components"
+  export: DsBadge
+  defaultTagName: ds-badge
+  registration:
+    export: defineBadge
+    supportsAliases: true
+  anatomy:
+    surface:
+      element: span
+      part: badge
+    content:
+      slot: default
+      required: true
+      accepts:
+        - text
+  events: {}
+  example: |
+    <ds-badge variant="success">Active</ds-badge>
+  notes: |
+    The host honors the native `hidden` attribute; that is not a contract parameter.

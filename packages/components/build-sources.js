@@ -2,13 +2,13 @@
  * Writes the source files that follow from the knowledge records, so adding a
  * component edits none of them:
  *
- * - `src/<name>.d.ts` for each component, from its binding and contract.
+ * - `src/<name>.d.ts` for each component, from its contract and web section.
  * - `src/index.js` and `src/index.d.ts`, the package-root barrel.
  *
- * Each web-component binding for this package names its module (the component
- * slug), class (`host.export`), registration function
- * (`host.registration.export`), and tag. Property and attribute types come from
- * the contract's parameter kinds and enum values, mapped through the binding.
+ * Each component whose web section names this package gives its module (the
+ * component slug), class (`web.export`), registration function
+ * (`web.registration.export`), and tag. Property and attribute types come from
+ * the contract's parameter kinds and enum values, mapped through the web section.
  * The files are committed; CI fails when a build changes, adds, or removes one. Generated
  * files that no component owns any more are deleted.
  */
@@ -29,20 +29,19 @@ const { name: packageName } = JSON.parse(
 
 const catalog = await openCatalog();
 const elements = catalog
-  .list({ type: "binding" })
+  .list({ type: "component" })
   .map((summary) => catalog.get(summary.id))
-  .filter((binding) => binding.host.platform === "web-component")
-  .filter((binding) => binding.host.package === packageName)
-  .map((binding) => {
-    const component = catalog.get(binding.relations.implements[0]);
+  .filter((component) => component.web?.package === packageName)
+  .map((component) => {
+    const host = component.web;
     const slug = component.id.slice("component.".length);
     return {
       slug,
       component,
-      host: binding.host,
-      tagName: binding.host.defaultTagName,
-      className: binding.host.export,
-      defineName: binding.host.registration.export,
+      host,
+      tagName: host.defaultTagName,
+      className: host.export,
+      defineName: host.registration.export,
       typePrefix: pascalCase(slug),
     };
   })
@@ -52,7 +51,7 @@ for (const { slug } of elements) {
   try {
     await access(new URL(`${slug}.js`, SRC));
   } catch {
-    throw new Error(`A binding names component ${slug}, but src/${slug}.js does not exist.`);
+    throw new Error(`component.${slug} has a web section, but src/${slug}.js does not exist.`);
   }
 }
 
@@ -226,7 +225,7 @@ async function write(file, lines) {
   console.log(`src/${file}`);
 }
 
-/** Delete generated files that no component owns any more, such as a removed binding's types. */
+/** Delete generated files that no component owns any more, such as a removed component's types. */
 async function removeStale() {
   for (const file of await readdir(SRC)) {
     if (written.has(file) || !/\.(?:d\.ts|js)$/.test(file)) continue;

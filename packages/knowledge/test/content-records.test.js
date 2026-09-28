@@ -51,7 +51,6 @@ test("parseAuthoredRecord accepts YAML component specs without bodies", () => {
     assert.equal(record.schemaVersion, 1);
     assert.equal(record.type, "component");
     assert.equal(Object.hasOwn(record, "body"), false);
-    assert.equal(record.contract.specVersion, 5);
     assert.ok(record.contract.usage.do.every((item) => typeof item.id === "string"));
   }
 });

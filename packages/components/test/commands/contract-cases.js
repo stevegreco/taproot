@@ -18,20 +18,15 @@ export async function contractCases() {
   const catalog = await openCatalog();
   const full = (summary) => catalog.get(summary.id);
   const components = catalog.list({ type: "component" }).map(full);
-  const bindings = catalog.list({ type: "binding" }).map(full);
   if (components.length === 0) throw new Error("compiled catalog has no component records");
-  return components.map((record) => componentCases(record, bindingFor(bindings, record.id)));
+  return components.map((record) => {
+    if (!record.web) throw new Error(`${record.id} has no web section`);
+    return componentCases(record);
+  });
 }
 
-function bindingFor(bindings, id) {
-  const binding = bindings.find((record) => record.relations?.implements?.includes(id));
-  if (!binding) throw new Error(`${id} has no binding record`);
-  return binding;
-}
-
-function componentCases(record, binding) {
-  const { contract } = record;
-  const { host } = binding;
+function componentCases(record) {
+  const { contract, web: host } = record;
   const axes = configurationAxes(contract, host, record.id);
   const cases = [];
 
@@ -88,7 +83,7 @@ function configurationAxes(contract, host, id) {
     const parameter = contract.parameters?.[name];
     if (parameter) {
       const attribute = host.parameters?.[name]?.attribute;
-      if (!attribute) throw new Error(`${id} parameter ${name} has no binding attribute`);
+      if (!attribute) throw new Error(`${id} parameter ${name} has no web attribute`);
       const values =
         parameter.kind === "boolean" ? ["true", "false"] : Object.keys(parameter.values);
       const hostValue = (value) => host.parameters[name].values?.[value] ?? value;
