@@ -33,14 +33,14 @@ test("shuffled records and term insertion still yield identical id sequences", a
     title: "Hyphen order",
     summary: "Shared pumpkin summary.",
     tags: ["order"],
-    relations: { uses: ["order.a.b"] },
+    relations: { related: ["order.a.b"] },
     body: "pumpkin hyphen body",
   });
   const dotted = stubRecord("order.a.b", {
     title: "Dotted order",
     summary: "Shared pumpkin summary.",
     tags: ["order"],
-    backlinks: { usedBy: ["order.a-b"] },
+    backlinks: { related: ["order.a-b"] },
     body: "pumpkin dotted body",
   });
   const extra = stubRecord("order.aa", {

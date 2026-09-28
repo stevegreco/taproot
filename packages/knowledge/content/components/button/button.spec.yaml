@@ -2,18 +2,12 @@ id: component.button
 type: component
 title: Button
 summary: Use Button to trigger an action or to submit or reset a form.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
   - action
-  - button
   - form
-relations:
-  related:
-    - component.badge
+related:
+  - component.badge
+  - component.link
 sources:
   - kind: token-source
     path: packages/tokens/src/tokens/components/button.tokens.json
@@ -27,17 +21,13 @@ contract:
   description: Triggers an action or submits or resets a form.
   usage:
     do:
-      - id: trigger-action
-        situation: Trigger an action in the current view.
-      - id: submit-or-reset
-        situation: Submit or reset a form.
+      - situation: Trigger an action in the current view.
+      - situation: Submit or reset a form.
     avoid:
-      - id: navigation
-        situation: Navigate to another location.
+      - situation: Navigate to another location.
         instead: Link
         why: Links provide native navigation semantics.
-      - id: status-or-metadata
-        situation: Display status or metadata.
+      - situation: Display status or metadata.
         instead: Badge
         why: Button communicates an available action.
   content:
@@ -50,6 +40,12 @@ contract:
           - Delete account
         avoid:
           - Click here
+    - id: danger-for-destructive
+      level: must
+      statement: Use the danger variant only for destructive or difficult-to-reverse actions.
+    - id: explain-disabled
+      level: should
+      statement: When the context does not say why an action is disabled, say why near it.
     - id: follow-action-hierarchy
       level: should
       statement: Apply the action hierarchy pattern when several actions appear together.
@@ -117,6 +113,9 @@ contract:
     - id: disabled-prevents-activation
       level: must
       statement: Disabled prevents activation.
+    - id: explicit-form-action
+      level: should
+      statement: In a form, set action to submit or reset when the button should submit or reset. The default activate does neither.
     - id: form-association
       level: should
       statement: Submit and reset participate in a form when the host supports form association.

@@ -44,7 +44,7 @@ test("non-ASCII letters are separators, not indexed terms", () => {
   assert.equal(tokenize("日本語").size, 0);
 });
 
-test("contract, web, and checks add terms without stringifying the record", () => {
+test("contract and web add terms without stringifying the record", () => {
   const record = {
     id: "component.secret",
     type: "guideline",
@@ -76,9 +76,6 @@ test("contract, web, and checks add terms without stringifying the record", () =
         accessibleName: { attribute: "aria-label" },
       },
     },
-    checks: [
-      { id: "button-review-label", requirement: "The accessible label describes the result." },
-    ],
   };
 
   const text = collectSearchText(record);
@@ -87,7 +84,6 @@ test("contract, web, and checks add terms without stringifying the record", () =
   assert.match(text, /pressed/);
   assert.match(text, /ds-button/);
   assert.match(text, /aria-label/);
-  assert.match(text, /accessible label describes/);
   assert.equal(text.includes("component.secret"), false);
   assert.equal(text.includes("guideline"), false);
   assert.equal(text.includes("implement"), false);

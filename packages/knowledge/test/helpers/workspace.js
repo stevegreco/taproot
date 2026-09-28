@@ -14,7 +14,6 @@ const defaults = {
   visibility: "public",
   jobs: ["design"],
   tags: ["fixture"],
-  relations: {},
 };
 
 export function recordYaml(fields) {

@@ -12,7 +12,7 @@ function pattern(overrides = {}) {
   return {
     id: "pattern.scratch",
     type: "pattern",
-    relations: { guides: ["component.scratch"] },
+    relations: { related: ["component.scratch"] },
     body: "## Assign emphasis\n\n### Primary\n\nScratch primary guidance.\n\n### Empty\n\n## Avoid\n",
     variantGuidance: { "component.scratch": { primary: "primary" } },
     ...overrides,
@@ -41,7 +41,10 @@ test("variant guidance fails on anchors, variants, or components the records do 
     messages(pattern({ variantGuidance: { "component.scratch": { ghost: "primary" } } }))[0],
     /variant ghost, which its contract does not have/,
   );
-  assert.match(messages(pattern({ relations: {} }))[0], /which the pattern does not guide/);
+  assert.match(
+    messages(pattern({ relations: {} }))[0],
+    /which the pattern does not list in related/,
+  );
   assert.match(
     messages(pattern(), pattern({ id: "pattern.again" }))[0],
     /pattern\.again variantGuidance guides component\.scratch variant primary, which pattern\.scratch already guides/,

@@ -2,19 +2,12 @@ id: component.checkbox
 type: component
 title: Checkbox
 summary: Use Checkbox to turn one independent option on or off, with a label, hint, and error.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
-  - checkbox
   - form
   - selection
-relations:
-  related:
-    - component.button
-    - component.text-field
+related:
+  - component.button
+  - component.text-field
 sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -22,25 +15,18 @@ contract:
   description: Turns one independent option on or off, and associates a label, optional hint, and optional error with the control.
   usage:
     do:
-      - id: independent-option
-        situation: Turn one option on or off in a form that is submitted later.
-      - id: several-of-a-list
-        situation: Choose any number of options from a short list, one checkbox per option.
-      - id: acknowledge
-        situation: Confirm an agreement or acknowledgement before submit.
-      - id: parent-of-a-list
-        situation: Select or clear a list of options at once, showing indeterminate when only some are selected.
+      - situation: Turn one option on or off in a form that is submitted later.
+      - situation: Choose any number of options from a short list, one checkbox per option.
+      - situation: Confirm an agreement or acknowledgement before submit.
+      - situation: Select or clear a list of options at once, showing indeterminate when only some are selected.
     avoid:
-      - id: one-of-a-list
-        situation: Choose exactly one option from a list.
+      - situation: Choose exactly one option from a list.
         instead: Radio group
         why: Checkboxes are independent. Nothing stops two being checked.
-      - id: immediate-setting
-        situation: Apply a setting as soon as it is toggled, with no submit.
+      - situation: Apply a setting as soon as it is toggled, with no submit.
         instead: Switch
         why: A checkbox value takes effect when its form is submitted.
-      - id: trigger-action
-        situation: Trigger an action by itself.
+      - situation: Trigger an action by itself.
         instead: Button
         why: Checkbox records a choice.
   content:
@@ -84,10 +70,10 @@ contract:
       role: label
       description: Visible name for the option.
     - name: hint
-      role: label
+      role: description
       description: Optional supporting guidance.
     - name: error
-      role: indicator
+      role: description
       description: Optional message that says what to fix.
   parameters:
     label:
@@ -150,6 +136,9 @@ contract:
     - id: error-marks-invalid
       level: must
       statement: A non-empty error marks the control invalid, and clearing the error removes that state.
+    - id: error-blocks-submit
+      level: must
+      statement: While a non-empty error is set, the control blocks its form from submitting.
     - id: disabled-blocks-toggle
       level: must
       statement: Disabled prevents toggling from pointer and keyboard.
@@ -192,7 +181,7 @@ contract:
         statement: Keyboard focus remains visibly indicated.
   rationale:
     - decision: Checkbox consumes semantic tokens directly, plus one radius primitive.
-      rationale: ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is already audited against them. No semantic radius fits a small box (control radius is 10px), so the box uses primitives.radius.xs. No component-token namespace.
+      rationale: ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is already audited against them. No semantic radius fits a 16px box, so the box uses primitives.radius.xs. No component-token namespace.
     - decision: Checked and indeterminate are states driven by their parameters.
       rationale: They change the same box fill, and indeterminate wins over checked. As states, their order says so. As two boolean axes they would assign the fill in overlapping rules.
     - decision: A checked or indeterminate box does not change on hover.

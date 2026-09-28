@@ -40,7 +40,7 @@ test("references to a record that failed validation are not reported again", asy
     [pattern]: authored(pattern, {
       id: "pattern.uses-invalid",
       type: "pattern",
-      relations: { uses: ["component.invalid"], related: ["component.missing"] },
+      related: ["component.invalid", "component.missing"],
     }),
   });
 
@@ -192,6 +192,7 @@ Body text.
   assert.equal(record.schemaVersion, 1);
   assert.equal(record.visibility, "public");
   assert.deepEqual(record.relations, {});
+  assert.equal(record.status, "draft");
   assert.equal(record.jobs[0], "design");
   assert.equal(
     record.sources.some((source) => source.kind === "authored" && source.path === path),
@@ -369,7 +370,7 @@ test("CORPUS_UNRESOLVED_RELATION fires for a missing target", async () => {
   const reader = createMemoryReader({
     [path]: authored(path, {
       id: "component.orphan",
-      relations: { uses: ["component.missing"] },
+      related: ["component.missing"],
     }),
   });
 
@@ -421,7 +422,7 @@ test("CORPUS_SELF_RELATION fires when a record targets itself", async () => {
   const reader = createMemoryReader({
     [path]: authored(path, {
       id: "component.self",
-      relations: { related: ["component.self"] },
+      related: ["component.self"],
     }),
   });
 
@@ -443,23 +444,6 @@ test("CORPUS_INCOMPLETE_EXAMPLE fires when an example has no assets or annotatio
 
   assert.equal(problems.length, 1);
   assert.equal(problems[0].recordId, "example.empty");
-});
-
-test("CORPUS_INCOMPLETE_CHECKS fires when a review guideline has no checks", async () => {
-  const path = "content/review.md";
-  const reader = createMemoryReader({
-    [path]: authored(path, {
-      id: "guideline.empty-review",
-      type: "guideline",
-      jobs: ["review"],
-    }),
-  });
-
-  const corpus = await buildCorpus(reader, [publicRoot]);
-  const problems = codes(corpus, PROBLEM.CORPUS_INCOMPLETE_CHECKS);
-
-  assert.equal(problems.length, 1);
-  assert.equal(problems[0].recordId, "guideline.empty-review");
 });
 
 test("SOURCE_MISSING fires when a declared source file is absent", async () => {

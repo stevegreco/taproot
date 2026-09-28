@@ -16,7 +16,7 @@ export type ComponentKnowledgeSection =
   | "review";
 
 export type ApiMemberKind = "attribute" | "property" | "event";
-export type CheckLevel = "error" | "warning";
+export type CheckLevel = "must" | "should" | "may";
 export type RecordStatus = "draft" | "accepted" | "deprecated" | "superseded";
 
 export interface Variant {
@@ -630,23 +630,18 @@ function projectExample(record: Record<string, unknown>, digest: string): Exampl
   };
 }
 
-function projectReview(record: Record<string, unknown>): ReviewSection {
-  const checks = Array.isArray(record.checks) ? record.checks : [];
-  return {
-    title: asString(record.title),
-    checks: checks.flatMap((item) => {
-      if (!isObject(item)) return [];
-      const level = item.level;
-      if (level !== "error" && level !== "warning") return [];
-      return [
-        {
-          id: asString(item.id),
-          level,
-          requirement: asString(item.requirement),
-        },
-      ];
-    }),
-  };
+/** The review checklist: every rule in the contract, in the order the page presents them. */
+function projectReview(contract: Record<string, unknown>): ReviewSection | undefined {
+  const accessibility = isObject(contract.accessibility) ? contract.accessibility : {};
+  const rules = [contract.content, contract.behavior, accessibility.requirements].flatMap((list) =>
+    Array.isArray(list) ? list.filter(isObject) : [],
+  );
+  const checks = rules.flatMap((rule) => {
+    const level = rule.level;
+    if (level !== "must" && level !== "should" && level !== "may") return [];
+    return [{ id: asString(rule.id), level, requirement: asString(rule.statement) }];
+  });
+  return checks.length > 0 ? { title: "Review checklist", checks } : undefined;
 }
 
 /** "Using together": each related pattern's summary and Avoid list, plus the example. */
@@ -735,7 +730,6 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   const patterns: Record<string, unknown>[] = [];
   let behaviorSection: BehaviorSection | undefined;
   let example: ExampleFigure | undefined;
-  let review: ReviewSection | undefined;
 
   for (const neighbor of catalog.related(id)) {
     const related = neighbor.record;
@@ -747,12 +741,6 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
       if (example) fail("unexpected-slice", `${id} has more than one related example`);
       example = projectExample(related, digest);
     } else if (type === "guideline") {
-      const checks = related.checks;
-      if (Array.isArray(checks) && checks.length > 0) {
-        if (review) fail("unexpected-slice", `${id} has more than one related review guideline`);
-        review = projectReview(related);
-        continue;
-      }
       const sections = isObject(related.docsSections) ? related.docsSections : {};
       const behavior = isObject(sections.behavior) ? sections.behavior : {};
       const behaviorAnchor = asString(behavior.section);
@@ -780,10 +768,6 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
           );
         }
         behaviorSection = { heading, markdown: section };
-      } else if (guides(related, id)) {
-        console.warn(
-          `${asString(related.id)} guides ${id} but has no checks or docsSections.behavior, so the ${slug} page does not show it`,
-        );
       }
     }
   }
@@ -808,13 +792,8 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     api: projectApi(record.contract, host),
     accessibility: projectAccessibility(record.contract.accessibility, id),
     together,
-    review,
+    review: projectReview(record.contract),
   };
-}
-
-function guides(record: Record<string, unknown>, id: string): boolean {
-  const targets = isObject(record.relations) ? record.relations.guides : undefined;
-  return Array.isArray(targets) && targets.includes(id);
 }
 
 function deepFreeze<T>(value: T): T {

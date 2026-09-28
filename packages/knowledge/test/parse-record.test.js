@@ -14,7 +14,6 @@ jobs:
   - implement
 tags:
   - button
-relations: {}
 sources:
   - kind: authored
     path: packages/knowledge/content/components/test-button.md
@@ -84,12 +83,13 @@ test("parseRecord rejects unknown fields at every object level", () => {
   assertIssuePath(rootUnknown, "test-button.md", "/spurious");
 
   const nestedUnknown = validComponent.replace(
-    "relations: {}",
-    `relations:
-  unexpected:
-    - component.button`,
+    "\n---\n\n",
+    `\nrelations:
+  related:
+    - component.button
+---\n\n`,
   );
-  assertIssuePath(nestedUnknown, "test-button.md", "/relations/unexpected");
+  assertIssuePath(nestedUnknown, "test-button.md", "/relations");
 
   const sourceUnknown = validComponent.replace(
     "    path: packages/knowledge/content/components/test-button.md",
@@ -181,7 +181,7 @@ Use this component to trigger a test action.
   });
 
   assert.equal(record.schemaVersion, 1);
-  assert.deepEqual(record.relations, {});
+  assert.equal(Object.hasOwn(record, "relations"), false);
   assert.deepEqual(record.sources, [
     { kind: "authored", path: "packages/knowledge/content/components/test-button.md" },
   ]);
@@ -210,15 +210,19 @@ Use this component to trigger a test action.
 
   assert.equal(record.schemaVersion, 1);
   assert.equal(record.visibility, "public");
-  assert.deepEqual(record.relations, {});
+  assert.equal(Object.hasOwn(record, "relations"), false);
   assert.deepEqual(record.sources, [
     { kind: "authored", path: "packages/knowledge/content/components/test-button.md" },
   ]);
 });
 
-test("parseRecord still requires jobs", () => {
-  const markdown = validComponent.replace("\njobs:\n  - implement\n", "\n");
-  assertIssuePath(markdown, "test-button.md", "/jobs");
+test("parseRecord accepts a record without jobs, tags, or status", () => {
+  const markdown = validComponent
+    .replace("\njobs:\n  - implement\n", "\n")
+    .replace("\ntags:\n  - button\n", "\n")
+    .replace("\nstatus: draft\n", "\n");
+  const record = parseRecord(markdown, { sourcePath: "test-button.md" });
+  assert.equal(Object.hasOwn(record, "jobs"), false);
 });
 
 test("parseRecord injects an authored source when only an adr source is declared", () => {
@@ -336,7 +340,6 @@ jobs:
   - implement
 tags:
   - button
-relations: {}
 sources:
   - kind: authored
     path: packages/knowledge/content/components/test-button.md

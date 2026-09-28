@@ -3,19 +3,13 @@ id: guideline.button-implementation
 type: guideline
 title: Implement button actions
 summary: Implement actions with the Button contract, explicit form behavior, and semantic variants.
-status: draft
-jobs:
-  - implement
 tags:
   - action
-  - button
   - form
   - implementation
-relations:
-  uses:
-    - pattern.action-hierarchy
-  guides:
-    - component.button
+related:
+  - pattern.action-hierarchy
+  - component.button
 docsSections:
   behavior:
     section: set-form-behavior-deliberately
@@ -39,7 +33,7 @@ Use `<ds-button>` for an action in the current view:
 <ds-button variant="primary">Save changes</ds-button>
 ```
 
-Use a link when activation navigates to another location.
+Use [Link](../components/link/link.spec.yaml) when activation navigates to another location.
 
 ## Set form behavior deliberately
 

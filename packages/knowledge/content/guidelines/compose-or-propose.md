@@ -3,21 +3,15 @@ id: guideline.compose-or-propose
 type: guideline
 title: Compose or propose
 summary: Compose a new interface need from tokens and existing components first, and open an issue or RFC only when the system itself has to change.
-status: draft
-jobs:
-  - design
-  - implement
 tags:
   - composition
   - contribution
   - governance
   - rfc
-relations:
-  uses:
-    - pattern.action-hierarchy
-  related:
-    - component.button
-    - component.badge
+related:
+  - pattern.action-hierarchy
+  - component.button
+  - component.badge
 ---
 
 Most interface needs are met by composing what the system already publishes. Change the system

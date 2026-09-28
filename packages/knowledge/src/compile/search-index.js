@@ -69,7 +69,6 @@ export function collectSearchText(record) {
     record.body,
     ...collectContractTerms(record.contract),
     ...collectHostTerms(record.web),
-    ...collectCheckTerms(record.checks),
   ]
     .filter((part) => typeof part === "string" && part.length > 0)
     .join(" ");
@@ -176,17 +175,6 @@ function collectHostTerms(host) {
   }
 
   return parts;
-}
-
-/**
- * @param {unknown} checks
- * @returns {string[]}
- */
-function collectCheckTerms(checks) {
-  if (!Array.isArray(checks)) return [];
-  return checks
-    .map((check) => check?.requirement)
-    .filter((text) => typeof text === "string" && text.length > 0);
 }
 
 /**

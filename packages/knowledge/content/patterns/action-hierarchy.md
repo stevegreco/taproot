@@ -3,24 +3,13 @@ id: pattern.action-hierarchy
 type: pattern
 title: Action hierarchy
 summary: Assign action emphasis by importance, support role, and risk, and choose Button or Link by what the control does.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
   - action
-  - button
   - hierarchy
   - destructive
-  - link
-relations:
-  uses:
-    - component.button
-    - component.link
-  guides:
-    - component.button
-    - component.link
+related:
+  - component.button
+  - component.link
 variantGuidance:
   component.button: [primary, secondary, ghost, danger]
   component.link: [inline, standalone]

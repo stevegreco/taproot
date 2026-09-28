@@ -228,7 +228,7 @@ describe("DsCheckbox", () => {
     expect(getComputedStyle(input).outlineStyle).not.toBe("none");
   });
 
-  test("[form-value] submits its value only when checked and blocks submit while required and unchecked", () => {
+  test("[form-value][error-blocks-submit] submits its value only when checked and blocks submit while required, unchecked, or in error", () => {
     const form = render(`
       <form>
         <${tagName} label="I agree" name="terms" required></${tagName}>

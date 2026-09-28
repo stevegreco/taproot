@@ -1,9 +1,20 @@
 import { PROBLEM, problem } from "./tables.js";
+import { byCodeUnit } from "../sort.js";
 import { headingAnchors, subsectionAnchors } from "./anchors.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import recordSchema from "../schema/knowledge-record.schema.json" with { type: "json" };
 
 const WEB_KEYS = Object.freeze(Object.keys(recordSchema.$defs.web.properties));
+
+/** Who each record type serves, when the record does not say. */
+const DEFAULT_JOBS = Object.freeze({
+  component: ["design", "implement", "review"],
+  pattern: ["design", "implement", "review"],
+  guideline: ["implement", "review"],
+  example: ["design", "implement"],
+  foundation: ["design"],
+  decision: ["design"],
+});
 
 export function assembleRecord(authored, contribution, assets) {
   const record = {
@@ -13,16 +24,15 @@ export function assembleRecord(authored, contribution, assets) {
     type: authored.type,
     title: authored.title,
     summary: authored.summary,
-    status: authored.status,
+    status: authored.status ?? "draft",
     visibility: authored.visibility,
-    jobs: authored.jobs,
-    tags: authored.tags,
-    relations: authored.relations,
+    jobs: authored.jobs ?? DEFAULT_JOBS[authored.type],
+    tags: recordTags(authored),
+    relations: authored.related ? { related: authored.related } : {},
     sources: contribution.sources,
     body: authored.body,
   };
 
-  if (authored.checks) record.checks = authored.checks;
   if (authored.docsSections) record.docsSections = authored.docsSections;
   if (authored.variantGuidance)
     record.variantGuidance = expandVariantGuidance(authored.variantGuidance);
@@ -34,6 +44,17 @@ export function assembleRecord(authored, contribution, assets) {
   if (contribution.fields.tokens) record.tokens = contribution.fields.tokens;
 
   return record;
+}
+
+/**
+ * Authored tags plus the record's own name and the names of the records it relates to, so
+ * `component.text-field` is found by "text-field" without an author writing it.
+ */
+function recordTags(authored) {
+  const names = [authored.id, ...(authored.related ?? [])].map((id) =>
+    id.slice(id.indexOf(".") + 1).replaceAll(".", "-"),
+  );
+  return [...new Set([...(authored.tags ?? []), ...names])].sort(byCodeUnit);
 }
 
 /** A list of variants is shorthand for anchors named after each variant. */
@@ -49,7 +70,7 @@ function expandVariantGuidance(guidance) {
 }
 
 /**
- * Each pattern's variantGuidance must name a component the pattern guides, a
+ * Each pattern's variantGuidance must name a component the pattern lists in related, a
  * variant that component's contract has, and a `###` heading with text in the
  * pattern body. A variant takes guidance from at most one pattern.
  */
@@ -70,8 +91,8 @@ export function checkVariantGuidance(records, invalidIds = new Set()) {
     const anchors = subsectionAnchors(record.body ?? "");
     for (const [id, variants] of Object.entries(record.variantGuidance)) {
       if (invalidIds.has(id)) continue;
-      if (!(record.relations?.guides ?? []).includes(id)) {
-        report(`names ${id}, which the pattern does not guide`);
+      if (!(record.relations?.related ?? []).includes(id)) {
+        report(`names ${id}, which the pattern does not list in related`);
         continue;
       }
       const values = records.get(id)?.contract?.parameters?.variant?.values ?? {};
@@ -287,18 +308,6 @@ export function completenessProblems(record) {
         problem({
           code: PROBLEM.CORPUS_INCOMPLETE_EXAMPLE,
           message: `${record.id} needs at least one asset and one annotation`,
-          recordId: record.id,
-        }),
-      );
-    }
-  }
-
-  if (record.type === "guideline" && record.jobs.includes("review")) {
-    if (!Array.isArray(record.checks) || record.checks.length === 0) {
-      problems.push(
-        problem({
-          code: PROBLEM.CORPUS_INCOMPLETE_CHECKS,
-          message: `${record.id} review guideline needs at least one check`,
           recordId: record.id,
         }),
       );

@@ -107,7 +107,7 @@ describe("DsTextField", () => {
     expect(input.type).toBe("text");
   });
 
-  test("[form-value] submits its value with a button and blocks submit while an error is set", () => {
+  test("[form-value][error-blocks-submit] submits its value with a button and blocks submit while an error is set", () => {
     const form = render(`
       <form>
         <${tagName} label="Email" name="email" type="email"></${tagName}>

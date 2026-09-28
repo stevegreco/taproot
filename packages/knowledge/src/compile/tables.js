@@ -21,7 +21,6 @@ export const PROBLEM = Object.freeze({
   CORPUS_UNRESOLVED_ANNOTATION: "corpus/unresolved-annotation-target",
   CORPUS_SELF_RELATION: "corpus/self-relation",
   CORPUS_INCOMPLETE_EXAMPLE: "corpus/incomplete-example",
-  CORPUS_INCOMPLETE_CHECKS: "corpus/incomplete-checks",
   CONTRACT_UNRESOLVED_REFERENCE: "contract/unresolved-reference",
   VARIANT_GUIDANCE_INVALID: "pattern/variant-guidance",
   VISUAL_MISSING_VALUE: "contract/missing-visual-value",
@@ -40,13 +39,8 @@ export const PROBLEM = Object.freeze({
 
 /** @typedef {typeof PROBLEM[keyof typeof PROBLEM]} ProblemCode */
 
+/** The backlink key for each relation. `related` is the only relation, and it is symmetric. */
 export const REVERSE_RELATION = Object.freeze({
-  uses: "usedBy",
-  demonstrates: "demonstratedBy",
-  guides: "guidedBy",
-  implements: "implementedBy",
-  reviews: "reviewedBy",
-  supersedes: "supersededBy",
   related: "related",
 });
 

@@ -10,9 +10,8 @@ jobs:
   - implement
 tags:
   - button
-relations:
-  uses:
-    - component.button
+related:
+  - component.button
 sources:
   - kind: authored
     path: packages/knowledge/test/fixtures/internal-content/uses-button.md

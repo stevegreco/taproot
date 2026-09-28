@@ -42,9 +42,6 @@ function applyAuthoredDefaults(data, sourcePath) {
   if (!Object.hasOwn(next, "schemaVersion")) {
     next.schemaVersion = 1;
   }
-  if (!Object.hasOwn(next, "relations")) {
-    next.relations = {};
-  }
   if (!Object.hasOwn(next, "sources")) {
     next.sources = [{ kind: "authored", path: sourcePath }];
     return next;

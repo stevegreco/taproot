@@ -3,16 +3,11 @@ id: guideline.text-field-implementation
 type: guideline
 title: Implement text fields
 summary: Implement a labeled text field with hint, error, and form submission.
-status: draft
-jobs:
-  - implement
 tags:
   - form
-  - text-field
   - implementation
-relations:
-  guides:
-    - component.text-field
+related:
+  - component.text-field
 docsSections:
   behavior:
     section: set-form-behavior-deliberately

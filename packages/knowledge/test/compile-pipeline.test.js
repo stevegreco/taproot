@@ -47,7 +47,7 @@ test("corpus assembly is repeatable and leaves loaded inputs unchanged", async (
         {
           id: "component.alpha",
           path: "content/alpha.md",
-          relations: { related: ["component.beta"] },
+          related: ["component.beta"],
         },
         "See [Beta](./beta.md#usage).",
       ),

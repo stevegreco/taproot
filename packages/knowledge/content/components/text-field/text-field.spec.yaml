@@ -2,19 +2,12 @@ id: component.text-field
 type: component
 title: Text field
 summary: Use Text field to collect a single line of text with a label, hint, and error.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
   - form
   - input
-  - text-field
-relations:
-  related:
-    - component.badge
-    - component.button
+related:
+  - component.badge
+  - component.button
 sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -22,21 +15,16 @@ contract:
   description: Collects one line of text and associates a label, optional hint, and optional error with the control.
   usage:
     do:
-      - id: collect-short-text
-        situation: Collect a short value such as a name, email, or search query.
-      - id: pair-with-button
-        situation: Pair with Button when the value should be submitted.
+      - situation: Collect a short value such as a name, email, or search query.
+      - situation: Pair with Button when the value should be submitted.
     avoid:
-      - id: long-text
-        situation: Collect multi-line text.
+      - situation: Collect multi-line text.
         instead: Text area
         why: Text field is a single line.
-      - id: known-options
-        situation: Choose from a known set of options.
+      - situation: Choose from a known set of options.
         instead: Select
         why: Text field does not present choices.
-      - id: trigger-action
-        situation: Trigger an action by itself.
+      - situation: Trigger an action by itself.
         instead: Button
         why: Text field collects a value.
   content:
@@ -71,10 +59,10 @@ contract:
       role: interactive-surface
       description: Single-line text control.
     - name: hint
-      role: label
+      role: description
       description: Optional supporting guidance.
     - name: error
-      role: indicator
+      role: description
       description: Optional message that says what to fix.
   parameters:
     label:
@@ -131,6 +119,9 @@ contract:
     - id: error-marks-invalid
       level: must
       statement: A non-empty error marks the control invalid, and clearing the error removes that state.
+    - id: error-blocks-submit
+      level: must
+      statement: While a non-empty error is set, the control blocks its form from submitting.
     - id: disabled-blocks-editing
       level: must
       statement: Disabled prevents editing.

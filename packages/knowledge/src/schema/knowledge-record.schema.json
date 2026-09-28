@@ -3,7 +3,7 @@
   "$id": "urn:stevegreco:design-system:knowledge-record:1",
   "title": "Authored knowledge record",
   "type": "object",
-  "required": ["id", "type", "title", "summary", "status", "jobs", "tags"],
+  "required": ["id", "type", "title", "summary"],
   "properties": {
     "id": {
       "$ref": "#/$defs/dottedId"
@@ -24,7 +24,8 @@
       "minLength": 1
     },
     "status": {
-      "enum": ["draft", "accepted", "deprecated", "superseded"]
+      "enum": ["draft", "accepted", "deprecated", "superseded"],
+      "description": "Defaults to draft."
     },
     "visibility": {
       "enum": ["public", "internal"]
@@ -35,17 +36,16 @@
       "uniqueItems": true,
       "items": {
         "enum": ["design", "implement", "review"]
-      }
+      },
+      "description": "Who the record serves. The build derives it from type when omitted."
     },
     "tags": {
       "type": "array",
       "uniqueItems": true,
       "items": {
         "$ref": "#/$defs/slug"
-      }
-    },
-    "relations": {
-      "$ref": "#/$defs/relations"
+      },
+      "description": "Extra search terms. The build adds the record name and related record names."
     },
     "sources": {
       "type": "array",
@@ -69,6 +69,10 @@
     "body": {
       "type": "string",
       "minLength": 1
+    },
+    "related": {
+      "description": "Records to read alongside this one. The link works both ways.",
+      "$ref": "#/$defs/recordIdList"
     }
   },
   "allOf": [
@@ -83,12 +87,6 @@
       },
       "then": {
         "properties": {
-          "checks": {
-            "type": "array",
-            "items": {
-              "$ref": "#/$defs/check"
-            }
-          },
           "docsSections": {
             "type": "object",
             "additionalProperties": false,
@@ -225,33 +223,6 @@
         "$ref": "#/$defs/dottedId"
       }
     },
-    "relations": {
-      "type": "object",
-      "properties": {
-        "uses": {
-          "$ref": "#/$defs/recordIdList"
-        },
-        "demonstrates": {
-          "$ref": "#/$defs/recordIdList"
-        },
-        "guides": {
-          "$ref": "#/$defs/recordIdList"
-        },
-        "implements": {
-          "$ref": "#/$defs/recordIdList"
-        },
-        "reviews": {
-          "$ref": "#/$defs/recordIdList"
-        },
-        "supersedes": {
-          "$ref": "#/$defs/recordIdList"
-        },
-        "related": {
-          "$ref": "#/$defs/recordIdList"
-        }
-      },
-      "additionalProperties": false
-    },
     "source": {
       "type": "object",
       "required": ["kind", "path"],
@@ -262,23 +233,6 @@
         },
         "path": {
           "$ref": "#/$defs/repositoryPath"
-        }
-      },
-      "additionalProperties": false
-    },
-    "check": {
-      "type": "object",
-      "required": ["id", "level", "requirement"],
-      "properties": {
-        "id": {
-          "$ref": "#/$defs/slug"
-        },
-        "level": {
-          "enum": ["error", "warning"]
-        },
-        "requirement": {
-          "type": "string",
-          "minLength": 1
         }
       },
       "additionalProperties": false
@@ -373,7 +327,7 @@
     "usageDo": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "situation"],
+      "required": ["situation"],
       "properties": {
         "id": {
           "$ref": "#/$defs/slug"
@@ -387,7 +341,7 @@
     "usageAvoid": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "situation"],
+      "required": ["situation"],
       "properties": {
         "id": {
           "$ref": "#/$defs/slug"
@@ -480,7 +434,7 @@
           "minLength": 1
         },
         "role": {
-          "enum": ["interactive-surface", "label", "indicator", "container"]
+          "enum": ["interactive-surface", "label", "description", "indicator", "container"]
         },
         "description": {
           "type": "string",

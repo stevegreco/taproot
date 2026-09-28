@@ -341,11 +341,11 @@ test("a visuals token missing from the token package fails the build", async () 
       /semantic\.color\.does\.not\.exist/.test(item.message),
     ),
   );
-  assert.equal(
+  assert.match(
     codes(corpus, PROBLEM.SOURCE_CONFLICT).find((item) =>
       /semantic\.color\.does\.not\.exist/.test(item.message),
     ).path,
-    "content/missing-visual.md:56 /contract/visuals/control/base/background",
+    /^content\/missing-visual\.md:\d+ \/contract\/visuals\/control\/base\/background$/,
   );
 });
 

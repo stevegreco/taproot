@@ -2,18 +2,11 @@ id: component.badge
 type: component
 title: Badge
 summary: Use Badge for status or metadata. It is not a control.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
-  - badge
   - status
   - metadata
-relations:
-  related:
-    - component.button
+related:
+  - component.button
 sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -21,19 +14,15 @@ contract:
   description: Labels status or metadata. Not a control.
   usage:
     do:
-      - id: status-or-metadata
-        situation: Display status, category, or supporting metadata.
+      - situation: Display status, category, or supporting metadata.
     avoid:
-      - id: trigger-action
-        situation: Trigger an action in the current view.
+      - situation: Trigger an action in the current view.
         instead: Button
         why: Badge is not interactive and does not communicate an available action.
-      - id: navigation
-        situation: Navigate to another location.
+      - situation: Navigate to another location.
         instead: Link
         why: Links provide native navigation semantics.
-      - id: live-status
-        situation: Announce a live status change by itself.
+      - situation: Announce a live status change by itself.
         instead: Host live-region semantics
         why: Badge sets no live-region role.
   content:

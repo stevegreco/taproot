@@ -140,12 +140,6 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.match(buttonMarkdown, /^- `click` for activate\. Not fired when effectively-disabled\.$/m);
   assert.match(buttonMarkdown, /## Example\n\n```html\n<ds-button variant="primary">/);
 
-  const reviewMarkdown = await readFile(
-    join(outDir, "public/markdown/guideline.button-review.md"),
-    "utf8",
-  );
-  assert.doesNotMatch(reviewMarkdown, /^checks:/m);
-
   const example = records.find((record) => record.id === "example.action-hierarchy.settings");
   const assetPath = example.assets[0].bundlePath;
   const svg = await readFile(join(outDir, "public", assetPath), "utf8");

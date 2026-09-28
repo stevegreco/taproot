@@ -28,7 +28,7 @@ test("emitted Markdown frontmatter is the exporter's identity keys only", async 
   }
 });
 
-test("parseRecord accepts emitted markdown and omits contract, web, and checks", async () => {
+test("parseRecord accepts emitted markdown and omits contract and web", async () => {
   const bundle = await publicBundle();
 
   const button = parseRecord(bundle.markdown.get("markdown/component.button.md"), {
@@ -37,13 +37,14 @@ test("parseRecord accepts emitted markdown and omits contract, web, and checks",
   assert.equal(button.id, "component.button");
   assert.equal(Object.hasOwn(button, "contract"), false);
   assert.equal(Object.hasOwn(button, "host"), false);
-  assert.equal(Object.hasOwn(button, "checks"), false);
 
-  const guideline = parseRecord(bundle.markdown.get("markdown/guideline.button-review.md"), {
-    sourcePath: "markdown/guideline.button-review.md",
-  });
-  assert.equal(guideline.id, "guideline.button-review");
-  assert.equal(Object.hasOwn(guideline, "checks"), false);
+  const guideline = parseRecord(
+    bundle.markdown.get("markdown/guideline.button-implementation.md"),
+    {
+      sourcePath: "markdown/guideline.button-implementation.md",
+    },
+  );
+  assert.equal(guideline.id, "guideline.button-implementation");
 
   assert.equal(Object.hasOwn(button, "web"), false);
 });

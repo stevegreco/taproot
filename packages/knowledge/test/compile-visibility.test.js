@@ -103,10 +103,10 @@ test("public bundle drops internal inbound edges", async () => {
   );
 
   const publicButton = publicRecords.find((record) => record.id === "component.button");
-  assert.equal((publicButton.backlinks.usedBy ?? []).includes("internal.uses-button"), false);
+  assert.equal((publicButton.backlinks.related ?? []).includes("internal.uses-button"), false);
 
   const internalButton = internalRecords.find((record) => record.id === "component.button");
-  assert.ok((internalButton.backlinks.usedBy ?? []).includes("internal.uses-button"));
+  assert.ok((internalButton.backlinks.related ?? []).includes("internal.uses-button"));
   assert.ok(internalRecords.some((record) => record.id === "internal.uses-button"));
   assert.equal(result.bundles[0].visibility, "public");
   assert.ok(result.bundles[0].recordCount < result.bundles[1].recordCount);
@@ -116,7 +116,7 @@ test("VISIBILITY_LEAK fires when a public record references an internal record",
   const reader = createMemoryReader({
     "content/leaky.md": recordMarkdown({
       id: "component.leaky",
-      relations: { uses: ["internal.secret"] },
+      related: ["internal.secret"],
       sources: [{ kind: "authored", path: "content/leaky.md" }],
     }),
     "internal/secret.md": recordMarkdown({

@@ -184,7 +184,7 @@ test("search index may list records in a different order", async () => {
 });
 
 test("dangling relation is bundle-inconsistent", async () => {
-  const records = [stubRecord("fixture.alpha", { relations: { uses: ["fixture.missing"] } })];
+  const records = [stubRecord("fixture.alpha", { relations: { related: ["fixture.missing"] } })];
   await assert.rejects(
     () =>
       openCatalog({
@@ -268,7 +268,7 @@ test("expectVisibility public rejects an internal fixture", async () => {
         id: "internal.secret",
         visibility: "internal",
         type: "guideline",
-        relations: { uses: ["component.alpha"] },
+        related: ["component.alpha"],
       }),
     },
     "internal",
@@ -325,7 +325,7 @@ for (const [field, value] of [
   ["schemaVersion", 99],
   ["compiledSchemaVersion", 99],
   ["sources", []],
-  ["relations", { uses: "fixture.alpha" }],
+  ["relations", { related: "fixture.alpha" }],
   ["unexpected", true],
 ]) {
   test(`retrieval validates compiled record shape: ${field}`, async () => {

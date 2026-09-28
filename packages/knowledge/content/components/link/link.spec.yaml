@@ -2,18 +2,11 @@ id: component.link
 type: component
 title: Link
 summary: Use Link to navigate to another page, a location on the page, or a resource.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
   - action
-  - link
   - navigation
-relations:
-  related:
-    - component.button
+related:
+  - component.button
 sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -21,19 +14,14 @@ contract:
   description: Navigates to another page, a location on the current page, or a resource.
   usage:
     do:
-      - id: navigate
-        situation: Navigate to another page or resource.
-      - id: in-page
-        situation: Move to a location on the current page.
-      - id: reference-in-text
-        situation: Point to related content from within a sentence.
+      - situation: Navigate to another page or resource.
+      - situation: Move to a location on the current page.
+      - situation: Point to related content from within a sentence.
     avoid:
-      - id: trigger-action
-        situation: Trigger an action or submit a form.
+      - situation: Trigger an action or submit a form.
         instead: Button
         why: Buttons provide action semantics and form behavior.
-      - id: status-or-metadata
-        situation: Display status or metadata.
+      - situation: Display status or metadata.
         instead: Badge
         why: Link communicates a destination.
   content:

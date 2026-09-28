@@ -78,7 +78,7 @@ test("search guideline is empty on the real slice because type is not indexed", 
   assert.deepEqual(catalog.search("guideline"), []);
 });
 
-test("compiled contract, web section, and checks are searchable", async () => {
+test("compiled contract and web section are searchable", async () => {
   const catalog = await openCatalog();
   const fullWidthIds = catalog.search("fullWidth").map((hit) => hit.record.id);
   const accessibleNameIds = catalog.search("accessibleName").map((hit) => hit.record.id);

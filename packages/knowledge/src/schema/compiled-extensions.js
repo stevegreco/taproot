@@ -4,6 +4,9 @@ export const COMPILED_SCHEMA_VERSION = 8;
 
 export const COMPILED_REQUIRED = Object.freeze([
   "schemaVersion",
+  "status",
+  "jobs",
+  "tags",
   "visibility",
   "relations",
   "sources",
@@ -15,6 +18,12 @@ export const COMPILED_REQUIRED = Object.freeze([
 
 export const COMPILED_PROPERTIES = Object.freeze({
   compiledSchemaVersion: { const: COMPILED_SCHEMA_VERSION },
+  relations: {
+    description: "The record's authored links. backlinks holds the links other records declare.",
+    type: "object",
+    additionalProperties: false,
+    properties: { related: { $ref: "#/$defs/recordIdList" } },
+  },
   backlinks: { $ref: "#/$defs/backlinks" },
   tokens: { $ref: "#/$defs/tokenContract" },
   bodyOrigin: { enum: ["authored", "generated"] },
@@ -55,12 +64,6 @@ export const COMPILED_DEFS = Object.freeze({
     type: "object",
     additionalProperties: false,
     properties: {
-      usedBy: { $ref: "#/$defs/recordIdList" },
-      demonstratedBy: { $ref: "#/$defs/recordIdList" },
-      guidedBy: { $ref: "#/$defs/recordIdList" },
-      implementedBy: { $ref: "#/$defs/recordIdList" },
-      reviewedBy: { $ref: "#/$defs/recordIdList" },
-      supersededBy: { $ref: "#/$defs/recordIdList" },
       related: { $ref: "#/$defs/recordIdList" },
     },
   },
