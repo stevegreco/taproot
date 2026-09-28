@@ -47,14 +47,13 @@ export function assembleRecord(authored, contribution, assets) {
 }
 
 /**
- * Authored tags plus the record's own name and the names of the records it relates to, so
- * `component.text-field` is found by "text-field" without an author writing it.
+ * Authored tags plus the record's own name, so `component.text-field` is found by "text-field"
+ * without an author writing it. Related records' names are left out: as tags they would rank a
+ * record for its neighbor's name.
  */
 function recordTags(authored) {
-  const names = [authored.id, ...(authored.related ?? [])].map((id) =>
-    id.slice(id.indexOf(".") + 1).replaceAll(".", "-"),
-  );
-  return [...new Set([...(authored.tags ?? []), ...names])].sort(byCodeUnit);
+  const name = authored.id.slice(authored.id.indexOf(".") + 1).replaceAll(".", "-");
+  return [...new Set([...(authored.tags ?? []), name])].sort(byCodeUnit);
 }
 
 /** A list of variants is shorthand for anchors named after each variant. */

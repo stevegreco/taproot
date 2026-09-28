@@ -8,6 +8,7 @@ import { createWorkspaceReader } from "./reader.js";
 import { PROBLEM, problem } from "./tables.js";
 
 export { createWorkspaceReader } from "./reader.js";
+export { cssVariable } from "./generate-body.js";
 export {
   CHANNEL_CSS,
   compileContractVisuals,
@@ -56,7 +57,7 @@ export async function compile(options) {
     const knowledgeVersion = await readPackageVersion(
       join(workspaceRoot, "packages/knowledge/package.json"),
     );
-    const designSystemVersion = await readPackageVersion(
+    const { version: designSystemVersion, name: designSystemPackage } = await readPackage(
       join(workspaceRoot, "packages/tokens/package.json"),
     );
     const revision = options.revision !== undefined ? options.revision : gitRevision(workspaceRoot);
@@ -74,7 +75,13 @@ export async function compile(options) {
 
     const reader = createWorkspaceReader(workspaceRoot);
     const corpus = await buildCorpus(reader, roots, { workspaceRoot });
-    const meta = { knowledgeVersion, designSystemVersion, buildTime, revision };
+    const meta = {
+      knowledgeVersion,
+      designSystemVersion,
+      designSystemPackage,
+      buildTime,
+      revision,
+    };
     const publicBundle = projectBundle(corpus, "public", meta);
     const internalBundle = options.internalContent
       ? projectBundle(corpus, "internal", meta)
@@ -117,9 +124,12 @@ export async function compile(options) {
 }
 
 async function readPackageVersion(packageJsonPath) {
+  return (await readPackage(packageJsonPath)).version;
+}
+
+async function readPackage(packageJsonPath) {
   try {
-    const raw = JSON.parse(await readFile(packageJsonPath, "utf8"));
-    return raw.version;
+    return JSON.parse(await readFile(packageJsonPath, "utf8"));
   } catch (error) {
     throw new KnowledgeCompileError([
       problem({

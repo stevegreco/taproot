@@ -1,25 +1,7 @@
-import { flatten } from "@stevegreco/design-system/flatten";
 import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 
-/** Resolve a mapping token name through the published flatten() kebab-case rule. */
-export function cssVariableFromTokenName(name) {
-  const tree = {};
-  let cursor = tree;
-  const parts = name.split(".");
-  for (const [index, part] of parts.entries()) {
-    if (index === parts.length - 1) {
-      cursor[part] = "";
-      continue;
-    }
-    cursor[part] = {};
-    cursor = cursor[part];
-  }
-  const [token] = flatten(tree);
-  if (!token?.cssVariable) {
-    throw new Error(`flatten() produced no CSS variable for ${name}`);
-  }
-  return token.cssVariable;
-}
+/** The CSS variable for a mapping token name, by the token package's flatten() rule. */
+export { cssVariable as cssVariableFromTokenName } from "@stevegreco/design-system-knowledge/compile";
 
 /** Every token CSS variable a stylesheet reads with var(). */
 export function tokenVariables(styles) {

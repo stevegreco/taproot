@@ -149,20 +149,6 @@ const SECTIONS: readonly ComponentKnowledgeSection[] = [
   "accessibility",
   "review",
 ];
-function resolvePublicRoot(): string {
-  try {
-    return dirname(
-      assertSpecifier(
-        "@stevegreco/design-system-knowledge/manifest",
-        "@stevegreco/design-system-knowledge",
-      ),
-    );
-  } catch (error) {
-    if (error instanceof DocsKnowledgeError) throw error;
-    throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
-  }
-}
-
 function assetPublicDir(): string {
   return fileURLToPath(new URL("../public/knowledge-assets/", import.meta.url));
 }
@@ -807,18 +793,36 @@ function deepFreeze<T>(value: T): T {
   return Object.freeze(value);
 }
 
+/**
+ * The package's public bundle directory. Astro bundles this module, so the loader's own
+ * default location does not survive; resolve the package export instead.
+ */
+function resolvePublicRoot(): string {
+  try {
+    return dirname(
+      assertSpecifier(
+        "@stevegreco/design-system-knowledge/manifest",
+        "@stevegreco/design-system-knowledge",
+      ),
+    );
+  } catch (error) {
+    if (error instanceof DocsKnowledgeError) throw error;
+    throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
+  }
+}
+
 async function assembleDocsKnowledge(): Promise<ReadonlyMap<string, ComponentSlice>> {
-  const publicRoot = resolvePublicRoot();
   let catalog: Catalog;
   try {
-    catalog = await openCatalog(publicRoot, { expectVisibility: "public" });
+    catalog = await openCatalog(resolvePublicRoot(), { expectVisibility: "public" });
   } catch (error) {
     if (error instanceof DocsKnowledgeError) throw error;
     throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
   }
 
   try {
-    await stageAssets(publicRoot, catalog.info.digest);
+    if (!catalog.info.root) throw new Error("the knowledge catalog has no bundle directory");
+    await stageAssets(catalog.info.root, catalog.info.digest);
   } catch (error) {
     throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
   }

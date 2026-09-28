@@ -154,6 +154,22 @@ The executable schema, authored Markdown parser, and knowledge compiler validate
 - [`bindings/`](../../packages/knowledge/content/bindings/) holds host bindings such as `<name>.web-component.md`.
 - [`guidelines/`](../../packages/knowledge/content/guidelines/), [`patterns/`](../../packages/knowledge/content/patterns/), and [`examples/`](../../packages/knowledge/content/examples/) hold the narrative records.
 
+## Proposing a change
+
+The [Compose or propose](../../packages/knowledge/content/guidelines/compose-or-propose.md)
+guideline tells adopters when to compose and when to ask for a change. Inside this repository:
+
+- A new component follows [new-component.md](new-component.md). Its spec has a `contract` with
+  explicit `visuals`, shaped like the existing specs. Checkbox is the most complete one to copy.
+- A change to how the system works gets an RFC in `docs/rfcs/` before any code: a component that
+  owns focus management, an overlay, or a composite keyboard model; a change to the record or
+  contract shape; a new token tier or semantic role category; or a change that would supersede an
+  accepted ADR. An accepted RFC becomes an ADR, and the ADR updates the requirements and content
+  model it changes.
+- This is a personal system. An RFC is one Markdown document that states the problem, the
+  evidence, and the proposed change. It needs no review board or sign-off beyond its author. The
+  RFC step exists to force the design question before the implementation, not to add ceremony.
+
 ## Working agreement
 
 - Keep durable requirements and decisions in this repository.

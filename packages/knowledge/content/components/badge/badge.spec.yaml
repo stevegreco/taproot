@@ -23,7 +23,7 @@ contract:
         instead: Link
         why: Links provide native navigation semantics.
       - situation: Announce a live status change by itself.
-        instead: Host live-region semantics
+        instead: a live region in the surrounding page
         why: Badge sets no live-region role.
   content:
     - id: keep-label-short
@@ -139,4 +139,4 @@ web:
   example: |
     <ds-badge variant="success">Active</ds-badge>
   notes: |
-    The host honors the native `hidden` attribute; that is not a contract parameter.
+    The element honors the native `hidden` attribute.

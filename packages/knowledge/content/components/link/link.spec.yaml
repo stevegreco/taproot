@@ -167,7 +167,7 @@ web:
     - decision: Content always includes text.
       rationale: Link text is the accessible name. There is no accessibleName parameter, so an icon-only link would be announced as just "link".
   notes: |
-    The host honors the native `hidden` attribute; that is not a contract parameter.
+    The element honors the native `hidden` attribute.
 
     The host is `display: inline`, so an inline link wraps with the text around it. `href` is mirrored
     onto the inner anchor; removing it removes the anchor's `href`, which drops link semantics and

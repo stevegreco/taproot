@@ -4,6 +4,24 @@ const STOPWORDS = Object.freeze(
     "an",
     "and",
     "are",
+    "can",
+    "do",
+    "does",
+    "how",
+    "i",
+    "me",
+    "my",
+    "should",
+    "use",
+    "we",
+    "what",
+    "when",
+    "where",
+    "which",
+    "who",
+    "why",
+    "you",
+    "your",
     "as",
     "at",
     "be",
@@ -75,17 +93,37 @@ export function collectSearchText(record) {
 }
 
 /**
- * Split on any run of characters outside `[a-z0-9]`. Accented and non-Latin
- * letters become separators, so `café` indexes as `caf`. That is an
- * English-only design-system choice, not an oversight.
+ * Split on any run of characters outside `[a-z0-9]`, then reduce each word to a light stem so
+ * plurals and -ing forms match: `buttons` and `button`, `loading` and `load`. A hyphenated word
+ * such as `ds-button` or `text-field` also indexes whole and joined (`textfield`), so a query for
+ * the tag or the camel-cased name ranks the record that has it. Accented and non-Latin letters
+ * become separators, so `café` indexes as `caf`. That is an English-only design-system choice.
  */
 export function tokenize(text) {
-  return new Set(
-    text
-      .toLowerCase()
-      .split(/[^a-z0-9]+/u)
-      .filter((term) => term.length >= 2 && !STOPWORDS.has(term)),
-  );
+  const terms = new Set();
+  for (const word of text.toLowerCase().split(/[^a-z0-9-]+/u)) {
+    const parts = word.split("-").filter(Boolean);
+    if (parts.length > 1) {
+      terms.add(parts.join("-"));
+      terms.add(parts.join(""));
+    }
+    for (const part of parts) terms.add(stem(part));
+  }
+  for (const term of terms) {
+    if (term.length < 2 || STOPWORDS.has(term)) terms.delete(term);
+  }
+  return terms;
+}
+
+/** Strip common English plural and -ing endings, keeping at least a four-letter stem. */
+function stem(word) {
+  if (word.length > 4 && word.endsWith("ies")) return `${word.slice(0, -3)}y`;
+  if (word.length > 6 && word.endsWith("ing")) return word.slice(0, -3);
+  if (word.length > 4 && /(?:ch|sh|x|z|ss)es$/.test(word)) return word.slice(0, -2);
+  if (word.length > 3 && word.endsWith("s") && !/(?:ss|us|is)$/.test(word)) {
+    return word.slice(0, -1);
+  }
+  return word;
 }
 
 /**

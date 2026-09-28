@@ -132,12 +132,27 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.match(buttonMarkdown, /^ {2}- `danger`: Destructive or difficult-to-reverse action\.$/m);
   assert.match(
     buttonMarkdown,
-    /^\| control \| background \| variant=danger, hover \| `component\.button\.danger\.background\.hover` \|$/m,
+    /^\| control \| background \| variant=danger, hover \| `component\.button\.danger\.background\.hover` \| `background-color: var\(--component-button-danger-background-hover\)` \|$/m,
   );
   assert.doesNotMatch(buttonMarkdown, /^web:/m);
-  assert.match(buttonMarkdown, /^- Tag: `<ds-button>`$/m);
+  // The file alone says how to install, register, and use the element.
+  assert.match(buttonMarkdown, /^import "@stevegreco\/design-system\/css";$/m);
+  assert.match(
+    buttonMarkdown,
+    /^import \{ defineButton \} from "@stevegreco\/design-system-components\/button";$/m,
+  );
+  assert.match(buttonMarkdown, /^defineButton\(\); \/\/ registers <ds-button>$/m);
   assert.match(buttonMarkdown, /^\| action \| `type` \| `type` \| activate → `button`/m);
-  assert.match(buttonMarkdown, /^- `click` for activate\. Not fired when effectively-disabled\.$/m);
+  assert.match(
+    buttonMarkdown,
+    /^- `click` for activate\. Not fired while disabled, including inside a disabled fieldset\.$/m,
+  );
+  assert.match(buttonMarkdown, /^- The default slot holds `content` and is required\./m);
+  assert.match(buttonMarkdown, /^- `::part\(button\)`: The inner native button control\.$/m);
+  assert.match(
+    buttonMarkdown,
+    /^- \[Action hierarchy\]\(pattern\.action-hierarchy\.md\) \(pattern\)$/m,
+  );
   assert.match(buttonMarkdown, /## Example\n\n```html\n<ds-button variant="primary">/);
 
   const example = records.find((record) => record.id === "example.action-hierarchy.settings");

@@ -1,3 +1,4 @@
+import { contentDigest } from "../../src/compile/digest.js";
 import { COMPILED_SCHEMA_VERSION } from "../../src/schema/compiled-extensions.js";
 import { buildCorpus } from "../../src/compile/corpus.js";
 import { projectBundle } from "../../src/compile/bundle.js";
@@ -51,21 +52,22 @@ export function stubRecord(id, fields = {}) {
 }
 
 export function stubManifest(recordCount, files = []) {
+  const content = {
+    schemaVersion: 1,
+    compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
+    visibility: "public",
+    knowledgeVersion: META.knowledgeVersion,
+    designSystemVersion: META.designSystemVersion,
+    recordCount,
+    files,
+  };
   return {
-    content: {
-      schemaVersion: 1,
-      compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
-      visibility: "public",
-      knowledgeVersion: META.knowledgeVersion,
-      designSystemVersion: META.designSystemVersion,
-      recordCount,
-      files,
-    },
+    content,
     build: {
       time: META.buildTime.toISOString(),
       revision: META.revision,
     },
-    digest: "sha256:test",
+    digest: contentDigest(content),
   };
 }
 
