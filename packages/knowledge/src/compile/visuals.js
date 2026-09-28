@@ -27,6 +27,7 @@ const REST_STATE = "default";
 const MOTION_SHORTHAND = "transition";
 const MOTION_CLEARED = Object.freeze(["transition-duration", "transition-timing-function"]);
 const BOOLEAN_CONFIGURATION_VALUES = Object.freeze(["true", "false"]);
+const GENERATED_FIELDS = Object.freeze(["mappings", "visualCoverage"]);
 
 /**
  * Expand compact `visuals` into compiled `mappings` and drop the authored source.
@@ -36,33 +37,24 @@ export function compileContractVisuals(contract, recordId) {
   if (!contract) return { contract, problems: [] };
 
   const hasVisuals = Object.hasOwn(contract, "visuals");
-  const hasMappings = Object.hasOwn(contract, "mappings");
-  if (
-    !hasVisuals &&
-    !Object.hasOwn(contract, "stateResolution") &&
-    !Object.hasOwn(contract, "visualCoverage")
-  ) {
+  const generated = GENERATED_FIELDS.filter((field) => Object.hasOwn(contract, field));
+  if (!hasVisuals && !Object.hasOwn(contract, "stateResolution") && generated.length === 0) {
     return { contract, problems: [] };
   }
 
   const next = structuredClone(contract);
   const problems = [];
 
-  if (hasVisuals && hasMappings) {
-    problems.push(
-      conflict(recordId, "/contract/visuals", "contract cannot author both visuals and mappings"),
-    );
-  }
-
-  if (Object.hasOwn(next, "visualCoverage")) {
+  // `visuals` is the only authored form of token mappings.
+  for (const field of generated) {
     problems.push(
       conflict(
         recordId,
-        "/contract/visualCoverage",
-        "visualCoverage is generated from visuals and cannot be authored",
+        `/contract/${field}`,
+        `${field} is generated from visuals and cannot be authored`,
       ),
     );
-    delete next.visualCoverage;
+    delete next[field];
   }
 
   problems.push(...stateResolutionProblems(next, recordId));
@@ -72,6 +64,7 @@ export function compileContractVisuals(contract, recordId) {
     problems.push(...expanded.problems);
     next.mappings = expanded.mappings;
     next.visualCoverage = buildVisualCoverage(next);
+    problems.push(...missingValueWarnings(next.visualCoverage, recordId));
     delete next.visuals;
   }
 
@@ -697,7 +690,8 @@ function isMoreSpecific(left, right) {
   return Object.keys(specific).length > generalKeys.length;
 }
 
-function configurationValues(key, parameters, configurationAxes) {
+/** Values a configuration key may take, or null when it names no parameter or axis. */
+export function configurationValues(key, parameters, configurationAxes) {
   if (Object.hasOwn(configurationAxes, key)) {
     return new Set(configurationAxes[key].values ?? []);
   }
@@ -722,7 +716,8 @@ function sortMappings(mappings) {
   });
 }
 
-function mappingIdentity(mapping) {
+/** Rows with the same part, channel, configuration, and state must name the same token. */
+export function mappingIdentity(mapping) {
   return `${mapping.part}\0${mapping.channel}\0${serializeConfiguration(mapping.configuration)}\0${mapping.state ?? ""}`;
 }
 
@@ -756,4 +751,21 @@ function conflict(recordId, path, message) {
     recordId,
     path,
   });
+}
+
+/** A new axis value with no visuals compiles, but should not do so silently. */
+function missingValueWarnings(coverage, recordId) {
+  return Object.entries(coverage.parts ?? {}).flatMap(([part, { missingValues }]) =>
+    Object.entries(missingValues ?? {}).flatMap(([axis, values]) =>
+      values.map((value) =>
+        problem({
+          code: PROBLEM.VISUAL_MISSING_VALUE,
+          message: `${recordId} part ${part} has visuals for ${axis} but none for ${axis}=${value}`,
+          recordId,
+          path: `/contract/visuals/${part}/${axis}`,
+          severity: "warning",
+        }),
+      ),
+    ),
+  );
 }

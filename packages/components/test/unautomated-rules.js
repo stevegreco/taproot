@@ -6,15 +6,13 @@
  */
 export const unautomatedRules = Object.freeze({
   "component.badge": {
-    "text-communicates-state":
+    "a11y-text-communicates-state":
       "The badge renders the text it is given. Whether that text names the state is an authoring review.",
-    "surrounding-ui-announces":
+    "a11y-surrounding-ui-announces":
       "Announcing a change is the consuming UI's job, so there is nothing in Badge to test.",
   },
   "component.button": {
-    "label-describes-action":
-      "The label is authored content. Whether it describes the action is an authoring review.",
-    "meaning-not-color-alone":
+    "a11y-not-color-alone":
       "Button always renders its label. Whether the label alone carries the meaning is an authoring review.",
   },
   "component.link": {

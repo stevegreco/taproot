@@ -164,94 +164,6 @@ test("Badge composes authored contract and ADR 0003 without a token contract", a
   );
 });
 
-test("an extra contract size compiles without editing compiler constants", async () => {
-  const componentPath = "content/size.md";
-  const reader = createMemoryReader({
-    [componentPath]: recordMarkdown({
-      id: "component.size-extra",
-      sources: [
-        { kind: "authored", path: componentPath },
-        { kind: "token-source", path: "packages/tokens/size.json" },
-      ],
-      contract: portableContract({
-        description: "Extra contract size.",
-        anatomy: [
-          { name: "control", role: "interactive-surface", description: "Interactive control." },
-        ],
-        parameters: {
-          variant: { kind: "enum", values: { primary: "Primary." } },
-          size: { kind: "enum", values: { sm: "Small.", md: "Medium.", lg: "Large." } },
-        },
-        mappings: [
-          {
-            part: "control",
-            channel: "padding-inline",
-            configuration: { size: "lg" },
-            token: { name: "component.size.size.large.paddingInline" },
-          },
-        ],
-      }),
-      tokenRef: {
-        tier: "component",
-        namespace: "component.size",
-        description: "Size tokens.",
-      },
-    }),
-    "packages/tokens/size.json": JSON.stringify({
-      component: {
-        size: {
-          primary: {
-            background: { default: { $value: "#000", $type: "color" } },
-          },
-          size: {
-            large: { paddingInline: { $value: "24px", $type: "dimension" } },
-          },
-        },
-      },
-    }),
-  });
-
-  const corpus = await buildCorpus(reader, [{ root: "content", visibility: "public" }]);
-  assert.equal(
-    corpus.problems.filter((item) => item.severity === "error").length,
-    0,
-    JSON.stringify(corpus.problems, null, 2),
-  );
-  const record = corpus.records.get("component.size-extra");
-  assert.equal(record.contract.parameters.size.values.lg, "Large.");
-  assert.equal(record.contract.mappings[0].token.name, "component.size.size.large.paddingInline");
-});
-
-test("a mapped token missing from the token package fails the build", async () => {
-  const componentPath = "content/missing-token.md";
-  const reader = createMemoryReader({
-    [componentPath]: recordMarkdown({
-      id: "component.missing-token",
-      sources: [{ kind: "authored", path: componentPath }],
-      contract: portableContract({
-        description: "Missing mapped token.",
-        anatomy: [{ name: "surface", role: "indicator", description: "Surface." }],
-        mappings: [
-          {
-            part: "surface",
-            channel: "background",
-            token: { name: "semantic.color.does.not.exist" },
-          },
-        ],
-      }),
-    }),
-  });
-
-  const corpus = await buildCorpus(reader, [{ root: "content", visibility: "public" }], {
-    workspaceRoot: repoRoot,
-  });
-  assert.ok(
-    codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) =>
-      /semantic\.color\.does\.not\.exist/.test(item.message),
-    ),
-  );
-});
-
 test("link rewriting leaves fenced code alone and rewrites Markdown links", async () => {
   const path = "content/with-link.md";
   const target = "content/target.md";
@@ -309,13 +221,7 @@ test("a new tokens.json file is in the catalog without a compiler table", async 
       sources: [{ kind: "authored", path: componentPath }],
       contract: portableContract({
         anatomy: [{ name: "surface", role: "indicator", description: "Surface." }],
-        mappings: [
-          {
-            part: "surface",
-            channel: "background",
-            token: { name: "component.extra.background" },
-          },
-        ],
+        visuals: { surface: { base: { background: "component.extra.background" } } },
       }),
     }),
   );

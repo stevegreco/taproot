@@ -2,6 +2,11 @@
 
 Design tokens for the Ember & Sage design system — distributed as CSS custom properties and JSON. Built with [Style Dictionary](https://styledictionary.com).
 
+This repository also holds the component source of truth in
+[`packages/knowledge`](packages/knowledge/README.md), the web components in
+[`packages/components`](packages/components/README.md), and the documentation site in
+`apps/documentation`.
+
 ## Install
 
 ```bash

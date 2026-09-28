@@ -22,11 +22,13 @@ export async function hostElements() {
       className: host.export,
       defineExport: host.registration.export,
       supportsAliases: host.registration.supportsAliases,
+      events: [...new Set(Object.values(host.events ?? {}).map((entry) => entry.event))],
       focusPart: host.focus ? (host.anatomy[host.focus.forwardsTo]?.part ?? null) : null,
       ruleIds: [...(contract.behavior ?? []), ...(contract.accessibility?.requirements ?? [])].map(
         (rule) => rule.id,
       ),
       properties: sampleProperties(contract.parameters ?? {}, host.parameters ?? {}),
+      enums: enumProperties(contract.parameters ?? {}, host.parameters ?? {}),
     };
   });
 }
@@ -45,4 +47,19 @@ function sampleProperties(parameters, mapped) {
     } else samples[property] = `sample ${name}`;
   }
   return samples;
+}
+
+/** Each mapped enum property with its host values and default, as its getter should return them. */
+function enumProperties(parameters, mapped) {
+  return Object.entries(parameters)
+    .filter(([name, parameter]) => parameter.kind === "enum" && mapped[name]?.property)
+    .map(([name, parameter]) => {
+      const hostValue = (value) => mapped[name].values?.[value] ?? value;
+      return {
+        attribute: mapped[name].attribute,
+        property: mapped[name].property,
+        values: Object.keys(parameter.values).map(hostValue),
+        default: hostValue(parameter.default),
+      };
+    });
 }

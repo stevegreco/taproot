@@ -1,4 +1,5 @@
 import { PROBLEM, problem } from "./tables.js";
+import { configurationValues, mappingIdentity } from "./visuals.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
 
@@ -23,7 +24,8 @@ export function assembleRecord(authored, contribution, assets) {
 
   if (authored.checks) record.checks = authored.checks;
   if (authored.docsSections) record.docsSections = authored.docsSections;
-  if (authored.variantGuidance) record.variantGuidance = authored.variantGuidance;
+  if (authored.variantGuidance)
+    record.variantGuidance = expandVariantGuidance(authored.variantGuidance);
   if (assets.length > 0) record.assets = assets;
   if (authored.annotations) record.annotations = authored.annotations;
   if (authored.contract) record.contract = authored.contract;
@@ -32,6 +34,83 @@ export function assembleRecord(authored, contribution, assets) {
   if (contribution.fields.tokens) record.tokens = contribution.fields.tokens;
 
   return record;
+}
+
+/** A list of variants is shorthand for anchors named after each variant. */
+function expandVariantGuidance(guidance) {
+  return Object.fromEntries(
+    Object.entries(guidance).map(([id, variants]) => [
+      id,
+      Array.isArray(variants)
+        ? Object.fromEntries(variants.map((variant) => [variant, variant]))
+        : variants,
+    ]),
+  );
+}
+
+/**
+ * Each pattern's variantGuidance must name a component the pattern guides, a
+ * variant that component's contract has, and a `###` heading with text in the
+ * pattern body. A variant takes guidance from at most one pattern.
+ */
+export function checkVariantGuidance(records) {
+  const problems = [];
+  const guidedBy = new Map();
+  for (const record of records.values()) {
+    if (!record.variantGuidance) continue;
+    const report = (message) =>
+      problems.push(
+        problem({
+          code: PROBLEM.VARIANT_GUIDANCE_INVALID,
+          message: `${record.id} variantGuidance ${message}`,
+          recordId: record.id,
+          path: "/variantGuidance",
+        }),
+      );
+    const anchors = subsectionAnchors(record.body ?? "");
+    for (const [id, variants] of Object.entries(record.variantGuidance)) {
+      if (!(record.relations?.guides ?? []).includes(id)) {
+        report(`names ${id}, which the pattern does not guide`);
+        continue;
+      }
+      const values = records.get(id)?.contract?.parameters?.variant?.values ?? {};
+      for (const [variant, anchor] of Object.entries(variants)) {
+        if (!Object.hasOwn(values, variant)) {
+          report(`names ${id} variant ${variant}, which its contract does not have`);
+        }
+        if (!anchors.has(anchor)) {
+          report(`${id}.${variant} names #${anchor}, but no ### heading with text has that anchor`);
+        }
+        const key = `${id} ${variant}`;
+        if (guidedBy.has(key)) {
+          report(`guides ${id} variant ${variant}, which ${guidedBy.get(key)} already guides`);
+        }
+        guidedBy.set(key, record.id);
+      }
+    }
+  }
+  return problems;
+}
+
+/** Anchors of `###` headings followed by text, using the docs site's heading anchor rule. */
+function subsectionAnchors(body) {
+  const anchors = new Set();
+  const matches = [...body.matchAll(/^###\s+(.+)$/gm)];
+  for (const [index, match] of matches.entries()) {
+    const end = matches[index + 1]?.index ?? body.length;
+    let text = body.slice(match.index + match[0].length, end);
+    const cut = text.search(/^##\s+/m);
+    if (cut !== -1) text = text.slice(0, cut);
+    if (text.trim().length === 0) continue;
+    anchors.add(
+      match[1]
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, ""),
+    );
+  }
+  return anchors;
 }
 
 /**
@@ -101,7 +180,7 @@ function kebabCase(name) {
   return name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 }
 
-export function checkBindingAgreement(records) {
+export function checkBindingAgreement(records, invalidIds = new Set()) {
   const problems = [];
 
   for (const record of records.values()) {
@@ -119,6 +198,7 @@ export function checkBindingAgreement(records) {
       continue;
     }
 
+    if (invalidIds.has(implementsIds[0])) continue;
     const target = records.get(implementsIds[0]);
     if (!target || target.type !== "component" || !target.contract) {
       problems.push(
@@ -216,8 +296,6 @@ function bijectionProblems(recordId, label, expected, actual) {
   }
   return problems;
 }
-
-const BOOLEAN_CONFIGURATION_VALUES = Object.freeze(["true", "false"]);
 
 export function checkSourceAgreement(record, tokenNames = null) {
   const problems = [];
@@ -338,32 +416,6 @@ export function checkMappingAgreement(record, tokenNames = null) {
   }
 
   return problems;
-}
-
-function configurationValues(key, parameters, configurationAxes) {
-  if (Object.hasOwn(configurationAxes, key)) {
-    return new Set(configurationAxes[key].values ?? []);
-  }
-  const parameter = parameters[key];
-  if (!parameter) return null;
-  if (parameter.kind === "enum") {
-    return new Set(Object.keys(parameter.values ?? {}));
-  }
-  if (parameter.kind === "boolean") {
-    return new Set(BOOLEAN_CONFIGURATION_VALUES);
-  }
-  if (parameter.kind === "string") {
-    return { has: () => true };
-  }
-  return null;
-}
-
-function mappingIdentity(mapping) {
-  const configuration = Object.entries(mapping.configuration ?? {})
-    .sort(([left], [right]) => left.localeCompare(right))
-    .map(([key, value]) => `${key}=${value}`)
-    .join(",");
-  return `${mapping.part}\0${mapping.channel}\0${configuration}\0${mapping.state ?? ""}`;
 }
 
 function tokenIdentity(token) {

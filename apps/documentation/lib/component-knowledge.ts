@@ -1,7 +1,7 @@
 import { access, cp, mkdir, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
+import { formatAvoid, formatRule, openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 import { assertSpecifier } from "./workspace-builds";
 
 export type ComponentSlug = string;
@@ -291,9 +291,10 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
     }
     case "api":
       return markdownTable(
-        ["Name", "Type", "Default", "Description"],
+        ["Name", "Kind", "Type", "Default", "Description"],
         slice.api.map((row) => [
           row.name,
+          row.kind,
           row.typeDisplay,
           row.defaultDisplay ?? "",
           apiDescription(row),
@@ -316,7 +317,10 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
     }
     case "review":
       if (!slice.review) return "";
-      return slice.review.checks.map((check) => `- ${check.requirement}`).join("\n");
+      return [
+        `### ${slice.review.title}`,
+        slice.review.checks.map((check) => `- ${check.requirement}`).join("\n"),
+      ].join("\n\n");
   }
 }
 
@@ -419,54 +423,21 @@ function subsectionsByAnchor(body: string): Map<string, string> {
  * Variant guidance a component opts into. A pattern's `variantGuidance` maps a
  * component ID to its variant values, each naming a `###` subsection of the
  * pattern body by anchor. A pattern without an entry for the component
- * contributes nothing, whatever its headings are called.
+ * contributes nothing, whatever its headings are called. The knowledge compile
+ * rejects anchors, variants, and components that do not exist.
  */
 export function variantGuidance(
   id: string,
-  parameters: Record<string, unknown>,
   patterns: readonly Record<string, unknown>[],
 ): Map<string, string> {
   const guidance = new Map<string, string>();
-  const values =
-    isObject(parameters.variant) && isObject(parameters.variant.values)
-      ? parameters.variant.values
-      : {};
   for (const pattern of patterns) {
-    const patternId = asString(pattern.id);
     const declared = isObject(pattern.variantGuidance) ? pattern.variantGuidance[id] : undefined;
-    if (declared === undefined) continue;
-    if (!isObject(declared)) {
-      fail("malformed-contract", `${patternId} variantGuidance.${id} must map variants to anchors`);
-    }
-    const guides = isObject(pattern.relations) ? pattern.relations.guides : undefined;
-    if (!Array.isArray(guides) || !guides.includes(id)) {
-      fail(
-        "malformed-contract",
-        `${patternId} variantGuidance names ${id}, which it does not guide`,
-      );
-    }
+    if (!isObject(declared)) continue;
     const subsections = subsectionsByAnchor(asString(pattern.body));
     for (const [variant, anchor] of Object.entries(declared)) {
-      if (!Object.hasOwn(values, variant)) {
-        fail(
-          "malformed-contract",
-          `${patternId} variantGuidance names ${id} variant ${variant}, which its contract does not have`,
-        );
-      }
       const text = subsections.get(asString(anchor));
-      if (!text) {
-        fail(
-          "malformed-contract",
-          `${patternId} variantGuidance.${id}.${variant} names #${asString(anchor)}, but no ### heading with text has that anchor`,
-        );
-      }
-      if (guidance.has(variant)) {
-        fail(
-          "unexpected-slice",
-          `${id} variant ${variant} has guidance from more than one pattern`,
-        );
-      }
-      guidance.set(variant, text);
+      if (text) guidance.set(variant, text);
     }
   }
   return guidance;
@@ -710,58 +681,17 @@ function projectIntro(
   const contract = isObject(record.contract) ? record.contract : {};
   const introParts = [asString(contract.description)];
   const usage = isObject(contract.usage) ? contract.usage : {};
-  const avoid = Array.isArray(usage.avoid) ? usage.avoid : [];
-  const avoidLines: string[] = [];
-  for (const item of avoid) {
-    if (!isObject(item)) continue;
-    const situation = asString(item.situation);
-    const instead = asString(item.instead);
-    const why = asString(item.why);
-    const line = [situation, instead ? `Use ${instead} instead.` : "", why]
-      .filter((part) => part.length > 0)
-      .join(" ");
-    if (line.length > 0) avoidLines.push(`- ${line}`);
-  }
+  const avoid = Array.isArray(usage.avoid) ? usage.avoid.filter(isObject) : [];
+  const avoidLines = avoid.map((item) => formatAvoid(item));
   if (avoidLines.length > 0) {
     introParts.push(`### When to avoid\n\n${avoidLines.join("\n")}`);
   }
 
-  const contentRules = Array.isArray(contract.content) ? contract.content : [];
-  const contentBlocks = contentRules.flatMap((rule) => {
-    if (!isObject(rule)) return [];
-    const level = asString(rule.level);
-    const statement = asString(rule.statement);
-    const lines = [level ? `- **${level}:** ${statement}` : `- ${statement}`];
-    if (typeof rule.applicability === "string" && rule.applicability.length > 0) {
-      lines.push(`Applies when: ${rule.applicability}`);
-    }
-    if (typeof rule.rationale === "string" && rule.rationale.length > 0) {
-      lines.push(`Why: ${rule.rationale}`);
-    }
-    const references = Array.isArray(rule.references) ? rule.references : [];
-    for (const reference of references) {
-      if (!isObject(reference)) continue;
-      const id = asString(reference.id);
-      if (!id) continue;
-      const fragment = asString(reference.fragment);
-      const hash = fragment ? `#${fragment}` : "";
-      const label = id === "pattern.action-hierarchy" ? "action hierarchy pattern" : id;
-      lines.push(`See [${label}](markdown/${id}.md${hash}).`);
-    }
-    const examples = isObject(rule.examples) ? rule.examples : {};
-    const doExamples = Array.isArray(examples.do)
-      ? examples.do.filter((example): example is string => typeof example === "string")
-      : [];
-    const avoidExamples = Array.isArray(examples.avoid)
-      ? examples.avoid.filter((example): example is string => typeof example === "string")
-      : [];
-    if (doExamples.length > 0) lines.push(`Do: ${doExamples.join("; ")}.`);
-    if (avoidExamples.length > 0) lines.push(`Avoid: ${avoidExamples.join("; ")}.`);
-    return [lines.join("\n")];
-  });
+  const contentRules = Array.isArray(contract.content) ? contract.content.filter(isObject) : [];
+  const contentLines = contentRules.flatMap((rule) => formatRule(rule));
   const label =
-    contentBlocks.length > 0
-      ? rewriteBundleUrls(`### Write the label\n\n${contentBlocks.join("\n\n")}`, digest)
+    contentLines.length > 0
+      ? rewriteBundleUrls(`### Write the label\n\n${contentLines.join("\n")}`, digest)
       : "";
   const behavior = behaviorSection
     ? `### ${behaviorSection.heading}\n\n${rewriteBundleUrls(behaviorSection.markdown, digest)}`
@@ -857,11 +787,15 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
           );
         }
         behaviorSection = { heading, markdown: section };
+      } else if (guides(related, id)) {
+        console.warn(
+          `${asString(related.id)} guides ${id} but has no checks or docsSections.behavior, so the ${slug} page does not show it`,
+        );
       }
     }
   }
 
-  const variants = projectVariants(tagName, parameters, variantGuidance(id, parameters, patterns));
+  const variants = projectVariants(tagName, parameters, variantGuidance(id, patterns));
   const { introMarkdown, behaviorMarkdown } = projectIntro(record, behaviorSection, digest);
 
   const together = projectTogether(patterns, example);
@@ -883,6 +817,11 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     together,
     review,
   };
+}
+
+function guides(record: Record<string, unknown>, id: string): boolean {
+  const targets = isObject(record.relations) ? record.relations.guides : undefined;
+  return Array.isArray(targets) && targets.includes(id);
 }
 
 function deepFreeze<T>(value: T): T {

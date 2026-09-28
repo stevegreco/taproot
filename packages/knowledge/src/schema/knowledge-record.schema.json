@@ -88,9 +88,19 @@
             "minProperties": 1,
             "propertyNames": { "$ref": "#/$defs/dottedId" },
             "additionalProperties": {
-              "type": "object",
-              "minProperties": 1,
-              "additionalProperties": { "$ref": "#/$defs/slug" }
+              "anyOf": [
+                {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": { "$ref": "#/$defs/slug" }
+                },
+                {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": { "$ref": "#/$defs/slug" }
+                }
+              ]
             }
           }
         }

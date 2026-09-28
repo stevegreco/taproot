@@ -1,11 +1,9 @@
 ---
 id: binding.badge.web-component
-schemaVersion: 1
 type: binding
 title: Badge web component
 summary: Maps the Badge contract onto ds-badge, a span surface, and a default slot.
 status: draft
-visibility: public
 jobs:
   - implement
 tags:
@@ -14,9 +12,6 @@ tags:
 relations:
   implements:
     - component.badge
-sources:
-  - kind: authored
-    path: packages/knowledge/content/bindings/badge.web-component.md
 host:
   specVersion: 1
   platform: web-component

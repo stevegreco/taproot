@@ -1,11 +1,9 @@
 ---
 id: guideline.text-field-implementation
-schemaVersion: 1
 type: guideline
 title: Implement text fields
 summary: Implement a labeled text field with hint, error, and form submission.
 status: draft
-visibility: public
 jobs:
   - implement
 tags:
@@ -19,9 +17,6 @@ docsSections:
   behavior:
     section: set-form-behavior-deliberately
     heading: Forms
-sources:
-  - kind: authored
-    path: packages/knowledge/content/guidelines/text-field-implementation.md
 ---
 
 ## Register and render Text field

@@ -1,6 +1,4 @@
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
-import { once } from "node:events";
 import { access, chmod, mkdir, mkdtemp, unlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -28,10 +26,6 @@ async function stubWorkspace() {
 
 function isCompileError(error) {
   return error instanceof KnowledgeCompileError;
-}
-
-function ownerFile(pid) {
-  return `${JSON.stringify({ pid, startedAt: new Date().toISOString() })}\n`;
 }
 
 test("compile fails when the public content root is missing", async () => {
@@ -206,61 +200,6 @@ test("RECORD_UNREADABLE fires when a listed record file is not readable", async 
   }
 });
 
-test("compile fails with a coded error when the compile lock is held", async () => {
-  const workspace = await stubWorkspace();
-  await mkdir(join(workspace, "packages/knowledge/content"), { recursive: true });
-  const outDir = join(workspace, "dist");
-  const lockDir = `${outDir}.lock`;
-  await mkdir(lockDir);
-  await writeFile(join(lockDir, "owner.json"), ownerFile(process.pid));
-
-  await assert.rejects(
-    () => compile({ workspaceRoot: workspace, outDir, revision: "test" }),
-    (error) => {
-      assert.ok(isCompileError(error));
-      const problems = error.problems.filter((item) => item.code === PROBLEM.COMPILE_LOCK_HELD);
-      assert.equal(problems.length, 1);
-      assert.equal(problems[0].path, lockDir);
-      assert.match(error.message, /rm -rf/);
-      assert.ok(error.message.includes(lockDir));
-      return true;
-    },
-  );
-
-  await access(lockDir);
-});
-
-test("compile steals a lock whose owner process is gone", async () => {
-  const workspace = await stubWorkspace();
-  await mkdir(join(workspace, "packages/knowledge/content"), { recursive: true });
-  const outDir = join(workspace, "dist");
-  const lockDir = `${outDir}.lock`;
-  const child = spawn(process.execPath, ["-e", "setInterval(() => {}, 1000)"], {
-    stdio: "ignore",
-  });
-  const pid = child.pid;
-  child.kill("SIGKILL");
-  await once(child, "exit");
-  await mkdir(lockDir);
-  await writeFile(join(lockDir, "owner.json"), ownerFile(pid));
-
-  const result = await compile({ workspaceRoot: workspace, outDir, revision: "test" });
-  assert.equal(result.bundles[0].recordCount, 0);
-  await assert.rejects(() => access(lockDir));
-});
-
-test("compile steals a leftover lock directory with no owner file", async () => {
-  const workspace = await stubWorkspace();
-  await mkdir(join(workspace, "packages/knowledge/content"), { recursive: true });
-  const outDir = join(workspace, "dist");
-  const lockDir = `${outDir}.lock`;
-  await mkdir(lockDir);
-
-  const result = await compile({ workspaceRoot: workspace, outDir, revision: "test" });
-  assert.equal(result.bundles[0].recordCount, 0);
-  await assert.rejects(() => access(lockDir));
-});
-
 test("compile names the package.json path when the version cannot be read", async () => {
   const workspace = await stubWorkspace();
   await mkdir(join(workspace, "packages/knowledge/content"), { recursive: true });
@@ -281,6 +220,4 @@ test("compile names the package.json path when the version cannot be read", asyn
       return true;
     },
   );
-
-  await assert.rejects(() => access(`${outDir}.lock`));
 });

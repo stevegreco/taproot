@@ -1,3 +1,5 @@
+import { formatAvoid, formatRule } from "../render.js";
+
 /**
  * Generate the compiled Markdown body for a YAML-only component. The structured
  * record remains the only authored authority; this projection is compiler
@@ -34,6 +36,11 @@ export function generateComponentBody(record) {
     sections.push(["## Behavior", ...behavior.flatMap(formatRule)].join("\n"));
   }
 
+  const parameters = Object.entries(contract.parameters ?? {});
+  if (parameters.length > 0) {
+    sections.push(["## Parameters", ...parameters.flatMap(formatParameter)].join("\n"));
+  }
+
   const accessibility = contract.accessibility;
   if (accessibility) {
     const lines = ["## Accessibility"];
@@ -48,42 +55,115 @@ export function generateComponentBody(record) {
     sections.push(lines.join("\n"));
   }
 
+  const mappings = contract.mappings ?? [];
+  if (mappings.length > 0) {
+    sections.push(
+      [
+        "## Tokens",
+        "| Part | Channel | When | Token |",
+        "| --- | --- | --- | --- |",
+        ...mappings.map(formatMapping),
+      ].join("\n"),
+    );
+  }
+
   return sections
     .filter((section) => typeof section === "string" && section.length > 0)
     .join("\n\n");
 }
 
-function formatAvoid(item) {
-  let line = `- ${item.situation}`;
-  if (item.instead) line += ` Use ${item.instead} instead.`;
-  if (item.why) line += ` ${item.why}`;
-  return line;
-}
-
-function formatRule(rule) {
-  const lines = [`- **${rule.level}:** ${rule.statement}`];
-  if (rule.applicability) {
-    lines.push(`  Applies when: ${rule.applicability}`);
-  }
-  if (rule.rationale) {
-    lines.push(`  Why: ${rule.rationale}`);
-  }
-  for (const reference of rule.references ?? []) {
-    const hash = reference.fragment ? `#${reference.fragment}` : "";
-    lines.push(`  See [${referenceLabel(reference.id)}](markdown/${reference.id}.md${hash}).`);
-  }
-  if (rule.examples?.do?.length) {
-    lines.push(`  Do: ${rule.examples.do.join("; ")}.`);
-  }
-  if (rule.examples?.avoid?.length) {
-    lines.push(`  Avoid: ${rule.examples.avoid.join("; ")}.`);
+function formatParameter([name, parameter]) {
+  const facts = [parameter.kind];
+  if (Object.hasOwn(parameter, "default")) facts.push(`default \`${parameter.default}\``);
+  const description = parameter.description ? `: ${parameter.description}` : "";
+  const lines = [`- \`${name}\` (${facts.join(", ")})${description}`];
+  for (const [value, text] of Object.entries(parameter.values ?? {})) {
+    lines.push(`  - \`${value}\`: ${text}`);
   }
   return lines;
 }
 
-function referenceLabel(id) {
-  if (id === "pattern.action-hierarchy") return "action hierarchy pattern";
-  const dot = id.indexOf(".");
-  const rest = dot === -1 ? id : id.slice(dot + 1);
-  return rest.replaceAll("-", " ").replaceAll(".", " ");
+function formatMapping(mapping) {
+  const when = [
+    ...Object.entries(mapping.configuration ?? {}).map(([axis, value]) => `${axis}=${value}`),
+    ...(mapping.state ? [mapping.state] : []),
+  ];
+  const token = mapping.token?.name ?? mapping.token?.literal ?? "";
+  return `| ${mapping.part} | ${mapping.channel} | ${when.join(", ") || "always"} | \`${token}\` |`;
+}
+
+/**
+ * Sections the emitted Markdown file adds after a record's body, so each file
+ * answers the next question without opening JSON: a component links its
+ * implementations, and a binding lists its web-component API and example.
+ *
+ * @param {object} record
+ * @returns {string[]}
+ */
+export function generateReferenceSections(record) {
+  if (record.type === "component") {
+    const bindings = record.backlinks?.implementedBy ?? [];
+    if (bindings.length === 0) return [];
+    return [
+      ["## Implementations", ...bindings.map((id) => `- [${id}](markdown/${id}.md)`)].join("\n"),
+    ];
+  }
+  if (record.type !== "binding" || !record.host) return [];
+
+  const host = record.host;
+  const sections = [];
+  const summary = [];
+  if (host.defaultTagName) summary.push(`- Tag: \`<${host.defaultTagName}>\``);
+  if (host.package) summary.push(`- Package: \`${host.package}\``);
+  if (host.registration?.export) summary.push(`- Register: \`${host.registration.export}()\``);
+  if (summary.length > 0) sections.push(["## Web component", ...summary].join("\n"));
+
+  const parameters = Object.entries(host.parameters ?? {});
+  if (parameters.length > 0) {
+    sections.push(
+      [
+        "## Attributes",
+        "| Parameter | Attribute | Property | Values |",
+        "| --- | --- | --- | --- |",
+        ...parameters.map(([name, mapped]) => {
+          const values = Object.entries(mapped.values ?? {})
+            .map(([portable, value]) => `${portable} → \`${value}\``)
+            .join(", ");
+          return `| ${name} | ${code(mapped.attribute)} | ${code(mapped.property)} | ${values} |`;
+        }),
+      ].join("\n"),
+    );
+  }
+
+  const properties = Object.entries(host.properties ?? {});
+  if (properties.length > 0) {
+    sections.push(
+      [
+        "## Properties",
+        ...properties.map(([name, property]) =>
+          `- \`${name}\` (\`${property.type}\`${property.readonly ? ", read-only" : ""}): ${property.description ?? ""}`.trimEnd(),
+        ),
+      ].join("\n"),
+    );
+  }
+
+  const events = Object.entries(host.events ?? {});
+  if (events.length > 0) {
+    sections.push(
+      [
+        "## Events",
+        ...events.map(([name, event]) => {
+          const suppressed = event.suppressedWhen ? ` Not fired when ${event.suppressedWhen}.` : "";
+          return `- \`${event.event}\` for ${name}.${suppressed}`;
+        }),
+      ].join("\n"),
+    );
+  }
+
+  if (host.example) sections.push(`## Example\n\n\`\`\`html\n${host.example.trim()}\n\`\`\``);
+  return sections;
+}
+
+function code(value) {
+  return value ? `\`${value}\`` : "";
 }

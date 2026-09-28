@@ -4,6 +4,7 @@ import {
   checkBindingAgreement,
   checkRuleReferences,
   checkSourceAgreement,
+  checkVariantGuidance,
   completenessProblems,
   resolveBindingDefaults,
 } from "./records.js";
@@ -42,7 +43,8 @@ export function assembleCorpus(loaded) {
     }),
   );
   const bindingProblems = resolveBindingDefaults(records);
-  const validation = validateRelations(records);
+  const invalidIds = loaded.invalidIds ?? new Set();
+  const validation = validateRelations(records, invalidIds);
   const problems = [
     ...loaded.problems,
     ...visualProblems,
@@ -52,7 +54,8 @@ export function assembleCorpus(loaded) {
       ...checkRuleReferences(record, records),
       ...completenessProblems(record),
     ]),
-    ...checkBindingAgreement(records),
+    ...checkBindingAgreement(records, invalidIds),
+    ...checkVariantGuidance(records),
     ...validation.problems,
   ];
   // visualMapping.additionalProperties is false, so compiler-only `source`
@@ -83,7 +86,8 @@ export function assembleCorpus(loaded) {
   };
 }
 
-function validateRelations(records) {
+/** References to a record that already failed validation are not reported again. */
+function validateRelations(records, invalidIds) {
   const problems = [];
   const edges = [];
   for (const record of records.values()) {
@@ -101,6 +105,7 @@ function validateRelations(records) {
           continue;
         }
         if (!records.has(to)) {
+          if (invalidIds.has(to)) continue;
           problems.push(
             problem({
               code: PROBLEM.CORPUS_UNRESOLVED_RELATION,
@@ -118,6 +123,7 @@ function validateRelations(records) {
     for (const annotation of record.annotations ?? []) {
       for (const to of annotation.relatesTo ?? []) {
         if (!records.has(to)) {
+          if (invalidIds.has(to)) continue;
           problems.push(
             problem({
               code: PROBLEM.CORPUS_UNRESOLVED_ANNOTATION,

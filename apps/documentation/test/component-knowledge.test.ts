@@ -78,7 +78,7 @@ test("button slice variants and api come from the public catalog contract", () =
     ["primary", "secondary", "ghost", "danger"],
   );
   assert.equal(variant.description, "", "enum members keep value text off the row description");
-  assert.equal(slice.accessibility.keyboard.length, 2, "keyboard bindings come from the contract");
+  assert.equal(slice.accessibility.keyboard.length, 3, "keyboard bindings come from the contract");
   assert.ok(slice.together, "related pattern and example project into using-together");
   assert.ok(
     slice.together?.example?.src.startsWith("/knowledge-assets/"),
@@ -326,7 +326,7 @@ test("the button page frontmatter matches the slice title and summary", () => {
   assert.equal(description, slice.summary, "frontmatter description matches the record summary");
   assert.match(source, /^## Variants$/m);
   assert.match(source, /^## Using together$/m);
-  assert.match(source, /^## Attributes$/m);
+  assert.match(source, /^## API$/m);
   assert.match(source, /^## Accessibility$/m);
   assert.match(source, /section="review"/, "review stays available without a TOC heading");
 });
@@ -370,11 +370,10 @@ const scratchPattern = {
   relations: { guides: ["component.scratch"] },
   body: "## Assign emphasis\n\n### Primary\n\nScratch primary guidance.\n\n## Avoid\n\n- Scratch item",
 };
-const scratchParameters = { variant: { kind: "enum", values: { primary: "Scratch." } } };
 
 test("variant guidance is opt-in, not inferred from pattern headings", () => {
   assert.equal(
-    variantGuidance("component.scratch", scratchParameters, [scratchPattern]).size,
+    variantGuidance("component.scratch", [scratchPattern]).size,
     0,
     "a ### Primary heading alone guides nothing",
   );
@@ -384,45 +383,13 @@ test("variant guidance is opt-in, not inferred from pattern headings", () => {
     variantGuidance: { "component.scratch": { primary: "primary" } },
   };
   assert.equal(
-    variantGuidance("component.scratch", scratchParameters, [optedIn]).get("primary"),
+    variantGuidance("component.scratch", [optedIn]).get("primary"),
     "Scratch primary guidance.",
   );
   assert.equal(
-    variantGuidance("component.other", scratchParameters, [optedIn]).size,
+    variantGuidance("component.other", [optedIn]).size,
     0,
     "another component with the same variant name gets nothing",
-  );
-});
-
-test("variant guidance fails on anchors, variants, or components the records do not have", () => {
-  const withGuidance = (guidance: Record<string, unknown>) => [
-    { ...scratchPattern, variantGuidance: { "component.scratch": guidance } },
-  ];
-  assert.throws(
-    () =>
-      variantGuidance("component.scratch", scratchParameters, withGuidance({ primary: "missing" })),
-    /names #missing, but no ### heading/,
-  );
-  assert.throws(
-    () =>
-      variantGuidance("component.scratch", scratchParameters, withGuidance({ ghost: "primary" })),
-    /variant ghost, which its contract does not have/,
-  );
-  assert.throws(
-    () =>
-      variantGuidance("component.scratch", scratchParameters, [
-        {
-          ...scratchPattern,
-          relations: {},
-          variantGuidance: { "component.scratch": { primary: "primary" } },
-        },
-      ]),
-    /which it does not guide/,
-  );
-  const twice = withGuidance({ primary: "primary" });
-  assert.throws(
-    () => variantGuidance("component.scratch", scratchParameters, [...twice, ...twice]),
-    /more than one pattern/,
   );
 });
 

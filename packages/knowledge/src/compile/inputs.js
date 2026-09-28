@@ -30,6 +30,8 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
   const problems = [];
   const pending = new Map();
   const listedPathById = new Map();
+  /** Ids declared by records that failed validation, so references to them are not reported twice. */
+  const invalidIds = new Set();
 
   for (const root of roots) {
     let listed;
@@ -76,6 +78,7 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
         authored = parseAuthoredRecord(text, { sourcePath: repoPath });
       } catch (error) {
         if (error instanceof KnowledgeRecordError) {
+          if (error.recordId) invalidIds.add(error.recordId);
           const typedPaths = new Set(
             error.issues.filter((issue) => issue.keyword === "type").map((issue) => issue.path),
           );
@@ -87,7 +90,9 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
               problem({
                 code: unsupported ? PROBLEM.RECORD_SCHEMA_UNSUPPORTED : PROBLEM.RECORD_INVALID,
                 message: issue.message,
-                path: issue.path ? `${repoPath} ${issue.path}` : repoPath,
+                path: [issue.line ? `${repoPath}:${issue.line}` : repoPath, issue.path]
+                  .filter(Boolean)
+                  .join(" "),
               }),
             );
           }
@@ -240,6 +245,7 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     assetBytes,
     assetOwner,
     tokenNames: tokenCatalog.names,
+    invalidIds,
     problems,
   };
 }

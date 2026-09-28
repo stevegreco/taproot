@@ -1,10 +1,8 @@
 id: component.badge
-schemaVersion: 1
 type: component
 title: Badge
 summary: Use Badge for status or metadata. It is not a control.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -17,8 +15,6 @@ relations:
   related:
     - component.button
 sources:
-  - kind: authored
-    path: packages/knowledge/content/components/badge/badge.spec.yaml
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:
@@ -82,16 +78,16 @@ contract:
     name: Visible text is the accessible name.
     keyboard: []
     requirements:
-      - id: text-communicates-state
+      - id: a11y-text-communicates-state
         level: must
         statement: The text communicates the state. Meaning does not depend on color alone.
-      - id: not-a-control
+      - id: a11y-not-a-control
         level: must
         statement: Badge is not used as a control.
-      - id: no-live-region
+      - id: a11y-no-live-region
         level: must
         statement: Badge does not set a live-region role.
-      - id: surrounding-ui-announces
+      - id: a11y-surrounding-ui-announces
         level: must
         statement: Changing status that must be announced is the surrounding UI's job.
   rationale:

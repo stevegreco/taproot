@@ -1,10 +1,8 @@
 id: component.link
-schemaVersion: 1
 type: component
 title: Link
 summary: Use Link to navigate to another page, a location on the page, or a resource.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -17,8 +15,6 @@ relations:
   related:
     - component.button
 sources:
-  - kind: authored
-    path: packages/knowledge/content/components/link/link.spec.yaml
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:
@@ -102,6 +98,8 @@ contract:
     semantics: Link.
     name: Required from the link text.
     keyboard:
+      - key: Tab
+        action: Move focus to or from the link.
       - key: Enter
         action: Follow the link.
     requirements:
@@ -137,6 +135,7 @@ contract:
           foreground: semantic.color.foreground.default
         focus-visible:
           outline: semantic.color.border.focus
+          radius: semantic.radius.control
       variant:
         inline:
           font-family: inherit

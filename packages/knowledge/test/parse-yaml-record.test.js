@@ -62,6 +62,25 @@ test("parseRecord remains a Markdown parser", () => {
   );
 });
 
+test("parseYamlRecord reports a renamed contract field once, with its line", () => {
+  const text = yamlComponent().replace(/^  states:/m, "  statez:");
+  const line = text.split("\n").findIndex((row) => row.startsWith("  statez:")) + 1;
+
+  assert.throws(
+    () => parseYamlRecord(text, { sourcePath: buttonPath }),
+    (error) => {
+      assert.ok(error instanceof KnowledgeRecordError);
+      assert.deepEqual(
+        error.issues.map(({ path, message }) => `${path} ${message}`),
+        ["/contract/states is required", "/contract/statez is not an allowed field"],
+      );
+      assert.equal(error.issues[1].line, line);
+      assert.equal(error.recordId, "component.yaml-button");
+      return true;
+    },
+  );
+});
+
 test("parseYamlRecord reports indentation errors as yaml, not uniqueKeys", () => {
   const yaml = `id: component.yaml-button
 schemaVersion: 1

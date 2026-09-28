@@ -29,6 +29,7 @@ import {
 } from "./load.js";
 
 export { KnowledgeBundleError };
+export { formatAvoid, formatRule, referenceLabel } from "../render.js";
 
 const EMPTY = Object.freeze([]);
 const FIELD_WEIGHT = Object.freeze({ title: 8, tags: 4, summary: 2, body: 1 });

@@ -68,13 +68,19 @@ export function findSchemaIssues(candidate) {
     : (validate.errors ?? [])
         // `contains` also emits per-item const/required failures while probing members.
         .filter((error) => !error.schemaPath.includes("/contains/"))
+        // A failed `then` branch is already reported by its own errors.
+        .filter((error) => error.keyword !== "if")
         .map((error) => ({
           path: issuePath(error),
           keyword: error.keyword,
           message: issueMessage(error),
         }));
+  // A failing subschema leaves its properties unevaluated, so unevaluatedProperties
+  // then flags valid fields. Report it only when nothing else went wrong.
+  const specific = schemaIssues.filter((issue) => issue.keyword !== "unevaluatedProperties");
+  const reported = specific.length > 0 ? specific : schemaIssues;
 
-  return [...schemaIssues, ...findContractSemanticIssues(candidate)].sort(compareIssues);
+  return [...reported, ...findContractSemanticIssues(candidate)].sort(compareIssues);
 }
 
 function claimUniqueId(seen, id, path, issues) {

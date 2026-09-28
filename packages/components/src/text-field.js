@@ -309,10 +309,15 @@ export class DsTextField extends ForwardsFocus(Base) {
     this.#syncValidity();
   };
 
+  /**
+   * The native input's `input` event is composed and reaches the host on its
+   * own; `change` is not, so re-dispatch it from the host.
+   */
   #onChange = () => {
     this.#dirty = true;
     this.#syncFormValue();
     this.#syncValidity();
+    this.dispatchEvent(new Event("change", { bubbles: true }));
   };
 
   /** Keep the visible error as the only validation message when one is set. */

@@ -1,5 +1,5 @@
 import grayMatter from "gray-matter";
-import { parseYamlMapping } from "./parse-yaml.js";
+import { parseYamlMapping, yamlLocator } from "./parse-yaml.js";
 import { findSchemaIssues } from "./schema/validator.js";
 
 export const YAML_SPEC_SUFFIX = ".spec.yaml";
@@ -7,15 +7,32 @@ export const YAML_SPEC_SUFFIX = ".spec.yaml";
 const parseMatter = grayMatter.default ?? grayMatter;
 
 export class KnowledgeRecordError extends Error {
-  constructor(sourcePath, issues) {
+  /**
+   * @param {string} sourcePath
+   * @param {readonly { path: string, keyword: string, message: string, line?: number }[]} issues
+   * @param {{ recordId?: string }} [options] The id the invalid record declared, when it had one.
+   */
+  constructor(sourcePath, issues, options = {}) {
     const details = issues
-      .map(({ path, message }) => `  ${path || "<record>"} ${message}`)
+      .map(
+        ({ path, message, line }) =>
+          `  ${line ? `line ${line} ` : ""}${path || "<record>"} ${message}`,
+      )
       .join("\n");
     super(`${sourcePath}: invalid knowledge record\n${details}`);
     this.name = "KnowledgeRecordError";
     this.sourcePath = sourcePath;
+    this.recordId = typeof options.recordId === "string" ? options.recordId : null;
     this.issues = Object.freeze(issues);
   }
+}
+
+/** Attach the source line to each issue the locator can place. */
+function withLines(issues, locate) {
+  return issues.map((issue) => {
+    const line = issue.path ? locate(issue.path) : null;
+    return line ? { ...issue, line } : issue;
+  });
 }
 
 function structuralError(sourcePath, keyword, message) {
@@ -47,7 +64,7 @@ function applyAuthoredDefaults(data, sourcePath) {
     return source;
   });
   if (!next.sources.some((source) => source?.kind === "authored")) {
-    next.sources = [...next.sources, { kind: "authored", path: sourcePath }];
+    next.sources = [{ kind: "authored", path: sourcePath }, ...next.sources];
   }
   return next;
 }
@@ -105,7 +122,12 @@ export function parseRecord(markdown, options) {
   const issues = findSchemaIssues(candidate);
 
   if (issues.length > 0) {
-    throw new KnowledgeRecordError(options.sourcePath, issues);
+    // gray-matter keeps the newline after the opening `---`, so matter lines match file lines.
+    throw new KnowledgeRecordError(
+      options.sourcePath,
+      withLines(issues, yamlLocator(parsed.matter)),
+      { recordId: data.id },
+    );
   }
 
   return candidate;
@@ -186,7 +208,9 @@ export function parseYamlRecord(yamlText, options) {
     return byPath === 0 ? left.keyword.localeCompare(right.keyword) : byPath;
   });
   if (issues.length > 0) {
-    throw new KnowledgeRecordError(options.sourcePath, issues);
+    throw new KnowledgeRecordError(options.sourcePath, withLines(issues, yamlLocator(yamlText)), {
+      recordId: data.id,
+    });
   }
 
   return candidate;

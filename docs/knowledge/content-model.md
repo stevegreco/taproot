@@ -108,9 +108,10 @@ anchor matches no heading, so renaming a heading cannot silently drop that secti
 
 A pattern can add `variantGuidance` to opt a component's variants into guidance from its body. It
 maps a component ID the pattern `guides` to variant values, each naming a `###` subsection by
-anchor. Headings alone guide nothing: a component with a `primary` variant gets no guidance from a
-`### Primary` heading unless the pattern names it. The docs build fails when an anchor, variant, or
-component does not exist, or when two patterns guide the same variant. A component can relate to
+anchor. A list (`component.button: [primary, danger]`) is shorthand for anchors named after each
+variant. Headings alone guide nothing: a component with a `primary` variant gets no guidance from a
+`### Primary` heading unless the pattern names it. The knowledge compile fails when an anchor,
+variant, or component does not exist, or when two patterns guide the same variant. A component can relate to
 more than one pattern. Example records can add structured `assets` and `annotations`.
 
 ## Executable contract
@@ -144,7 +145,7 @@ The derived schema retains the authored conditional definitions of `contract`, `
 and retrieval use the same compiled-record validator; retrieval separately checks manifest/index
 consistency (KNOW-008, KNOW-015, KNOW-023).
 
-Authored records must declare exactly one `kind: authored` source. They cannot declare the
+Authored records have exactly one `kind: authored` source, filled from the file path when omitted. They cannot declare the
 compiler-only `generated` source kind. Unknown fields fail validation rather than passing through
 to compiled output. The authored schema stays `unevaluatedProperties: false`.
 
@@ -160,8 +161,9 @@ packages/knowledge/content/components/
 
 `parseRecord` fills `schemaVersion` as
 `1`, empty `relations`, and an `authored` source path from the file. The compiler fills omitted
-`visibility` from the content root that listed the file. Authors still write `id`, `type`, `title`,
-`summary`, `status`, `jobs`, `tags`, and, for Markdown, `body`. YAML component specs omit `body`.
+`visibility` from the content root that listed the file. Content files omit `schemaVersion`,
+`visibility`, and the authored source. Authors write `id`, `type`, `title`, `summary`, `status`,
+`jobs`, `tags`, and, for Markdown, `body`. YAML component specs omit `body`. `sources` lists only external inputs, such as token files or ADRs.
 Folder names do not set `id` or `type`.
 
 ```markdown
@@ -312,8 +314,8 @@ A source entry identifies how a record was produced:
 - `adr`: accepted decision owned by its domain package; or
 - `generated`: deterministic output from another declared source.
 
-An authored record declares exactly one `kind: authored` source. That path must be the file the
-compiler is parsing. A second authored source is invalid. A missing or mismatched authored path
+An authored record has exactly one `kind: authored` source, filled from the file path when omitted.
+When written out, that path must be the file the compiler is parsing. A second authored source is invalid. A missing or mismatched authored path
 fails the build. Each compiled `revision` is a digest of the bytes at that entry's declared path.
 
 A component's portable `contract` is authored in the component record. For YAML specs that is the
@@ -418,9 +420,9 @@ visibility, knowledge version, design system version, record count, and per-file
 digest hashes that block. Build time and git revision live in `manifest.build` and are not part
 of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `7` because
 compiled records carry `bodyOrigin` and contracts use structured usage IDs and rules. Bundles
-whose compiled schema version is not 7 fail closed. Portable `specVersion` is 5. The compiler always projects the internal
-bundle for validation and writes it only when internal content is configured. An internal bundle may contain only public
-records; visibility is the declared projection, not a guess from record contents.
+whose compiled schema version is not 7 fail closed. Portable `specVersion` is 5. The compiler
+projects and writes the internal bundle only when internal content is configured. An internal bundle
+may contain only public records; visibility is the declared projection, not a guess from record contents.
 
 Consumers query a compiled bundle through `openCatalog` in
 `@stevegreco/design-system-knowledge/retrieve`. `search`, `get`, `list`, and `related` read

@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, join } from "node:path";
+import { mkdir, readFile, rename, rm } from "node:fs/promises";
+import { basename, join } from "node:path";
 import { buildCorpus } from "./corpus.js";
 import { projectBundle, writeBundle } from "./bundle.js";
 import { createWorkspaceReader } from "./reader.js";
@@ -49,13 +49,9 @@ export class KnowledgeCompileError extends Error {
 export async function compile(options) {
   const workspaceRoot = options.workspaceRoot;
   const outDir = options.outDir ?? join(workspaceRoot, "packages/knowledge/dist");
-  const lockDir = `${outDir}.lock`;
-  await acquireCompileLock(lockDir);
 
   let staging;
   try {
-    await removeOrphanStaging(outDir);
-
     const knowledgeVersion = await readPackageVersion(
       join(workspaceRoot, "packages/knowledge/package.json"),
     );
@@ -116,64 +112,6 @@ export async function compile(options) {
     if (staging) {
       await rm(staging, { recursive: true, force: true });
     }
-    await rm(lockDir, { recursive: true, force: true });
-  }
-}
-
-async function acquireCompileLock(lockDir) {
-  let stoleStale = false;
-  while (true) {
-    try {
-      await mkdir(lockDir);
-      break;
-    } catch (error) {
-      if (error?.code !== "EEXIST") throw error;
-      if (!stoleStale && (await isCompileLockStale(lockDir))) {
-        await rm(lockDir, { recursive: true, force: true });
-        stoleStale = true;
-        continue;
-      }
-      throw lockHeldError(lockDir);
-    }
-  }
-
-  try {
-    await writeFile(
-      join(lockDir, "owner.json"),
-      `${JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() })}\n`,
-    );
-  } catch (error) {
-    await rm(lockDir, { recursive: true, force: true });
-    throw error;
-  }
-}
-
-function lockHeldError(lockDir) {
-  return new KnowledgeCompileError([
-    problem({
-      code: PROBLEM.COMPILE_LOCK_HELD,
-      path: lockDir,
-      message: `compile lock is held. If no compile is running, remove it with: rm -rf ${lockDir}`,
-    }),
-  ]);
-}
-
-async function isCompileLockStale(lockDir) {
-  try {
-    const owner = JSON.parse(await readFile(join(lockDir, "owner.json"), "utf8"));
-    return !isPidAlive(owner.pid);
-  } catch {
-    return true;
-  }
-}
-
-function isPidAlive(pid) {
-  if (!Number.isInteger(pid) || pid <= 0) return false;
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (error) {
-    return error?.code !== "ESRCH";
   }
 }
 
@@ -209,20 +147,4 @@ function sourceDateOrNow() {
     return new Date(Number(epoch) * 1000);
   }
   return new Date();
-}
-
-async function removeOrphanStaging(outDir) {
-  const parent = dirname(outDir);
-  const prefix = `${basename(outDir)}.tmp-`;
-  let names;
-  try {
-    names = await readdir(parent);
-  } catch {
-    return;
-  }
-  await Promise.all(
-    names
-      .filter((name) => name.startsWith(prefix))
-      .map((name) => rm(join(parent, name), { recursive: true, force: true })),
-  );
 }

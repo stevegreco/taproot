@@ -1,19 +1,18 @@
 /**
  * Host-binding guarantees, checked once for every web-component binding in the
  * catalog: alias registration, the native `hidden` attribute, focus forwarding
- * to `host.focus.forwardsTo`, visible keyboard focus, and properties set before
- * registration. A component's own test file covers only its behavior.
+ * to `host.focus.forwardsTo`, visible keyboard focus, binding events reaching
+ * the host, enum properties, and properties set before registration. A
+ * component's own test file covers only its behavior.
  *
  * The rule census credits a tag in a title here to every component whose
- * contract has that rule, so these titles carry each component's rule ID for
- * visible focus.
+ * contract has that rule, so the visible-focus title carries
+ * `[a11y-visible-focus]`.
  */
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
 import { commands, userEvent } from "vitest/browser";
 
 import { FIXTURES } from "./helpers/fixtures.js";
-
-const VISIBLE_FOCUS_RULES = Object.freeze(["a11y-visible-focus", "visible-focus"]);
 
 const elements = await commands.hostElements();
 const modules = new Map();
@@ -48,6 +47,16 @@ function render(element, attributes = {}) {
 
 function focusTarget(element, host) {
   return host.shadowRoot.querySelector(`[part="${element.focusPart}"]`);
+}
+
+/** Fire a binding event the way a user would, from its native control. */
+async function trigger(event, target) {
+  if (event === "click" || target.type === "checkbox") {
+    await userEvent.click(target);
+    return;
+  }
+  await userEvent.type(target, "a");
+  if (event === "change") await userEvent.tab();
 }
 
 describe("host checks", () => {
@@ -85,7 +94,7 @@ describe("host checks", () => {
   );
 
   test.each(rows(focusable))(
-    "[a11y-visible-focus][visible-focus] <%s> shows a focus outline when reached by keyboard",
+    "[a11y-visible-focus] <%s> shows a focus outline when reached by keyboard",
     async (_tagName, element) => {
       const host = render(element);
       const target = focusTarget(element, host);
@@ -99,14 +108,56 @@ describe("host checks", () => {
     },
   );
 
+  const events = focusable.flatMap((element) =>
+    element.events.map((event) => [element.tagName, event, element]),
+  );
+
+  test.each(events)("<%s> dispatches %s on the host", async (_tagName, event, element) => {
+    const host = render(element);
+    const received = [];
+    host.addEventListener(event, (dispatched) => received.push(dispatched.target));
+
+    await trigger(event, focusTarget(element, host));
+
+    expect(received).toContain(host);
+  });
+
+  test("every component with events has a focus target to fire them from", () => {
+    const uncovered = elements
+      .filter((element) => element.events.length > 0 && !element.focusPart)
+      .map((element) => element.id);
+
+    expect(uncovered).toEqual([]);
+  });
+
   test("every component with a visible-focus rule has a focus target", () => {
     const uncovered = elements
-      .filter((element) => element.ruleIds.some((id) => VISIBLE_FOCUS_RULES.includes(id)))
+      .filter((element) => element.ruleIds.includes("a11y-visible-focus"))
       .filter((element) => !element.focusPart)
       .map((element) => element.id);
 
     expect(uncovered).toEqual([]);
   });
+
+  const enums = elements.flatMap((element) =>
+    element.enums.map((entry) => [element.tagName, entry.property, element, entry]),
+  );
+
+  test.each(enums)(
+    "<%s> %s returns each contract value and falls back to the contract default",
+    (_tagName, _property, element, { attribute, property, values, default: fallback }) => {
+      const host = render(element);
+
+      for (const value of values) {
+        host.setAttribute(attribute, value);
+        expect(host[property], value).toBe(value);
+      }
+      host.setAttribute(attribute, "not-a-contract-value");
+      expect(host[property]).toBe(fallback);
+      host.removeAttribute(attribute);
+      expect(host[property]).toBe(fallback);
+    },
+  );
 
   /**
    * Create and connect the element while its tag is still undefined, set every

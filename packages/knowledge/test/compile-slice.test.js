@@ -133,6 +133,16 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.doesNotMatch(buttonMarkdown, /^contract:/m);
   assert.doesNotMatch(buttonMarkdown, /^host:/m);
   assert.doesNotMatch(buttonMarkdown, /^checks:/m);
+  // The file alone answers which variant, which tokens, and where the implementation is.
+  assert.match(buttonMarkdown, /^ {2}- `danger`: Destructive or difficult-to-reverse action\.$/m);
+  assert.match(
+    buttonMarkdown,
+    /^\| control \| background \| variant=danger, hover \| `component\.button\.danger\.background\.hover` \|$/m,
+  );
+  assert.match(
+    buttonMarkdown,
+    /^- \[binding\.button\.web-component\]\(binding\.button\.web-component\.md\)$/m,
+  );
 
   const bindingMarkdown = await readFile(
     join(outDir, "public/markdown/binding.button.web-component.md"),
@@ -140,6 +150,13 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   );
   assert.doesNotMatch(bindingMarkdown, /^host:/m);
   assert.doesNotMatch(bindingMarkdown, /^contract:/m);
+  assert.match(bindingMarkdown, /^- Tag: `<ds-button>`$/m);
+  assert.match(bindingMarkdown, /^\| action \| `type` \| `type` \| activate → `button`/m);
+  assert.match(
+    bindingMarkdown,
+    /^- `click` for activate\. Not fired when effectively-disabled\.$/m,
+  );
+  assert.match(bindingMarkdown, /## Example\n\n```html\n<ds-button variant="primary">/);
 
   const reviewMarkdown = await readFile(
     join(outDir, "public/markdown/guideline.button-review.md"),

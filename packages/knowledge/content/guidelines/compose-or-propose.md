@@ -1,11 +1,9 @@
 ---
 id: guideline.compose-or-propose
-schemaVersion: 1
 type: guideline
 title: Compose or propose
 summary: Compose a new interface need from tokens and existing components first, and open an issue or RFC only when the system itself has to change.
 status: draft
-visibility: public
 jobs:
   - design
   - implement
@@ -20,9 +18,6 @@ relations:
   related:
     - component.button
     - component.badge
-sources:
-  - kind: authored
-    path: packages/knowledge/content/guidelines/compose-or-propose.md
 ---
 
 Most interface needs are met by composing what the system already publishes. Change the system
@@ -67,8 +62,8 @@ Open an issue when the change fits inside the existing record shape and contract
 
 A new component follows the new-component definition of done in
 `docs/knowledge/new-component.md`. Its component record has a `contract` with explicit `visuals`,
-shaped like the Button, Badge, and Link records. Extend that template rather than inventing a new
-record or mapping shape for one component.
+shaped like the existing records. Checkbox is the most complete one to copy. Extend that template
+rather than inventing a new record or mapping shape for one component.
 
 ## Open an RFC
 
