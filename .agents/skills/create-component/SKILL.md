@@ -1,6 +1,6 @@
 ---
 name: create-component
-description: Add a new web component to the Ember & Sage design system (packages/knowledge spec and binding, packages/components runtime and tests, apps/documentation page, example, and Verify steps). Use when asked to build, add, or scaffold a component such as Icon, Checkbox, Field, Radio, or Switch, when finishing a partly built component, or when reviewing a component PR for completeness.
+description: Add a new web component to the Ember & Sage design system (packages/knowledge spec with its web section, packages/components runtime and tests, apps/documentation page, example, and Verify steps). Use when asked to build, add, or scaffold a component such as Icon, Checkbox, Field, Radio, or Switch, when finishing a partly built component, or when reviewing a component PR for completeness.
 ---
 
 # Create a component
@@ -12,8 +12,8 @@ knowledge records, never only here (see `AGENTS.md`).
 Pick a reference component and copy its shape:
 
 - **Link**: small, non-form, one inner control, a placement variant.
-- **Checkbox**: form-associated, boolean states, label/hint/error in the shadow root, suppressed
-  states. Text field is the older version of the same shape.
+- **Checkbox**: form-associated, boolean states, label/hint/error in the shadow root, states in
+  priority order. Text field is the older version of the same shape.
 - **Badge**: non-interactive, variants only.
 
 Read [references/gotchas.md](references/gotchas.md) before writing the spec, and again whenever
@@ -31,18 +31,22 @@ loading, invalid, sizes, density, icon-only, RTL, reduced motion, forced colors)
 parameter, state, visual, or rule in the contract, or a `rationale` entry saying why not. Ask the
 user only about decisions that change public API. Decide the rest and record them.
 
-### 2. Author the records
+### 2. Author the spec
 
-- `packages/knowledge/content/components/<slug>/<slug>.spec.yaml`: contract with `usage`,
-  `content`, `anatomy`, `parameters`, `events`, `states`, `behavior`,
-  `accessibility.requirements`, `rationale`, `stateResolution`, and `visuals`. Give every rule a
-  stable ID and level.
-- `packages/knowledge/content/bindings/<slug>.web-component.md`: tag, registration, anatomy
-  element and part per anatomy name, events, `properties`, `formAssociation` if it is a form
-  control, `focus.forwardsTo`, and an `example` of typical markup for the docs usage snippet. Add `parameters` and `parts` entries only for exceptions (see
-  gotchas).
-- If a pattern should guide its variants, add the component to the pattern's `relations.guides`
-  and `variantGuidance`.
+`packages/knowledge/content/components/<slug>/<slug>.spec.yaml`, copied from Checkbox so it keeps
+the schema comment on line 1:
+
+- `id`, `title`, `summary`, and `related`. Leave `status`, `jobs`, and `tags` to the build unless
+  they add something.
+- `contract` with `usage`, `content`, `anatomy`, `parameters`, `events`, `states` (highest
+  priority first, then `default`), `behavior`, `accessibility.requirements`, `rationale`, and
+  `visuals`. Give every rule a stable ID and a `must`, `should`, or `may` level.
+- `web`: package, export, tag, registration, anatomy element and part per anatomy name, events,
+  `states` for attribute-driven states such as `invalid`, `properties`, `formAssociation` if it is
+  a form control, `focus.forwardsTo`, an `example` of typical markup for the docs usage snippet,
+  and `notes`. Add `parameters` and `parts` entries only for exceptions (see gotchas).
+- If a pattern should guide its variants, add the component to the pattern's `related` and
+  `variantGuidance`.
 
 Check: `pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`.
 
@@ -54,7 +58,7 @@ component's behavior. CSS uses only the tokens the spec maps. Put pseudo-classes
 control named by `focus.forwardsTo`.
 
 The build writes `src/<slug>.d.ts` and the package-root barrel, `src/index.js` and
-`src/index.d.ts`, from the binding and contract. JSX types in the docs follow from them. Do not
+`src/index.d.ts`, from the spec. JSX types in the docs follow from them. Do not
 edit these files; commit what the build writes. The only list a component may edit is
 `apps/documentation/docs/components/meta.ts`, for nav order, and that is optional.
 
@@ -63,9 +67,10 @@ edit these files; commit what the build writes. The only list a component may ed
 - `packages/components/test/<slug>.test.js`. Tag each test covering a rule:
   `test("[rule-id] …")`. A `must` rule that no test can prove (authored wording, consumer
   responsibility) gets a reason in `test/unautomated-rules.js` instead.
-- `test/host-checks.test.js` covers alias registration, `hidden`, focus forwarding, visible focus
-  (`[a11y-visible-focus]`), and properties set before registration for every binding. Do not
-  repeat them in `<slug>.test.js`.
+- `test/host-checks.test.js` covers alias registration, `hidden`, declared parts, the required
+  slot, focus forwarding, visible focus (`[a11y-visible-focus]`), events and their suppression
+  while disabled, Enter and Space activation, `form`, enum properties, and properties set before
+  registration for every component. Do not repeat them in `<slug>.test.js`.
 - The mapping, census, host, and example-types checks run on their own from the records. Do not edit
   them for one component. If one fails, fix the spec, CSS, or types. Extend the harness
   (`test/commands/contract-cases.js`) only when a new kind of state or axis appears, and make the
@@ -76,8 +81,9 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 ### 5. Document and verify
 
 - The `/components/<slug>` page renders from the catalog (`apps/documentation/lib/component-pages.ts`):
-  title, import, the binding's `example` as the usage snippet, the live example, and each
-  `<ComponentKnowledge>` section with content. Give the binding an `example`.
+  title, import, the web section's `example` as the usage snippet, the live example, and each
+  `<ComponentKnowledge>` section with content. The review checklist lists the contract rules. Give
+  the web section an `example`.
 - `apps/documentation/docs/components/<slug>.mdx` (optional): only the preview introduction, as
   plain prose with no front matter. Do not restate the contract.
 - `apps/documentation/examples/<slug>.tsx`: one realistic demo with `data-<slug>-*` handles and

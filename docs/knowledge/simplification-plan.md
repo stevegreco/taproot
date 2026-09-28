@@ -1,7 +1,7 @@
 # Knowledge layer simplification plan
 
 **Date:** 2026-09-28
-**Status:** Proposed. This plan replaces the open work items in
+**Status:** Done, 2026-09-28. This plan replaces the open work items in
 [architecture-review-2026-09-04.md](architecture-review-2026-09-04.md).
 
 ## Goals

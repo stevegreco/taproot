@@ -1,7 +1,8 @@
 # ADR 0002: Knowledge-owned portable contracts
 
 **Status:** Accepted; spec-record authoring superseded by
-[ADR 0003](./0003-component-owned-portable-contracts.md)
+[ADR 0003](./0003-component-owned-portable-contracts.md); separate binding records superseded by
+[ADR 0007](./0007-simplified-knowledge-model.md)
 
 This decision supersedes [ADR 0001](./0001-portable-design-system-knowledge.md). ADR 0001 remains
 the record of the original catalog architecture. This ADR changes ownership of portable component

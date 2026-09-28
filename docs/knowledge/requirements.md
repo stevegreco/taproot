@@ -8,6 +8,13 @@ Ember & Sage needs a portable source of design system knowledge for agents that 
 implement them, and review them. An agent may use the knowledge without access to this repository
 or the design system source code.
 
+The knowledge has two jobs:
+
+1. **A contract to build from.** Engineers build the web components, and designers build the Figma
+   components, from the same parts, variants, states, tokens, and rules.
+2. **One source of knowledge to serve.** Components, patterns, and guidelines reach the docs site
+   and adopters' agents through one retrieval interface, and later through MCP, a CLI, and an API.
+
 The knowledge includes component contracts, patterns, guidelines, best practices, token guidance,
 decisions, and annotated screen examples. Delivery protocols such as MCP expose the knowledge but
 do not own it.
@@ -30,9 +37,9 @@ publish the same facts without maintaining a second agent-only copy.
 - **KNOW-001:** The repository must contain the authoritative public knowledge records and their
   schemas.
 - **KNOW-002:** Knowledge with a clear domain owner must remain close to that owner. Token facts and
-  token ADRs remain with the token package. Portable component contracts are authored on component
-  records in the knowledge package. Host bindings (`type: binding`) are authored in the knowledge
-  package. Component runtime stays in the component package. Knowledge must not become a second
+  token ADRs remain with the token package. Component contracts are authored in component specs in
+  the knowledge package, and each spec's `web` section says how the web component implements the
+  contract. Component runtime stays in the component package. Knowledge must not become a second
   owner of token values.
 - **KNOW-003:** Cross-cutting patterns, guidelines, and examples must have an explicit home in the
   knowledge package.
@@ -42,10 +49,11 @@ publish the same facts without maintaining a second agent-only copy.
 
 ### Content
 
-- **KNOW-006:** The system must represent components, bindings, patterns, guidelines, examples,
-  foundations, and decisions.
+- **KNOW-006:** The system must represent components, patterns, guidelines, examples, foundations,
+  and decisions. A component's platform implementation is part of its record, not a separate one.
 - **KNOW-007:** A compiled record must have a stable ID, type, title, summary, status, visibility,
-  supported agent jobs, tags, relationships, provenance, and an agent-readable body. An authored
+  supported agent jobs, tags, relationships, provenance, and an agent-readable body. Authors write
+  the ID, type, title, and summary; the build supplies the others when they are omitted. An authored
   YAML component spec may omit a Markdown body. The compiler generates that compiled body from the
   structured record so the YAML file remains the only authored authority. Markdown records still
   author their bodies.
@@ -53,7 +61,8 @@ publish the same facts without maintaining a second agent-only copy.
   usage, anatomy, parameters, events, states, behavior, accessibility, and token relationships.
 - **KNOW-009:** Pattern knowledge must explain when to use the pattern, when to avoid it, its
   composition, accessibility constraints, and related components and examples.
-- **KNOW-010:** Review guidance must state verifiable checks rather than broad recommendations.
+- **KNOW-010:** Review guidance must state verifiable checks rather than broad recommendations. A
+  component's review checklist is its contract rules, each with a `must`, `should`, or `may` level.
 - **KNOW-011:** A visual example must include the image, alternative text, a written description of
   the relevant design decisions, and relationships to the guidance it demonstrates.
 - **KNOW-012:** Records must distinguish accepted guidance from drafts, deprecated guidance, and
@@ -111,7 +120,7 @@ The first release is one connected vertical slice:
 - the Button component;
 - an action hierarchy pattern;
 - implementation guidance;
-- a review checklist;
+- a review checklist drawn from the contract rules;
 - one committed and annotated screen example; and
 - provenance linking the component to its token source and governing decisions.
 
