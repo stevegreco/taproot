@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { tokenize } from "../compile/search-index.js";
 import authoredSchema from "../schema/index.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
+import { byCodeUnit } from "../sort.js";
 
 export class KnowledgeBundleError extends Error {
   /**
@@ -435,10 +436,6 @@ function deepFreeze(value) {
     for (const nested of Object.values(value)) deepFreeze(nested);
   }
   return Object.freeze(value);
-}
-
-export function byCodeUnit(left, right) {
-  return left < right ? -1 : left > right ? 1 : 0;
 }
 
 function cloneRecords(records) {

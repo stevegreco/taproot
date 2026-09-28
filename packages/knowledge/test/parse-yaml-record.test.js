@@ -244,7 +244,7 @@ test("YAML components coexist with Markdown records and generate a useful body",
         type: "pattern",
         sources: [{ kind: "authored", path: patternPath }],
       },
-      "Assign emphasis.",
+      "## Assign emphasis\n\nOne primary action per group.",
     ),
     [markdownPath]: recordMarkdown(
       {

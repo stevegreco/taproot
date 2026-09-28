@@ -107,7 +107,7 @@ describe("DsTextField", () => {
     expect(input.type).toBe("text");
   });
 
-  test("submits its value with a button and blocks submit while an error is set", () => {
+  test("[form-value] submits its value with a button and blocks submit while an error is set", () => {
     const form = render(`
       <form>
         <${tagName} label="Email" name="email" type="email"></${tagName}>
@@ -129,7 +129,7 @@ describe("DsTextField", () => {
     expect(submit).not.toHaveBeenCalled();
   });
 
-  test("resets to the initial value", () => {
+  test("[form-value] resets to the initial value", () => {
     const form = render(`
       <form>
         <${tagName} label="Email" name="email" value="first@example.com"></${tagName}>

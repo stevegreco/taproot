@@ -11,6 +11,7 @@ import { buildSearchIndex } from "./search-index.js";
 import { generateReferenceSections } from "./generate-body.js";
 import { rewriteEmittedMarkdownUrls } from "./narrative.js";
 import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
+import { byCodeUnit } from "../sort.js";
 
 export function projectBundle(corpus, visibility, meta) {
   const includedIds = [...corpus.records.keys()].filter((id) => {
@@ -36,16 +37,14 @@ export function projectBundle(corpus, visibility, meta) {
     bucket[key].add(edge.from);
   }
 
-  const records = includedIds
-    .sort((left, right) => left.localeCompare(right))
-    .map((id) => {
-      const record = corpus.records.get(id);
-      const backlinks = {};
-      for (const [key, values] of Object.entries(backlinksById.get(id))) {
-        backlinks[key] = [...values].sort((left, right) => left.localeCompare(right));
-      }
-      return { ...record, backlinks };
-    });
+  const records = includedIds.sort(byCodeUnit).map((id) => {
+    const record = corpus.records.get(id);
+    const backlinks = {};
+    for (const [key, values] of Object.entries(backlinksById.get(id))) {
+      backlinks[key] = [...values].sort(byCodeUnit);
+    }
+    return { ...record, backlinks };
+  });
 
   problems.push(...findCompiledIssues(records));
 
@@ -84,12 +83,10 @@ export function projectBundle(corpus, visibility, meta) {
     files.set(path, bytes);
   }
 
-  const listed = [...files.keys()]
-    .sort((left, right) => left.localeCompare(right))
-    .map((path) => {
-      const bytes = files.get(path);
-      return { path, sha256: sha256Hex(bytes), bytes: bytes.byteLength };
-    });
+  const listed = [...files.keys()].sort(byCodeUnit).map((path) => {
+    const bytes = files.get(path);
+    return { path, sha256: sha256Hex(bytes), bytes: bytes.byteLength };
+  });
 
   const content = {
     schemaVersion: 1,
@@ -129,7 +126,7 @@ export function projectBundle(corpus, visibility, meta) {
 }
 
 export async function writeBundle(dir, bundle) {
-  const paths = [...bundle.files.keys()].sort((left, right) => left.localeCompare(right));
+  const paths = [...bundle.files.keys()].sort(byCodeUnit);
   for (const relative of paths) {
     const absolute = join(dir, relative);
     await mkdir(dirname(absolute), { recursive: true });

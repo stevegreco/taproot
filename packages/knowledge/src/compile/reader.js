@@ -1,6 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { safeJoinWorkspace } from "./paths.js";
+import { byCodeUnit } from "../sort.js";
 
 /**
  * @param {string} workspaceRoot
@@ -26,7 +27,7 @@ export function createWorkspaceReader(workspaceRoot) {
       }
 
       await walk(root.root);
-      return paths.sort((left, right) => left.localeCompare(right));
+      return paths.sort(byCodeUnit);
     },
     async readText(repoPath) {
       const absolute = safeJoinWorkspace(workspaceRoot, repoPath);

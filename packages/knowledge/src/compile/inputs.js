@@ -11,6 +11,7 @@ import { readAdr } from "./sources/adr.js";
 import { readTokenSource } from "./sources/token-source.js";
 import { PROBLEM, problem } from "./tables.js";
 import { shortRevision } from "./digest.js";
+import { byCodeUnit } from "../sort.js";
 
 const posix = path.posix;
 
@@ -32,6 +33,8 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
   const listedPathById = new Map();
   /** Ids declared by records that failed validation, so references to them are not reported twice. */
   const invalidIds = new Set();
+  /** Authored text by repo path, so later problems can name a line. */
+  const textByPath = new Map();
 
   for (const root of roots) {
     let listed;
@@ -73,6 +76,7 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
         continue;
       }
 
+      textByPath.set(repoPath, text);
       let authored;
       try {
         authored = parseAuthoredRecord(text, { sourcePath: repoPath });
@@ -246,6 +250,7 @@ export async function loadCorpusInputs(reader, roots, options = {}) {
     assetOwner,
     tokenNames: tokenCatalog.names,
     invalidIds,
+    textByPath,
     problems,
   };
 }
@@ -277,7 +282,7 @@ export async function listTokenCatalogFiles(workspaceRoot) {
   }
 
   await walk(TOKEN_CATALOG_ROOT);
-  return files.sort((left, right) => left.localeCompare(right));
+  return files.sort(byCodeUnit);
 }
 
 async function loadTokenNames(inputs, workspaceRoot) {

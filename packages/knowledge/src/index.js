@@ -1,10 +1,8 @@
-import grayMatter from "gray-matter";
 import { parseYamlMapping, yamlLocator } from "./parse-yaml.js";
 import { findSchemaIssues } from "./schema/validator.js";
+import { byCodeUnit } from "./sort.js";
 
 export const YAML_SPEC_SUFFIX = ".spec.yaml";
-
-const parseMatter = grayMatter.default ?? grayMatter;
 
 export class KnowledgeRecordError extends Error {
   /**
@@ -69,28 +67,24 @@ function applyAuthoredDefaults(data, sourcePath) {
   return next;
 }
 
+/**
+ * Split a Markdown record into frontmatter and body. The frontmatter goes through the same
+ * strict YAML parser as `.spec.yaml` files. A leading newline stands in for the opening `---`,
+ * so YAML line numbers match file lines.
+ */
 function readAuthoredMarkdown(markdown, sourcePath) {
-  if (!/^---(?:\r\n|\r|\n)/.test(markdown)) {
+  const match = /^\uFEFF?---[ \t]*\r?\n(?:([\s\S]*?)\r?\n)?---[ \t]*(?:\r?\n|$)/.exec(markdown);
+  if (!match) {
     throw structuralError(sourcePath, "frontmatter", "YAML frontmatter is missing");
   }
-
-  let parsed;
-  try {
-    parsed = parseMatter(markdown);
-  } catch (error) {
-    throw structuralError(
-      sourcePath,
-      "yaml",
-      error instanceof Error ? error.message : "YAML frontmatter is malformed",
-    );
+  const matter = `\n${match[1] ?? ""}`;
+  const parsed = parseYamlMapping(matter);
+  if (!parsed.ok) {
+    throw new KnowledgeRecordError(sourcePath, parsed.issues, {
+      recordId: recoverTopLevelId(matter),
+    });
   }
-
-  const data = parsed.data;
-  if (data == null || typeof data !== "object" || Array.isArray(data)) {
-    throw structuralError(sourcePath, "frontmatter", "YAML frontmatter must be a mapping");
-  }
-
-  return parsed;
+  return { data: parsed.data, matter, content: markdown.slice(match[0].length) };
 }
 
 export function parseRecord(markdown, options) {
@@ -122,7 +116,6 @@ export function parseRecord(markdown, options) {
   const issues = findSchemaIssues(candidate);
 
   if (issues.length > 0) {
-    // gray-matter keeps the newline after the opening `---`, so matter lines match file lines.
     throw new KnowledgeRecordError(
       options.sourcePath,
       withLines(issues, yamlLocator(parsed.matter)),
@@ -173,7 +166,9 @@ export function parseYamlRecord(yamlText, options) {
 
   const parsed = parseYamlMapping(yamlText);
   if (!parsed.ok) {
-    throw new KnowledgeRecordError(options.sourcePath, parsed.issues);
+    throw new KnowledgeRecordError(options.sourcePath, parsed.issues, {
+      recordId: recoverTopLevelId(yamlText),
+    });
   }
 
   const data = parsed.data;
@@ -204,8 +199,8 @@ export function parseYamlRecord(yamlText, options) {
     });
   }
   issues.sort((left, right) => {
-    const byPath = left.path.localeCompare(right.path);
-    return byPath === 0 ? left.keyword.localeCompare(right.keyword) : byPath;
+    const byPath = byCodeUnit(left.path, right.path);
+    return byPath === 0 ? byCodeUnit(left.keyword, right.keyword) : byPath;
   });
   if (issues.length > 0) {
     throw new KnowledgeRecordError(options.sourcePath, withLines(issues, yamlLocator(yamlText)), {
@@ -214,4 +209,29 @@ export function parseYamlRecord(yamlText, options) {
   }
 
   return candidate;
+}
+
+/**
+ * The top-level `id` of text that failed to parse, so other records' references to it are not
+ * reported as unresolved on top of the parse error.
+ */
+function recoverTopLevelId(text) {
+  return /^id:[ \t]*["']?([a-z0-9][a-z0-9.-]*)["']?[ \t]*(?:#.*)?$/m.exec(text)?.[1];
+}
+
+/**
+ * Map JSON Pointers into an authored record to file line numbers, for problems found after
+ * parsing. Returns null for every pointer when the text cannot be read as a record.
+ *
+ * @param {string} text
+ * @param {string} sourcePath
+ * @returns {(pointer: string) => number | null}
+ */
+export function recordLocator(text, sourcePath) {
+  if (isYamlSpecPath(sourcePath)) return yamlLocator(text);
+  try {
+    return yamlLocator(readAuthoredMarkdown(text, sourcePath).matter);
+  } catch {
+    return () => null;
+  }
 }

@@ -3,8 +3,7 @@ import { access, cp, mkdtemp, readFile, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "vitest";
-import { fromMarkdown } from "mdast-util-from-markdown";
-import { visit } from "unist-util-visit";
+import { headingAnchors } from "../src/compile/anchors.js";
 import { compile } from "../src/compile/index.js";
 import { markdownDestinations } from "../src/compile/narrative.js";
 import { repoRoot } from "./helpers/workspace.js";
@@ -90,28 +89,7 @@ function resolveFromFile(file, url) {
 
 function targetHasFragment(markdown, hash) {
   if (new RegExp(`\\bid=["']${escapeRegExp(hash)}["']`, "i").test(markdown)) return true;
-  const body = stripFrontmatter(markdown);
-  const slugs = new Set();
-  visit(fromMarkdown(body), "heading", (node) => {
-    slugs.add(headingSlug(plainText(node)));
-  });
-  return slugs.has(hash.toLowerCase());
-}
-
-function plainText(node) {
-  const parts = [];
-  visit(node, "text", (child) => {
-    parts.push(child.value);
-  });
-  return parts.join("");
-}
-
-function headingSlug(text) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\p{L}\p{N}\s-]/gu, "")
-    .replace(/\s+/g, "-");
+  return headingAnchors(stripFrontmatter(markdown)).has(hash.toLowerCase());
 }
 
 function escapeRegExp(value) {

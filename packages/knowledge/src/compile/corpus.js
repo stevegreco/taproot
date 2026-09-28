@@ -12,6 +12,8 @@ import { generateComponentBody } from "./generate-body.js";
 import { rewriteBodyLinks } from "./narrative.js";
 import { PROBLEM, problem } from "./tables.js";
 import { compileContractVisuals, stripMappingSources } from "./visuals.js";
+import { byCodeUnit } from "../sort.js";
+import { recordLocator } from "../index.js";
 
 export { CONTRIBUTORS } from "./inputs.js";
 export { sha256Hex, shortRevision } from "./digest.js";
@@ -51,11 +53,11 @@ export function assembleCorpus(loaded) {
     ...bindingProblems,
     ...[...records.values()].flatMap((record) => [
       ...checkSourceAgreement(record, loaded.tokenNames),
-      ...checkRuleReferences(record, records),
+      ...checkRuleReferences(record, records, invalidIds),
       ...completenessProblems(record),
     ]),
     ...checkBindingAgreement(records, invalidIds),
-    ...checkVariantGuidance(records),
+    ...checkVariantGuidance(records, invalidIds),
     ...validation.problems,
   ];
   // visualMapping.additionalProperties is false, so compiler-only `source`
@@ -74,16 +76,37 @@ export function assembleCorpus(loaded) {
     });
     rewrittenRecords.set(id, { ...record, body: rewritten.body });
     narrativeReferences.set(id, rewritten.references);
-    problems.push(...rewritten.problems);
+    // Generated bodies link only to rule references, which checkRuleReferences already reports.
+    if (record.bodyOrigin === "authored") problems.push(...rewritten.problems);
   }
   return {
-    records: new Map([...rewrittenRecords].sort(([left], [right]) => left.localeCompare(right))),
+    records: new Map([...rewrittenRecords].sort(([left], [right]) => byCodeUnit(left, right))),
     edges: Object.freeze(validation.edges),
     narrativeReferences,
     assetBytes: loaded.assetBytes,
     assetOwner: loaded.assetOwner,
-    problems: Object.freeze(problems),
+    problems: Object.freeze(locateProblems(problems, loaded)),
   };
+}
+
+/**
+ * Give each record problem its file, and its line when the path is a JSON Pointer, in the
+ * same `file:line /pointer` form that parse errors use.
+ */
+function locateProblems(problems, loaded) {
+  const locators = new Map();
+  return problems.map((item) => {
+    const file = item.recordId ? loaded.listedPathById.get(item.recordId) : undefined;
+    if (!file) return item;
+    if (item.path == null || item.path === "") return { ...item, path: file };
+    if (!item.path.startsWith("/")) return item;
+    if (!locators.has(file)) {
+      const text = loaded.textByPath?.get(file);
+      locators.set(file, text == null ? () => null : recordLocator(text, file));
+    }
+    const line = locators.get(file)(item.path);
+    return { ...item, path: `${line ? `${file}:${line}` : file} ${item.path}` };
+  });
 }
 
 /** References to a record that already failed validation are not reported again. */
@@ -142,8 +165,8 @@ function validateRelations(records, invalidIds) {
 
 function compareEdges(left, right) {
   return (
-    left.from.localeCompare(right.from) ||
-    left.relation.localeCompare(right.relation) ||
-    left.to.localeCompare(right.to)
+    byCodeUnit(left.from, right.from) ||
+    byCodeUnit(left.relation, right.relation) ||
+    byCodeUnit(left.to, right.to)
   );
 }

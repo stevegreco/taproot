@@ -1,4 +1,5 @@
 import { PROBLEM, problem } from "./tables.js";
+import { byCodeUnit } from "../sort.js";
 
 export const VISUAL_LITERALS = Object.freeze(["transparent", "inherit", "none"]);
 
@@ -84,7 +85,7 @@ export function expandVisuals(contract, recordId) {
 
   problems.push(...reservedAxisNameProblems(parameters, configurationAxes, recordId));
 
-  for (const partName of Object.keys(visuals).sort(compareKey)) {
+  for (const partName of Object.keys(visuals).sort(byCodeUnit)) {
     const path = `/contract/visuals/${partName}`;
     if (!parts.has(partName)) {
       problems.push(conflict(recordId, path, `visuals part ${partName} is not in anatomy`));
@@ -165,7 +166,7 @@ export function resolveMappings(mappings, stateResolution = {}, options = {}) {
 
   const parts = {};
   for (const [part, channels] of [...resolved.entries()].sort(([left], [right]) =>
-    left.localeCompare(right),
+    byCodeUnit(left, right),
   )) {
     if (isNone(channels.get(MOTION_SHORTHAND)?.token)) {
       for (const channel of MOTION_CLEARED) channels.delete(channel);
@@ -240,7 +241,7 @@ function expandPart(partName, node, contract, recordId, path) {
 
   for (const axis of Object.keys(node)
     .filter((key) => !RESERVED_PART_KEYS.includes(key))
-    .sort(compareKey)) {
+    .sort(byCodeUnit)) {
     const allowed = configurationValues(
       axis,
       contract.parameters ?? {},
@@ -262,7 +263,7 @@ function expandPart(partName, node, contract, recordId, path) {
       problems.push(conflict(recordId, axisPath, `visuals axis ${axis} must be an object`));
       continue;
     }
-    for (const value of Object.keys(values).sort(compareKey)) {
+    for (const value of Object.keys(values).sort(byCodeUnit)) {
       const valuePath = `${axisPath}/${value}`;
       if (!allowed.has(value)) {
         problems.push(
@@ -310,7 +311,7 @@ function expandStateBlock(partName, states, configuration, contract, recordId, p
     return problems;
   }
   const allowed = new Set(contract.states ?? []);
-  for (const state of Object.keys(states).sort(compareKey)) {
+  for (const state of Object.keys(states).sort(byCodeUnit)) {
     const statePath = `${path}/${state}`;
     if (!allowed.has(state)) {
       problems.push(
@@ -340,7 +341,7 @@ function channelMappings(partName, channels, configuration, state, recordId, pat
     return [];
   }
   const mappings = [];
-  for (const channel of Object.keys(channels).sort(compareKey)) {
+  for (const channel of Object.keys(channels).sort(byCodeUnit)) {
     const channelPath = `${path}/${channel}`;
     if (!VISUAL_CHANNEL_SET.has(channel)) {
       problems.push(
@@ -504,7 +505,7 @@ function buildVisualCoverage(contract) {
   const parts = {};
   const usedAxes = new Set();
 
-  for (const partName of Object.keys(visuals).sort(compareKey)) {
+  for (const partName of Object.keys(visuals).sort(byCodeUnit)) {
     const node = visuals[partName];
     if (!isPlainObject(node)) continue;
     const axes = [];
@@ -517,13 +518,13 @@ function buildVisualCoverage(contract) {
 
     for (const axis of Object.keys(node)
       .filter((key) => !RESERVED_PART_KEYS.includes(key))
-      .sort(compareKey)) {
+      .sort(byCodeUnit)) {
       const axisValues = node[axis];
       if (!isPlainObject(axisValues)) continue;
       axes.push(axis);
       usedAxes.add(axis);
       const authored = [];
-      for (const value of Object.keys(axisValues).sort(compareKey)) {
+      for (const value of Object.keys(axisValues).sort(byCodeUnit)) {
         authored.push(value);
         const body = axisValues[value];
         if (!isPlainObject(body)) continue;
@@ -540,7 +541,7 @@ function buildVisualCoverage(contract) {
     const coverage = {
       axes,
       values,
-      states: [...states].sort(compareKey),
+      states: [...states].sort(byCodeUnit),
       channels: VISUAL_CHANNELS.filter((channel) => channels.has(channel)),
     };
     const missingValues = missingAxisValues(axes, values, contract);
@@ -551,13 +552,13 @@ function buildVisualCoverage(contract) {
   const uncoveredParts = (contract.anatomy ?? [])
     .map((item) => item.name)
     .filter((name) => !Object.hasOwn(parts, name))
-    .sort(compareKey);
+    .sort(byCodeUnit);
   const uncoveredAxes = [
     ...Object.keys(contract.parameters ?? {}),
     ...Object.keys(contract.configurationAxes ?? {}),
   ]
     .filter((name) => !usedAxes.has(name) && !RESERVED_PART_KEYS.includes(name))
-    .sort(compareKey);
+    .sort(byCodeUnit);
 
   return { parts, uncoveredParts, uncoveredAxes };
 }
@@ -587,7 +588,7 @@ function missingAxisValues(axes, authoredValues, contract) {
     );
     if (!allowed || typeof allowed.has !== "function" || !allowed[Symbol.iterator]) continue;
     const authored = new Set(authoredValues[axis] ?? []);
-    const absent = [...allowed].filter((value) => !authored.has(value)).sort(compareKey);
+    const absent = [...allowed].filter((value) => !authored.has(value)).sort(byCodeUnit);
     if (absent.length > 0) missing[axis] = absent;
   }
   return missing;
@@ -640,14 +641,14 @@ function layerStates(active, stateResolution) {
   for (const state of overlay) {
     if (active.has(state) && !independent.has(state)) layers.set(state, rank++);
   }
-  for (const state of suppressWinners.sort(compareKey)) {
+  for (const state of suppressWinners.sort(byCodeUnit)) {
     if (active.has(state) && !independent.has(state) && !layers.has(state))
       layers.set(state, rank++);
   }
-  for (const state of [...independent].sort(compareKey)) {
+  for (const state of [...independent].sort(byCodeUnit)) {
     if (active.has(state)) layers.set(state, rank++);
   }
-  for (const state of [...active].sort(compareKey)) {
+  for (const state of [...active].sort(byCodeUnit)) {
     if (!layers.has(state) && state !== REST_STATE) {
       layers.set(state, rank++);
     }
@@ -706,12 +707,13 @@ export function configurationValues(key, parameters, configurationAxes) {
 function sortMappings(mappings) {
   return [...mappings].sort((left, right) => {
     return (
-      left.part.localeCompare(right.part) ||
-      left.channel.localeCompare(right.channel) ||
-      serializeConfiguration(left.configuration).localeCompare(
+      byCodeUnit(left.part, right.part) ||
+      byCodeUnit(left.channel, right.channel) ||
+      byCodeUnit(
+        serializeConfiguration(left.configuration),
         serializeConfiguration(right.configuration),
       ) ||
-      (left.state ?? "").localeCompare(right.state ?? "")
+      byCodeUnit(left.state ?? "", right.state ?? "")
     );
   });
 }
@@ -723,7 +725,7 @@ export function mappingIdentity(mapping) {
 
 function serializeConfiguration(configuration) {
   return Object.entries(configuration ?? {})
-    .sort(([left], [right]) => left.localeCompare(right))
+    .sort(([left], [right]) => byCodeUnit(left, right))
     .map(([key, value]) => `${key}=${value}`)
     .join(",");
 }
@@ -738,10 +740,6 @@ function isNone(token) {
 
 function isPlainObject(value) {
   return value != null && typeof value === "object" && !Array.isArray(value);
-}
-
-function compareKey(left, right) {
-  return left.localeCompare(right);
 }
 
 function conflict(recordId, path, message) {

@@ -1,4 +1,5 @@
 import { PROBLEM, problem } from "./tables.js";
+import { headingAnchors, subsectionAnchors } from "./anchors.js";
 import { configurationValues, mappingIdentity } from "./visuals.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
@@ -53,7 +54,7 @@ function expandVariantGuidance(guidance) {
  * variant that component's contract has, and a `###` heading with text in the
  * pattern body. A variant takes guidance from at most one pattern.
  */
-export function checkVariantGuidance(records) {
+export function checkVariantGuidance(records, invalidIds = new Set()) {
   const problems = [];
   const guidedBy = new Map();
   for (const record of records.values()) {
@@ -69,6 +70,7 @@ export function checkVariantGuidance(records) {
       );
     const anchors = subsectionAnchors(record.body ?? "");
     for (const [id, variants] of Object.entries(record.variantGuidance)) {
+      if (invalidIds.has(id)) continue;
       if (!(record.relations?.guides ?? []).includes(id)) {
         report(`names ${id}, which the pattern does not guide`);
         continue;
@@ -90,27 +92,6 @@ export function checkVariantGuidance(records) {
     }
   }
   return problems;
-}
-
-/** Anchors of `###` headings followed by text, using the docs site's heading anchor rule. */
-function subsectionAnchors(body) {
-  const anchors = new Set();
-  const matches = [...body.matchAll(/^###\s+(.+)$/gm)];
-  for (const [index, match] of matches.entries()) {
-    const end = matches[index + 1]?.index ?? body.length;
-    let text = body.slice(match.index + match[0].length, end);
-    const cut = text.search(/^##\s+/m);
-    if (cut !== -1) text = text.slice(0, cut);
-    if (text.trim().length === 0) continue;
-    anchors.add(
-      match[1]
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, ""),
-    );
-  }
-  return anchors;
 }
 
 /**
@@ -456,20 +437,37 @@ export function completenessProblems(record) {
   return problems;
 }
 
-export function checkRuleReferences(record, records) {
+export function checkRuleReferences(record, records, invalidIds = new Set()) {
   const problems = [];
   const contract = record.contract;
   if (contract == null || typeof contract !== "object") return problems;
 
   for (const { rule, path } of walkContractRules(contract)) {
     for (const [index, reference] of (rule.references ?? []).entries()) {
-      if (!records.has(reference.id)) {
+      if (invalidIds.has(reference.id)) continue;
+      const target = records.get(reference.id);
+      if (!target) {
         problems.push(
           problem({
             code: PROBLEM.CONTRACT_UNRESOLVED_REFERENCE,
             message: `${record.id} rule ${rule.id} references unresolved record ${reference.id}`,
             recordId: record.id,
             path: `${path}/references/${index}/id`,
+          }),
+        );
+        continue;
+      }
+      if (
+        reference.fragment &&
+        target.bodyOrigin === "authored" &&
+        !headingAnchors(target.body ?? "").has(reference.fragment)
+      ) {
+        problems.push(
+          problem({
+            code: PROBLEM.CONTRACT_UNRESOLVED_REFERENCE,
+            message: `${record.id} rule ${rule.id} references #${reference.fragment}, which ${reference.id} has no heading for`,
+            recordId: record.id,
+            path: `${path}/references/${index}/fragment`,
           }),
         );
       }

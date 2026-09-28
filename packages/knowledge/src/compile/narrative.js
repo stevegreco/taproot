@@ -70,16 +70,9 @@ export function rewriteBodyLinks(body, context) {
       return;
     }
     references.push(resolved.reference);
-    if (resolved.url !== url && node.position) {
-      replacements.push({
-        start: node.position.start.offset,
-        end: node.position.end.offset,
-        text: replaceDestination(
-          body.slice(node.position.start.offset, node.position.end.offset),
-          url,
-          resolved.url,
-        ),
-      });
+    if (resolved.url !== url) {
+      const range = destinationRange(body, node);
+      if (range) replacements.push({ ...range, text: resolved.url });
     }
   });
 
@@ -115,16 +108,9 @@ export function rewriteEmittedMarkdownUrls(body) {
     if (node.type !== "link" && node.type !== "image") return;
     const url = node.url ?? "";
     const next = toMarkdownFileUrl(url);
-    if (next === url || !node.position) return;
-    replacements.push({
-      start: node.position.start.offset,
-      end: node.position.end.offset,
-      text: replaceDestination(
-        body.slice(node.position.start.offset, node.position.end.offset),
-        url,
-        next,
-      ),
-    });
+    if (next === url) return;
+    const range = destinationRange(body, node);
+    if (range) replacements.push({ ...range, text: next });
   });
 
   let rewritten = body;
@@ -187,10 +173,11 @@ function resolveBodyUrl(url, context, allowBundlePath = false) {
     return { kind: "error" };
   }
 
-  for (const id of context.recordIdByPath.values()) {
-    if (pathPart === `markdown/${id}.md`) {
-      return { kind: "ok", url, reference: { kind: "record", target: id } };
-    }
+  const viewId = pathPart.startsWith(`${MARKDOWN_VIEW_DIR}/`)
+    ? pathPart.slice(MARKDOWN_VIEW_DIR.length + 1, -".md".length)
+    : null;
+  if (viewId && pathPart.endsWith(".md") && recordIds(context).has(viewId)) {
+    return { kind: "ok", url, reference: { kind: "record", target: viewId } };
   }
   if (allowBundlePath) {
     for (const target of context.assetPathToBundlePath.values()) {
@@ -220,6 +207,17 @@ function resolveBodyUrl(url, context, allowBundlePath = false) {
   return { kind: "error" };
 }
 
+const idSets = new WeakMap();
+
+function recordIds(context) {
+  let ids = idSets.get(context.recordIdByPath);
+  if (!ids) {
+    ids = new Set(context.recordIdByPath.values());
+    idSets.set(context.recordIdByPath, ids);
+  }
+  return ids;
+}
+
 function* htmlDestinations(html) {
   const root = parseFragment(html, { sourceCodeLocationInfo: true });
   function* walk(node) {
@@ -244,21 +242,40 @@ function escapeAttribute(value) {
     .replaceAll(">", "&gt;");
 }
 
-function replaceDestination(slice, oldUrl, newUrl) {
-  const wrapped = `(${oldUrl})`;
-  const at = slice.lastIndexOf(wrapped);
-  if (at !== -1) {
-    return slice.slice(0, at) + `(${newUrl})` + slice.slice(at + wrapped.length);
+/**
+ * The source range of an inline link or image destination, without its angle brackets.
+ * Replacing only this range keeps a linked image's two destinations from overlapping, and
+ * it finds destinations written with backslash escapes, whose source differs from `node.url`.
+ */
+function destinationRange(body, node) {
+  if (!node.position) return null;
+  const start = node.position.start.offset;
+  const slice = body.slice(start, node.position.end.offset);
+  if (!slice.endsWith(")")) return null;
+  // The destination follows the last `](`; a nested image's destination comes earlier.
+  const open = slice.lastIndexOf("](");
+  if (open === -1) return null;
+  let at = open + 2;
+  while (/\s/.test(slice[at] ?? "")) at += 1;
+  if (slice[at] === "<") {
+    const close = slice.indexOf(">", at);
+    return close === -1 ? null : { start: start + at + 1, end: start + close };
   }
-  const titled = `(${oldUrl} `;
-  const titledAt = slice.lastIndexOf(titled);
-  if (titledAt !== -1) {
-    return slice.slice(0, titledAt) + `(${newUrl} ` + slice.slice(titledAt + titled.length);
+  let end = at;
+  let depth = 0;
+  while (end < slice.length) {
+    const char = slice[end];
+    if (char === "\\") {
+      end += 2;
+      continue;
+    }
+    if (/\s/.test(char)) break;
+    if (char === "(") depth += 1;
+    if (char === ")") {
+      if (depth === 0) break;
+      depth -= 1;
+    }
+    end += 1;
   }
-  const angled = `(<${oldUrl}>)`;
-  const angledAt = slice.lastIndexOf(angled);
-  if (angledAt !== -1) {
-    return slice.slice(0, angledAt) + `(<${newUrl}>)` + slice.slice(angledAt + angled.length);
-  }
-  return slice.replace(oldUrl, newUrl);
+  return end > at ? { start: start + at, end: start + end } : null;
 }

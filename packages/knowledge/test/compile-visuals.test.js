@@ -356,7 +356,7 @@ test("a visuals token missing from the token package fails the build", async () 
     codes(corpus, PROBLEM.SOURCE_CONFLICT).find((item) =>
       /semantic\.color\.does\.not\.exist/.test(item.message),
     ).path,
-    "/contract/visuals/control/base/background/token/name",
+    "content/missing-visual.md:67 /contract/visuals/control/base/background/token/name",
   );
 });
 

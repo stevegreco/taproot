@@ -19,14 +19,8 @@
 
 import { tokenize } from "../compile/search-index.js";
 import { REVERSE_RELATION } from "../compile/tables.js";
-import {
-  DOTTED_ID,
-  KnowledgeBundleError,
-  SLUG,
-  VOCABULARY,
-  byCodeUnit,
-  loadBundle,
-} from "./load.js";
+import { DOTTED_ID, KnowledgeBundleError, SLUG, VOCABULARY, loadBundle } from "./load.js";
+import { byCodeUnit } from "../sort.js";
 
 export { KnowledgeBundleError };
 export { formatAvoid, formatRule, referenceLabel } from "../render.js";
