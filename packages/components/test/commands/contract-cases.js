@@ -148,9 +148,9 @@ function stateAttributes(contract, host) {
       attributes[state] = { name: attribute, value: "" };
     }
   }
-  // A non-empty error message is what marks the control invalid.
-  if (host.parameters?.error?.attribute) {
-    attributes.invalid = { name: host.parameters.error.attribute, value: "Fix this." };
+  // Any non-empty value puts the element in a state its web section maps to an attribute.
+  for (const [state, { attribute }] of Object.entries(host.states ?? {})) {
+    attributes[state] = { name: attribute, value: "Fix this." };
   }
   return attributes;
 }

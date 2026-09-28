@@ -28,6 +28,35 @@ export async function hostElements() {
       ),
       properties: sampleProperties(contract.parameters ?? {}, host.parameters ?? {}),
       enums: enumProperties(contract.parameters ?? {}, host.parameters ?? {}),
+      // Every string attribute set, so parts that render only with text are present.
+      textAttributes: Object.fromEntries(
+        Object.entries(contract.parameters ?? {})
+          .filter(
+            ([name, parameter]) =>
+              parameter.kind === "string" && host.parameters?.[name]?.attribute,
+          )
+          .filter(([name]) => !host.parameters[name].attribute.startsWith("aria-"))
+          .map(([name]) => [host.parameters[name].attribute, `Sample ${name}`]),
+      ),
+      parts: Object.values(host.anatomy ?? {})
+        .map((node) => node.part)
+        .filter(Boolean),
+      requiresDefaultSlot: Object.values(host.anatomy ?? {}).some(
+        (node) => node.slot === "default" && node.required,
+      ),
+      disabledAttribute: host.parameters?.disabled?.attribute ?? null,
+      fieldsetDisables: host.formAssociation?.fieldsetDisables === true,
+      suppressedWhenDisabled: [
+        ...new Set(
+          Object.values(host.events ?? {})
+            .filter((entry) => entry.suppressedWhen === "effectively-disabled")
+            .map((entry) => entry.event),
+        ),
+      ],
+      hasFormProperty: Object.hasOwn(host.properties ?? {}, "form"),
+      activationKeys: (contract.accessibility?.keyboard ?? [])
+        .map((binding) => binding.key)
+        .filter((key) => key === "Enter" || key === "Space"),
     };
   });
 }

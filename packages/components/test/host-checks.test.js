@@ -1,9 +1,11 @@
 /**
  * Web-section guarantees, checked once for every component with a web section
- * in the catalog: alias registration, the native `hidden` attribute, focus
- * forwarding to `web.focus.forwardsTo`, visible keyboard focus, events reaching
- * the host, enum properties, and properties set before registration. A
- * component's own test file covers only its behavior.
+ * in the catalog: alias registration, the native `hidden` attribute, declared
+ * parts and the required slot, focus forwarding to `web.focus.forwardsTo`,
+ * visible keyboard focus, events reaching the host and not firing while
+ * disabled, keyboard activation, the `form` property, enum properties, and
+ * properties set before registration. A component's own test file covers only
+ * its behavior.
  *
  * The rule census credits a tag in a title here to every component whose
  * contract has that rule, so the visible-focus title carries
@@ -49,13 +51,16 @@ function focusTarget(element, host) {
   return host.shadowRoot.querySelector(`[part="${element.focusPart}"]`);
 }
 
-/** Fire a web event the way a user would, from its native control. */
-async function trigger(event, target) {
+/**
+ * Fire a web event the way a user would, from its native control. `force` skips the
+ * actionability wait, so a disabled control can be tried.
+ */
+async function trigger(event, target, options = {}) {
   if (event === "click" || target.type === "checkbox") {
-    await userEvent.click(target);
+    await userEvent.click(target, options);
     return;
   }
-  await userEvent.type(target, "a");
+  await userEvent.type(target, "a", options);
   if (event === "change") await userEvent.tab();
 }
 
@@ -121,6 +126,93 @@ describe("host checks", () => {
 
     expect(received).toContain(host);
   });
+
+  test.each(rows(elements.filter((element) => element.parts.length > 0)))(
+    "<%s> renders every part its web section declares",
+    (_tagName, element) => {
+      const host = render(element, element.textAttributes);
+      const missing = element.parts.filter(
+        (part) => !host.shadowRoot.querySelector(`[part~="${part}"]`),
+      );
+
+      expect(missing).toEqual([]);
+    },
+  );
+
+  test.each(rows(elements.filter((element) => element.requiresDefaultSlot)))(
+    "<%s> renders the default slot its web section requires",
+    (_tagName, element) => {
+      const host = render(element);
+
+      expect(host.shadowRoot.querySelector("slot:not([name])")).not.toBe(null);
+    },
+  );
+
+  const suppressed = focusable
+    .filter((element) => element.disabledAttribute)
+    .flatMap((element) =>
+      element.suppressedWhenDisabled.map((event) => [element.tagName, event, element]),
+    );
+
+  test.each(suppressed)(
+    "<%s> does not dispatch %s while disabled",
+    async (_tagName, event, element) => {
+      const host = render(element, { [element.disabledAttribute]: "" });
+      const received = [];
+      host.addEventListener(event, () => received.push(event));
+
+      await trigger(event, focusTarget(element, host), { force: true });
+
+      expect(received).toEqual([]);
+    },
+  );
+
+  test.each(suppressed.filter(([, , element]) => element.fieldsetDisables))(
+    "<%s> does not dispatch %s inside a disabled fieldset",
+    async (_tagName, event, element) => {
+      const fieldset = document.createElement("fieldset");
+      fieldset.disabled = true;
+      document.body.append(fieldset);
+      const host = render(element);
+      fieldset.append(host);
+      const received = [];
+      host.addEventListener(event, () => received.push(event));
+
+      await trigger(event, focusTarget(element, host), { force: true });
+
+      expect(received).toEqual([]);
+    },
+  );
+
+  const keys = focusable
+    .filter((element) => element.events.length > 0)
+    .flatMap((element) => element.activationKeys.map((key) => [element.tagName, key, element]));
+
+  test.each(keys)("<%s> activates with %s", async (_tagName, key, element) => {
+    const host = render(element);
+    const [event] = element.events;
+    const received = [];
+    host.addEventListener(event, () => received.push(event));
+
+    focusTarget(element, host).focus();
+    await userEvent.keyboard(key === "Space" ? " " : `{${key}}`);
+
+    expect(received).toEqual([event]);
+  });
+
+  test.each(rows(elements.filter((element) => element.hasFormProperty)))(
+    "<%s> form returns the form that owns it",
+    (_tagName, element) => {
+      const form = document.createElement("form");
+      document.body.append(form);
+      const host = render(element);
+      form.append(host);
+
+      expect(host.form).toBe(form);
+      host.remove();
+      expect(host.form).toBe(null);
+    },
+  );
 
   test("every component with events has a focus target to fire them from", () => {
     const uncovered = elements

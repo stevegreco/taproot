@@ -1015,6 +1015,21 @@
             "$ref": "#/$defs/eventMap"
           }
         },
+        "states": {
+          "description": "States an attribute drives, beyond those named after a boolean parameter. A non-empty value puts the element in the state.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["attribute"],
+            "properties": {
+              "attribute": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
         "properties": {
           "type": "object",
           "additionalProperties": {

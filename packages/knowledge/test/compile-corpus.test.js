@@ -592,6 +592,18 @@ function defaultedComponent(web) {
   });
 }
 
+test("SOURCE_CONFLICT fires when a web state is not a contract state", async () => {
+  const corpus = await buildCorpus(
+    defaultedComponent({ states: { invalid: { attribute: "error" } } }),
+    [publicRoot],
+  );
+  assert.ok(
+    codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) =>
+      /web states names invalid, which contract\.states does not have/.test(item.message),
+    ),
+  );
+});
+
 test("web parameters default to kebab-case attributes and same-name properties", async () => {
   const corpus = await buildCorpus(
     defaultedComponent({ parameters: { accessibleName: { attribute: "aria-label" } } }),

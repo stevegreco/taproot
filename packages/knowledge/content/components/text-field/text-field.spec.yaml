@@ -249,6 +249,9 @@ web:
     change:
       event: change
       suppressedWhen: effectively-disabled
+  states:
+    invalid:
+      attribute: error
   properties:
     form:
       type: "HTMLFormElement | null"

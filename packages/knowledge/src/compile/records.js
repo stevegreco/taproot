@@ -214,6 +214,19 @@ export function checkWebAgreement(records) {
       ),
     );
 
+    for (const state of Object.keys(web.states ?? {})) {
+      if (!(contract.states ?? []).includes(state)) {
+        problems.push(
+          problem({
+            code: PROBLEM.SOURCE_CONFLICT,
+            message: `${record.id} web states names ${state}, which contract.states does not have`,
+            recordId: record.id,
+            path: `/web/states/${state}`,
+          }),
+        );
+      }
+    }
+
     for (const [name, portable] of Object.entries(contract.parameters ?? {})) {
       const mapped = web.parameters?.[name];
       if (!mapped?.values || portable.kind !== "enum") continue;
