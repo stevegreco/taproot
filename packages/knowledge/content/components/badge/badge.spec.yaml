@@ -98,8 +98,8 @@ contract:
   visuals:
     surface:
       base:
-        padding-block: primitives.space.1
-        padding-inline: primitives.space.2
+        padding-vertical: primitives.space.1
+        padding-horizontal: primitives.space.2
         radius: semantic.radius.pill
         font-family: semantic.typography.label.small.fontFamily
         font-size: semantic.typography.label.small.fontSize

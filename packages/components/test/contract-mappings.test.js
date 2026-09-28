@@ -4,7 +4,7 @@
  * the token the contract resolves there, in light and dark themes.
  *
  * States are forced, not reached with the pointer: hover, pressed, and
- * focus-visible through CDP pseudo-state forcing on the focus target; states
+ * focus through CDP pseudo-state forcing on the focus target; states
  * named after a boolean parameter (disabled, checked) and invalid through host
  * attributes. The pointer is parked away from the cases first, so a pointer an
  * earlier test file left over a control cannot add a real hover. Literals
@@ -18,33 +18,32 @@ import { FIXTURES } from "./helpers/fixtures.js";
 const PSEUDO_STATES = Object.freeze({
   hover: "hover",
   pressed: "active",
-  "focus-visible": "focus-visible",
+  focus: "focus-visible",
 });
 
-/** CSS property set on the probe, then the longhands read from part and probe. */
-const CHANNELS = Object.freeze({
-  background: ["background-color", ["background-color"]],
-  foreground: ["color", ["color"]],
-  border: [
-    "border-color",
-    ["border-top-color", "border-right-color", "border-bottom-color", "border-left-color"],
+/** The longhands read from part and probe for each CSS property a channel sets. */
+const LONGHANDS = Object.freeze({
+  "background-color": ["background-color"],
+  color: ["color"],
+  "border-color": [
+    "border-top-color",
+    "border-right-color",
+    "border-bottom-color",
+    "border-left-color",
   ],
-  outline: ["outline-color", ["outline-color"]],
-  "padding-inline": ["padding-inline", ["padding-inline-start", "padding-inline-end"]],
-  "padding-block": ["padding-block", ["padding-block-start", "padding-block-end"]],
-  radius: ["border-radius", ["border-top-left-radius", "border-bottom-right-radius"]],
-  gap: ["gap", ["row-gap", "column-gap"]],
-  "font-family": ["font-family", ["font-family"]],
-  "font-size": ["font-size", ["font-size"]],
-  "font-weight": ["font-weight", ["font-weight"]],
-  "line-height": ["line-height", ["line-height"]],
-  "letter-spacing": ["letter-spacing", ["letter-spacing"]],
-  transition: [
-    "transition",
-    ["transition-property", "transition-duration", "transition-timing-function"],
-  ],
-  "transition-duration": ["transition-duration", ["transition-duration"]],
-  "transition-timing-function": ["transition-timing-function", ["transition-timing-function"]],
+  "outline-color": ["outline-color"],
+  "padding-inline": ["padding-inline-start", "padding-inline-end"],
+  "padding-block": ["padding-block-start", "padding-block-end"],
+  "border-radius": ["border-top-left-radius", "border-bottom-right-radius"],
+  gap: ["row-gap", "column-gap"],
+  "font-family": ["font-family"],
+  "font-size": ["font-size"],
+  "font-weight": ["font-weight"],
+  "line-height": ["line-height"],
+  "letter-spacing": ["letter-spacing"],
+  transition: ["transition-property", "transition-duration", "transition-timing-function"],
+  "transition-duration": ["transition-duration"],
+  "transition-timing-function": ["transition-timing-function"],
 });
 
 /** Distinct inherited type, so `inherit` cannot pass by matching a token by accident. */
@@ -104,9 +103,6 @@ async function parkPointer() {
 
 async function checkCase(component, tagName, testCase, theme) {
   const where = `${component.id} ${describeConfiguration(testCase.configuration)} ${describeStates(testCase.states)} theme=${theme}`;
-  if (testCase.problems.length > 0)
-    return testCase.problems.map((problem) => `${where}: ${problem}`);
-
   await session.send("Emulation.setEmulatedMedia", { features: testCase.media });
   const host = render(component, tagName, testCase);
 
@@ -120,15 +116,15 @@ async function checkCase(component, tagName, testCase, theme) {
   }
 
   const mismatches = [];
-  for (const { part, channel, value } of testCase.expected) {
+  for (const { part, channel, css, value } of testCase.expected) {
     const element = partElement(component, host, part);
     if (!element) {
       mismatches.push(`${where}: part ${part} is not rendered`);
       continue;
     }
-    const [setProperty, longhands] = CHANNELS[channel];
+    const longhands = LONGHANDS[css];
     settleTransitions(element);
-    const expected = probe(element, setProperty, value, longhands);
+    const expected = probe(element, css, value, longhands);
     const actual = computed(element, longhands);
     for (const longhand of longhands) {
       if (!sameValue(longhand, actual[longhand], expected[longhand])) {

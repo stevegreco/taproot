@@ -1,3 +1,4 @@
+import { COMPILED_SCHEMA_VERSION } from "../src/schema/compiled-extensions.js";
 import { recordOnlyCompiledFields, stubRecord } from "./helpers/catalog.js";
 import { portableContract } from "./helpers/workspace.js";
 import assert from "node:assert/strict";
@@ -86,7 +87,7 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
     written.map((record) => record.id),
     ids,
   );
-  assert.equal(written[0].compiledSchemaVersion, 7);
+  assert.equal(written[0].compiledSchemaVersion, COMPILED_SCHEMA_VERSION);
   assert.ok(written.find((record) => record.id === "component.button").backlinks);
 
   const internal = projectBundle(corpus, "internal", meta);
@@ -152,7 +153,7 @@ test("compiled schema still requires visibility after authored defaults", () => 
     sources: [{ kind: "authored", path: "content/almost.md", revision: "abc123456789abcd" }],
     body: "Body.",
     bodyOrigin: "authored",
-    compiledSchemaVersion: 7,
+    compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
     backlinks: {},
   };
   const missing = findCompiledIssues([almost]);

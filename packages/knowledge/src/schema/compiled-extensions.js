@@ -1,4 +1,6 @@
-export const COMPILED_SCHEMA_VERSION = 7;
+import contractSchema from "./portable-contract.schema.json" with { type: "json" };
+
+export const COMPILED_SCHEMA_VERSION = 8;
 
 export const COMPILED_REQUIRED = Object.freeze([
   "schemaVersion",
@@ -84,6 +86,76 @@ export const COMPILED_DEFS = Object.freeze({
       name: { type: "string", minLength: 1 },
       alias: { type: ["string", "null"] },
       valueType: { type: "string" },
+    },
+  },
+});
+
+/** Fields the compiler adds to a component contract. */
+export const COMPILED_CONTRACT_PROPERTIES = Object.freeze({
+  mappings: {
+    description: "One row per part, channel, configuration, and state, expanded from visuals.",
+    type: "array",
+    items: { $ref: "#/$defs/visualMapping" },
+  },
+  visualCoverage: { $ref: "#/$defs/visualCoverage" },
+});
+
+const stringList = { type: "array", items: { type: "string", minLength: 1 } };
+
+export const COMPILED_CONTRACT_DEFS = Object.freeze({
+  visualMapping: {
+    type: "object",
+    additionalProperties: false,
+    required: ["part", "channel", "token"],
+    properties: {
+      part: { type: "string", minLength: 1 },
+      channel: { enum: Object.keys(contractSchema.$defs.channelMapProperties.properties) },
+      configuration: {
+        type: "object",
+        additionalProperties: { type: "string", minLength: 1 },
+      },
+      state: { type: "string", minLength: 1 },
+      token: {
+        oneOf: [
+          {
+            type: "object",
+            additionalProperties: false,
+            required: ["name"],
+            properties: { name: { type: "string", minLength: 1 } },
+          },
+          {
+            type: "object",
+            additionalProperties: false,
+            required: ["literal"],
+            properties: { literal: { enum: ["transparent", "inherit", "none"] } },
+          },
+        ],
+      },
+    },
+  },
+  visualCoverage: {
+    type: "object",
+    additionalProperties: false,
+    required: ["parts", "uncoveredParts", "uncoveredAxes"],
+    properties: {
+      parts: { type: "object", additionalProperties: { $ref: "#/$defs/visualPartCoverage" } },
+      uncoveredParts: stringList,
+      uncoveredAxes: stringList,
+    },
+  },
+  visualPartCoverage: {
+    type: "object",
+    additionalProperties: false,
+    required: ["axes", "values", "states", "channels"],
+    properties: {
+      axes: stringList,
+      values: { type: "object", additionalProperties: stringList },
+      missingValues: {
+        type: "object",
+        additionalProperties: { ...stringList, minItems: 1 },
+      },
+      states: stringList,
+      channels: stringList,
     },
   },
 });

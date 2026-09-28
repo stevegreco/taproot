@@ -64,7 +64,7 @@ test("contract host and checks add terms without stringifying the record", () =>
         variant: { kind: "enum", values: { ghost: "Low emphasis." } },
       },
       events: { activate: { description: "unused event prose" } },
-      states: ["pressed", "focus-visible"],
+      states: ["pressed", "focus"],
       accessibility: { requirements: ["Icon-only buttons have an accessibleName."] },
     },
     host: {

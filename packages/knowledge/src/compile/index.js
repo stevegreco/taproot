@@ -9,6 +9,7 @@ import { PROBLEM, problem } from "./tables.js";
 
 export { createWorkspaceReader } from "./reader.js";
 export {
+  CHANNEL_CSS,
   compileContractVisuals,
   expandVisuals,
   resolveMappings,

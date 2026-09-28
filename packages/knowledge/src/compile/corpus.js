@@ -11,7 +11,7 @@ import {
 import { generateComponentBody } from "./generate-body.js";
 import { rewriteBodyLinks } from "./narrative.js";
 import { PROBLEM, problem } from "./tables.js";
-import { compileContractVisuals, stripMappingSources } from "./visuals.js";
+import { compileContractVisuals } from "./visuals.js";
 import { byCodeUnit } from "../sort.js";
 import { recordLocator } from "../index.js";
 
@@ -31,7 +31,7 @@ export function assembleCorpus(loaded) {
     [...loaded.inputs].map(([id, input]) => {
       const record = assembleRecord(input.authored, input.contribution, input.assets);
       if (record.contract) {
-        const expanded = compileContractVisuals(record.contract, id);
+        const expanded = compileContractVisuals(record.contract, id, loaded.tokenNames);
         record.contract = expanded.contract;
         visualProblems.push(...expanded.problems);
       }
@@ -52,7 +52,7 @@ export function assembleCorpus(loaded) {
     ...visualProblems,
     ...bindingProblems,
     ...[...records.values()].flatMap((record) => [
-      ...checkSourceAgreement(record, loaded.tokenNames),
+      ...checkSourceAgreement(record),
       ...checkRuleReferences(record, records, invalidIds),
       ...completenessProblems(record),
     ]),
@@ -60,11 +60,6 @@ export function assembleCorpus(loaded) {
     ...checkVariantGuidance(records, invalidIds),
     ...validation.problems,
   ];
-  // visualMapping.additionalProperties is false, so compiler-only `source`
-  // paths must come off after checkMappingAgreement and before compiled output.
-  for (const record of records.values()) {
-    stripMappingSources(record.contract);
-  }
   const rewrittenRecords = new Map();
   const narrativeReferences = new Map();
   for (const [id, record] of records) {

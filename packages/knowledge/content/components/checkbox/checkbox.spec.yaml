@@ -128,13 +128,13 @@ contract:
     change:
       description: The checked state was committed from user interaction.
   states:
-    - default
-    - hover
-    - focus-visible
-    - checked
-    - indeterminate
     - disabled
     - invalid
+    - indeterminate
+    - checked
+    - hover
+    - focus
+    - default
   behavior:
     - id: toggle-on-activate
       level: must
@@ -195,11 +195,11 @@ contract:
     - decision: Checkbox consumes semantic tokens directly, plus one radius primitive.
       rationale: ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is already audited against them. No semantic radius fits a small box (control radius is 10px), so the box uses primitives.radius.xs. No component-token namespace.
     - decision: Checked and indeterminate are states driven by their parameters.
-      rationale: They change the same box fill, and indeterminate wins over checked. As states, stateResolution says so. As two boolean axes they would assign the fill in overlapping rules.
+      rationale: They change the same box fill, and indeterminate wins over checked. As states, their order says so. As two boolean axes they would assign the fill in overlapping rules.
     - decision: A checked or indeterminate box does not change on hover.
-      rationale: The resolver has no combined hover-and-checked state, and the indicator already confirms the state. Hover strengthens the unchecked border only.
-    - decision: Disabled suppresses checked and indeterminate fills, not the indicator.
-      rationale: A disabled box uses disabled colors in every state. The indicator shape still shows whether it is checked.
+      rationale: Checked and indeterminate come before hover, so their border wins, and the indicator already confirms the state. Hover strengthens the unchecked border only.
+    - decision: Disabled overrides checked and indeterminate fills, not the indicator.
+      rationale: Disabled comes first and sets every box channel, so a disabled box uses disabled colors in every state. The indicator shape still shows whether it is checked.
     - decision: Label, hint, and error belong to the checkbox.
       rationale: Same decision as Text field. A separate field shell does not exist yet. Association stays on this control until that shell lands.
     - decision: One size, no density variant, no pressed state.
@@ -210,19 +210,6 @@ contract:
       rationale: Toggling is local until submit, so there is no work to wait on; settings that save immediately belong to Switch. The check mark and dash are not directional, and box and label order follows the inline direction. State changes swap colors and the indicator instantly, so there is nothing to reduce under prefers-reduced-motion.
     - decision: Checkbox groups are not part of this component.
       rationale: Group a list with a native fieldset and legend. A group-level label and error belong to a field shell.
-  stateResolution:
-    suppress:
-      disabled:
-        - checked
-        - hover
-        - indeterminate
-        - invalid
-      indeterminate:
-        - checked
-    overlay:
-      - hover
-    independent:
-      - focus-visible
   visuals:
     field:
       base:
@@ -238,8 +225,8 @@ contract:
       states:
         hover:
           border: semantic.color.border.strong
-        focus-visible:
-          outline: semantic.color.border.focus
+        focus:
+          focus-ring: semantic.color.border.focus
         checked:
           background: semantic.color.background.action.primary.default
           border: semantic.color.border.action.primary.default

@@ -1,6 +1,5 @@
 import { PROBLEM, problem } from "./tables.js";
 import { headingAnchors, subsectionAnchors } from "./anchors.js";
-import { configurationValues, mappingIdentity } from "./visuals.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
 import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
 
@@ -278,7 +277,7 @@ function bijectionProblems(recordId, label, expected, actual) {
   return problems;
 }
 
-export function checkSourceAgreement(record, tokenNames = null) {
+export function checkSourceAgreement(record) {
   const problems = [];
   const tokens = record.tokens;
   if (tokens) {
@@ -299,110 +298,7 @@ export function checkSourceAgreement(record, tokenNames = null) {
     }
   }
 
-  problems.push(...checkMappingAgreement(record, tokenNames));
   return problems;
-}
-
-export function checkMappingAgreement(record, tokenNames = null) {
-  const mappings = record.contract?.mappings;
-  if (!Array.isArray(mappings) || mappings.length === 0) return [];
-
-  const problems = [];
-  const parts = new Set((record.contract.anatomy ?? []).map((item) => item.name));
-  const states = new Set(record.contract.states ?? []);
-  const parameters = record.contract.parameters ?? {};
-  const configurationAxes = record.contract.configurationAxes ?? {};
-  const seen = new Map();
-
-  for (const [index, mapping] of mappings.entries()) {
-    const path = mapping.source ?? `/contract/mappings/${index}`;
-    if (!parts.has(mapping.part)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapping part ${mapping.part} is not in anatomy`,
-          recordId: record.id,
-          path: `${path}/part`,
-        }),
-      );
-    }
-    if (mapping.state && !states.has(mapping.state)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapping state ${mapping.state} is not in contract.states`,
-          recordId: record.id,
-          path: `${path}/state`,
-        }),
-      );
-    }
-    for (const [key, value] of Object.entries(mapping.configuration ?? {})) {
-      const allowed = configurationValues(key, parameters, configurationAxes);
-      if (!allowed) {
-        problems.push(
-          problem({
-            code: PROBLEM.SOURCE_CONFLICT,
-            message: `mapping configuration ${key} is not a contract parameter or configuration axis`,
-            recordId: record.id,
-            path: `${path}/configuration/${key}`,
-          }),
-        );
-        continue;
-      }
-      if (!allowed.has(value)) {
-        problems.push(
-          problem({
-            code: PROBLEM.SOURCE_CONFLICT,
-            message: `mapping configuration ${key} has unknown value ${value}`,
-            recordId: record.id,
-            path: `${path}/configuration/${key}`,
-          }),
-        );
-      }
-    }
-    if (mapping.token?.name && tokenNames != null && !tokenNames.has(mapping.token.name)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapped token ${mapping.token.name} is missing from the token package`,
-          recordId: record.id,
-          path: `${path}/token/name`,
-        }),
-      );
-    }
-
-    const identity = mappingIdentity(mapping);
-    const previous = seen.get(identity);
-    if (previous !== undefined && previous.token !== tokenIdentity(mapping.token)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapping ${mapping.part} ${mapping.channel} names both ${previous.token} and ${tokenIdentity(mapping.token)}`,
-          recordId: record.id,
-          path,
-        }),
-      );
-    } else if (previous === undefined) {
-      seen.set(identity, { token: tokenIdentity(mapping.token), index });
-    } else {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapping ${mapping.part} ${mapping.channel} is duplicated`,
-          recordId: record.id,
-          path,
-        }),
-      );
-    }
-  }
-
-  return problems;
-}
-
-function tokenIdentity(token) {
-  if (token?.name) return token.name;
-  if (token?.literal) return token.literal;
-  return "unknown";
 }
 
 export function completenessProblems(record) {

@@ -123,11 +123,11 @@ contract:
     change:
       description: The value was committed.
   states:
-    - default
-    - hover
-    - focus-visible
     - disabled
     - invalid
+    - hover
+    - focus
+    - default
   behavior:
     - id: error-marks-invalid
       level: must
@@ -170,17 +170,6 @@ contract:
       rationale: The message is the accessible signal. A variant axis would hide that the state comes from the error.
     - decision: Label, hint, and error belong to the field.
       rationale: A separate field shell does not exist yet. Association stays on this control until that shell lands.
-  stateResolution:
-    suppress:
-      disabled:
-        - hover
-        - invalid
-      invalid:
-        - hover
-    overlay:
-      - hover
-    independent:
-      - focus-visible
   visuals:
     field:
       base:
@@ -202,8 +191,8 @@ contract:
         foreground: semantic.color.foreground.default
         border: semantic.color.border.default
         radius: semantic.radius.control
-        padding-inline: primitives.space.3
-        padding-block: primitives.space.2
+        padding-horizontal: primitives.space.3
+        padding-vertical: primitives.space.2
         font-family: semantic.typography.body.default.fontFamily
         font-size: semantic.typography.body.default.fontSize
         font-weight: semantic.typography.body.default.fontWeight
@@ -212,8 +201,8 @@ contract:
       states:
         hover:
           border: semantic.color.border.strong
-        focus-visible:
-          outline: semantic.color.border.focus
+        focus:
+          focus-ring: semantic.color.border.focus
         disabled:
           background: semantic.color.background.disabled
           foreground: semantic.color.foreground.disabled

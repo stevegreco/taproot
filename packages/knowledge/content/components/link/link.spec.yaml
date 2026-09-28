@@ -78,9 +78,9 @@ contract:
     activate:
       description: Follows the link to its destination.
   states:
-    - default
     - hover
-    - focus-visible
+    - focus
+    - default
   behavior:
     - id: native-navigation
       level: must
@@ -121,11 +121,6 @@ contract:
       rationale: Text decoration is fixed component behavior, not a token channel. The behavior rules state when it shows.
     - decision: Link has no visited or disabled styling.
       rationale: Browsers limit visited styling to color and no semantic visited role exists. A link with no destination is text.
-  stateResolution:
-    overlay:
-      - hover
-    independent:
-      - focus-visible
   visuals:
     control:
       base:
@@ -133,8 +128,8 @@ contract:
       states:
         hover:
           foreground: semantic.color.foreground.default
-        focus-visible:
-          outline: semantic.color.border.focus
+        focus:
+          focus-ring: semantic.color.border.focus
           radius: semantic.radius.control
       variant:
         inline:

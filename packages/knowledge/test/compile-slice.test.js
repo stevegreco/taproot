@@ -39,7 +39,7 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
     (row) =>
       row.configuration?.variant === "ghost" &&
       row.channel === "background" &&
-      row.state === "default",
+      row.state === undefined,
   );
   assert.equal(ghostRestFill.token.literal, "transparent");
   assert.equal(Object.hasOwn(button.contract, "visuals"), false);
@@ -62,27 +62,24 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.equal(Object.hasOwn(textField.contract, "visuals"), false);
   assert.equal(textField.contract.specVersion, 5);
   assert.ok(textField.contract.mappings.length > 0);
-  const invalidControl = resolveMappings(
-    textField.contract.mappings,
-    textField.contract.stateResolution,
-    { part: "control", states: ["hover", "invalid"] },
-  );
+  const invalidControl = resolveMappings(textField.contract.mappings, textField.contract.states, {
+    part: "control",
+    states: ["hover", "invalid"],
+  });
   assert.equal(
     invalidControl.channels.border.token.name,
     "semantic.color.border.status.danger.default",
   );
-  const disabledControl = resolveMappings(
-    textField.contract.mappings,
-    textField.contract.stateResolution,
-    { part: "control", states: ["hover", "invalid", "disabled"] },
-  );
+  const disabledControl = resolveMappings(textField.contract.mappings, textField.contract.states, {
+    part: "control",
+    states: ["hover", "invalid", "disabled"],
+  });
   assert.equal(disabledControl.channels.border.token.name, "semantic.color.border.disabled");
-  const focusedInvalid = resolveMappings(
-    textField.contract.mappings,
-    textField.contract.stateResolution,
-    { part: "control", states: ["invalid", "focus-visible"] },
-  );
-  assert.equal(focusedInvalid.channels.outline.token.name, "semantic.color.border.focus");
+  const focusedInvalid = resolveMappings(textField.contract.mappings, textField.contract.states, {
+    part: "control",
+    states: ["invalid", "focus"],
+  });
+  assert.equal(focusedInvalid.channels["focus-ring"].token.name, "semantic.color.border.focus");
   assert.equal(
     focusedInvalid.channels.border.token.name,
     "semantic.color.border.status.danger.default",
@@ -92,15 +89,15 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.equal(Object.hasOwn(link, "tokens"), false);
   assert.equal(Object.hasOwn(link.contract, "visuals"), false);
   assert.equal(link.contract.parameters.variant.default, "inline");
-  const hoveredInline = resolveMappings(link.contract.mappings, link.contract.stateResolution, {
+  const hoveredInline = resolveMappings(link.contract.mappings, link.contract.states, {
     part: "control",
     configuration: { variant: "inline" },
-    states: ["hover", "focus-visible"],
+    states: ["hover", "focus"],
   });
   assert.equal(hoveredInline.channels.foreground.token.name, "semantic.color.foreground.default");
-  assert.equal(hoveredInline.channels.outline.token.name, "semantic.color.border.focus");
+  assert.equal(hoveredInline.channels["focus-ring"].token.name, "semantic.color.border.focus");
   assert.equal(hoveredInline.channels["font-size"].token.literal, "inherit");
-  const standalone = resolveMappings(link.contract.mappings, link.contract.stateResolution, {
+  const standalone = resolveMappings(link.contract.mappings, link.contract.states, {
     part: "control",
     configuration: { variant: "standalone" },
   });

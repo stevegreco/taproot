@@ -1,3 +1,4 @@
+import { COMPILED_SCHEMA_VERSION } from "../../src/schema/compiled-extensions.js";
 import { buildCorpus } from "../../src/compile/corpus.js";
 import { projectBundle } from "../../src/compile/bundle.js";
 import { NARRATIVE_FRONTMATTER_KEYS } from "../../src/compile/tables.js";
@@ -32,7 +33,7 @@ export function stubRecord(id, fields = {}) {
   return {
     id,
     schemaVersion: 1,
-    compiledSchemaVersion: 7,
+    compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
     sources: [{ kind: "authored", path: `content/${id}.md`, revision: "fixture" }],
     type: "component",
     title: "Title",
@@ -53,7 +54,7 @@ export function stubManifest(recordCount, files = []) {
   return {
     content: {
       schemaVersion: 1,
-      compiledSchemaVersion: 7,
+      compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
       visibility: "public",
       knowledgeVersion: META.knowledgeVersion,
       designSystemVersion: META.designSystemVersion,

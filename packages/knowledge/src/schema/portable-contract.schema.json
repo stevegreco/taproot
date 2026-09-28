@@ -16,55 +16,75 @@
     "accessibility"
   ],
   "properties": {
-    "specVersion": { "const": 5 },
-    "description": { "type": "string", "minLength": 1 },
-    "usage": { "$ref": "#/$defs/usage" },
+    "specVersion": {
+      "const": 5
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "usage": {
+      "$ref": "#/$defs/usage"
+    },
     "content": {
       "type": "array",
-      "items": { "$ref": "#/$defs/rule" }
+      "items": {
+        "$ref": "#/$defs/rule"
+      }
     },
     "anatomy": {
       "type": "array",
-      "items": { "$ref": "#/$defs/anatomyPart" }
+      "items": {
+        "$ref": "#/$defs/anatomyPart"
+      }
     },
     "parameters": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/parameter" }
+      "additionalProperties": {
+        "$ref": "#/$defs/parameter"
+      }
     },
     "configurationAxes": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/configurationAxis" }
+      "additionalProperties": {
+        "$ref": "#/$defs/configurationAxis"
+      }
     },
     "events": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/event" }
+      "additionalProperties": {
+        "$ref": "#/$defs/event"
+      }
     },
     "states": {
+      "description": "States, highest priority first. For each channel, the first active state that sets it wins. default is the rest state and comes last.",
       "type": "array",
-      "items": { "type": "string", "minLength": 1 }
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "behavior": {
       "type": "array",
-      "items": { "$ref": "#/$defs/rule" }
+      "items": {
+        "$ref": "#/$defs/rule"
+      }
     },
-    "accessibility": { "$ref": "#/$defs/accessibility" },
+    "accessibility": {
+      "$ref": "#/$defs/accessibility"
+    },
     "rationale": {
       "type": "array",
-      "items": { "$ref": "#/$defs/rationaleItem" }
+      "items": {
+        "$ref": "#/$defs/rationaleItem"
+      }
     },
     "visuals": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/visualPart" }
-    },
-    "stateResolution": { "$ref": "#/$defs/stateResolution" },
-    "visualCoverage": {
-      "description": "Compiler output from visuals. The compiler rejects an authored value.",
-      "$ref": "#/$defs/visualCoverage"
-    },
-    "mappings": {
-      "description": "Compiler output from visuals. The compiler rejects an authored value.",
-      "type": "array",
-      "items": { "$ref": "#/$defs/visualMapping" }
+      "additionalProperties": {
+        "$ref": "#/$defs/visualPart"
+      }
     }
   },
   "$defs": {
@@ -75,11 +95,15 @@
       "properties": {
         "do": {
           "type": "array",
-          "items": { "$ref": "#/$defs/usageDo" }
+          "items": {
+            "$ref": "#/$defs/usageDo"
+          }
         },
         "avoid": {
           "type": "array",
-          "items": { "$ref": "#/$defs/usageAvoid" }
+          "items": {
+            "$ref": "#/$defs/usageAvoid"
+          }
         }
       }
     },
@@ -96,8 +120,13 @@
       "additionalProperties": false,
       "required": ["id", "situation"],
       "properties": {
-        "id": { "$ref": "#/$defs/slug" },
-        "situation": { "type": "string", "minLength": 1 }
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "situation": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "usageAvoid": {
@@ -105,10 +134,21 @@
       "additionalProperties": false,
       "required": ["id", "situation"],
       "properties": {
-        "id": { "$ref": "#/$defs/slug" },
-        "situation": { "type": "string", "minLength": 1 },
-        "instead": { "type": "string", "minLength": 1 },
-        "why": { "type": "string", "minLength": 1 }
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "situation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instead": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "ruleReference": {
@@ -116,8 +156,12 @@
       "additionalProperties": false,
       "required": ["id"],
       "properties": {
-        "id": { "$ref": "#/$defs/dottedId" },
-        "fragment": { "$ref": "#/$defs/slug" }
+        "id": {
+          "$ref": "#/$defs/dottedId"
+        },
+        "fragment": {
+          "$ref": "#/$defs/slug"
+        }
       }
     },
     "rule": {
@@ -125,14 +169,29 @@
       "additionalProperties": false,
       "required": ["id", "level", "statement"],
       "properties": {
-        "id": { "$ref": "#/$defs/slug" },
-        "level": { "enum": ["must", "should", "may"] },
-        "statement": { "type": "string", "minLength": 1 },
-        "applicability": { "type": "string", "minLength": 1 },
-        "rationale": { "type": "string", "minLength": 1 },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "level": {
+          "enum": ["must", "should", "may"]
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "applicability": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
         "references": {
           "type": "array",
-          "items": { "$ref": "#/$defs/ruleReference" }
+          "items": {
+            "$ref": "#/$defs/ruleReference"
+          }
         },
         "examples": {
           "type": "object",
@@ -140,11 +199,17 @@
           "properties": {
             "do": {
               "type": "array",
-              "items": { "type": "string", "minLength": 1 }
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
             },
             "avoid": {
               "type": "array",
-              "items": { "type": "string", "minLength": 1 }
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         }
@@ -155,11 +220,17 @@
       "additionalProperties": false,
       "required": ["name", "role", "description"],
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
         "role": {
           "enum": ["interactive-surface", "label", "indicator", "container"]
         },
-        "description": { "type": "string", "minLength": 1 }
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "parameter": {
@@ -167,24 +238,39 @@
       "additionalProperties": false,
       "required": ["kind"],
       "properties": {
-        "kind": { "enum": ["enum", "boolean", "string"] },
+        "kind": {
+          "enum": ["enum", "boolean", "string"]
+        },
         "values": {
           "type": "object",
           "minProperties": 1,
-          "additionalProperties": { "type": "string", "minLength": 1 }
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "examples": {
           "type": "object",
           "minProperties": 1,
-          "additionalProperties": { "type": "string", "minLength": 1 }
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "default": true,
-        "description": { "type": "string", "minLength": 1 }
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "kind": { "const": "enum" } },
+            "properties": {
+              "kind": {
+                "const": "enum"
+              }
+            },
             "required": ["kind"]
           },
           "then": {
@@ -193,20 +279,32 @@
               "values": {
                 "type": "object",
                 "minProperties": 1,
-                "additionalProperties": { "type": "string", "minLength": 1 }
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
               },
-              "default": { "type": "string", "minLength": 1 }
+              "default": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         },
         {
           "if": {
-            "properties": { "kind": { "const": "boolean" } },
+            "properties": {
+              "kind": {
+                "const": "boolean"
+              }
+            },
             "required": ["kind"]
           },
           "then": {
             "properties": {
-              "default": { "type": "boolean" },
+              "default": {
+                "type": "boolean"
+              },
               "values": false,
               "examples": false
             }
@@ -214,12 +312,18 @@
         },
         {
           "if": {
-            "properties": { "kind": { "const": "string" } },
+            "properties": {
+              "kind": {
+                "const": "string"
+              }
+            },
             "required": ["kind"]
           },
           "then": {
             "properties": {
-              "default": { "type": "string" },
+              "default": {
+                "type": "string"
+              },
               "values": false,
               "examples": false
             }
@@ -236,9 +340,15 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "minLength": 1 }
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
-        "description": { "type": "string", "minLength": 1 }
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "event": {
@@ -246,7 +356,10 @@
       "additionalProperties": false,
       "required": ["description"],
       "properties": {
-        "description": { "type": "string", "minLength": 1 }
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "accessibility": {
@@ -254,15 +367,25 @@
       "additionalProperties": false,
       "required": ["semantics", "name"],
       "properties": {
-        "semantics": { "type": "string", "minLength": 1 },
-        "name": { "type": "string", "minLength": 1 },
+        "semantics": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
         "keyboard": {
           "type": "array",
-          "items": { "$ref": "#/$defs/keyboardBinding" }
+          "items": {
+            "$ref": "#/$defs/keyboardBinding"
+          }
         },
         "requirements": {
           "type": "array",
-          "items": { "$ref": "#/$defs/rule" }
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
         }
       }
     },
@@ -271,8 +394,14 @@
       "additionalProperties": false,
       "required": ["key", "action"],
       "properties": {
-        "key": { "type": "string", "minLength": 1 },
-        "action": { "type": "string", "minLength": 1 }
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "rationaleItem": {
@@ -280,200 +409,114 @@
       "additionalProperties": false,
       "required": ["decision", "rationale"],
       "properties": {
-        "decision": { "type": "string", "minLength": 1 },
-        "rationale": { "type": "string", "minLength": 1 }
+        "decision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
-    "channelValue": { "type": "string", "minLength": 1 },
+    "channelValue": {
+      "type": "string",
+      "minLength": 1
+    },
     "channelMap": {
+      "description": "Token names or literals for the visual channels.",
       "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "background": { "$ref": "#/$defs/channelValue" },
-        "foreground": { "$ref": "#/$defs/channelValue" },
-        "border": { "$ref": "#/$defs/channelValue" },
-        "outline": { "$ref": "#/$defs/channelValue" },
-        "padding-inline": { "$ref": "#/$defs/channelValue" },
-        "padding-block": { "$ref": "#/$defs/channelValue" },
-        "radius": { "$ref": "#/$defs/channelValue" },
-        "gap": { "$ref": "#/$defs/channelValue" },
-        "font-family": { "$ref": "#/$defs/channelValue" },
-        "font-size": { "$ref": "#/$defs/channelValue" },
-        "font-weight": { "$ref": "#/$defs/channelValue" },
-        "line-height": { "$ref": "#/$defs/channelValue" },
-        "letter-spacing": { "$ref": "#/$defs/channelValue" },
-        "transition": { "$ref": "#/$defs/channelValue" },
-        "transition-duration": { "$ref": "#/$defs/channelValue" },
-        "transition-timing-function": { "$ref": "#/$defs/channelValue" }
-      }
+      "$ref": "#/$defs/channelMapProperties",
+      "unevaluatedProperties": false
     },
     "stateMap": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/channelMap" }
+      "additionalProperties": {
+        "$ref": "#/$defs/channelMap"
+      }
     },
     "visualAxisValue": {
+      "description": "Channels for one configuration value, and its states.",
       "type": "object",
-      "additionalProperties": false,
+      "$ref": "#/$defs/channelMapProperties",
       "properties": {
-        "states": { "$ref": "#/$defs/stateMap" },
-        "background": { "$ref": "#/$defs/channelValue" },
-        "foreground": { "$ref": "#/$defs/channelValue" },
-        "border": { "$ref": "#/$defs/channelValue" },
-        "outline": { "$ref": "#/$defs/channelValue" },
-        "padding-inline": { "$ref": "#/$defs/channelValue" },
-        "padding-block": { "$ref": "#/$defs/channelValue" },
-        "radius": { "$ref": "#/$defs/channelValue" },
-        "gap": { "$ref": "#/$defs/channelValue" },
-        "font-family": { "$ref": "#/$defs/channelValue" },
-        "font-size": { "$ref": "#/$defs/channelValue" },
-        "font-weight": { "$ref": "#/$defs/channelValue" },
-        "line-height": { "$ref": "#/$defs/channelValue" },
-        "letter-spacing": { "$ref": "#/$defs/channelValue" },
-        "transition": { "$ref": "#/$defs/channelValue" },
-        "transition-duration": { "$ref": "#/$defs/channelValue" },
-        "transition-timing-function": { "$ref": "#/$defs/channelValue" }
-      }
+        "states": {
+          "$ref": "#/$defs/stateMap"
+        }
+      },
+      "unevaluatedProperties": false
     },
     "visualAxis": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/visualAxisValue" }
+      "additionalProperties": {
+        "$ref": "#/$defs/visualAxisValue"
+      }
     },
     "visualPart": {
       "type": "object",
       "properties": {
-        "base": { "$ref": "#/$defs/channelMap" },
-        "states": { "$ref": "#/$defs/stateMap" }
-      },
-      "additionalProperties": { "$ref": "#/$defs/visualAxis" }
-    },
-    "visualCoverage": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["parts", "uncoveredParts", "uncoveredAxes"],
-      "properties": {
-        "parts": {
-          "type": "object",
-          "additionalProperties": { "$ref": "#/$defs/visualPartCoverage" }
-        },
-        "uncoveredParts": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 }
-        },
-        "uncoveredAxes": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 }
-        }
-      }
-    },
-    "visualPartCoverage": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["axes", "values", "states", "channels"],
-      "properties": {
-        "axes": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 }
-        },
-        "values": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "array",
-            "items": { "type": "string", "minLength": 1 }
-          }
-        },
-        "missingValues": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "array",
-            "minItems": 1,
-            "items": { "type": "string", "minLength": 1 }
-          }
+        "base": {
+          "$ref": "#/$defs/channelMap"
         },
         "states": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 }
-        },
-        "channels": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 }
+          "$ref": "#/$defs/stateMap"
         }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/visualAxis"
       }
     },
-    "stateResolution": {
+    "channelMapProperties": {
+      "description": "The one list of visual channel names. channelMap and visualAxisValue close it.",
       "type": "object",
-      "additionalProperties": false,
       "properties": {
-        "suppress": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "array",
-            "minItems": 1,
-            "uniqueItems": true,
-            "items": { "type": "string", "minLength": 1 }
-          }
+        "background": {
+          "$ref": "#/$defs/channelValue"
         },
-        "overlay": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": { "type": "string", "minLength": 1 }
+        "foreground": {
+          "$ref": "#/$defs/channelValue"
         },
-        "independent": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": { "type": "string", "minLength": 1 }
-        }
-      }
-    },
-    "visualMapping": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["part", "channel", "token"],
-      "properties": {
-        "part": { "type": "string", "minLength": 1 },
-        "channel": {
-          "enum": [
-            "background",
-            "foreground",
-            "border",
-            "outline",
-            "padding-inline",
-            "padding-block",
-            "radius",
-            "gap",
-            "font-family",
-            "font-size",
-            "font-weight",
-            "line-height",
-            "letter-spacing",
-            "transition",
-            "transition-duration",
-            "transition-timing-function"
-          ]
+        "border": {
+          "$ref": "#/$defs/channelValue"
         },
-        "configuration": {
-          "type": "object",
-          "additionalProperties": { "type": "string", "minLength": 1 }
+        "focus-ring": {
+          "$ref": "#/$defs/channelValue"
         },
-        "state": { "type": "string", "minLength": 1 },
-        "token": {
-          "oneOf": [
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["name"],
-              "properties": {
-                "name": { "type": "string", "minLength": 1 }
-              }
-            },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["literal"],
-              "properties": {
-                "literal": { "enum": ["transparent", "inherit", "none"] }
-              }
-            }
-          ]
+        "padding-horizontal": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "padding-vertical": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "radius": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "gap": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "font-family": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "font-size": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "font-weight": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "line-height": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "letter-spacing": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "motion": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "motion-duration": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "motion-easing": {
+          "$ref": "#/$defs/channelValue"
         }
       }
     }

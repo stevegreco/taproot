@@ -1,3 +1,4 @@
+import { COMPILED_SCHEMA_VERSION } from "../src/schema/compiled-extensions.js";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
@@ -73,7 +74,7 @@ test("openCatalog accepts default, path, URL, and in-memory sources", async () =
   assert.equal(fromDefault.info.digest, fromUrl.info.digest);
   assert.equal(fromDefault.info.digest, fromMemory.info.digest);
   assert.equal(fromDefault.info.visibility, "public");
-  assert.equal(fromDefault.info.compiledSchemaVersion, 7);
+  assert.equal(fromDefault.info.compiledSchemaVersion, COMPILED_SCHEMA_VERSION);
   assert.ok(fromDefault.info.recordCount > 0);
   assert.equal(fromDefault.info.recordCount, fromDefault.list().length);
 });

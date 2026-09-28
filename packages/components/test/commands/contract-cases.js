@@ -4,14 +4,14 @@
  * configuration and one set of simultaneous states, with every part/channel
  * value `resolveMappings()` expects there.
  */
-import { resolveMappings } from "@stevegreco/design-system-knowledge/compile";
+import { CHANNEL_CSS, resolveMappings } from "@stevegreco/design-system-knowledge/compile";
 import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 
 import { cssVariableFromTokenName } from "../mapping-css.js";
 
 /** Configuration axes that are not host parameters, and the media feature that drives each. */
 const MEDIA_AXES = Object.freeze({
-  prefersReducedMotion: "prefers-reduced-motion",
+  reducedMotion: "prefers-reduced-motion",
 });
 
 export async function contractCases() {
@@ -37,14 +37,14 @@ function componentCases(record, binding) {
 
   for (const configuration of product(axes)) {
     for (const states of stateSets(contract)) {
-      const resolved = resolveMappings(contract.mappings, contract.stateResolution, {
+      const resolved = resolveMappings(contract.mappings, contract.states, {
         configuration: configuration.values,
         states,
       });
       const expected = [];
       for (const [part, channels] of Object.entries(resolved.parts)) {
         for (const [channel, row] of Object.entries(channels)) {
-          expected.push({ part, channel, value: cssValue(row.token) });
+          expected.push({ part, channel, css: CHANNEL_CSS[channel], value: cssValue(row.token) });
         }
       }
       cases.push({
@@ -53,7 +53,6 @@ function componentCases(record, binding) {
         media: configuration.media,
         states,
         expected,
-        problems: resolved.problems.map((problem) => problem.message),
       });
     }
   }
@@ -125,17 +124,20 @@ function configurationAxes(contract, host, id) {
   });
 }
 
-/** Rest, each mapped state alone, and each suppressing state with what it suppresses. */
+/**
+ * Rest, each mapped state alone, and each pair of mapped states, so the contract's priority
+ * order is checked wherever two states meet.
+ */
 function stateSets(contract) {
   const mapped = new Set();
   for (const mapping of contract.mappings) {
-    if (mapping.state && mapping.state !== "default") mapped.add(mapping.state);
+    if (mapping.state) mapped.add(mapping.state);
   }
-  const sets = [[], ...[...mapped].sort().map((state) => [state])];
-  for (const [winner, losers] of Object.entries(contract.stateResolution?.suppress ?? {})) {
-    for (const loser of losers) sets.push([winner, loser]);
-  }
-  return sets;
+  const states = (contract.states ?? []).filter((state) => mapped.has(state));
+  const pairs = states.flatMap((first, index) =>
+    states.slice(index + 1).map((second) => [first, second]),
+  );
+  return [[], ...states.map((state) => [state]), ...pairs];
 }
 
 /**

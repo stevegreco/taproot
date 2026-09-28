@@ -102,18 +102,18 @@ contract:
       kind: string
       description: Accessible name when visible content is insufficient.
   configurationAxes:
-    prefersReducedMotion:
+    reducedMotion:
       values:
         - reduce
   events:
     activate:
       description: Requests the action represented by the button.
   states:
-    - default
-    - hover
-    - pressed
-    - focus-visible
     - disabled
+    - pressed
+    - hover
+    - focus
+    - default
   behavior:
     - id: disabled-prevents-activation
       level: must
@@ -145,16 +145,6 @@ contract:
   rationale:
     - decision: Button has a published component-token namespace.
       rationale: Consumers need a stable customization boundary for variants and states.
-  stateResolution:
-    suppress:
-      disabled:
-        - hover
-        - pressed
-    overlay:
-      - hover
-      - pressed
-    independent:
-      - focus-visible
   visuals:
     control:
       base:
@@ -165,18 +155,18 @@ contract:
         font-weight: component.button.font.weight
         line-height: component.button.font.lineHeight
         letter-spacing: component.button.font.letterSpacing
-        transition-duration: component.button.motion.duration
-        transition-timing-function: component.button.motion.easing
+        motion-duration: component.button.motion.duration
+        motion-easing: component.button.motion.easing
       states:
-        focus-visible:
-          outline: component.button.focus.border
+        focus:
+          focus-ring: component.button.focus.border
       size:
         md:
-          padding-inline: component.button.size.medium.paddingInline
-          padding-block: component.button.size.medium.paddingBlock
+          padding-horizontal: component.button.size.medium.paddingInline
+          padding-vertical: component.button.size.medium.paddingBlock
         sm:
-          padding-inline: component.button.size.small.paddingInline
-          padding-block: component.button.size.small.paddingBlock
+          padding-horizontal: component.button.size.small.paddingInline
+          padding-vertical: component.button.size.small.paddingBlock
       variant:
         primary:
           background: component.button.primary.background.default
@@ -216,6 +206,7 @@ contract:
             pressed:
               background: component.button.ghost.background.pressed
             disabled:
+              background: transparent
               foreground: component.button.ghost.foreground.disabled
         danger:
           background: component.button.danger.background.default
@@ -232,6 +223,6 @@ contract:
               background: component.button.danger.background.disabled
               foreground: component.button.danger.foreground.disabled
               border: component.button.danger.border.disabled
-      prefersReducedMotion:
+      reducedMotion:
         reduce:
-          transition: none
+          motion: none

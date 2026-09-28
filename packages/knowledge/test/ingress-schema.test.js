@@ -74,7 +74,7 @@ const buttonContract = {
   events: {
     activate: { description: "Requests the action represented by the button." },
   },
-  states: ["default", "hover", "pressed", "focus-visible", "disabled"],
+  states: ["disabled", "pressed", "hover", "focus", "default"],
   behavior: [
     {
       id: "disabled-prevents-activation",
@@ -266,11 +266,6 @@ test("portable contract schema accepts grouped visuals", () => {
   assert.equal(
     validate({
       ...buttonContract,
-      stateResolution: {
-        suppress: { disabled: ["hover", "pressed"] },
-        overlay: ["hover", "pressed"],
-        independent: ["focus-visible"],
-      },
       visuals: {
         control: {
           base: { radius: "component.button.radius" },
@@ -286,6 +281,16 @@ test("portable contract schema accepts grouped visuals", () => {
     true,
     JSON.stringify(validate.errors, null, 2),
   );
+});
+
+test("portable contract schema rejects stateResolution, which states order replaced", () => {
+  const validate = compile(portableContractSchema);
+  assert.equal(validate({ ...buttonContract, stateResolution: { overlay: ["hover"] } }), false);
+});
+
+test("portable contract schema rejects authored mappings", () => {
+  const validate = compile(portableContractSchema);
+  assert.equal(validate({ ...buttonContract, mappings: [] }), false);
 });
 
 test("portable contract schema rejects an unknown visual channel", () => {

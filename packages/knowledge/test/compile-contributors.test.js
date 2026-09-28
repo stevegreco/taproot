@@ -54,7 +54,7 @@ test("Button composes authored contract, tokens, and ADR 0003 into disjoint name
     (row) =>
       row.configuration?.variant === "ghost" &&
       row.channel === "background" &&
-      row.state === "default",
+      row.state === undefined,
   );
   assert.equal(ghostRestFill.token.literal, "transparent");
   assert.equal(
