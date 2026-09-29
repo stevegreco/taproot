@@ -28,8 +28,7 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const manifest = JSON.parse(await readFile(join(outDir, "public/manifest.json"), "utf8"));
   assert.equal(manifest.content.recordCount, authoredCount);
   assert.equal(manifest.content.visibility, "public");
-  assert.ok(manifest.content.files.some((entry) => entry.path === "schema/portable-contract.json"));
-  assert.ok(manifest.content.files.some((entry) => entry.path === "schema/host-binding.json"));
+  assert.ok(manifest.content.files.some((entry) => entry.path === "schema/knowledge-record.json"));
   assert.equal(records.length, authoredCount);
 
   const button = records.find((record) => record.id === "component.button");
@@ -39,11 +38,10 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
     (row) =>
       row.configuration?.variant === "ghost" &&
       row.channel === "background" &&
-      row.state === "default",
+      row.state === undefined,
   );
   assert.equal(ghostRestFill.token.literal, "transparent");
   assert.equal(Object.hasOwn(button.contract, "visuals"), false);
-  assert.equal(button.contract.specVersion, 5);
 
   const badge = records.find((record) => record.id === "component.badge");
   assert.equal(Object.hasOwn(badge.contract, "tagName"), false);
@@ -60,29 +58,25 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   const textField = records.find((record) => record.id === "component.text-field");
   assert.equal(Object.hasOwn(textField, "tokens"), false);
   assert.equal(Object.hasOwn(textField.contract, "visuals"), false);
-  assert.equal(textField.contract.specVersion, 5);
   assert.ok(textField.contract.mappings.length > 0);
-  const invalidControl = resolveMappings(
-    textField.contract.mappings,
-    textField.contract.stateResolution,
-    { part: "control", states: ["hover", "invalid"] },
-  );
+  const invalidControl = resolveMappings(textField.contract.mappings, textField.contract.states, {
+    part: "control",
+    states: ["hover", "invalid"],
+  });
   assert.equal(
     invalidControl.channels.border.token.name,
     "semantic.color.border.status.danger.default",
   );
-  const disabledControl = resolveMappings(
-    textField.contract.mappings,
-    textField.contract.stateResolution,
-    { part: "control", states: ["hover", "invalid", "disabled"] },
-  );
+  const disabledControl = resolveMappings(textField.contract.mappings, textField.contract.states, {
+    part: "control",
+    states: ["hover", "invalid", "disabled"],
+  });
   assert.equal(disabledControl.channels.border.token.name, "semantic.color.border.disabled");
-  const focusedInvalid = resolveMappings(
-    textField.contract.mappings,
-    textField.contract.stateResolution,
-    { part: "control", states: ["invalid", "focus-visible"] },
-  );
-  assert.equal(focusedInvalid.channels.outline.token.name, "semantic.color.border.focus");
+  const focusedInvalid = resolveMappings(textField.contract.mappings, textField.contract.states, {
+    part: "control",
+    states: ["invalid", "focus"],
+  });
+  assert.equal(focusedInvalid.channels["focus-ring"].token.name, "semantic.color.border.focus");
   assert.equal(
     focusedInvalid.channels.border.token.name,
     "semantic.color.border.status.danger.default",
@@ -92,15 +86,15 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.equal(Object.hasOwn(link, "tokens"), false);
   assert.equal(Object.hasOwn(link.contract, "visuals"), false);
   assert.equal(link.contract.parameters.variant.default, "inline");
-  const hoveredInline = resolveMappings(link.contract.mappings, link.contract.stateResolution, {
+  const hoveredInline = resolveMappings(link.contract.mappings, link.contract.states, {
     part: "control",
     configuration: { variant: "inline" },
-    states: ["hover", "focus-visible"],
+    states: ["hover", "focus"],
   });
   assert.equal(hoveredInline.channels.foreground.token.name, "semantic.color.foreground.default");
-  assert.equal(hoveredInline.channels.outline.token.name, "semantic.color.border.focus");
+  assert.equal(hoveredInline.channels["focus-ring"].token.name, "semantic.color.border.focus");
   assert.equal(hoveredInline.channels["font-size"].token.literal, "inherit");
-  const standalone = resolveMappings(link.contract.mappings, link.contract.stateResolution, {
+  const standalone = resolveMappings(link.contract.mappings, link.contract.states, {
     part: "control",
     configuration: { variant: "standalone" },
   });
@@ -109,17 +103,18 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
     "semantic.typography.label.default.fontSize",
   );
 
-  const binding = records.find((record) => record.id === "binding.button.web-component");
-  assert.equal(binding.host.defaultTagName, "ds-button");
-  const textFieldBinding = records.find(
-    (record) => record.id === "binding.text-field.web-component",
-  );
-  assert.equal(textFieldBinding.host.defaultTagName, "ds-text-field");
-  const linkBinding = records.find((record) => record.id === "binding.link.web-component");
-  assert.equal(linkBinding.host.defaultTagName, "ds-link");
-  assert.equal(Object.hasOwn(linkBinding.host, "formAssociation"), false);
+  const byId = (id) => records.find((record) => record.id === id);
+  assert.equal(byId("component.button").web.defaultTagName, "ds-button");
+  assert.equal(byId("component.text-field").web.defaultTagName, "ds-text-field");
+  const linkWeb = byId("component.link").web;
+  assert.equal(linkWeb.defaultTagName, "ds-link");
+  assert.equal(Object.hasOwn(linkWeb, "formAssociation"), false);
   // Link has no accessibleName parameter, so its text is the only name source.
-  assert.equal(linkBinding.host.anatomy.content.accepts.includes("decorative-icon"), false);
+  assert.equal(linkWeb.anatomy.content.accepts.includes("decorative-icon"), false);
+  assert.equal(
+    records.some((record) => record.type === "binding"),
+    false,
+  );
 
   const buttonMarkdown = await readFile(
     join(outDir, "public/markdown/component.button.md"),
@@ -137,32 +132,28 @@ test("the authored slice compiles with contracts, ghost tokens, rewritten links,
   assert.match(buttonMarkdown, /^ {2}- `danger`: Destructive or difficult-to-reverse action\.$/m);
   assert.match(
     buttonMarkdown,
-    /^\| control \| background \| variant=danger, hover \| `component\.button\.danger\.background\.hover` \|$/m,
+    /^\| control \| background \| variant=danger, hover \| `component\.button\.danger\.background\.hover` \| `background-color: var\(--component-button-danger-background-hover\)` \|$/m,
   );
+  assert.doesNotMatch(buttonMarkdown, /^web:/m);
+  // The file alone says how to install, register, and use the element.
+  assert.match(buttonMarkdown, /^import "@stevegreco\/design-system\/css";$/m);
   assert.match(
     buttonMarkdown,
-    /^- \[binding\.button\.web-component\]\(binding\.button\.web-component\.md\)$/m,
+    /^import \{ defineButton \} from "@stevegreco\/design-system-components\/button";$/m,
   );
-
-  const bindingMarkdown = await readFile(
-    join(outDir, "public/markdown/binding.button.web-component.md"),
-    "utf8",
-  );
-  assert.doesNotMatch(bindingMarkdown, /^host:/m);
-  assert.doesNotMatch(bindingMarkdown, /^contract:/m);
-  assert.match(bindingMarkdown, /^- Tag: `<ds-button>`$/m);
-  assert.match(bindingMarkdown, /^\| action \| `type` \| `type` \| activate → `button`/m);
+  assert.match(buttonMarkdown, /^defineButton\(\); \/\/ registers <ds-button>$/m);
+  assert.match(buttonMarkdown, /^\| action \| `type` \| `type` \| activate → `button`/m);
   assert.match(
-    bindingMarkdown,
-    /^- `click` for activate\. Not fired when effectively-disabled\.$/m,
+    buttonMarkdown,
+    /^- `click` for activate\. Not fired while disabled, including inside a disabled fieldset\.$/m,
   );
-  assert.match(bindingMarkdown, /## Example\n\n```html\n<ds-button variant="primary">/);
-
-  const reviewMarkdown = await readFile(
-    join(outDir, "public/markdown/guideline.button-review.md"),
-    "utf8",
+  assert.match(buttonMarkdown, /^- The default slot holds `content` and is required\./m);
+  assert.match(buttonMarkdown, /^- `::part\(button\)`: The inner native button control\.$/m);
+  assert.match(
+    buttonMarkdown,
+    /^- \[Action hierarchy\]\(pattern\.action-hierarchy\.md\) \(pattern\)$/m,
   );
-  assert.doesNotMatch(reviewMarkdown, /^checks:/m);
+  assert.match(buttonMarkdown, /## Example\n\n```html\n<ds-button variant="primary">/);
 
   const example = records.find((record) => record.id === "example.action-hierarchy.settings");
   const assetPath = example.assets[0].bundlePath;

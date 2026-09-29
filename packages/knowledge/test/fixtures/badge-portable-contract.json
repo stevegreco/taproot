@@ -1,5 +1,4 @@
 {
-  "specVersion": 5,
   "description": "Labels status or metadata. Not a control.",
   "usage": {
     "do": [

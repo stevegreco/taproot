@@ -59,87 +59,33 @@ test("get identifies contract provenance from the component authored source", as
   assert.match(authoredSources[0].revision, /^[0-9a-f]{16}$/);
 });
 
-test("Button guidance uses guides and reviews, not related", async () => {
+test("Button's related records are the ones it or they list, in both directions", async () => {
   const catalog = await openCatalog();
   const neighbors = catalog.related("component.button");
   const byId = Object.fromEntries(neighbors.map((neighbor) => [neighbor.record.id, neighbor]));
 
   for (const id of [
-    "binding.button.web-component",
     "component.badge",
+    "component.link",
     "example.action-hierarchy.settings",
     "guideline.button-implementation",
-    "guideline.button-review",
     "pattern.action-hierarchy",
   ]) {
     assert.ok(byId[id], `related("component.button") includes ${id}`);
   }
+  assert.equal(catalog.get("guideline.button-review"), undefined);
 
-  assert.deepEqual(catalog.get("component.button").relations.related, ["component.badge"]);
-  assert.equal(Object.hasOwn(catalog.get("component.button").relations, "guides"), false);
-
+  assert.deepEqual(catalog.get("component.button").relations.related, [
+    "component.badge",
+    "component.link",
+  ]);
+  for (const via of neighbors.flatMap((neighbor) => neighbor.via)) {
+    assert.equal(via.relation, "related");
+  }
   assert.deepEqual(byId["pattern.action-hierarchy"].via, [
-    { relation: "guides", direction: "inbound" },
-    { relation: "uses", direction: "inbound" },
+    { relation: "related", direction: "symmetric" },
   ]);
-  assert.deepEqual(byId["guideline.button-implementation"].via, [
-    { relation: "guides", direction: "inbound" },
-  ]);
-  assert.deepEqual(byId["guideline.button-review"].via, [
-    { relation: "reviews", direction: "inbound" },
-  ]);
-  assert.deepEqual(byId["component.badge"].via, [{ relation: "related", direction: "symmetric" }]);
-  assert.deepEqual(byId["binding.button.web-component"].via, [
-    { relation: "implements", direction: "inbound" },
-  ]);
-  assert.deepEqual(byId["example.action-hierarchy.settings"].via, [
-    { relation: "uses", direction: "inbound" },
-  ]);
-
-  const pattern = catalog.get("pattern.action-hierarchy");
-  assert.ok(pattern.relations.guides.includes("component.button"));
-  assert.equal(Object.hasOwn(pattern.relations, "related"), false);
-
-  const implementation = catalog.get("guideline.button-implementation");
-  assert.deepEqual(implementation.relations.guides, ["component.button"]);
-  assert.deepEqual(implementation.relations.uses, ["pattern.action-hierarchy"]);
-  assert.equal(Object.hasOwn(implementation.relations, "related"), false);
-
-  const review = catalog.get("guideline.button-review");
-  assert.deepEqual(review.relations.reviews, ["component.button", "pattern.action-hierarchy"]);
-  assert.equal(Object.hasOwn(review.relations, "related"), false);
-  assert.deepEqual(review.checks.length > 0, true);
-
-  assert.deepEqual(catalog.get("component.badge").relations.related, ["component.button"]);
-});
-
-test("Button review keeps checks and does not restate them in the body", async () => {
-  const catalog = await openCatalog();
-  const review = catalog.get("guideline.button-review");
-
-  assert.deepEqual(
-    review.checks.map((check) => check.id),
-    [
-      "button-review-semantics",
-      "button-review-hierarchy",
-      "button-review-danger",
-      "button-review-label",
-      "button-review-form-type",
-      "button-review-disabled",
-      "button-review-focus",
-      "button-review-tokens",
-    ],
-  );
-  assert.match(
-    review.body,
-    /source-only review cannot verify focus/,
-    "keep the note that a source-only review cannot verify focus or disabled behavior",
-  );
-  assert.doesNotMatch(
-    review.body,
-    /^## /m,
-    "review body must not restate checks as a heading list",
-  );
+  assert.ok(catalog.get("component.button").backlinks.related.includes("pattern.action-hierarchy"));
 });
 
 test("list filters AND across keys and OR within a key", async () => {
@@ -152,7 +98,6 @@ test("list filters AND across keys and OR within a key", async () => {
   const guidelineIds = guidelines.map((record) => record.id);
   assert.deepEqual(guidelineIds, [...guidelineIds].sort());
   assert.equal(guidelineIds.includes("guideline.button-implementation"), true);
-  assert.equal(guidelineIds.includes("guideline.button-review"), true);
 
   const implement = catalog.list({ jobs: "implement", type: ["guideline", "pattern"] });
   assert.equal(
@@ -217,8 +162,7 @@ test("every public component record has a contract", async () => {
     assert.equal(Object.hasOwn(record.contract, "tagName"), false);
     assert.ok(record.contract.parameters);
   }
-  const binding = catalog.get("binding.button.web-component");
-  assert.equal(binding.host.defaultTagName, "ds-button");
+  assert.equal(catalog.get("component.button").web.defaultTagName, "ds-button");
 });
 
 test("list visibility narrows an internal catalog and never widens a public one", async () => {
@@ -229,7 +173,7 @@ test("list visibility narrows an internal catalog and never widens a public one"
         id: "internal.secret",
         visibility: "internal",
         type: "guideline",
-        relations: { uses: ["component.alpha"] },
+        related: ["component.alpha"],
       }),
     },
     "internal",
@@ -249,11 +193,11 @@ test("list visibility narrows an internal catalog and never widens a public one"
   assert.equal(publicCatalog.list({ visibility: "internal" }).length, 0);
 });
 
-test("related groups two edges onto one neighbor via[]", async () => {
+test("related links both ways with one via entry", async () => {
   const bundle = await projectFiles({
     "content/alpha.md": authored("content/alpha.md", {
       id: "component.alpha",
-      relations: { uses: ["component.beta"], related: ["component.beta"] },
+      related: ["component.beta"],
     }),
     "content/beta.md": authored("content/beta.md", { id: "component.beta" }),
   });
@@ -266,18 +210,12 @@ test("related groups two edges onto one neighbor via[]", async () => {
   const neighbors = catalog.related("component.alpha");
   assert.equal(neighbors.length, 1);
   assert.equal(neighbors[0].record.id, "component.beta");
-  assert.deepEqual(neighbors[0].via, [
-    { relation: "related", direction: "symmetric" },
-    { relation: "uses", direction: "outbound" },
-  ]);
+  assert.deepEqual(neighbors[0].via, [{ relation: "related", direction: "symmetric" }]);
 
   const inbound = catalog.related("component.beta");
   assert.equal(inbound.length, 1);
   assert.equal(inbound[0].record.id, "component.alpha");
-  assert.deepEqual(inbound[0].via, [
-    { relation: "related", direction: "symmetric" },
-    { relation: "uses", direction: "inbound" },
-  ]);
+  assert.deepEqual(inbound[0].via, [{ relation: "related", direction: "symmetric" }]);
 });
 
 test("related throws for an unknown seed and returns [] for an isolated record", async () => {

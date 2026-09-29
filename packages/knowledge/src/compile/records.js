@@ -1,9 +1,20 @@
 import { PROBLEM, problem } from "./tables.js";
-import { configurationValues, mappingIdentity } from "./visuals.js";
+import { byCodeUnit } from "../sort.js";
+import { headingAnchors, subsectionAnchors } from "./anchors.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
-import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
+import recordSchema from "../schema/knowledge-record.schema.json" with { type: "json" };
 
-const HOST_KEYS = Object.freeze(Object.keys(hostBindingSchema.properties));
+const WEB_KEYS = Object.freeze(Object.keys(recordSchema.$defs.web.properties));
+
+/** Who each record type serves, when the record does not say. */
+const DEFAULT_JOBS = Object.freeze({
+  component: ["design", "implement", "review"],
+  pattern: ["design", "implement", "review"],
+  guideline: ["implement", "review"],
+  example: ["design", "implement"],
+  foundation: ["design"],
+  decision: ["design"],
+});
 
 export function assembleRecord(authored, contribution, assets) {
   const record = {
@@ -13,27 +24,36 @@ export function assembleRecord(authored, contribution, assets) {
     type: authored.type,
     title: authored.title,
     summary: authored.summary,
-    status: authored.status,
+    status: authored.status ?? "draft",
     visibility: authored.visibility,
-    jobs: authored.jobs,
-    tags: authored.tags,
-    relations: authored.relations,
+    jobs: authored.jobs ?? DEFAULT_JOBS[authored.type],
+    tags: recordTags(authored),
+    relations: authored.related ? { related: authored.related } : {},
     sources: contribution.sources,
     body: authored.body,
   };
 
-  if (authored.checks) record.checks = authored.checks;
   if (authored.docsSections) record.docsSections = authored.docsSections;
   if (authored.variantGuidance)
     record.variantGuidance = expandVariantGuidance(authored.variantGuidance);
   if (assets.length > 0) record.assets = assets;
   if (authored.annotations) record.annotations = authored.annotations;
   if (authored.contract) record.contract = authored.contract;
-  if (authored.host) record.host = authored.host;
+  if (authored.web) record.web = authored.web;
   if (authored.tokenRef) record.tokenRef = authored.tokenRef;
   if (contribution.fields.tokens) record.tokens = contribution.fields.tokens;
 
   return record;
+}
+
+/**
+ * Authored tags plus the record's own name, so `component.text-field` is found by "text-field"
+ * without an author writing it. Related records' names are left out: as tags they would rank a
+ * record for its neighbor's name.
+ */
+function recordTags(authored) {
+  const name = authored.id.slice(authored.id.indexOf(".") + 1).replaceAll(".", "-");
+  return [...new Set([...(authored.tags ?? []), name])].sort(byCodeUnit);
 }
 
 /** A list of variants is shorthand for anchors named after each variant. */
@@ -49,11 +69,11 @@ function expandVariantGuidance(guidance) {
 }
 
 /**
- * Each pattern's variantGuidance must name a component the pattern guides, a
+ * Each pattern's variantGuidance must name a component the pattern lists in related, a
  * variant that component's contract has, and a `###` heading with text in the
  * pattern body. A variant takes guidance from at most one pattern.
  */
-export function checkVariantGuidance(records) {
+export function checkVariantGuidance(records, invalidIds = new Set()) {
   const problems = [];
   const guidedBy = new Map();
   for (const record of records.values()) {
@@ -69,8 +89,9 @@ export function checkVariantGuidance(records) {
       );
     const anchors = subsectionAnchors(record.body ?? "");
     for (const [id, variants] of Object.entries(record.variantGuidance)) {
-      if (!(record.relations?.guides ?? []).includes(id)) {
-        report(`names ${id}, which the pattern does not guide`);
+      if (invalidIds.has(id)) continue;
+      if (!(record.relations?.related ?? []).includes(id)) {
+        report(`names ${id}, which the pattern does not list in related`);
         continue;
       }
       const values = records.get(id)?.contract?.parameters?.variant?.values ?? {};
@@ -92,52 +113,25 @@ export function checkVariantGuidance(records) {
   return problems;
 }
 
-/** Anchors of `###` headings followed by text, using the docs site's heading anchor rule. */
-function subsectionAnchors(body) {
-  const anchors = new Set();
-  const matches = [...body.matchAll(/^###\s+(.+)$/gm)];
-  for (const [index, match] of matches.entries()) {
-    const end = matches[index + 1]?.index ?? body.length;
-    let text = body.slice(match.index + match[0].length, end);
-    const cut = text.search(/^##\s+/m);
-    if (cut !== -1) text = text.slice(0, cut);
-    if (text.trim().length === 0) continue;
-    anchors.add(
-      match[1]
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, ""),
-    );
-  }
-  return anchors;
-}
-
 /**
- * Fill each binding's parameter and part maps from the contract it implements.
- * Authored bindings list only exceptions. A parameter with no entry maps to
- * attribute kebab-case(name) and property name; an entry is the whole mapping,
- * so `{ attribute: full-width }` alone means there is no property. A part with
- * no entry uses its anatomy description. Compiled records carry the resolved
- * maps, so consumers never apply these defaults themselves.
+ * Fill each component's web parameter and part maps from its contract. The `web` section
+ * lists only exceptions. A parameter with no entry maps to attribute kebab-case(name) and
+ * property name; an entry is the whole mapping, so `{ attribute: full-width }` alone means
+ * there is no property. A part with no entry uses its anatomy description. Compiled records
+ * carry the resolved maps, so consumers never apply these defaults themselves.
  */
-export function resolveBindingDefaults(records) {
+export function resolveWebDefaults(records) {
   const problems = [];
 
   for (const [id, record] of records) {
-    if (record.type !== "binding" || record.host == null) continue;
-    const target = records.get(record.relations?.implements?.[0]);
-    // checkBindingAgreement reports a binding without a component contract.
-    if (target?.type !== "component" || !target.contract) continue;
-
-    const host = record.host;
-    const contract = target.contract;
+    if (record.web == null || record.contract == null) continue;
+    const { web, contract } = record;
     const parameters = {};
     for (const name of Object.keys(contract.parameters ?? {})) {
-      parameters[name] = host.parameters?.[name] ?? { attribute: kebabCase(name), property: name };
+      parameters[name] = web.parameters?.[name] ?? { attribute: kebabCase(name), property: name };
     }
-    for (const [name, mapped] of Object.entries(host.parameters ?? {})) {
-      // Not a contract parameter. checkBindingAgreement reports it.
+    for (const [name, mapped] of Object.entries(web.parameters ?? {})) {
+      // Not a contract parameter. checkWebAgreement reports it.
       if (!Object.hasOwn(parameters, name)) parameters[name] = mapped;
     }
 
@@ -145,34 +139,34 @@ export function resolveBindingDefaults(records) {
       (contract.anatomy ?? []).map((part) => [part.name, part.description]),
     );
     const parts = {};
-    for (const [name, anatomy] of Object.entries(host.anatomy ?? {})) {
+    for (const [name, anatomy] of Object.entries(web.anatomy ?? {})) {
       if (!anatomy.part) continue;
-      const description = host.parts?.[anatomy.part]?.description ?? descriptions.get(name);
+      const description = web.parts?.[anatomy.part]?.description ?? descriptions.get(name);
       if (description) parts[anatomy.part] = { description };
     }
-    for (const name of Object.keys(host.parts ?? {})) {
+    for (const name of Object.keys(web.parts ?? {})) {
       if (Object.hasOwn(parts, name)) continue;
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `${id} host parts has unknown ${name}`,
+          message: `${id} web parts has unknown ${name}`,
           recordId: id,
-          path: "/host/parts",
+          path: "/web/parts",
         }),
       );
     }
 
-    const resolved = { ...host, parameters, parts };
+    const resolved = { ...web, parameters, parts };
     if (Object.keys(parts).length === 0) delete resolved.parts;
-    records.set(id, { ...record, host: inSchemaOrder(resolved) });
+    records.set(id, { ...record, web: inSchemaOrder(resolved) });
   }
 
   return problems;
 }
 
-function inSchemaOrder(host) {
+function inSchemaOrder(web) {
   return Object.fromEntries(
-    HOST_KEYS.filter((key) => Object.hasOwn(host, key)).map((key) => [key, host[key]]),
+    WEB_KEYS.filter((key) => Object.hasOwn(web, key)).map((key) => [key, web[key]]),
   );
 }
 
@@ -180,76 +174,70 @@ function kebabCase(name) {
   return name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 }
 
-export function checkBindingAgreement(records, invalidIds = new Set()) {
+/** A component's `web` section names exactly the contract's parts, parameters, and events. */
+export function checkWebAgreement(records) {
   const problems = [];
 
   for (const record of records.values()) {
-    if (record.type !== "binding") continue;
-    const implementsIds = record.relations?.implements ?? [];
-    if (implementsIds.length !== 1) {
+    if (record.web == null) continue;
+    if (record.contract == null) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `${record.id} must implement exactly one component`,
+          message: `${record.id} has a web section but no contract`,
           recordId: record.id,
-          path: "/relations/implements",
+          path: "/web",
         }),
       );
       continue;
     }
 
-    if (invalidIds.has(implementsIds[0])) continue;
-    const target = records.get(implementsIds[0]);
-    if (!target || target.type !== "component" || !target.contract) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `${record.id} must implement a component that has a contract`,
-          recordId: record.id,
-          path: "/relations/implements",
-        }),
-      );
-      continue;
-    }
-
-    const host = record.host ?? {};
-    const contract = target.contract;
+    const { web, contract } = record;
     problems.push(
       ...bijectionProblems(
         record.id,
         "anatomy",
         namesOfList(contract.anatomy),
-        namesOfMap(host.anatomy),
+        namesOfMap(web.anatomy),
       ),
-    );
-    problems.push(
       ...bijectionProblems(
         record.id,
         "parameters",
         namesOfMap(contract.parameters),
-        namesOfMap(host.parameters),
+        namesOfMap(web.parameters),
       ),
-    );
-    problems.push(
       ...bijectionProblems(
         record.id,
         "events",
         namesOfMap(contract.events),
-        namesOfMap(host.events),
+        namesOfMap(web.events),
       ),
     );
 
+    for (const state of Object.keys(web.states ?? {})) {
+      if (!(contract.states ?? []).includes(state)) {
+        problems.push(
+          problem({
+            code: PROBLEM.SOURCE_CONFLICT,
+            message: `${record.id} web states names ${state}, which contract.states does not have`,
+            recordId: record.id,
+            path: `/web/states/${state}`,
+          }),
+        );
+      }
+    }
+
     for (const [name, portable] of Object.entries(contract.parameters ?? {})) {
-      const mapped = host.parameters?.[name];
+      const mapped = web.parameters?.[name];
       if (!mapped?.values || portable.kind !== "enum") continue;
       for (const value of Object.keys(portable.values ?? {})) {
         if (!Object.hasOwn(mapped.values, value)) {
           problems.push(
             problem({
               code: PROBLEM.SOURCE_CONFLICT,
-              message: `${record.id} host parameter ${name} is missing enum value ${value}`,
+              message: `${record.id} web parameter ${name} is missing enum value ${value}`,
               recordId: record.id,
-              path: `/host/parameters/${name}/values`,
+              path: `/web/parameters/${name}/values`,
             }),
           );
         }
@@ -275,9 +263,9 @@ function bijectionProblems(recordId, label, expected, actual) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `${recordId} host ${label} is missing ${name}`,
+          message: `${recordId} web ${label} is missing ${name}`,
           recordId,
-          path: `/host/${label}`,
+          path: `/web/${label}`,
         }),
       );
     }
@@ -287,9 +275,9 @@ function bijectionProblems(recordId, label, expected, actual) {
       problems.push(
         problem({
           code: PROBLEM.SOURCE_CONFLICT,
-          message: `${recordId} host ${label} has unknown ${name}`,
+          message: `${recordId} web ${label} has unknown ${name}`,
           recordId,
-          path: `/host/${label}`,
+          path: `/web/${label}`,
         }),
       );
     }
@@ -297,7 +285,7 @@ function bijectionProblems(recordId, label, expected, actual) {
   return problems;
 }
 
-export function checkSourceAgreement(record, tokenNames = null) {
+export function checkSourceAgreement(record) {
   const problems = [];
   const tokens = record.tokens;
   if (tokens) {
@@ -318,110 +306,7 @@ export function checkSourceAgreement(record, tokenNames = null) {
     }
   }
 
-  problems.push(...checkMappingAgreement(record, tokenNames));
   return problems;
-}
-
-export function checkMappingAgreement(record, tokenNames = null) {
-  const mappings = record.contract?.mappings;
-  if (!Array.isArray(mappings) || mappings.length === 0) return [];
-
-  const problems = [];
-  const parts = new Set((record.contract.anatomy ?? []).map((item) => item.name));
-  const states = new Set(record.contract.states ?? []);
-  const parameters = record.contract.parameters ?? {};
-  const configurationAxes = record.contract.configurationAxes ?? {};
-  const seen = new Map();
-
-  for (const [index, mapping] of mappings.entries()) {
-    const path = mapping.source ?? `/contract/mappings/${index}`;
-    if (!parts.has(mapping.part)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapping part ${mapping.part} is not in anatomy`,
-          recordId: record.id,
-          path: `${path}/part`,
-        }),
-      );
-    }
-    if (mapping.state && !states.has(mapping.state)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapping state ${mapping.state} is not in contract.states`,
-          recordId: record.id,
-          path: `${path}/state`,
-        }),
-      );
-    }
-    for (const [key, value] of Object.entries(mapping.configuration ?? {})) {
-      const allowed = configurationValues(key, parameters, configurationAxes);
-      if (!allowed) {
-        problems.push(
-          problem({
-            code: PROBLEM.SOURCE_CONFLICT,
-            message: `mapping configuration ${key} is not a contract parameter or configuration axis`,
-            recordId: record.id,
-            path: `${path}/configuration/${key}`,
-          }),
-        );
-        continue;
-      }
-      if (!allowed.has(value)) {
-        problems.push(
-          problem({
-            code: PROBLEM.SOURCE_CONFLICT,
-            message: `mapping configuration ${key} has unknown value ${value}`,
-            recordId: record.id,
-            path: `${path}/configuration/${key}`,
-          }),
-        );
-      }
-    }
-    if (mapping.token?.name && tokenNames != null && !tokenNames.has(mapping.token.name)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapped token ${mapping.token.name} is missing from the token package`,
-          recordId: record.id,
-          path: `${path}/token/name`,
-        }),
-      );
-    }
-
-    const identity = mappingIdentity(mapping);
-    const previous = seen.get(identity);
-    if (previous !== undefined && previous.token !== tokenIdentity(mapping.token)) {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapping ${mapping.part} ${mapping.channel} names both ${previous.token} and ${tokenIdentity(mapping.token)}`,
-          recordId: record.id,
-          path,
-        }),
-      );
-    } else if (previous === undefined) {
-      seen.set(identity, { token: tokenIdentity(mapping.token), index });
-    } else {
-      problems.push(
-        problem({
-          code: PROBLEM.SOURCE_CONFLICT,
-          message: `mapping ${mapping.part} ${mapping.channel} is duplicated`,
-          recordId: record.id,
-          path,
-        }),
-      );
-    }
-  }
-
-  return problems;
-}
-
-function tokenIdentity(token) {
-  if (token?.name) return token.name;
-  if (token?.literal) return token.literal;
-  return "unknown";
 }
 
 export function completenessProblems(record) {
@@ -441,35 +326,40 @@ export function completenessProblems(record) {
     }
   }
 
-  if (record.type === "guideline" && record.jobs.includes("review")) {
-    if (!Array.isArray(record.checks) || record.checks.length === 0) {
-      problems.push(
-        problem({
-          code: PROBLEM.CORPUS_INCOMPLETE_CHECKS,
-          message: `${record.id} review guideline needs at least one check`,
-          recordId: record.id,
-        }),
-      );
-    }
-  }
-
   return problems;
 }
 
-export function checkRuleReferences(record, records) {
+export function checkRuleReferences(record, records, invalidIds = new Set()) {
   const problems = [];
   const contract = record.contract;
   if (contract == null || typeof contract !== "object") return problems;
 
   for (const { rule, path } of walkContractRules(contract)) {
     for (const [index, reference] of (rule.references ?? []).entries()) {
-      if (!records.has(reference.id)) {
+      if (invalidIds.has(reference.id)) continue;
+      const target = records.get(reference.id);
+      if (!target) {
         problems.push(
           problem({
             code: PROBLEM.CONTRACT_UNRESOLVED_REFERENCE,
             message: `${record.id} rule ${rule.id} references unresolved record ${reference.id}`,
             recordId: record.id,
             path: `${path}/references/${index}/id`,
+          }),
+        );
+        continue;
+      }
+      if (
+        reference.fragment &&
+        target.bodyOrigin === "authored" &&
+        !headingAnchors(target.body ?? "").has(reference.fragment)
+      ) {
+        problems.push(
+          problem({
+            code: PROBLEM.CONTRACT_UNRESOLVED_REFERENCE,
+            message: `${record.id} rule ${rule.id} references #${reference.fragment}, which ${reference.id} has no heading for`,
+            recordId: record.id,
+            path: `${path}/references/${index}/fragment`,
           }),
         );
       }

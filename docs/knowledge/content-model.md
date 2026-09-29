@@ -1,463 +1,218 @@
 # Knowledge content model
 
-**Status:** Draft
+**Status:** Draft. Describes the model after the
+[simplification plan](simplification-plan.md) and [ADR 0007](../adr/0007-simplified-knowledge-model.md).
 
 ## Design goals
 
-The content model must work as readable source material in Git, deterministic build input, and a
-portable retrieval format. Component records that publish a contract are authored as YAML specs.
-Cross-cutting narrative guidance uses Markdown. Facts that agents need to filter, validate, or
-connect use structured metadata.
+The model serves two jobs. It is the contract that the web components and the Figma components are
+built from, and it is the one source of knowledge that the docs site and agents read.
 
-The model favors small records connected by explicit relationships over one large document. A
-consumer can retrieve a focused answer and follow its relationships when it needs more context.
-
-A compiled record can combine an authored YAML or Markdown record with structured domain sources.
-For example, `component.button` authors its host-neutral `contract` in `button.spec.yaml`. The
-compiler copies authored fields verbatim, generates a compiled body from the contract when the
-YAML file omits one, and composes each source kind into a reserved namespace. It does not
-flat-merge source fields into `title`, `summary`, or `status` (KNOW-002, KNOW-008).
+It must work as readable source material in Git, as deterministic build input, and as a portable
+retrieval format. Structured facts are YAML: each component is one `*.spec.yaml` file. Narrative
+guidance is Markdown with YAML frontmatter. Small records connect through `related`, so a consumer
+can retrieve a focused answer and follow links when it needs more.
 
 ## Record types
 
-### Component
+| Type | Authored as | Holds |
+| --- | --- | --- |
+| `component` | `components/<name>/<name>.spec.yaml` | Metadata, the `contract`, the `web` section, and optional `tokenRef`. |
+| `pattern` | `patterns/*.md` | Guidance for composing components, optionally with `variantGuidance`. |
+| `guideline` | `guidelines/*.md` | How-to guidance for one job, optionally with `docsSections`. |
+| `example` | `examples/*.md` | An annotated screen with `assets` and `annotations`. |
+| `foundation` | Markdown | Reference knowledge such as color roles. None exist yet. |
+| `decision` | Markdown | An architectural or design decision. None exist yet; ADRs stay in `docs/adr`. |
 
-The narrative hub for a design system component. Each component is authored as a
-`components/<name>/<name>.spec.yaml` file that owns metadata, relationships, provenance, token
-references, and the portable `contract`. That object has usage, optional content rules, anatomy, parameters, optional
-configuration axes, events, states, behavior rules, accessibility, optional rationale, and optional
-visual mappings. Usage entries have stable IDs, a `situation`, and optional `instead` and `why`.
-Rules share a vocabulary with stable IDs, obligation levels (`must`, `should`, `may`), a statement,
-and optional applicability, rationale, record references, and `examples.do` / `examples.avoid`.
-IDs are unique within the contract. Rule `references` are dotted record IDs, not plain-language
-alternatives such as Link. A mapping row names an anatomy
-part, visual channel, configuration, state, and either a token name or a closed literal
-(`transparent`, `inherit`, `none`). Token names may be semantic, primitive, or component. Media-query
-axes such as `prefersReducedMotion` live in `configurationAxes`, not in the compiler. The
-contract has no `tagName`, slots, parts, attribute spellings, or DOM types.
-Host identity is not authored here. A later component may omit `contract` and may still be Markdown.
+A component's platform implementation is part of its record. There is no separate binding record.
 
-Examples: the records under `packages/knowledge/content/components/`.
+## Authored fields
 
-### Binding
+Every record needs `id`, `type`, `title`, and `summary`. The rest is optional:
 
-The authored host mapping for one platform. A binding `implements` a component. Its `host` is the
-only object that may name a custom-element tag, FACE, slots, parts, or `HTMLFormElement`. Host
-`behavior` is not part of the mapping schema; structured siblings such as `formAssociation` and
-`focus` are the source of those host facts. Portable behaviors that those fields cannot express
-belong on the component `contract.behavior` array.
+- `status` is `draft`, `accepted`, `deprecated`, or `superseded`. The build defaults it to `draft`.
+- `jobs` lists `design`, `implement`, and `review`. The build derives it from the type when
+  omitted: components serve all three, patterns all three, guidelines implement and review,
+  examples design and implement, and foundations and decisions design.
+- `tags` are extra search terms. The build adds the record's own name, such as `text-field`.
+- `related` lists records to read alongside this one. A link counts in both directions.
+- `sources` lists files the record reads, such as a token file or an ADR. The build adds the
+  record's own file as its `authored` source.
+- `visibility` is `public` or `internal`. The build takes it from the content root.
 
-Examples: `binding.button.web-component`, `binding.badge.web-component`.
+Unknown fields fail validation. `packages/knowledge/src/schema/knowledge-record.schema.json` is the
+one authored schema, in JSON Schema 2020-12. Each spec's first line names it, so editors that use
+`yaml-language-server` complete fields and mark mistakes.
 
-### Pattern
+Markdown records author a body. Component specs do not; the build generates the body from the
+contract.
 
-Guidance for composing components and content to solve a recurring interface problem.
+## The contract
 
-Examples: action hierarchy, form actions, status feedback.
+`contract` holds what is true on every platform. Its vocabulary is neutral so a designer building
+the Figma component and an engineer building the web component read the same facts.
 
-### Guideline
+- `description`: what the component does, in one sentence.
+- `usage.do` and `usage.avoid`: situations, each with optional `instead` and `why` for avoid.
+- `content`, `behavior`, and `accessibility.requirements`: rules. Each has an `id` unique in the
+  contract, a `level` of `must`, `should`, or `may`, and a `statement`, with optional
+  `applicability`, `rationale`, `references` to record IDs (with an optional heading `fragment`),
+  and `examples.do` / `examples.avoid`. These rules are also the component's review checklist.
+- `anatomy`: parts, each with a `name`, a `role` (`interactive-surface`, `label`, `description`,
+  `indicator`, or `container`), and a `description`.
+- `parameters`: options of kind `enum`, `boolean`, or `string`. An enum has `values` and may have
+  `examples`; a default must match the kind and name one of the values.
+- `configurationAxes`: conditions that are not parameters, such as `reducedMotion: [reduce]`.
+- `events`: what the component reports, each with a description.
+- `states`: the component's states, highest priority first, then `default`.
+- `accessibility`: `semantics`, `name`, `keyboard`, and the requirement rules.
+- `rationale`: decisions, especially what the component deliberately does not ship.
+- `visuals`: which token each part uses.
 
-A focused rule for design, implementation, or review. A guideline should be concrete enough to
-apply or check.
+### Visuals and states
 
-Examples: label buttons with the resulting action, use semantic tokens by intent.
+`visuals` is keyed by anatomy part. Each part has `base` channels, part-wide `states`, and one
+block per parameter or configuration axis, keyed by value. A value holds channels and its own
+`states`.
 
-### Example
+The channels are `background`, `foreground`, `border`, `focus-ring`, `padding-horizontal`,
+`padding-vertical`, `radius`, `gap`, `font-family`, `font-size`, `font-weight`, `line-height`,
+`letter-spacing`, `motion`, `motion-duration`, and `motion-easing`. The schema's
+`channelMapProperties` is the one list; the compiler's `CHANNEL_CSS` maps each to its CSS property.
+A value is a published token name or one of the literals `transparent`, `inherit`, and `none`.
 
-An annotated implementation or screen that demonstrates one or more records. Examples can be
-positive, negative, or comparative.
+The build expands `visuals` into `mappings` rows of part, channel, configuration, optional state,
+and token, and drops `visuals` from compiled output. Rules:
 
-### Foundation
+- For each part and channel, the first active state in `contract.states` that sets it wins, then
+  rows with no state. Among rows for the same state, the one with more configuration keys wins.
+- A state hides a lower one only on the channels it sets. Button's ghost disabled state sets its
+  background to `transparent` so hover cannot show through.
+- `default` is the rest state. It comes last in `states` and never has a `states` block.
+- `motion: none` clears the motion duration and easing on the same part.
+- Two rows for one part, channel, and state whose configurations can both apply, where neither is
+  more specific, are a conflict.
+- Every token name must exist in `packages/tokens/src/tokens`. Unknown parts, axes, values, and
+  states fail the build.
 
-Reference knowledge used across components and patterns.
+Compiled `visualCoverage` lists the parts, axes, values, states, and channels each part covers,
+and a warning names an axis value with no visuals.
 
-Examples: color roles, typography roles, spacing, theming, token tier selection.
+## The web section
 
-### Decision
+`web` holds how the web component implements the contract: `package`, `export`, `defaultTagName`,
+`registration` (`export`, `supportsAliases`), `anatomy` (the `element`, `part`, or `slot` for each
+contract part), `parameters`, `events` (the DOM `event` and optional `suppressedWhen`), `states`
+(the attribute that drives a state such as `invalid`), `properties`, `formAssociation`, `focus`,
+`parts`, `example`, `rationale`, and `notes`.
 
-An accepted or superseded architectural or design decision. Existing ADRs can generate decision
-records without moving from their owning package.
+`web.parameters` lists exceptions only. A contract parameter with no entry maps to attribute
+`kebab-case(name)` and property `name`; an entry replaces that default whole. A part with no
+`web.parts` entry takes its anatomy description. The compiled record carries the resolved maps.
 
-## Required fields
+The build checks that `web.anatomy`, `web.parameters`, and `web.events` name exactly the contract's
+parts, parameters, and events, that an enum's value map covers every value, that `web.states` names
+contract states, and that a `web.parts` override names a rendered part.
 
-Each compiled record has these fields:
+## Composed sources
 
-- `id` is a stable, globally unique identifier.
-- `schemaVersion` identifies the record schema.
-- `type` is one of the defined record types.
-- `title` is the human-readable name.
-- `summary` is a short answer suitable for search results.
-- `status` is `draft`, `accepted`, `deprecated`, or `superseded`.
-- `visibility` is `public` or `internal`.
-- `jobs` contains any of `design`, `implement`, and `review`.
-- `tags` contains controlled discovery terms.
-- `relations` contains typed links to other stable record IDs.
-- `sources` contains authored or generated provenance.
-- `body` contains the Markdown guidance.
+A record's authored fields are never overwritten. Declared sources compose into their own fields:
 
-Record types can add validated fields. For example, component records can include a portable
-`contract` plus `tokenRef`, binding records include a `host` mapping, and example records can
-include assets and annotations.
+- `token-source` fills `tokens.entries` from the declared token file. It pairs with `tokenRef`,
+  which fills `tokens.tier`, `tokens.namespace`, and `tokens.description`. A component without a
+  component-token namespace has neither.
+- `adr` adds a `kind: adr` source with path and revision, so a reader can follow the record to the
+  decision. ADR prose stays with its package.
 
-Guidelines intended for review can add structured `checks`. Each check has a stable ID, a level,
-and one verifiable requirement. A guideline can add `docsSections` to name the `##` section that a
-documentation site shows for a page section. Today the only key is `behavior`, which takes the
-section's heading anchor and the heading the page shows it under
-(`{ section: set-form-behavior-deliberately, heading: Forms }`). The docs build fails when the
-anchor matches no heading, so renaming a heading cannot silently drop that section.
-
-A pattern can add `variantGuidance` to opt a component's variants into guidance from its body. It
-maps a component ID the pattern `guides` to variant values, each naming a `###` subsection by
-anchor. A list (`component.button: [primary, danger]`) is shorthand for anchors named after each
-variant. Headings alone guide nothing: a component with a `primary` variant gets no guidance from a
-`### Primary` heading unless the pattern names it. The knowledge compile fails when an anchor,
-variant, or component does not exist, or when two patterns guide the same variant. A component can relate to
-more than one pattern. Example records can add structured `assets` and `annotations`.
-
-## Executable contract
-
-`packages/knowledge/src/schema/knowledge-record.schema.json` is the canonical authored-record
-schema. It uses JSON Schema 2020-12 so non-JavaScript consumers can validate the same records.
-Schema version `1` fixes the current field vocabulary and dotted ID format.
-
-The package exports `parseRecord(markdown, { sourcePath })` for Markdown records and
-`parseYamlRecord(yaml, { sourcePath })` for `*.spec.yaml` component records.
-`parseAuthoredRecord(text, { sourcePath })` selects the parser from the path suffix. It does not
-infer `id` or `type` from the filename. `parseRecord` parses YAML frontmatter, adds the
-trimmed Markdown body, validates the complete authored record, and returns one flat object. YAML
-specs omit `body`; the compiler generates compiled Markdown from the structured record.
-Invalid
-input throws a path-aware `KnowledgeRecordError`. Duplicate YAML keys fail. `sourcePath` is
-provenance for the authored
-source, not a format discriminator: the same Markdown bytes parse under `markdown/<id>.md` or an
-authored
-filename when identity frontmatter plus defaults satisfy the authored schema. Compiled Markdown is
-still not a round-trip for `contract`, `host`, or `checks`. Identity-only frontmatter still
-parses; `parseRecord` fills `schemaVersion`, `relations`, and `sources`.
-
-The compiled-record schema is derived in memory from this authored schema at compile time. The
-compiler clones the authored document, sets a new `$id`, and merges compiled-only fields. It does
-not `$ref` the authored schema from a sibling file, because `unevaluatedProperties: false` would
-reject those extra fields (KNOW-007, KNOW-023).
-
-The derived schema retains the authored conditional definitions of `contract`, `host`, and
-`tokenRef`. Extensions add only compiled fields and enriched source/asset definitions. Compilation
-and retrieval use the same compiled-record validator; retrieval separately checks manifest/index
-consistency (KNOW-008, KNOW-015, KNOW-023).
-
-Authored records have exactly one `kind: authored` source, filled from the file path when omitted. They cannot declare the
-compiler-only `generated` source kind. Unknown fields fail validation rather than passing through
-to compiled output. The authored schema stays `unevaluatedProperties: false`.
-
-## Proposed authored format
-
-Cross-cutting knowledge uses Markdown with YAML frontmatter. Component records that publish a
-contract use YAML specs:
-
-```text
-packages/knowledge/content/components/
-  <name>/<name>.spec.yaml
-```
-
-`parseRecord` fills `schemaVersion` as
-`1`, empty `relations`, and an `authored` source path from the file. The compiler fills omitted
-`visibility` from the content root that listed the file. Content files omit `schemaVersion`,
-`visibility`, and the authored source. Authors write `id`, `type`, `title`, `summary`, `status`,
-`jobs`, `tags`, and, for Markdown, `body`. YAML component specs omit `body`. `sources` lists only external inputs, such as token files or ADRs.
-Folder names do not set `id` or `type`.
-
-```markdown
----
-id: pattern.action-hierarchy
-type: pattern
-title: Action hierarchy
-summary: Choose button emphasis based on the relative importance and risk of each action.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
-tags:
-  - actions
-  - buttons
-relations:
-  uses:
-    - component.button
-  guides:
-    - component.button
----
-
-Pattern guidance goes here.
-```
-
-The executable authored schema matches this shape. Retrieval may still change how consumers query
-compiled records. It must not change these authored field names.
-
-## Composed records
-
-The Markdown record owns agent-facing narrative, discovery metadata, and relationships. Authored
-fields are never overwritten by a domain source. Entries in `sources` compose into disjoint
-namespaces:
-
-- a component that publishes a portable contract authors `contract`;
-- a `type: binding` record authors `host`;
-- `token-source` fills `tokens.entries` with flattened DTCG leaves from the declared source path,
-  never from `packages/tokens/dist/`;
-- the component's authored `tokenRef` fills `tokens.tier`, `tokens.namespace`, and
-  `tokens.description`;
-- `adr` contributes a `kind: adr` source with path and revision. Design, implement, and review
-  agents need that provenance so they can follow a compiled record to the domain-owned ADR. They
-  do not need ADR prose copied into the knowledge bundle. Token ADR bodies remain in
-  `packages/tokens`.
-
-The pairing is both halves or neither. A component with no published component-token namespace
-omits `tokenRef` and omits `kind: token-source` (token ADR 0003). It may still author `contract`
-and leave `tokens` absent. There is no semantic-token source kind.
-
-A binding `implements` exactly one component, and that component must already have `contract`.
-Host anatomy names, parameters, and events are a bijection with the portable contract. Portable
-anatomy names are unique. Enum parameters require `values`, and an enum default must name one of
-those values. An enum parameter may add `examples`, a sample label for some or all values; each key
-must name one of those values. Boolean and string parameters must not declare `values` or
-`examples`, and a default must match
-the declared kind. Each host parameter mapping names an attribute, a property, or both. An enum
-`values` map on a host parameter, when present, covers every portable enum value.
-
-A binding authors only the exceptions to two defaults, and the compiler resolves both into the
-compiled record. A contract parameter with no `host.parameters` entry maps to attribute
-`kebab-case(name)` and property `name`. An entry replaces the default whole, so Button's
-`fullWidth: { attribute: full-width }` has no property. A part with no `host.parts` entry takes
-the description of the anatomy entry that renders it. A `host.parts` override must name a part the
-host anatomy renders. A binding may also author `example`, typical markup for the element; the docs site uses it
-as the component page's usage snippet.
-
-Conflict is a closed list of cross-source assertions, not a general field-equality merge. The token
-namespace must exist in the token file when a component publishes `tokenRef`. Components author
-compact `contract.visuals` grouped by anatomy part and configuration axis. The compiler
-expands that source into `contract.mappings` rows and omits `visuals` from compiled output.
-`base` applies regardless of state. Nested `states` replace only the channels they name. Rest
-values beside a nested `states` block compile as `state: default` when that name is in
-`contract.states`. Bare values are published token names or the closed literals `transparent`,
-`inherit`, and `none`. Unknown names fail as missing tokens. `base` and `states` are reserved
-and cannot be parameter or axis names.
-
-Mapping rows must name an anatomy part, a contract state when `state` is present, configuration
-keys that are contract parameters or `configurationAxes` (for media-query axes such as
-`prefersReducedMotion`), and a token name that exists in the token package or a closed literal.
-Boolean configuration values are `"true"` or `"false"`. Duplicate rows that share part, channel,
-configuration, and state are a conflict. Incomparable axis assignments for the same part and
-channel are a conflict. YAML object order does not decide precedence.
-
-`contract.states` is a vocabulary. Simultaneous states use `contract.stateResolution`: `suppress`
-removes losers when the winner is active, `overlay` orders remaining interaction states, and
-`independent` states still contribute. Button `disabled` suppresses `hover` and `pressed`.
-`focus-visible` can combine with an enabled interaction state and with `disabled`.
-`transition: none` replaces duration and easing for that configuration when resolved.
-Compiled `visualCoverage` lists authored parts, axes, values, states, and channels, and names
-uncovered parts and parameters so missing visuals are visible. Authoring `visualCoverage` is a
-conflict. The compiler does not infer variant groups from
-token paths and does not freeze a size-name bridge. Token names are checked against every
-`*.tokens.json` file under `packages/tokens/src/tokens`. An extra size compiles when its mapping names a
-published token. A mapped token missing from the token package fails the build. Sparse variants such
-as `ghost` with no rest background token are authored as literals, not inferred. Authoring both
-`visuals` and `mappings` is a conflict. See [ADR 0004](../adr/0004-compact-visual-authoring.md).
-
-These are not conflicts, because they are different facts with different owners:
-
-- record `summary` versus `contract.description`
-- record `title` versus a host or token title
-- record `status` versus ADR status
-
-The compiler rejects a missing source, an unreadable source, a binding that is not a bijection, or
-one of those token assertions (`source/conflict`) instead of choosing a value silently (KNOW-023).
-
-The compiler does not generate `type: decision` records in this slice. KNOW-005 is satisfied by
-`sources[]`. KNOW-006 still allows authored `type: decision` records. KNOW-024 constrains
-generated records rather than requiring them.
+The token namespace must exist in the token file when a component declares `tokenRef`.
 
 ## Relationships
 
-Relationship names express why records connect. The initial vocabulary is:
+`related` is the only relationship. The build validates each target and adds the reverse link to
+`backlinks.related` on the target, per visibility projection: an internal record's link never
+appears on a public record. Compiled records keep the authored list in `relations.related`.
 
-- `uses` means the record depends on another component, pattern, or foundation.
-- `demonstrates` links an example to the guidance or component it illustrates.
-- `guides` links a pattern or guideline to the record it guides.
-- `implements` links a binding to the component it implements, or a record to a decision it
-  implements.
-- `reviews` links a checklist to the records it checks.
-- `supersedes` links a record to older guidance it replaces.
-- `related` records a meaningful connection with no more precise relation. Prefer `guides` and
-  `reviews` for guidance. Keep `related` for peers such as Button and Badge.
+A pattern's `variantGuidance` maps a component it lists in `related` to that component's variants,
+each naming a `###` heading in the pattern body. A list (`component.button: [primary, danger]`) is
+shorthand for headings named after each variant. The build fails when an anchor, variant, or
+component does not exist, or when two patterns guide the same variant.
 
-The compiler validates targets and adds named reverse relationships to compiled output. Reverse
-names come from a frozen table. `uses` becomes `usedBy`, `demonstrates` becomes `demonstratedBy`,
-`reviews` becomes `reviewedBy`, and the rest follow the same pattern. `related` is symmetric.
-
-Backlinks are computed per visibility projection, not on the corpus. An internal record that `uses`
-`component.button` must not appear in the public bundle as `component.button.backlinks.usedBy`
-(KNOW-020, KNOW-021). Authors should not maintain reverse relationships manually.
-
-The compiler resolves narrative links and images once using the Markdown syntax tree. It keeps
-their record and asset targets as compilation metadata and uses those targets for visibility
-checks. Code examples, plain text, and external URLs that happen to contain bundle paths are not
-local references. Reference metadata does not become a field on compiled records (KNOW-021).
-Raw HTML nodes are parsed for `href`, `src`, and `poster` attributes, including entity-encoded
-values. These destinations use the same resolution and visibility checks. HTML can refer to
-authored paths or existing bundle paths; unknown local destinations fail the build.
+The build resolves narrative links and images once, using the Markdown syntax tree, and rewrites
+only each destination. Raw HTML `href`, `src`, and `poster` attributes use the same resolution.
+Unknown local destinations fail the build.
 
 ## Provenance
 
-A source entry identifies how a record was produced:
-
-- `authored`: Markdown or YAML maintained directly as knowledge;
-- `token-source`: token definition or generated token artifact;
-- `adr`: accepted decision owned by its domain package; or
-- `generated`: deterministic output from another declared source.
-
-An authored record has exactly one `kind: authored` source, filled from the file path when omitted.
-When written out, that path must be the file the compiler is parsing. A second authored source is invalid. A missing or mismatched authored path
-fails the build. Each compiled `revision` is a digest of the bytes at that entry's declared path.
-
-A component's portable `contract` is authored in the component record. For YAML specs that is the
-`.spec.yaml` file. Its provenance is that `kind: authored` source. There is no separate
-contract-source field. Compiled `bodyOrigin` records whether the readable body was authored or
-generated from the structured record.
-
-Generated records include source paths and source revisions in their compiled metadata. The build
-must not silently treat generated output as authored truth.
+A source is `authored` (the record's own file), `token-source`, `adr`, or `generated`. A record has
+exactly one authored source, and its path must be the file the compiler parsed. Each compiled
+`revision` is a digest of the bytes at that path. Compiled `bodyOrigin` says whether the body was
+authored or generated.
 
 ## Visual examples
 
-An example asset has:
-
-- a stable asset ID that is unique across the corpus;
-- repository-relative source path;
-- media type and dimensions;
-- alternative text;
-- a written annotation describing the decisions visible in the image;
-- optional regions that associate part of an image with record IDs; and
-- origin and revision information.
-
-Text annotations are required because some consumers cannot inspect images. The image and its
-annotation travel together in every bundle that includes the example.
+An example asset has a stable ID unique across the corpus, a repository-relative path, a media type
+and dimensions, and alternative text. Annotations have an ID, a label, a description, and optional
+`relatesTo` record IDs. The generated page renders the annotations, so a consumer that cannot see
+the image still gets the decisions it shows. Image regions are not modeled yet.
 
 ## Visibility
 
-Authored roots are `{ root, visibility }`. A record's declared visibility must match its root.
-Public sources compile into the public bundle. An internal build can add records from a separately
-configured private input and includes both public and internal records.
+Authored roots are `{ root, visibility }`, and a record's visibility must match its root. The public
+bundle holds public records. When internal content is configured, the internal bundle holds public
+and internal records. The build rejects a public record that links to an internal record or asset,
+a path that leaves a record's allowed roots, an internal root that declares a public record, a
+missing or unreadable root, and duplicate record or asset IDs. Visibility controls bundle inclusion,
+not source access (KNOW-022).
 
-Source and asset paths are repository-relative. The compiler resolves each path and requires it
-to stay inside an allowed root. Public records may read their public authored root and domain
-token sources under `packages/tokens`. Internal records may read their configured private root
-and the same domain token sources. `.`, `..`, absolute paths, and symlinks that leave those
-roots fail the build. This does not replace access control on private roots (KNOW-022).
-
-The compiler rejects:
-
-- public records that reference internal records;
-- public records that reference internal-only assets;
-- paths that leave a record's allowed roots;
-- an internal root that declares a public record;
-- a missing or unreadable configured authored root;
-- a listed record that cannot be read;
-- two records that declare the same asset ID; and
-- public output containing undeclared files.
-
-An existing empty authored root is valid. The compiler does not treat a missing or unreadable
-root as an empty corpus (KNOW-013, KNOW-023).
-
-Marking a committed file as internal does not make the source private. Access controls must protect
-the source location itself. The published package includes `dist/public` and `src`. It does not
-include `dist/internal` (KNOW-017, KNOW-021).
-
-## Compiled layout
-
-The output is:
+## Compiled output
 
 ```text
-dist/
-├── public/
-│   ├── manifest.json
-│   ├── records.json
-│   ├── search-index.json
-│   ├── schema/
-│   │   ├── knowledge-record.json
-│   │   ├── compiled-knowledge-record.json
-│   │   ├── portable-contract.json
-│   │   └── host-binding.json
-│   ├── markdown/
-│   └── assets/
-└── internal/   # only when internal content is configured
-    └── ...
+dist/public/
+├── manifest.json
+├── records.json
+├── search-index.json
+├── schema/
+│   ├── knowledge-record.json
+│   └── compiled-knowledge-record.json
+├── markdown/<id>.md
+└── assets/
 ```
 
-`schema/compiled-knowledge-record.json` is the derived compiled schema.
-`schema/portable-contract.json` and `schema/host-binding.json` are the schemas those
-artifacts `$ref`. A copied `dist/public` contains every schema needed to validate authored and
-compiled records.
+Both schemas are self-contained. `records.json` is the only owner of structured fields.
+`markdown/<id>.md` is a readable page: identity frontmatter, then the body, then generated sections.
+A component page adds install and register steps, the web API, slots and parts, DOM events, form
+and focus behavior, and an example. Every page ends with its related records grouped by type.
 
-### Compiled view ownership
+The manifest `content` block records the schema versions, visibility, knowledge and design system
+versions, record count, and per-file hashes, and its digest hashes that block. Build time and git
+revision are outside the digest. `compiledSchemaVersion` is 8; a bundle with another version does
+not open.
 
-The compiler writes two views of each assembled record.
+## Retrieval
 
-- Record view: `records.json` and `openCatalog().get(id)`. This is the only
-  compiled owner of structured fields, including `contract`, `host`, `checks`, and `tokens`.
-- Markdown view: `markdown/<id>.md`. Frontmatter is identity and discovery (`id`, `jobs`,
-  `status`, `summary`, `tags`, `title`, `type`, `visibility`). The body is the rewritten
-  narrative, authored for Markdown records and generated from the contract for YAML-only
-  components. The file is not a round-trip for `parseRecord`. Record-view bodies keep
-  bundle-root-relative destinations (`markdown/<id>.md`, `assets/...`) so documentation can rewrite
-  them. Emitted Markdown files rewrite those same destinations relative to the containing file
-  (`<id>.md`, `../assets/...`). Links to other records are narrative cross-references, not
-  ownership of `contract`, `host`, or `checks`. `parseRecord` does not reject a `markdown/<id>.md`
-  path; compiled Markdown that satisfies the authored schema parses, without structured fields.
+`openCatalog` in `@stevegreco/design-system-knowledge/retrieve` opens a bundle directory, a URL, or
+an in-memory `{ records, searchIndex, manifest }`, and returns `get`, `list`, `search`, `related`,
+and `markdownPath`. Opening checks the manifest digest, the file hashes for a directory, and every
+record against the compiled schema. `info.root` names the bundle directory.
 
-`search-index.json` is an index over the record view. It is not a third record view.
+Search tokenizes title, summary, tags, body, and contract and web facts. It stems plurals and -ing
+forms, drops question words, and indexes hyphenated names whole and joined. Results rank by how
+many query terms match, then by field weight times term rarity, then by type (component, pattern,
+guideline, example).
 
-The manifest `content` block records the schema version, compiled schema version, bundle
-visibility, knowledge version, design system version, record count, and per-file hashes. The
-digest hashes that block. Build time and git revision live in `manifest.build` and are not part
-of the digest (KNOW-014, KNOW-018, KNOW-020, KNOW-024). `compiledSchemaVersion` is `7` because
-compiled records carry `bodyOrigin` and contracts use structured usage IDs and rules. Bundles
-whose compiled schema version is not 7 fail closed. Portable `specVersion` is 5. The compiler
-projects and writes the internal bundle only when internal content is configured. An internal bundle
-may contain only public records; visibility is the declared projection, not a guess from record contents.
+## Compiler stages
 
-Consumers query a compiled bundle through `openCatalog` in
-`@stevegreco/design-system-knowledge/retrieve`. `search`, `get`, `list`, and `related` read
-`records.json`, `search-index.json`, and `manifest.json`. They do not change these authored field
-names. The search index tokenizes `title`, `summary`, `tags`, `body`, and type-specific facts from
-`contract`, `host`, and `checks`. It does not index `id`, `type`, or `jobs`.
-
-Directory and in-memory catalog inputs must contain complete records conforming to the compiled
-schema, including per-record versions and source revisions. Malformed records fail with
-`KnowledgeBundleError` code `bundle-invalid` before queries can run. In-memory input skips file
-hash verification, but does not skip record validation. Opening a catalog copies in-memory records
-before freezing them, so the caller retains ownership of its original data (KNOW-015, KNOW-025).
-Manifest schema-version checks precede per-record validation, so incompatible bundles report
-`unsupported-schema-version`. Values that cannot be copied report `bundle-invalid`. Retrieval
-loads the schema validator on demand and compiles it once per process. Directory bundles still
-undergo record validation: matching manifest hashes establish file consistency, not proof that a
-trusted compiler produced them.
-
-### Compiler stages
-
-`loadCorpusInputs` reads authored records, domain sources, and assets. `assembleCorpus` consumes
-that data without further I/O or input mutation. It expands compact `visuals` into `mappings`,
-assembles records, validates mapping and
-namespace agreement, validates domain rules and relationships, and rewrites narrative references. `projectBundle`
-computes visibility-specific backlinks and emits files; `writeBundle` performs output I/O.
-The pure assembly stage can be tested with the same loaded inputs repeatedly (KNOW-023, KNOW-025).
+`loadCorpusInputs` reads records, sources, and assets. `assembleCorpus` does no I/O: it expands
+visuals, assembles records, resolves web defaults, runs the agreement checks, and rewrites narrative
+links. Each problem names its file and line, and a record that fails to parse causes no further
+errors in records that link to it. `projectBundle` computes backlinks per visibility and emits
+files; `writeBundle` writes them.
 
 ## Source ownership
 
 - `packages/tokens/` owns token values, token policy, and token ADRs.
-- `packages/knowledge/content/components/` owns portable component contracts when a component
-  publishes one.
-- `packages/knowledge/content/bindings/` owns host bindings.
+- `packages/knowledge/content/components/` owns component contracts and their web sections.
+- `packages/knowledge/content/` owns patterns, guidelines, examples, and annotations.
 - `packages/components/` owns component runtime.
-- `packages/knowledge/content/` owns cross-cutting patterns, guidelines, examples, and annotations.
 - `apps/documentation/` owns presentation and imports knowledge instead of restating it.
-- Tool-specific directories own agent procedures and verification workflows, not design system
-  facts.
+- Tool-specific directories own agent procedures, not design system facts.

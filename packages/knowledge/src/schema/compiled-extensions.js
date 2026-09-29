@@ -1,7 +1,12 @@
-export const COMPILED_SCHEMA_VERSION = 7;
+import recordSchema from "./knowledge-record.schema.json" with { type: "json" };
+
+export const COMPILED_SCHEMA_VERSION = 8;
 
 export const COMPILED_REQUIRED = Object.freeze([
   "schemaVersion",
+  "status",
+  "jobs",
+  "tags",
   "visibility",
   "relations",
   "sources",
@@ -13,6 +18,18 @@ export const COMPILED_REQUIRED = Object.freeze([
 
 export const COMPILED_PROPERTIES = Object.freeze({
   compiledSchemaVersion: { const: COMPILED_SCHEMA_VERSION },
+  sources: {
+    ...recordSchema.properties.sources,
+    description: "Every file the record read, starting with its authored file.",
+    minItems: 1,
+    minContains: 1,
+  },
+  relations: {
+    description: "The record's authored links. backlinks holds the links other records declare.",
+    type: "object",
+    additionalProperties: false,
+    properties: { related: { $ref: "#/$defs/recordIdList" } },
+  },
   backlinks: { $ref: "#/$defs/backlinks" },
   tokens: { $ref: "#/$defs/tokenContract" },
   bodyOrigin: { enum: ["authored", "generated"] },
@@ -53,12 +70,6 @@ export const COMPILED_DEFS = Object.freeze({
     type: "object",
     additionalProperties: false,
     properties: {
-      usedBy: { $ref: "#/$defs/recordIdList" },
-      demonstratedBy: { $ref: "#/$defs/recordIdList" },
-      guidedBy: { $ref: "#/$defs/recordIdList" },
-      implementedBy: { $ref: "#/$defs/recordIdList" },
-      reviewedBy: { $ref: "#/$defs/recordIdList" },
-      supersededBy: { $ref: "#/$defs/recordIdList" },
       related: { $ref: "#/$defs/recordIdList" },
     },
   },
@@ -84,6 +95,76 @@ export const COMPILED_DEFS = Object.freeze({
       name: { type: "string", minLength: 1 },
       alias: { type: ["string", "null"] },
       valueType: { type: "string" },
+    },
+  },
+});
+
+/** Fields the compiler adds to a component contract. */
+export const COMPILED_CONTRACT_PROPERTIES = Object.freeze({
+  mappings: {
+    description: "One row per part, channel, configuration, and state, expanded from visuals.",
+    type: "array",
+    items: { $ref: "#/$defs/visualMapping" },
+  },
+  visualCoverage: { $ref: "#/$defs/visualCoverage" },
+});
+
+const stringList = { type: "array", items: { type: "string", minLength: 1 } };
+
+export const COMPILED_CONTRACT_DEFS = Object.freeze({
+  visualMapping: {
+    type: "object",
+    additionalProperties: false,
+    required: ["part", "channel", "token"],
+    properties: {
+      part: { type: "string", minLength: 1 },
+      channel: { enum: Object.keys(recordSchema.$defs.channelMapProperties.properties) },
+      configuration: {
+        type: "object",
+        additionalProperties: { type: "string", minLength: 1 },
+      },
+      state: { type: "string", minLength: 1 },
+      token: {
+        oneOf: [
+          {
+            type: "object",
+            additionalProperties: false,
+            required: ["name"],
+            properties: { name: { type: "string", minLength: 1 } },
+          },
+          {
+            type: "object",
+            additionalProperties: false,
+            required: ["literal"],
+            properties: { literal: { enum: ["transparent", "inherit", "none"] } },
+          },
+        ],
+      },
+    },
+  },
+  visualCoverage: {
+    type: "object",
+    additionalProperties: false,
+    required: ["parts", "uncoveredParts", "uncoveredAxes"],
+    properties: {
+      parts: { type: "object", additionalProperties: { $ref: "#/$defs/visualPartCoverage" } },
+      uncoveredParts: stringList,
+      uncoveredAxes: stringList,
+    },
+  },
+  visualPartCoverage: {
+    type: "object",
+    additionalProperties: false,
+    required: ["axes", "values", "states", "channels"],
+    properties: {
+      axes: stringList,
+      values: { type: "object", additionalProperties: stringList },
+      missingValues: {
+        type: "object",
+        additionalProperties: { ...stringList, minItems: 1 },
+      },
+      states: stringList,
+      channels: stringList,
     },
   },
 });

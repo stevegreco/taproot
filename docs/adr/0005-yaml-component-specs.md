@@ -1,6 +1,7 @@
 # ADR 0005: YAML component specs with generated narrative
 
-**Status:** Accepted
+**Status:** Accepted; `specVersion`, usage entry IDs, and binding records superseded by
+[ADR 0007](./0007-simplified-knowledge-model.md)
 
 This decision supersedes the Markdown-authoring and narrative-projection portions of
 [ADR 0003](./0003-component-owned-portable-contracts.md). It preserves component ownership of

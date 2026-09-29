@@ -1,7 +1,8 @@
 # Knowledge architecture review and agent handoff
 
 **Date:** 2026-09-04
-**Status:** Review findings and proposed work. The review itself made no implementation changes;
+**Status:** Superseded by the [simplification plan](simplification-plan.md) and
+[ADR 0007](../adr/0007-simplified-knowledge-model.md). Review findings and proposed work. The review itself made no implementation changes;
 items marked Done were implemented afterward.
 
 ## Purpose

@@ -1,3 +1,4 @@
+import { COMPILED_SCHEMA_VERSION } from "../src/schema/compiled-extensions.js";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
@@ -73,9 +74,45 @@ test("openCatalog accepts default, path, URL, and in-memory sources", async () =
   assert.equal(fromDefault.info.digest, fromUrl.info.digest);
   assert.equal(fromDefault.info.digest, fromMemory.info.digest);
   assert.equal(fromDefault.info.visibility, "public");
-  assert.equal(fromDefault.info.compiledSchemaVersion, 7);
+  assert.equal(fromDefault.info.compiledSchemaVersion, COMPILED_SCHEMA_VERSION);
   assert.ok(fromDefault.info.recordCount > 0);
   assert.equal(fromDefault.info.recordCount, fromDefault.list().length);
+  assert.equal(fromPath.info.root, publicDir);
+  assert.equal(fromMemory.info.root, null);
+});
+
+test("markdownPath names a record's readable file in a directory bundle", async () => {
+  const catalog = await openCatalog(publicDir);
+  const path = catalog.markdownPath("component.button");
+  assert.equal(path, join(publicDir, "markdown/component.button.md"));
+  assert.match(await readFile(path, "utf8"), /^id: component\.button$/m);
+  assert.equal(catalog.markdownPath("component.missing"), undefined);
+});
+
+test("a manifest whose digest does not match its content does not open", async () => {
+  const read = async (name) => JSON.parse(await readFile(join(publicDir, name), "utf8"));
+  const bundle = {
+    records: await read("records.json"),
+    searchIndex: await read("search-index.json"),
+    manifest: { ...(await read("manifest.json")), digest: "sha256:00" },
+  };
+  await assert.rejects(
+    () => openCatalog(bundle),
+    (error) => {
+      assert.equal(error.code, "bundle-inconsistent");
+      assert.match(error.message, /manifest digest sha256:00 does not match/);
+      return true;
+    },
+  );
+});
+
+test("the package exports each record's Markdown and the bundle assets", async () => {
+  const markdown = import.meta
+    .resolve("@stevegreco/design-system-knowledge/markdown/component.button.md");
+  assert.match(await readFile(new URL(markdown), "utf8"), /^id: component\.button$/m);
+  const assets = (await openCatalog()).get("example.action-hierarchy.settings").assets;
+  const asset = import.meta.resolve(`@stevegreco/design-system-knowledge/${assets[0].bundlePath}`);
+  assert.match(await readFile(new URL(asset), "utf8"), /<svg/);
 });
 
 test("openCatalog does not export tokenize, createCatalog, or openDefaultCatalog", async () => {
@@ -183,7 +220,7 @@ test("search index may list records in a different order", async () => {
 });
 
 test("dangling relation is bundle-inconsistent", async () => {
-  const records = [stubRecord("fixture.alpha", { relations: { uses: ["fixture.missing"] } })];
+  const records = [stubRecord("fixture.alpha", { relations: { related: ["fixture.missing"] } })];
   await assert.rejects(
     () =>
       openCatalog({
@@ -267,7 +304,7 @@ test("expectVisibility public rejects an internal fixture", async () => {
         id: "internal.secret",
         visibility: "internal",
         type: "guideline",
-        relations: { uses: ["component.alpha"] },
+        related: ["component.alpha"],
       }),
     },
     "internal",
@@ -324,7 +361,7 @@ for (const [field, value] of [
   ["schemaVersion", 99],
   ["compiledSchemaVersion", 99],
   ["sources", []],
-  ["relations", { uses: "fixture.alpha" }],
+  ["relations", { related: "fixture.alpha" }],
   ["unexpected", true],
 ]) {
   test(`retrieval validates compiled record shape: ${field}`, async () => {

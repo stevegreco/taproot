@@ -26,10 +26,10 @@ export function formatRule(rule) {
     lines.push(`  See [${referenceLabel(reference.id)}](markdown/${reference.id}.md${hash}).`);
   }
   if (rule.examples?.do?.length) {
-    lines.push(`  Do: ${rule.examples.do.join("; ")}.`);
+    lines.push(`  Do: ${sentence(rule.examples.do.join("; "))}`);
   }
   if (rule.examples?.avoid?.length) {
-    lines.push(`  Avoid: ${rule.examples.avoid.join("; ")}.`);
+    lines.push(`  Avoid: ${sentence(rule.examples.avoid.join("; "))}`);
   }
   return lines;
 }
@@ -44,4 +44,9 @@ export function referenceLabel(id) {
     .replaceAll("-", " ")
     .replaceAll(".", " ");
   return `${name} ${type}`;
+}
+
+/** End with a period unless the text already ends a sentence. */
+function sentence(text) {
+  return /[.!?]$/.test(text) ? text : `${text}.`;
 }

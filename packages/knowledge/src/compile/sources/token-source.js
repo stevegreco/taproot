@@ -1,4 +1,5 @@
 import { PROBLEM, problem } from "../tables.js";
+import { byCodeUnit } from "../../sort.js";
 
 /**
  * @param {string} text
@@ -38,7 +39,7 @@ export function readTokenSource(text, context) {
 
   const entries = [];
   flattenTokens(tree, [], entries);
-  entries.sort((left, right) => left.name.localeCompare(right.name));
+  entries.sort((left, right) => byCodeUnit(left.name, right.name));
 
   return {
     fields: { tokens: { entries } },

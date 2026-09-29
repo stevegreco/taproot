@@ -11,11 +11,8 @@ import {
   repoRoot,
 } from "./helpers/workspace.js";
 
-const buttonResolution = {
-  suppress: { disabled: ["hover", "pressed"] },
-  overlay: ["hover", "pressed"],
-  independent: ["focus-visible"],
-};
+/** Highest priority first, as Button lists them. */
+const STATES = ["disabled", "pressed", "hover", "focus", "default"];
 
 function visualContract(visuals, extras = {}) {
   return portableContract({
@@ -24,9 +21,8 @@ function visualContract(visuals, extras = {}) {
       variant: { kind: "enum", values: { ghost: "Ghost.", primary: "Primary." } },
       size: { kind: "enum", values: { sm: "Small.", md: "Medium." } },
     },
-    configurationAxes: { prefersReducedMotion: { values: ["reduce"] } },
-    states: ["default", "hover", "pressed", "focus-visible", "disabled"],
-    stateResolution: buttonResolution,
+    configurationAxes: { reducedMotion: { values: ["reduce"] } },
+    states: STATES,
     visuals,
     ...extras,
   });
@@ -40,8 +36,8 @@ test("compact visuals expand into deterministic mapping rows", () => {
   const contract = visualContract({
     control: {
       base: { radius: "component.fixture.radius" },
-      states: { "focus-visible": { outline: "component.fixture.focus" } },
-      size: { md: { "padding-inline": "component.fixture.pad" } },
+      states: { focus: { "focus-ring": "component.fixture.focus" } },
+      size: { md: { "padding-horizontal": "component.fixture.pad" } },
       variant: {
         ghost: {
           background: "transparent",
@@ -61,14 +57,18 @@ test("compact visuals expand into deterministic mapping rows", () => {
   assert.equal(radius.part, "control");
   assert.deepEqual(radius.token, token("component.fixture.radius"));
   assert.equal(radius.source, "/contract/visuals/control/base/radius");
-  assert.equal(mappings.find((row) => row.channel === "padding-inline").state, undefined);
-  const ghostDefault = mappings.find(
+  assert.equal(mappings.find((row) => row.channel === "padding-horizontal").state, undefined);
+  const ghostRest = mappings.find(
     (row) =>
       row.channel === "background" &&
-      row.state === "default" &&
+      row.state === undefined &&
       row.configuration?.variant === "ghost",
   );
-  assert.deepEqual(ghostDefault.token, { literal: "transparent" });
+  assert.deepEqual(ghostRest.token, { literal: "transparent" });
+  assert.equal(
+    mappings.some((row) => row.state === "default"),
+    false,
+  );
   const ghostHover = mappings.find(
     (row) =>
       row.channel === "background" &&
@@ -120,72 +120,66 @@ test("YAML object order does not change expanded mappings", () => {
   assert.deepEqual(first.mappings, second.mappings);
 });
 
-test("reordering contract.states does not change resolved visuals", () => {
-  const visuals = {
-    control: {
-      variant: {
-        ghost: {
-          background: "transparent",
-          foreground: "component.fixture.fg",
-          states: {
-            hover: { background: "component.fixture.hover" },
-            disabled: { foreground: "component.fixture.disabled" },
-          },
+const ghostVisuals = {
+  control: {
+    variant: {
+      ghost: {
+        background: "transparent",
+        foreground: "component.fixture.fg",
+        states: {
+          hover: { background: "component.fixture.hover" },
+          disabled: { foreground: "component.fixture.disabled" },
         },
       },
     },
-  };
-  const ordered = expandVisuals(visualContract(visuals), "component.fixture");
-  const reversed = expandVisuals(
-    visualContract(visuals, {
-      states: ["disabled", "focus-visible", "pressed", "hover", "default"],
-    }),
-    "component.fixture",
+  },
+};
+const ghostHoverDisabled = { configuration: { variant: "ghost" }, states: ["hover", "disabled"] };
+
+test("the first active state in contract.states wins each channel it sets", () => {
+  const { mappings, problems } = expandVisuals(visualContract(ghostVisuals), "component.fixture");
+  assert.deepEqual(problems, []);
+  const resolved = resolveMappings(mappings, STATES, ghostHoverDisabled);
+  assert.deepEqual(resolved.channels.foreground.token, token("component.fixture.disabled"));
+  // Disabled sets no background, so the hover background shows through.
+  assert.deepEqual(resolved.channels.background.token, token("component.fixture.hover"));
+
+  const hoverFirst = resolveMappings(
+    mappings,
+    ["hover", "disabled", "pressed", "focus", "default"],
+    ghostHoverDisabled,
   );
-  const options = { configuration: { variant: "ghost" }, states: ["hover", "disabled"] };
-  assert.deepEqual(
-    resolveMappings(ordered.mappings, buttonResolution, options).channels.background.token,
-    { literal: "transparent" },
-  );
-  assert.deepEqual(
-    resolveMappings(reversed.mappings, buttonResolution, options).channels.background.token,
-    { literal: "transparent" },
-  );
+  assert.deepEqual(hoverFirst.channels.foreground.token, token("component.fixture.disabled"));
+  assert.deepEqual(hoverFirst.channels.background.token, token("component.fixture.hover"));
 });
 
-test("Ghost hover plus disabled keeps the disabled background, not hover", () => {
-  const { mappings, problems } = expandVisuals(
-    visualContract({
-      control: {
-        variant: {
-          ghost: {
-            background: "transparent",
-            foreground: "component.fixture.fg",
-            states: {
-              hover: { background: "component.fixture.hover" },
-              disabled: { foreground: "component.fixture.disabled" },
-            },
-          },
-        },
-      },
-    }),
-    "component.fixture",
-  );
-  assert.deepEqual(problems, []);
-  const resolved = resolveMappings(mappings, buttonResolution, {
-    configuration: { variant: "ghost" },
-    states: ["hover", "disabled"],
-  });
-  assert.deepEqual(resolved.problems, []);
+test("a state hides a lower one by setting the same channel", () => {
+  const visuals = structuredClone(ghostVisuals);
+  visuals.control.variant.ghost.states.disabled.background = "transparent";
+  const { mappings } = expandVisuals(visualContract(visuals), "component.fixture");
+  const resolved = resolveMappings(mappings, STATES, ghostHoverDisabled);
   assert.deepEqual(resolved.channels.background.token, { literal: "transparent" });
   assert.deepEqual(resolved.channels.foreground.token, token("component.fixture.disabled"));
 });
 
-test("disabled plus focus-visible keeps the focus outline", () => {
+test("default comes last in contract.states and has no states block", () => {
+  const misordered = compileContractVisuals(
+    visualContract(ghostVisuals, { states: ["default", "hover", "disabled"] }),
+    "component.fixture",
+  );
+  assert.ok(misordered.problems.some((item) => /must come last/.test(item.message)));
+  const { problems } = expandVisuals(
+    visualContract({ control: { states: { default: { background: "transparent" } } } }),
+    "component.fixture",
+  );
+  assert.ok(problems.some((item) => /go outside states/.test(item.message)));
+});
+
+test("disabled plus focus keeps the focus ring", () => {
   const { mappings } = expandVisuals(
     visualContract({
       control: {
-        states: { "focus-visible": { outline: "component.fixture.focus" } },
+        states: { focus: { "focus-ring": "component.fixture.focus" } },
         variant: {
           ghost: {
             background: "transparent",
@@ -199,12 +193,12 @@ test("disabled plus focus-visible keeps the focus outline", () => {
     }),
     "component.fixture",
   );
-  const resolved = resolveMappings(mappings, buttonResolution, {
+  const resolved = resolveMappings(mappings, STATES, {
     configuration: { variant: "ghost" },
-    states: ["disabled", "focus-visible"],
+    states: ["disabled", "focus"],
   });
   assert.deepEqual(resolved.channels.foreground.token, token("component.fixture.disabled"));
-  assert.deepEqual(resolved.channels.outline.token, token("component.fixture.focus"));
+  assert.deepEqual(resolved.channels["focus-ring"].token, token("component.fixture.focus"));
 });
 
 test("reduced-motion transition none clears duration and easing", () => {
@@ -212,24 +206,24 @@ test("reduced-motion transition none clears duration and easing", () => {
     visualContract({
       control: {
         base: {
-          "transition-duration": "component.fixture.duration",
-          "transition-timing-function": "component.fixture.easing",
+          "motion-duration": "component.fixture.duration",
+          "motion-easing": "component.fixture.easing",
         },
-        prefersReducedMotion: {
-          reduce: { transition: "none" },
+        reducedMotion: {
+          reduce: { motion: "none" },
         },
       },
     }),
     "component.fixture",
   );
-  const rest = resolveMappings(mappings, buttonResolution, { configuration: {} });
-  assert.equal(rest.channels["transition-duration"].token.name, "component.fixture.duration");
-  const reduced = resolveMappings(mappings, buttonResolution, {
-    configuration: { prefersReducedMotion: "reduce" },
+  const rest = resolveMappings(mappings, STATES, { configuration: {} });
+  assert.equal(rest.channels["motion-duration"].token.name, "component.fixture.duration");
+  const reduced = resolveMappings(mappings, STATES, {
+    configuration: { reducedMotion: "reduce" },
   });
-  assert.deepEqual(reduced.channels.transition.token, { literal: "none" });
-  assert.equal(Object.hasOwn(reduced.channels, "transition-duration"), false);
-  assert.equal(Object.hasOwn(reduced.channels, "transition-timing-function"), false);
+  assert.deepEqual(reduced.channels.motion.token, { literal: "none" });
+  assert.equal(Object.hasOwn(reduced.channels, "motion-duration"), false);
+  assert.equal(Object.hasOwn(reduced.channels, "motion-easing"), false);
 });
 
 test("incomparable axis assignments for one channel are a conflict", () => {
@@ -252,7 +246,7 @@ test("unknown parts, axes, states, and literals fail closed", () => {
       missing: { base: { radius: "component.fixture.radius" } },
       control: {
         tone: { loud: { background: "component.fixture.bg" } },
-        states: { selected: { outline: "component.fixture.focus" } },
+        states: { selected: { "focus-ring": "component.fixture.focus" } },
         base: { background: "currentColor" },
       },
     }),
@@ -300,29 +294,24 @@ test("compiled Button mappings omit visuals and preserve ghost rest fill", async
   );
   const button = corpus.records.get("component.button");
   assert.equal(Object.hasOwn(button.contract, "visuals"), false);
-  assert.equal(button.contract.specVersion, 5);
-  assert.deepEqual(button.contract.stateResolution.suppress.disabled, ["hover", "pressed"]);
+  assert.deepEqual(button.contract.states, ["disabled", "pressed", "hover", "focus", "default"]);
   const ghostRest = button.contract.mappings.find(
     (row) =>
       row.configuration?.variant === "ghost" &&
       row.channel === "background" &&
-      row.state === "default",
+      row.state === undefined,
   );
   assert.deepEqual(ghostRest.token, { literal: "transparent" });
-  const ghostHoverDisabled = resolveMappings(
-    button.contract.mappings,
-    button.contract.stateResolution,
-    {
-      configuration: { variant: "ghost", size: "md" },
-      states: ["hover", "disabled"],
-    },
-  );
+  const ghostHoverDisabled = resolveMappings(button.contract.mappings, button.contract.states, {
+    configuration: { variant: "ghost", size: "md" },
+    states: ["hover", "disabled"],
+  });
   assert.deepEqual(ghostHoverDisabled.channels.background.token, { literal: "transparent" });
   assert.equal(
     ghostHoverDisabled.channels.foreground.token.name,
     "component.button.ghost.foreground.disabled",
   );
-  const ghostHover = resolveMappings(button.contract.mappings, button.contract.stateResolution, {
+  const ghostHover = resolveMappings(button.contract.mappings, button.contract.states, {
     configuration: { variant: "ghost", size: "md" },
     states: ["hover"],
   });
@@ -352,11 +341,11 @@ test("a visuals token missing from the token package fails the build", async () 
       /semantic\.color\.does\.not\.exist/.test(item.message),
     ),
   );
-  assert.equal(
+  assert.match(
     codes(corpus, PROBLEM.SOURCE_CONFLICT).find((item) =>
       /semantic\.color\.does\.not\.exist/.test(item.message),
     ).path,
-    "/contract/visuals/control/base/background/token/name",
+    /^content\/missing-visual\.md:\d+ \/contract\/visuals\/control\/base\/background$/,
   );
 });
 
@@ -381,7 +370,7 @@ test("an extra contract size compiles from compact visuals", async () => {
           visuals: {
             control: {
               size: {
-                lg: { "padding-inline": "component.size.size.large.paddingInline" },
+                lg: { "padding-horizontal": "component.size.size.large.paddingInline" },
               },
             },
           },
@@ -438,7 +427,7 @@ test("resolveMappings keeps the same channel on two anatomy parts", () => {
         token: { name: "component.fixture.control.fg" },
       },
     ],
-    buttonResolution,
+    STATES,
     {},
   );
   assert.throws(() => resolved.channels, /pass \{ part \} to read channels/);
@@ -464,7 +453,7 @@ test("resolveMappings keeps the same channel on two anatomy parts", () => {
         token: { name: "component.fixture.control.fg" },
       },
     ],
-    buttonResolution,
+    STATES,
     { part: "content" },
   );
   assert.equal(content.channels.foreground.token.name, "component.fixture.content.fg");
@@ -472,26 +461,6 @@ test("resolveMappings keeps the same channel on two anatomy parts", () => {
   assert.equal(
     JSON.parse(JSON.stringify(content)).channels.foreground.token.name,
     "component.fixture.content.fg",
-  );
-});
-
-test("independent states cannot share a channel with overlay or suppress winners", () => {
-  const { problems } = expandVisuals(
-    visualContract({
-      control: {
-        states: { "focus-visible": { background: "component.fixture.focus" } },
-        variant: {
-          ghost: {
-            background: "transparent",
-            states: { hover: { background: "component.fixture.hover" } },
-          },
-        },
-      },
-    }),
-    "component.fixture",
-  );
-  assert.ok(
-    problems.some((item) => /independent state focus-visible cannot share/.test(item.message)),
   );
 });
 
@@ -510,14 +479,15 @@ test("compiled Button coverage lists unused parts and axes without failing them"
     "fullWidth",
   ]);
   assert.equal(Object.hasOwn(button.contract.visualCoverage.parts.control, "missingValues"), false);
-  assert.equal(
-    button.contract.mappings.some(
+  // Disabled sets the ghost background, so hover cannot show through it.
+  assert.deepEqual(
+    button.contract.mappings.find(
       (row) =>
         row.configuration?.variant === "ghost" &&
         row.channel === "background" &&
         row.state === "disabled",
-    ),
-    false,
+    ).token,
+    { literal: "transparent" },
   );
   assert.equal(Object.hasOwn(button.contract.mappings[0], "source"), false);
 });

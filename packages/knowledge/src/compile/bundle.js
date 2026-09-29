@@ -2,15 +2,14 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import yaml from "js-yaml";
 import authoredSchema from "../schema/index.js";
-import hostBindingSchema from "../schema/host-binding.schema.json" with { type: "json" };
-import portableContractSchema from "../schema/portable-contract.schema.json" with { type: "json" };
 import { compiledSchema, findCompiledIssues } from "../schema/compiled-record.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
-import { sha256Hex } from "./digest.js";
+import { contentDigest, sha256Hex } from "./digest.js";
 import { buildSearchIndex } from "./search-index.js";
 import { generateReferenceSections } from "./generate-body.js";
 import { rewriteEmittedMarkdownUrls } from "./narrative.js";
 import { NARRATIVE_FRONTMATTER_KEYS, PROBLEM, REVERSE_RELATION, problem } from "./tables.js";
+import { byCodeUnit } from "../sort.js";
 
 export function projectBundle(corpus, visibility, meta) {
   const includedIds = [...corpus.records.keys()].filter((id) => {
@@ -36,16 +35,14 @@ export function projectBundle(corpus, visibility, meta) {
     bucket[key].add(edge.from);
   }
 
-  const records = includedIds
-    .sort((left, right) => left.localeCompare(right))
-    .map((id) => {
-      const record = corpus.records.get(id);
-      const backlinks = {};
-      for (const [key, values] of Object.entries(backlinksById.get(id))) {
-        backlinks[key] = [...values].sort((left, right) => left.localeCompare(right));
-      }
-      return { ...record, backlinks };
-    });
+  const records = includedIds.sort(byCodeUnit).map((id) => {
+    const record = corpus.records.get(id);
+    const backlinks = {};
+    for (const [key, values] of Object.entries(backlinksById.get(id))) {
+      backlinks[key] = [...values].sort(byCodeUnit);
+    }
+    return { ...record, backlinks };
+  });
 
   problems.push(...findCompiledIssues(records));
 
@@ -53,8 +50,14 @@ export function projectBundle(corpus, visibility, meta) {
   const markdown = new Map();
   const assets = new Map();
 
+  const byId = new Map(records.map((record) => [record.id, record]));
+  const context = {
+    stylesheet: meta.designSystemPackage ? `${meta.designSystemPackage}/css` : undefined,
+    titleOf: (id) => byId.get(id)?.title,
+    typeOf: (id) => byId.get(id)?.type,
+  };
   for (const record of records) {
-    markdown.set(`markdown/${record.id}.md`, emitMarkdown(record));
+    markdown.set(`markdown/${record.id}.md`, emitMarkdown(record, context));
     for (const asset of record.assets ?? []) {
       const bytes = corpus.assetBytes.get(asset.bundlePath);
       if (bytes) assets.set(asset.bundlePath, bytes);
@@ -70,12 +73,6 @@ export function projectBundle(corpus, visibility, meta) {
     "schema/compiled-knowledge-record.json",
     `${JSON.stringify(compiledSchema, null, 2)}\n`,
   );
-  putText(
-    files,
-    "schema/portable-contract.json",
-    `${JSON.stringify(portableContractSchema, null, 2)}\n`,
-  );
-  putText(files, "schema/host-binding.json", `${JSON.stringify(hostBindingSchema, null, 2)}\n`);
 
   for (const [path, text] of markdown) {
     putText(files, path, text);
@@ -84,12 +81,10 @@ export function projectBundle(corpus, visibility, meta) {
     files.set(path, bytes);
   }
 
-  const listed = [...files.keys()]
-    .sort((left, right) => left.localeCompare(right))
-    .map((path) => {
-      const bytes = files.get(path);
-      return { path, sha256: sha256Hex(bytes), bytes: bytes.byteLength };
-    });
+  const listed = [...files.keys()].sort(byCodeUnit).map((path) => {
+    const bytes = files.get(path);
+    return { path, sha256: sha256Hex(bytes), bytes: bytes.byteLength };
+  });
 
   const content = {
     schemaVersion: 1,
@@ -100,7 +95,7 @@ export function projectBundle(corpus, visibility, meta) {
     recordCount: records.length,
     files: listed,
   };
-  const digest = `sha256:${sha256Hex(canonicalJson(content))}`;
+  const digest = contentDigest(content);
   const manifest = {
     content,
     build: {
@@ -129,7 +124,7 @@ export function projectBundle(corpus, visibility, meta) {
 }
 
 export async function writeBundle(dir, bundle) {
-  const paths = [...bundle.files.keys()].sort((left, right) => left.localeCompare(right));
+  const paths = [...bundle.files.keys()].sort(byCodeUnit);
   for (const relative of paths) {
     const absolute = join(dir, relative);
     await mkdir(dirname(absolute), { recursive: true });
@@ -196,30 +191,14 @@ function projectNarrativeFrontmatter(record) {
   return frontmatter;
 }
 
-function emitMarkdown(record) {
+function emitMarkdown(record, context) {
   const frontmatter = projectNarrativeFrontmatter(record);
   const body = rewriteEmittedMarkdownUrls(
-    [record.body, ...generateReferenceSections(record)].join("\n\n"),
+    [record.body, ...generateReferenceSections(record, context)].join("\n\n"),
   );
   return `---\n${yaml.dump(frontmatter, { lineWidth: 120, noRefs: true, sortKeys: true })}---\n\n${body}\n`;
 }
 
 function putText(files, path, text) {
   files.set(path, new TextEncoder().encode(text));
-}
-
-function canonicalJson(value) {
-  return JSON.stringify(sortKeys(value));
-}
-
-function sortKeys(value) {
-  if (Array.isArray(value)) return value.map(sortKeys);
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.keys(value)
-        .sort()
-        .map((key) => [key, sortKeys(value[key])]),
-    );
-  }
-  return value;
 }

@@ -67,7 +67,14 @@ jobs:
         run: pnpm build
 
       - name: Check generated sources are committed
-        run: git diff --exit-code
+        run: |
+          status="$(git status --porcelain --untracked-files=all)"
+          if [ -n "$status" ]; then
+            echo "The build changed, added, or removed tracked files. Commit them:"
+            echo "$status"
+            git diff
+            exit 1
+          fi
 
       - name: Test
         run: pnpm test

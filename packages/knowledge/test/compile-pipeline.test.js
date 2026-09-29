@@ -2,13 +2,12 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 import { assembleCorpus } from "../src/compile/corpus.js";
 import { loadCorpusInputs } from "../src/compile/inputs.js";
-import { checkMappingAgreement } from "../src/compile/records.js";
 import {
   rewriteBodyLinks,
   rewriteEmittedMarkdownUrls,
   toMarkdownFileUrl,
 } from "../src/compile/narrative.js";
-import { createMemoryReader, recordMarkdown, portableContract } from "./helpers/workspace.js";
+import { createMemoryReader, recordMarkdown } from "./helpers/workspace.js";
 
 test("HTML destinations share resolution and preserve unrelated markup", () => {
   const result = rewriteBodyLinks(
@@ -48,7 +47,7 @@ test("corpus assembly is repeatable and leaves loaded inputs unchanged", async (
         {
           id: "component.alpha",
           path: "content/alpha.md",
-          relations: { related: ["component.beta"] },
+          related: ["component.beta"],
         },
         "See [Beta](./beta.md#usage).",
       ),
@@ -91,97 +90,4 @@ test("emitted Markdown destinations are relative to the markdown file", () => {
     emitted,
     '<div class="example"><img alt="Shot" src="../assets/ds.shot.svg"><a href="component.beta.md#usage">Beta</a></div>\n\nSee [Beta](component.beta.md#usage).',
   );
-});
-
-test("mapping agreement rejects a token name that is not in the token package", () => {
-  const record = {
-    id: "component.fixture",
-    contract: portableContract({
-      anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
-      mappings: [
-        {
-          part: "control",
-          channel: "background",
-          token: { name: "component.fixture.missing" },
-        },
-      ],
-    }),
-  };
-  const problems = checkMappingAgreement(record, new Set(["component.fixture.present"]));
-  assert.equal(problems.length, 1);
-  assert.match(problems[0].message, /component\.fixture\.missing/);
-});
-
-test("mapping agreement skips token names when no catalog is loaded", () => {
-  const record = {
-    id: "component.fixture",
-    contract: portableContract({
-      anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
-      mappings: [
-        {
-          part: "control",
-          channel: "background",
-          token: { name: "component.fixture.unchecked" },
-        },
-      ],
-    }),
-  };
-  assert.deepEqual(checkMappingAgreement(record, null), []);
-});
-
-test("mapping agreement rejects a boolean configuration other than true or false", () => {
-  const record = {
-    id: "component.fixture",
-    contract: portableContract({
-      anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
-      parameters: { disabled: { kind: "boolean", default: false } },
-      mappings: [
-        {
-          part: "control",
-          channel: "background",
-          configuration: { disabled: "yes" },
-          token: { literal: "transparent" },
-        },
-      ],
-    }),
-  };
-  const problems = checkMappingAgreement(record, null);
-  assert.equal(problems.length, 1);
-  assert.match(problems[0].message, /disabled has unknown value yes/);
-});
-
-test("mapping agreement rejects a media-query axis that is not authored", () => {
-  const record = {
-    id: "component.fixture",
-    contract: portableContract({
-      anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
-      mappings: [
-        {
-          part: "control",
-          channel: "transition",
-          configuration: { prefersReducedMotion: "reduce" },
-          token: { literal: "none" },
-        },
-      ],
-    }),
-  };
-  const problems = checkMappingAgreement(record, null);
-  assert.equal(problems.length, 1);
-  assert.match(problems[0].message, /not a contract parameter or configuration axis/);
-});
-
-test("mapping agreement rejects duplicate rows that name different tokens", () => {
-  const record = {
-    id: "component.fixture",
-    contract: portableContract({
-      anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
-      mappings: [
-        { part: "control", channel: "background", token: { name: "a.token" } },
-        { part: "control", channel: "background", token: { name: "b.token" } },
-      ],
-    }),
-  };
-  const problems = checkMappingAgreement(record, new Set(["a.token", "b.token"]));
-  assert.equal(problems.length, 1);
-  assert.match(problems[0].message, /names both a\.token and b\.token/);
 });

@@ -3,21 +3,15 @@ id: guideline.compose-or-propose
 type: guideline
 title: Compose or propose
 summary: Compose a new interface need from tokens and existing components first, and open an issue or RFC only when the system itself has to change.
-status: draft
-jobs:
-  - design
-  - implement
 tags:
   - composition
   - contribution
   - governance
   - rfc
-relations:
-  uses:
-    - pattern.action-hierarchy
-  related:
-    - component.button
-    - component.badge
+related:
+  - pattern.action-hierarchy
+  - component.button
+  - component.badge
 ---
 
 Most interface needs are met by composing what the system already publishes. Change the system
@@ -50,36 +44,19 @@ Composition stops being composition when product code rebuilds what a component 
 
 When one of these is the only way to meet the need, the system is missing something. Propose it.
 
-## Open an issue
+## Propose a change
 
-Open an issue when the change fits inside the existing record shape and contracts:
+Open an issue on the design system when the change fits the components and tokens it already has:
 
 - A variant, size, or parameter on an existing component.
-- A bug in a component, binding, token, or record.
-- A composition used in more than one place that should become a pattern record.
-- A new component whose behavior comes from a native element plus tokens, such as an Icon host or
-  a field shell.
+- A bug in a component, its web implementation, a token, or its documentation.
+- A composition used in more than one place that should become a pattern.
+- A new component whose behavior comes from a native element plus tokens, such as an icon or a
+  field shell.
 
-A new component follows the new-component definition of done in
-`docs/knowledge/new-component.md`. Its component record has a `contract` with explicit `visuals`,
-shaped like the existing records. Checkbox is the most complete one to copy. Extend that template
-rather than inventing a new record or mapping shape for one component.
-
-## Open an RFC
-
-Open an RFC in `docs/rfcs/` before any code when the change alters how the system works, not only
-what it contains:
+Some changes alter how the system works, not only what it contains. Say so in the issue, so the
+design question is settled before anyone writes code:
 
 - A component that owns focus management, an overlay, or a composite keyboard model, such as a
   Dialog, Select, Menu, or Tabs.
-- A change to the component record, contract, or binding shape.
 - A new token tier, or a semantic role category that does not exist yet.
-- A change that would supersede an accepted ADR.
-
-An accepted RFC becomes an ADR, and the ADR updates the requirements and content model it changes.
-
-## Keep the process small
-
-This is a personal system. An RFC is one Markdown document that states the problem, the evidence,
-and the proposed change. It needs no review board or sign-off beyond its author. The RFC step
-exists to force the design question before the implementation, not to add ceremony.

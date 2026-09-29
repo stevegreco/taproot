@@ -16,7 +16,7 @@ export type ComponentKnowledgeSection =
   | "review";
 
 export type ApiMemberKind = "attribute" | "property" | "event";
-export type CheckLevel = "error" | "warning";
+export type CheckLevel = "must" | "should" | "may";
 export type RecordStatus = "draft" | "accepted" | "deprecated" | "superseded";
 
 export interface Variant {
@@ -97,11 +97,11 @@ export interface ComponentSlice {
   readonly summary: string;
   readonly status: RecordStatus;
   readonly tagName: string;
-  /** npm package that publishes the element, from the binding. */
+  /** npm package that publishes the element, from the web section. */
   readonly packageName: string;
-  /** The binding's registration function, exported from `<packageName>/<slug>`. */
+  /** The registration function, exported from `<packageName>/<slug>`. */
   readonly defineExport: string;
-  /** The binding's usage markup, or empty when it has none. */
+  /** The web section's usage markup, or empty when it has none. */
   readonly usageHtml: string;
   readonly introMarkdown: string;
   readonly behaviorMarkdown: string;
@@ -149,20 +149,6 @@ const SECTIONS: readonly ComponentKnowledgeSection[] = [
   "accessibility",
   "review",
 ];
-function resolvePublicRoot(): string {
-  try {
-    return dirname(
-      assertSpecifier(
-        "@stevegreco/design-system-knowledge/manifest",
-        "@stevegreco/design-system-knowledge",
-      ),
-    );
-  } catch (error) {
-    if (error instanceof DocsKnowledgeError) throw error;
-    throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
-  }
-}
-
 function assetPublicDir(): string {
   return fileURLToPath(new URL("../public/knowledge-assets/", import.meta.url));
 }
@@ -552,16 +538,9 @@ function projectApi(contract: Record<string, unknown>, host: Record<string, unkn
   return [...attributes, ...projectMembers(host.properties, "property"), ...events];
 }
 
-function bindingHost(catalog: Catalog, id: string): Record<string, unknown> {
-  const bindings = catalog.related(id).flatMap((neighbor) => {
-    const related = neighbor.record;
-    if (!isObject(related) || related.type !== "binding" || !isObject(related.host)) return [];
-    return [related.host];
-  });
-  const web = bindings.find((host) => host.platform === "web-component");
-  const host = web ?? bindings[0];
-  if (!host) fail("malformed-contract", `${id} has no host binding`);
-  return host;
+function webSection(record: Record<string, unknown>, id: string): Record<string, unknown> {
+  if (!isObject(record.web)) fail("malformed-contract", `${id} has no web section`);
+  return record.web;
 }
 
 function projectVariants(
@@ -637,23 +616,18 @@ function projectExample(record: Record<string, unknown>, digest: string): Exampl
   };
 }
 
-function projectReview(record: Record<string, unknown>): ReviewSection {
-  const checks = Array.isArray(record.checks) ? record.checks : [];
-  return {
-    title: asString(record.title),
-    checks: checks.flatMap((item) => {
-      if (!isObject(item)) return [];
-      const level = item.level;
-      if (level !== "error" && level !== "warning") return [];
-      return [
-        {
-          id: asString(item.id),
-          level,
-          requirement: asString(item.requirement),
-        },
-      ];
-    }),
-  };
+/** The review checklist: every rule in the contract, in the order the page presents them. */
+function projectReview(contract: Record<string, unknown>): ReviewSection | undefined {
+  const accessibility = isObject(contract.accessibility) ? contract.accessibility : {};
+  const rules = [contract.content, contract.behavior, accessibility.requirements].flatMap((list) =>
+    Array.isArray(list) ? list.filter(isObject) : [],
+  );
+  const checks = rules.flatMap((rule) => {
+    const level = rule.level;
+    if (level !== "must" && level !== "should" && level !== "may") return [];
+    return [{ id: asString(rule.id), level, requirement: asString(rule.statement) }];
+  });
+  return checks.length > 0 ? { title: "Review checklist", checks } : undefined;
 }
 
 /** "Using together": each related pattern's summary and Avoid list, plus the example. */
@@ -715,14 +689,14 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   if (!isObject(record.contract)) {
     fail("malformed-contract", `${id} is missing a contract`);
   }
-  const host = bindingHost(catalog, id);
+  const host = webSection(record, id);
   const tagName = asString(host.defaultTagName);
-  if (!tagName) fail("malformed-contract", `${id} binding is missing defaultTagName`);
+  if (!tagName) fail("malformed-contract", `${id} web section is missing defaultTagName`);
   const packageName = asString(host.package);
   const registration = isObject(host.registration) ? host.registration : {};
   const defineExport = asString(registration.export);
   if (!packageName || !defineExport) {
-    fail("malformed-contract", `${id} binding is missing its package or registration export`);
+    fail("malformed-contract", `${id} web section is missing its package or registration export`);
   }
   const parameters = record.contract.parameters;
   if (!isObject(parameters)) {
@@ -742,7 +716,6 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
   const patterns: Record<string, unknown>[] = [];
   let behaviorSection: BehaviorSection | undefined;
   let example: ExampleFigure | undefined;
-  let review: ReviewSection | undefined;
 
   for (const neighbor of catalog.related(id)) {
     const related = neighbor.record;
@@ -754,12 +727,6 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
       if (example) fail("unexpected-slice", `${id} has more than one related example`);
       example = projectExample(related, digest);
     } else if (type === "guideline") {
-      const checks = related.checks;
-      if (Array.isArray(checks) && checks.length > 0) {
-        if (review) fail("unexpected-slice", `${id} has more than one related review guideline`);
-        review = projectReview(related);
-        continue;
-      }
       const sections = isObject(related.docsSections) ? related.docsSections : {};
       const behavior = isObject(sections.behavior) ? sections.behavior : {};
       const behaviorAnchor = asString(behavior.section);
@@ -787,10 +754,6 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
           );
         }
         behaviorSection = { heading, markdown: section };
-      } else if (guides(related, id)) {
-        console.warn(
-          `${asString(related.id)} guides ${id} but has no checks or docsSections.behavior, so the ${slug} page does not show it`,
-        );
       }
     }
   }
@@ -815,13 +778,8 @@ function projectComponent(catalog: Catalog, record: unknown, digest: string): Co
     api: projectApi(record.contract, host),
     accessibility: projectAccessibility(record.contract.accessibility, id),
     together,
-    review,
+    review: projectReview(record.contract),
   };
-}
-
-function guides(record: Record<string, unknown>, id: string): boolean {
-  const targets = isObject(record.relations) ? record.relations.guides : undefined;
-  return Array.isArray(targets) && targets.includes(id);
 }
 
 function deepFreeze<T>(value: T): T {
@@ -835,18 +793,36 @@ function deepFreeze<T>(value: T): T {
   return Object.freeze(value);
 }
 
+/**
+ * The package's public bundle directory. Astro bundles this module, so the loader's own
+ * default location does not survive; resolve the package export instead.
+ */
+function resolvePublicRoot(): string {
+  try {
+    return dirname(
+      assertSpecifier(
+        "@stevegreco/design-system-knowledge/manifest",
+        "@stevegreco/design-system-knowledge",
+      ),
+    );
+  } catch (error) {
+    if (error instanceof DocsKnowledgeError) throw error;
+    throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
+  }
+}
+
 async function assembleDocsKnowledge(): Promise<ReadonlyMap<string, ComponentSlice>> {
-  const publicRoot = resolvePublicRoot();
   let catalog: Catalog;
   try {
-    catalog = await openCatalog(publicRoot, { expectVisibility: "public" });
+    catalog = await openCatalog(resolvePublicRoot(), { expectVisibility: "public" });
   } catch (error) {
     if (error instanceof DocsKnowledgeError) throw error;
     throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
   }
 
   try {
-    await stageAssets(publicRoot, catalog.info.digest);
+    if (!catalog.info.root) throw new Error("the knowledge catalog has no bundle directory");
+    await stageAssets(catalog.info.root, catalog.info.digest);
   } catch (error) {
     throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
   }

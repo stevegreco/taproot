@@ -82,19 +82,31 @@ export function parseYamlMapping(text) {
 }
 
 function yamlErrorIssue(error) {
+  const line = error.linePos?.[0]?.line;
+  const at = line ? { line } : {};
   if (error.code === "DUPLICATE_KEY") {
+    // The YAML error names the key but not its parents, so a pointer would be wrong.
     const key = duplicateKeyName(error);
     return {
-      path: key ? `/${key}` : "",
+      path: "",
       keyword: "uniqueKeys",
       message: key ? `duplicate YAML key ${key}` : "YAML mapping keys must be unique",
+      ...at,
     };
   }
   return {
     path: "",
     keyword: "yaml",
-    message: error.message ?? "YAML is malformed",
+    message: firstLine(error.message ?? "YAML is malformed"),
+    ...at,
   };
+}
+
+/** The error's summary without the ` at line N, column M:` suffix and source excerpt. */
+function firstLine(message) {
+  return String(message)
+    .split("\n")[0]
+    .replace(/ at line \d+, column \d+:?$/, "");
 }
 
 function duplicateKeyName(error) {

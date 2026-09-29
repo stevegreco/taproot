@@ -1,19 +1,14 @@
+# yaml-language-server: $schema=../../../src/schema/knowledge-record.schema.json
 id: component.button
 type: component
 title: Button
 summary: Use Button to trigger an action or to submit or reset a form.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
   - action
-  - button
   - form
-relations:
-  related:
-    - component.badge
+related:
+  - component.badge
+  - component.link
 sources:
   - kind: token-source
     path: packages/tokens/src/tokens/components/button.tokens.json
@@ -24,21 +19,16 @@ tokenRef:
   namespace: component.button
   description: All visual values consume the published Button component-token contract.
 contract:
-  specVersion: 5
   description: Triggers an action or submits or resets a form.
   usage:
     do:
-      - id: trigger-action
-        situation: Trigger an action in the current view.
-      - id: submit-or-reset
-        situation: Submit or reset a form.
+      - situation: Trigger an action in the current view.
+      - situation: Submit or reset a form.
     avoid:
-      - id: navigation
-        situation: Navigate to another location.
+      - situation: Navigate to another location.
         instead: Link
         why: Links provide native navigation semantics.
-      - id: status-or-metadata
-        situation: Display status or metadata.
+      - situation: Display status or metadata.
         instead: Badge
         why: Button communicates an available action.
   content:
@@ -51,6 +41,12 @@ contract:
           - Delete account
         avoid:
           - Click here
+    - id: danger-for-destructive
+      level: must
+      statement: Use the danger variant only for destructive or difficult-to-reverse actions.
+    - id: explain-disabled
+      level: should
+      statement: When the context does not say why an action is disabled, say why near it.
     - id: follow-action-hierarchy
       level: should
       statement: Apply the action hierarchy pattern when several actions appear together.
@@ -102,22 +98,25 @@ contract:
       kind: string
       description: Accessible name when visible content is insufficient.
   configurationAxes:
-    prefersReducedMotion:
+    reducedMotion:
       values:
         - reduce
   events:
     activate:
       description: Requests the action represented by the button.
   states:
-    - default
-    - hover
-    - pressed
-    - focus-visible
     - disabled
+    - pressed
+    - hover
+    - focus
+    - default
   behavior:
     - id: disabled-prevents-activation
       level: must
       statement: Disabled prevents activation.
+    - id: explicit-form-action
+      level: should
+      statement: In a form, set action to submit or reset when the button should submit or reset. The default activate does neither.
     - id: form-association
       level: should
       statement: Submit and reset participate in a form when the host supports form association.
@@ -145,16 +144,6 @@ contract:
   rationale:
     - decision: Button has a published component-token namespace.
       rationale: Consumers need a stable customization boundary for variants and states.
-  stateResolution:
-    suppress:
-      disabled:
-        - hover
-        - pressed
-    overlay:
-      - hover
-      - pressed
-    independent:
-      - focus-visible
   visuals:
     control:
       base:
@@ -165,18 +154,18 @@ contract:
         font-weight: component.button.font.weight
         line-height: component.button.font.lineHeight
         letter-spacing: component.button.font.letterSpacing
-        transition-duration: component.button.motion.duration
-        transition-timing-function: component.button.motion.easing
+        motion-duration: component.button.motion.duration
+        motion-easing: component.button.motion.easing
       states:
-        focus-visible:
-          outline: component.button.focus.border
+        focus:
+          focus-ring: component.button.focus.border
       size:
         md:
-          padding-inline: component.button.size.medium.paddingInline
-          padding-block: component.button.size.medium.paddingBlock
+          padding-horizontal: component.button.size.medium.paddingInline
+          padding-vertical: component.button.size.medium.paddingBlock
         sm:
-          padding-inline: component.button.size.small.paddingInline
-          padding-block: component.button.size.small.paddingBlock
+          padding-horizontal: component.button.size.small.paddingInline
+          padding-vertical: component.button.size.small.paddingBlock
       variant:
         primary:
           background: component.button.primary.background.default
@@ -216,6 +205,7 @@ contract:
             pressed:
               background: component.button.ghost.background.pressed
             disabled:
+              background: transparent
               foreground: component.button.ghost.foreground.disabled
         danger:
           background: component.button.danger.background.default
@@ -232,6 +222,60 @@ contract:
               background: component.button.danger.background.disabled
               foreground: component.button.danger.foreground.disabled
               border: component.button.danger.border.disabled
-      prefersReducedMotion:
+      reducedMotion:
         reduce:
-          transition: none
+          motion: none
+web:
+  package: "@stevegreco/design-system-components"
+  export: DsButton
+  defaultTagName: ds-button
+  registration:
+    export: defineButton
+    supportsAliases: true
+  anatomy:
+    control:
+      element: button
+      part: button
+    content:
+      slot: default
+      required: true
+      accepts:
+        - text
+        - decorative-icon
+        - text-and-decorative-icon
+  parameters:
+    action:
+      attribute: type
+      property: type
+      values:
+        activate: button
+        submit: submit
+        reset: reset
+    fullWidth:
+      attribute: full-width
+    accessibleName:
+      attribute: aria-label
+  events:
+    activate:
+      event: click
+      suppressedWhen: effectively-disabled
+  properties:
+    form:
+      type: "HTMLFormElement | null"
+      readonly: true
+      description: The associated form, including association across the shadow boundary.
+  formAssociation:
+    mechanism: FACE
+    fieldsetDisables: true
+    submitRunsConstraintValidation: true
+    resetResetsAssociatedForm: true
+  focus:
+    forwardsTo: control
+  parts:
+    button:
+      description: The inner native button control.
+  example: |
+    <ds-button variant="primary">Save changes</ds-button>
+  rationale:
+    - decision: Button is form-associated.
+      rationale: Submit and reset behavior must work across the shadow boundary.

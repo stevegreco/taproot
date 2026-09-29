@@ -1,6 +1,8 @@
 # ADR 0004: Compact visual authoring and explicit state resolution
 
-**Status:** Accepted
+**Status:** Accepted; `stateResolution`, CSS channel names, and authored `mappings` superseded by
+[ADR 0007](./0007-simplified-knowledge-model.md). Compact visuals remain; `mappings` is compiler
+output only.
 
 This decision extends [ADR 0003](./0003-component-owned-portable-contracts.md). It does not change
 component-owned contract authorship or host neutrality.

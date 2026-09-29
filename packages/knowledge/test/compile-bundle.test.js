@@ -1,3 +1,4 @@
+import { COMPILED_SCHEMA_VERSION } from "../src/schema/compiled-extensions.js";
 import { recordOnlyCompiledFields, stubRecord } from "./helpers/catalog.js";
 import { portableContract } from "./helpers/workspace.js";
 import assert from "node:assert/strict";
@@ -50,8 +51,7 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
   assert.equal(files.includes("records.jsonl"), false);
   assert.ok(files.includes("search-index.json"));
   assert.ok(files.includes("schema/compiled-knowledge-record.json"));
-  assert.ok(files.includes("schema/portable-contract.json"));
-  assert.ok(files.includes("schema/host-binding.json"));
+  assert.ok(files.includes("schema/knowledge-record.json"));
   assert.equal(bundle.manifest.content.visibility, "public");
 
   const markdown = bundle.markdown.get("markdown/component.button.md");
@@ -86,7 +86,7 @@ test("projectBundle emits sorted records, hashed files, and narrative projection
     written.map((record) => record.id),
     ids,
   );
-  assert.equal(written[0].compiledSchemaVersion, 7);
+  assert.equal(written[0].compiledSchemaVersion, COMPILED_SCHEMA_VERSION);
   assert.ok(written.find((record) => record.id === "component.button").backlinks);
 
   const internal = projectBundle(corpus, "internal", meta);
@@ -101,14 +101,8 @@ test("COMPILED_INVALID fires when emitted records fail the derived schema", () =
   assert.match(problems[0].message, /compiler bug/);
 });
 
-test("compiled schema preserves authored component and binding field ownership", async () => {
-  const component = stubRecord("component.fixture", {
-    contract: portableContract(),
-    tokenRef: { tier: "component", namespace: "component.fixture", description: "Fixture" },
-  });
-  const host = {
-    specVersion: 1,
-    platform: "web-component",
+test("compiled schema keeps contract, tokenRef, and web on components", async () => {
+  const web = {
     package: "fixture",
     export: "Fixture",
     defaultTagName: "ds-fixture",
@@ -117,23 +111,27 @@ test("compiled schema preserves authored component and binding field ownership",
     parameters: {},
     events: {},
   };
-  const binding = stubRecord("binding.fixture", { type: "binding", host });
-  assert.deepEqual(findCompiledIssues([component, binding]), []);
+  const component = stubRecord("component.fixture", {
+    contract: portableContract(),
+    tokenRef: { tier: "component", namespace: "component.fixture", description: "Fixture" },
+    web,
+  });
+  assert.deepEqual(findCompiledIssues([component]), []);
   for (const type of authoredSchema.properties.type.enum) {
     // Supply valid field values so failures exercise ownership, not field shape.
     const base = { ...component, type };
     delete base.contract;
     delete base.tokenRef;
     delete base.tokens;
-    if (type === "binding") base.host = binding.host;
+    delete base.web;
     assert.deepEqual(findCompiledIssues([base]), [], type);
-    for (const [field, value, owner] of [
-      ["contract", component.contract, "component"],
-      ["tokenRef", component.tokenRef, "component"],
-      ["host", binding.host, "binding"],
+    for (const [field, value] of [
+      ["contract", component.contract],
+      ["tokenRef", component.tokenRef],
+      ["web", web],
     ]) {
       const issues = findCompiledIssues([{ ...base, [field]: value }]);
-      assert.equal(issues.length === 0, type === owner, `${type}.${field}`);
+      assert.equal(issues.length === 0, type === "component", `${type}.${field}`);
     }
   }
 });
@@ -152,7 +150,7 @@ test("compiled schema still requires visibility after authored defaults", () => 
     sources: [{ kind: "authored", path: "content/almost.md", revision: "abc123456789abcd" }],
     body: "Body.",
     bodyOrigin: "authored",
-    compiledSchemaVersion: 7,
+    compiledSchemaVersion: COMPILED_SCHEMA_VERSION,
     backlinks: {},
   };
   const missing = findCompiledIssues([almost]);
@@ -161,27 +159,14 @@ test("compiled schema still requires visibility after authored defaults", () => 
   assert.equal(complete.length, 0);
 });
 
-test("compiled schema forbids contract on a binding record", async () => {
+test("compiled schema forbids host, which web replaced, on a component record", async () => {
   const corpus = await buildCorpus(
     createFsReader(repoRoot),
     [{ root: join(repoRoot, "packages/knowledge/content"), visibility: "public" }],
     { workspaceRoot: repoRoot },
   );
   const button = corpus.records.get("component.button");
-  const binding = corpus.records.get("binding.button.web-component");
-  const problems = findCompiledIssues([{ ...binding, contract: button.contract }]);
-  assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
-});
-
-test("compiled schema forbids host on a component record", async () => {
-  const corpus = await buildCorpus(
-    createFsReader(repoRoot),
-    [{ root: join(repoRoot, "packages/knowledge/content"), visibility: "public" }],
-    { workspaceRoot: repoRoot },
-  );
-  const button = corpus.records.get("component.button");
-  const binding = corpus.records.get("binding.button.web-component");
-  const problems = findCompiledIssues([{ ...button, host: binding.host }]);
+  const problems = findCompiledIssues([{ ...button, host: button.web }]);
   assert.ok(problems.some((item) => item.code === PROBLEM.COMPILED_INVALID));
 });
 

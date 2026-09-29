@@ -1,7 +1,8 @@
 # ADR 0003: Component-owned portable contracts
 
 **Status:** Accepted; Markdown authoring and narrative projection superseded by
-[ADR 0005](./0005-yaml-component-specs.md)
+[ADR 0005](./0005-yaml-component-specs.md); separate binding records superseded by
+[ADR 0007](./0007-simplified-knowledge-model.md)
 
 This decision supersedes the spec-record half of
 [ADR 0002](./0002-knowledge-owned-portable-contracts.md). ADR 0002 remains the record of

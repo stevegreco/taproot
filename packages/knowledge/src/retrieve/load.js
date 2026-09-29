@@ -1,10 +1,11 @@
-import { sha256Hex } from "../compile/digest.js";
-import { readFile } from "node:fs/promises";
+import { contentDigest, sha256Hex } from "../compile/digest.js";
+import { access, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tokenize } from "../compile/search-index.js";
 import authoredSchema from "../schema/index.js";
 import { COMPILED_SCHEMA_VERSION } from "../schema/compiled-extensions.js";
+import { byCodeUnit } from "../sort.js";
 
 export class KnowledgeBundleError extends Error {
   /**
@@ -74,7 +75,27 @@ export async function loadBundle(source, options = {}) {
     expectVisibility,
     resolved.label,
   );
-  return buildLoadedBundle(resolved.records, resolved.searchIndex, resolved.manifest, visibility);
+  // Last, so a bundle with a more specific fault reports that fault.
+  verifyDigest(resolved.manifest, resolved.label);
+  return buildLoadedBundle(
+    resolved.records,
+    resolved.searchIndex,
+    resolved.manifest,
+    visibility,
+    resolved.root,
+  );
+}
+
+/** The manifest digest must match its content, so a hand-edited manifest does not open. */
+function verifyDigest(manifest, label) {
+  const content = manifest?.content;
+  if (content == null || typeof content !== "object") return;
+  const expected = contentDigest(content);
+  if (manifest.digest !== expected) {
+    throw fail("bundle-inconsistent", label, [
+      `manifest digest ${manifest.digest} does not match its content (${expected})`,
+    ]);
+  }
 }
 
 /**
@@ -120,7 +141,7 @@ async function readDirectory(dir, label, isDefault) {
   verifyFileIntegrity(manifest, "records.json", bytesByName["records.json"], label);
   verifyFileIntegrity(manifest, "search-index.json", bytesByName["search-index.json"], label);
 
-  return { label, records, searchIndex, manifest };
+  return { label, records, searchIndex, manifest, root: dir };
 }
 
 /**
@@ -134,13 +155,25 @@ async function readBundleFile(path, name, label, isDefault) {
     return await readFile(path);
   } catch (error) {
     if (error && error.code === "ENOENT") {
-      const hint = isDefault
-        ? `${name} is missing; from the repo root run: pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`
-        : `${name} is missing`;
+      const hint = !isDefault
+        ? `${name} is missing`
+        : (await inWorkspace())
+          ? `${name} is missing; from the repo root run: pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`
+          : `${name} is missing; reinstall @stevegreco/design-system-knowledge, which ships dist/public`;
       throw fail("bundle-missing", label, [hint]);
     }
     const message = error instanceof Error ? error.message : "read failed";
     throw fail("bundle-unreadable", label, [`${name}: ${message}`]);
+  }
+}
+
+/** Whether this package is checked out in its monorepo, where a build can create the bundle. */
+async function inWorkspace() {
+  try {
+    await access(fileURLToPath(new URL("../../../../pnpm-workspace.yaml", import.meta.url)));
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -372,7 +405,7 @@ function readVisibility(manifest, records, expected, label) {
  * @param {"public"|"internal"} visibility
  * @returns {LoadedBundle}
  */
-function buildLoadedBundle(records, searchIndex, manifest, visibility) {
+function buildLoadedBundle(records, searchIndex, manifest, visibility, root = null) {
   const byId = new Map();
   for (const record of records) {
     byId.set(record.id, deepFreeze(record));
@@ -404,6 +437,7 @@ function buildLoadedBundle(records, searchIndex, manifest, visibility) {
     compiledSchemaVersion: content.compiledSchemaVersion,
     revision: build.revision ?? null,
     builtAt: build.time,
+    root,
   });
 
   return Object.freeze({ ids, byId, postings, fieldTerms, info });
@@ -435,10 +469,6 @@ function deepFreeze(value) {
     for (const nested of Object.values(value)) deepFreeze(nested);
   }
   return Object.freeze(value);
-}
-
-export function byCodeUnit(left, right) {
-  return left < right ? -1 : left > right ? 1 : 0;
 }
 
 function cloneRecords(records) {

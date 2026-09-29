@@ -4,14 +4,16 @@ import { join } from "node:path";
 import { test } from "vitest";
 import Ajv2020 from "ajv/dist/2020.js";
 import yaml from "js-yaml";
-import portableContractSchema from "../src/schema/portable-contract.schema.json" with { type: "json" };
-import hostBindingSchema from "../src/schema/host-binding.schema.json" with { type: "json" };
+import recordSchema from "../src/schema/knowledge-record.schema.json" with { type: "json" };
 import { repoRoot } from "./helpers/workspace.js";
 
 const Ajv = Ajv2020.default ?? Ajv2020;
 
+/** The contract and web sections, validated on their own through the record schema. */
+const portableContractSchema = { $ref: `${recordSchema.$id}#/$defs/contract` };
+const hostBindingSchema = { $ref: `${recordSchema.$id}#/$defs/web` };
+
 const buttonContract = {
-  specVersion: 5,
   description: "Triggers an action or submits or resets a form.",
   usage: {
     do: [
@@ -74,7 +76,7 @@ const buttonContract = {
   events: {
     activate: { description: "Requests the action represented by the button." },
   },
-  states: ["default", "hover", "pressed", "focus-visible", "disabled"],
+  states: ["disabled", "pressed", "hover", "focus", "default"],
   behavior: [
     {
       id: "disabled-prevents-activation",
@@ -104,8 +106,6 @@ const buttonContract = {
 };
 
 const buttonHost = {
-  specVersion: 1,
-  platform: "web-component",
   package: "@stevegreco/design-system-components",
   export: "DsButton",
   defaultTagName: "ds-button",
@@ -141,7 +141,7 @@ const buttonHost = {
 };
 
 function compile(schema) {
-  return new Ajv({ allErrors: true, strict: true }).compile(schema);
+  return new Ajv({ allErrors: true, strict: true }).addSchema(recordSchema).compile(schema);
 }
 
 function extraPropertyPaths(errors) {
@@ -153,17 +153,17 @@ function extraPropertyPaths(errors) {
     });
 }
 
-test("ingress schemas compile as JSON Schema draft 2020-12", () => {
-  const ajv = new Ajv({ allErrors: true, strict: true });
-  assert.equal(typeof ajv.compile(portableContractSchema), "function");
-  assert.equal(typeof ajv.compile(hostBindingSchema), "function");
-  assert.equal(portableContractSchema.additionalProperties, false);
-  assert.equal(hostBindingSchema.additionalProperties, false);
-  assert.equal(portableContractSchema.properties.specVersion.const, 5);
-  assert.equal(hostBindingSchema.properties.specVersion.const, 1);
-  assert.equal(Object.hasOwn(portableContractSchema.properties, "tagName"), false);
-  assert.equal(Object.hasOwn(portableContractSchema.properties, "api"), false);
-  assert.equal(Object.hasOwn(hostBindingSchema.properties, "defaultTagName"), true);
+test("the record schema holds the contract and web sections", () => {
+  const { contract, web } = recordSchema.$defs;
+  assert.equal(typeof compile(portableContractSchema), "function");
+  assert.equal(typeof compile(hostBindingSchema), "function");
+  assert.equal(contract.additionalProperties, false);
+  assert.equal(web.additionalProperties, false);
+  assert.equal(Object.hasOwn(contract.properties, "specVersion"), false);
+  assert.equal(Object.hasOwn(web.properties, "specVersion"), false);
+  assert.equal(Object.hasOwn(contract.properties, "tagName"), false);
+  assert.equal(Object.hasOwn(contract.properties, "api"), false);
+  assert.equal(Object.hasOwn(web.properties, "defaultTagName"), true);
 });
 
 test("current Button YAML fails the portable contract schema on tagName", async () => {
@@ -266,11 +266,6 @@ test("portable contract schema accepts grouped visuals", () => {
   assert.equal(
     validate({
       ...buttonContract,
-      stateResolution: {
-        suppress: { disabled: ["hover", "pressed"] },
-        overlay: ["hover", "pressed"],
-        independent: ["focus-visible"],
-      },
       visuals: {
         control: {
           base: { radius: "component.button.radius" },
@@ -286,6 +281,16 @@ test("portable contract schema accepts grouped visuals", () => {
     true,
     JSON.stringify(validate.errors, null, 2),
   );
+});
+
+test("portable contract schema rejects stateResolution, which states order replaced", () => {
+  const validate = compile(portableContractSchema);
+  assert.equal(validate({ ...buttonContract, stateResolution: { overlay: ["hover"] } }), false);
+});
+
+test("portable contract schema rejects authored mappings", () => {
+  const validate = compile(portableContractSchema);
+  assert.equal(validate({ ...buttonContract, mappings: [] }), false);
 });
 
 test("portable contract schema rejects an unknown visual channel", () => {

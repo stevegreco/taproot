@@ -15,9 +15,10 @@
     "./retrieve": "./src/retrieve/index.js",
     "./schema": "./src/schema/index.js",
     "./schema/knowledge-record.json": "./src/schema/knowledge-record.schema.json",
-    "./schema/portable-contract.json": "./src/schema/portable-contract.schema.json",
-    "./schema/host-binding.json": "./src/schema/host-binding.schema.json",
     "./manifest": "./dist/public/manifest.json",
+    "./markdown/*": "./dist/public/markdown/*",
+    "./assets/*": "./dist/public/assets/*",
+    "./package.json": "./package.json",
     "./records": "./dist/public/records.json",
     "./search-index": "./dist/public/search-index.json",
     "./schema/compiled-knowledge-record.json": "./dist/public/schema/compiled-knowledge-record.json"
@@ -32,8 +33,8 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
+    "@stevegreco/design-system": "workspace:*",
     "ajv": "^8.20.0",
-    "gray-matter": "^4.0.3",
     "js-yaml": "^4.3.1",
     "mdast-util-from-markdown": "^2.0.3",
     "parse5": "^7.3.0",
@@ -41,7 +42,6 @@
     "yaml": "^2.8.1"
   },
   "devDependencies": {
-    "@stevegreco/design-system": "workspace:*",
     "vitest": "^5.0.0"
   },
   "engines": {

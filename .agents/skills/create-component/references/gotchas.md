@@ -4,7 +4,7 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 
 ## Contents
 
-- Spec and binding
+- Spec and web section
 - Runtime
 - Component tests
 - Computed-style mapping test
@@ -13,17 +13,20 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 - Types
 - Build and test commands
 
-## Spec and binding
+## Spec and web section
 
-- Author `visuals`, never `mappings`. The compiler expands `visuals` into mapping rows and fails
-  when both exist.
-- A state that changes the same channel as another state needs `stateResolution`. `suppress`
-  says which state wins (Checkbox: `disabled` suppresses `checked`, `hover`, `indeterminate`,
-  `invalid`; `indeterminate` suppresses `checked`). `independent` states (focus-visible) must not
-  share channels with overlay or suppress winners, or the compiler rejects the overlap.
-- The resolver has no combined states such as hover-and-checked. If a combination needs its own
-  styling, it cannot be expressed. Record that in `rationale` (Checkbox did) instead of styling it
-  anyway, or the mapping test will fail.
+- Author `visuals`, never `mappings`. `mappings` is compiler output, and the schema rejects it in
+  a spec.
+- `contract.states` is a priority list. For each channel, the first active state that sets it
+  wins (Checkbox: `disabled`, `invalid`, `indeterminate`, `checked`, `hover`, `focus`,
+  `default`). A higher state hides a lower one only on the channels it sets, so give it every
+  channel it must override: Button's ghost `disabled` sets `background: transparent` so hover does
+  not show through.
+- There are no combined states such as hover-and-checked with their own tokens. If a
+  combination needs its own styling, it cannot be expressed. Record that in `rationale` (Checkbox
+  did) instead of styling it anyway, or the mapping test will fail.
+- Channel names are neutral: `focus-ring`, `padding-horizontal`, `padding-vertical`, `motion`,
+  `motion-duration`, `motion-easing`. The state is `focus`, and the axis is `reducedMotion`.
 - A state that is really a boolean parameter (checked, indeterminate, disabled) should be both a
   `parameters` entry of `kind: boolean` and a `states` entry with the same name. The mapping test
   drives it through that parameter's attribute automatically.
@@ -35,13 +38,13 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 - Every `must` rule in `behavior` and `accessibility.requirements` needs a test or a reason in
   `unautomated-rules.js`. Write rules you can test. Keep rules about authored wording in
   `content`, which the census does not enforce.
-- Binding `parameters` list only exceptions. With no entry, a parameter maps to attribute
+- `web.parameters` list only exceptions. With no entry, a parameter maps to attribute
   `kebab-case(name)` and property `name`. An entry replaces that default whole: Button's
   `fullWidth: { attribute: full-width }` is attribute-only, and `action` restates attribute and
   property because it adds `values`.
-- Binding `parts` list only host detail the anatomy description lacks ("Hidden when empty.",
+- `web.parts` list only host detail the anatomy description lacks ("Hidden when empty.",
   "The inner native input."). Other parts take the anatomy description.
-- `host.properties` holds read-only extras such as `form`. Its `type` string is copied into the
+- `web.properties` holds read-only extras such as `form`. Its `type` string is copied into the
   generated `.d.ts`, so write it as TypeScript.
 - A form control that contributes a value sets `formAssociation.submitsValue: true`. The generated
   type then declares `formResetCallback` and `formStateRestoreCallback`.
@@ -67,9 +70,11 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 ## Component tests
 
 - Title each test for a rule with its ID in brackets: `test("[rule-id] …")`. Several IDs can share
-  a title. Tags must name rules that exist in the contract, or the census fails.
-- Visible focus, alias registration, `hidden`, focus forwarding, and properties set before
-  registration are in `test/host-checks.test.js`, which runs for every binding. Its visible-focus
+  a title. Tags must name rules that exist in the contract, or the census fails. Skipped, todo,
+  and commented-out tests do not count.
+- Visible focus, alias registration, `hidden`, parts, the required slot, focus forwarding,
+  disabled events, keyboard activation, `form`, and properties set before registration are in
+  `test/host-checks.test.js`, which runs for every component with a web section. Its visible-focus
   title carries `[a11y-visible-focus]`, and the census credits that tag to every component whose
   contract has the rule. Use the same rule ID in a new contract.
 - Token values: never set `--semantic-*` inline. The setup file loads the real `tokens.css`.
@@ -79,13 +84,14 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 
 `test/contract-mappings.test.js` with cases from `test/commands/contract-cases.js`.
 
-- Pseudo states (hover, pressed, focus-visible) are forced on the binding's `focus.forwardsTo`
+- Pseudo states (hover, pressed, focus) are forced on the web section's `focus.forwardsTo`
   part. If the stylesheet puts the pseudo-class somewhere else (`:host(:hover)`, a wrapper), the
   test fails. Put it on the inner control.
-- A boolean-parameter state is driven by its attribute. `invalid` is driven by a non-empty
-  `error`. Any other attribute-driven state needs a driver added in `stateAttributes()`.
+- A boolean-parameter state is driven by its attribute. Any other attribute-driven state, such as
+  `invalid`, is declared in `web.states` with the attribute that drives it.
+- The test renders each state alone and each pair of states, so the priority order is checked.
 - A configuration axis that is not a parameter must be a media feature listed in `MEDIA_AXES`
-  (only `prefersReducedMotion` today).
+  (only `reducedMotion` today).
 - If a state needs content before it applies (Link needs `href` for `:hover` and focus), add it
   to `FIXTURES` in `test/helpers/fixtures.js`. The host checks use the same fixtures.
 - `inherit` is compared against the part's parent inside a container with distinctive type. Relative
@@ -96,8 +102,8 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 ## Docs projector
 
 - Variant guidance is opt-in. Add the component and each variant's `###` anchor to the pattern's
-  `variantGuidance`, and add the component to the pattern's `relations.guides`. A matching
-  heading alone does nothing.
+  `variantGuidance`, and add the component to the pattern's `related`. A matching heading alone
+  does nothing.
 - A component can relate to several patterns; each shows in "Using together".
 - A guideline shows under the page's usage through `docsSections.behavior: { section, heading }`.
   `section` is a `##` anchor in the guideline body; `heading` is what the page prints.
@@ -120,7 +126,7 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 
 ## Types
 
-- `pnpm build` writes `src/<slug>.d.ts` from the binding and contract: a property per mapped
+- `pnpm build` writes `src/<slug>.d.ts` from the spec: a property per mapped
   property, an attribute per mapped attribute (`aria-*` skipped, since frameworks type them), an
   enum alias `<Slug><Property>` (`LinkVariant`), property prose from the parameter description,
   and `HTMLElementTagNameMap`. Fix a wrong type in the records, not the file.
@@ -129,9 +135,8 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 
 ## Build and test commands
 
-- Rebuild knowledge after editing a spec or binding:
-  `pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`.
-- Run package tests one filter at a time. Two filters at once can race on the knowledge `dist/`
-  and fail with `bundle-missing`.
-- The docs tests build the docs site first (`apps/documentation/turbo.json`), so they take longer
-  than the others.
+- Rebuild knowledge after editing a spec:
+  `pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`. Each mistake is
+  reported once, with its file and line.
+- Several filters can run in one turbo command; each package builds once before its tests.
+- The docs tests build the docs site first, so they take longer than the others.

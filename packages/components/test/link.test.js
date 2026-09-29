@@ -1,4 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { userEvent } from "vitest/browser";
 
 import { defineLink } from "../src/link.js";
 import { resolvedValue } from "./helpers/tokens.js";
@@ -89,6 +90,16 @@ describe("DsLink", () => {
       resolvedValue("font-size", "var(--semantic-typography-label-default-font-size)"),
     );
     expect(style.textDecorationLine).toBe("none");
+  });
+
+  test("[standalone-underline-on-hover] a standalone link is underlined on hover", async () => {
+    const link = render(`<${tagName} variant="standalone" href="#x">All</${tagName}>`);
+    const anchor = anchorOf(link);
+
+    expect(getComputedStyle(anchor).textDecorationLine).toBe("none");
+    await userEvent.hover(anchor);
+    expect(getComputedStyle(anchor).textDecorationLine).toBe("underline");
+    await userEvent.unhover(anchor);
   });
 
   test("[native-navigation] activating the anchor navigates natively", () => {

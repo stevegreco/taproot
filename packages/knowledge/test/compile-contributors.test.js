@@ -25,10 +25,8 @@ test("Button composes authored contract, tokens, and ADR 0003 into disjoint name
     workspaceRoot: repoRoot,
   });
   const button = corpus.records.get("component.button");
-  const binding = corpus.records.get("binding.button.web-component");
 
   assert.ok(button);
-  assert.ok(binding);
   assert.equal(corpus.records.has("spec.button"), false);
   assert.equal(
     corpus.problems.filter((item) => item.severity === "error").length,
@@ -43,8 +41,8 @@ test("Button composes authored contract, tokens, and ADR 0003 into disjoint name
   assert.notEqual(button.summary, button.contract.description);
   assert.equal(button.title, "Button");
   assert.equal(button.status, "draft");
-  assert.equal(binding.host.defaultTagName, "ds-button");
-  assert.equal(binding.host.parameters.action.values.activate, "button");
+  assert.equal(button.web.defaultTagName, "ds-button");
+  assert.equal(button.web.parameters.action.values.activate, "button");
   assert.equal(
     corpus.problems.some((item) => item.code === PROBLEM.SOURCE_CONFLICT),
     false,
@@ -54,7 +52,7 @@ test("Button composes authored contract, tokens, and ADR 0003 into disjoint name
     (row) =>
       row.configuration?.variant === "ghost" &&
       row.channel === "background" &&
-      row.state === "default",
+      row.state === undefined,
   );
   assert.equal(ghostRestFill.token.literal, "transparent");
   assert.equal(
@@ -131,7 +129,6 @@ test("Badge composes authored contract and ADR 0003 without a token contract", a
     workspaceRoot: repoRoot,
   });
   const badge = corpus.records.get("component.badge");
-  const binding = corpus.records.get("binding.badge.web-component");
 
   assert.ok(badge);
   assert.equal(
@@ -147,7 +144,7 @@ test("Badge composes authored contract and ADR 0003 without a token contract", a
     ),
     true,
   );
-  assert.equal(binding.host.defaultTagName, "ds-badge");
+  assert.equal(badge.web.defaultTagName, "ds-badge");
   assert.equal(Object.hasOwn(badge, "tokens"), false);
   assert.equal(Object.hasOwn(badge, "tokenRef"), false);
   assert.ok(

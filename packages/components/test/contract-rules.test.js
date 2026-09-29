@@ -17,9 +17,13 @@ const catalog = await openCatalog();
 const components = catalog.list({ type: "component" }).map((summary) => catalog.get(summary.id));
 
 const SHARED_TESTS = "host-checks.test.js";
-/** A `test(`, `test.each(…)(`, or similar call, then its string title. */
+/** A `test(`, `test.each(…)(`, or similar call, its modifiers, then its string title. */
 const TITLE =
-  /\btest(?:\.\w+(?:\([^()]*(?:\([^()]*\)[^()]*)*\))?)*\(\s*(["'`])((?:\\.|(?!\1).)*)\1/g;
+  /\btest((?:\.\w+(?:\([^()]*(?:\([^()]*\)[^()]*)*\))?)*)\(\s*(["'`])((?:\\.|(?!\2).)*)\2/g;
+/** Modifiers whose test may not run, so its tags do not count. */
+const NOT_RUN = /\.(?:skip|todo|fails|skipIf|runIf)\b/;
+/** Block comments and whole-line comments, so commented-out tests do not count. */
+const COMMENTS = /\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm;
 const TAG = /\[([a-z0-9-]+)\]/g;
 
 function rulesOf(record) {
@@ -33,9 +37,10 @@ function slugOf(id) {
 
 /** Rule IDs tagged in the test titles of a file in test/. */
 function taggedRules(file) {
-  const source = readFileSync(new URL(`./${file}`, import.meta.url), "utf8");
+  const source = readFileSync(new URL(`./${file}`, import.meta.url), "utf8").replace(COMMENTS, "");
   const tags = new Set();
-  for (const [, , title] of source.matchAll(TITLE)) {
+  for (const [, modifiers, , title] of source.matchAll(TITLE)) {
+    if (NOT_RUN.test(modifiers)) continue;
     for (const [, id] of title.matchAll(TAG)) tags.add(id);
   }
   return tags;

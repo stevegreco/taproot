@@ -1,40 +1,28 @@
+# yaml-language-server: $schema=../../../src/schema/knowledge-record.schema.json
 id: component.link
 type: component
 title: Link
 summary: Use Link to navigate to another page, a location on the page, or a resource.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
   - action
-  - link
   - navigation
-relations:
-  related:
-    - component.button
+related:
+  - component.button
 sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:
-  specVersion: 5
   description: Navigates to another page, a location on the current page, or a resource.
   usage:
     do:
-      - id: navigate
-        situation: Navigate to another page or resource.
-      - id: in-page
-        situation: Move to a location on the current page.
-      - id: reference-in-text
-        situation: Point to related content from within a sentence.
+      - situation: Navigate to another page or resource.
+      - situation: Move to a location on the current page.
+      - situation: Point to related content from within a sentence.
     avoid:
-      - id: trigger-action
-        situation: Trigger an action or submit a form.
+      - situation: Trigger an action or submit a form.
         instead: Button
         why: Buttons provide action semantics and form behavior.
-      - id: status-or-metadata
-        situation: Display status or metadata.
+      - situation: Display status or metadata.
         instead: Badge
         why: Link communicates a destination.
   content:
@@ -78,9 +66,9 @@ contract:
     activate:
       description: Follows the link to its destination.
   states:
-    - default
     - hover
-    - focus-visible
+    - focus
+    - default
   behavior:
     - id: native-navigation
       level: must
@@ -121,11 +109,6 @@ contract:
       rationale: Text decoration is fixed component behavior, not a token channel. The behavior rules state when it shows.
     - decision: Link has no visited or disabled styling.
       rationale: Browsers limit visited styling to color and no semantic visited role exists. A link with no destination is text.
-  stateResolution:
-    overlay:
-      - hover
-    independent:
-      - focus-visible
   visuals:
     control:
       base:
@@ -133,8 +116,8 @@ contract:
       states:
         hover:
           foreground: semantic.color.foreground.default
-        focus-visible:
-          outline: semantic.color.border.focus
+        focus:
+          focus-ring: semantic.color.border.focus
           radius: semantic.radius.control
       variant:
         inline:
@@ -149,3 +132,44 @@ contract:
           font-weight: semantic.typography.label.default.fontWeight
           line-height: semantic.typography.label.default.lineHeight
           letter-spacing: semantic.typography.label.default.letterSpacing
+web:
+  package: "@stevegreco/design-system-components"
+  export: DsLink
+  defaultTagName: ds-link
+  registration:
+    export: defineLink
+    supportsAliases: true
+  anatomy:
+    control:
+      element: a
+      part: link
+    content:
+      slot: default
+      required: true
+      accepts:
+        - text
+        - text-and-decorative-icon
+  events:
+    activate:
+      event: click
+  focus:
+    forwardsTo: control
+  parts:
+    link:
+      description: The inner native anchor.
+  example: |
+    <p>Themes resolve through the <ds-link href="/adr/0003">token tier ADR</ds-link>.</p>
+    <ds-link variant="standalone" href="/projects">View all projects</ds-link>
+  rationale:
+    - decision: Link is not form-associated.
+      rationale: A link navigates. It never submits or resets a form.
+    - decision: Navigation is the inner anchor's native behavior.
+      rationale: Middle-click, modifier keys, and the context menu keep working without script.
+    - decision: Content always includes text.
+      rationale: Link text is the accessible name. There is no accessibleName parameter, so an icon-only link would be announced as just "link".
+  notes: |
+    The element honors the native `hidden` attribute.
+
+    The host is `display: inline`, so an inline link wraps with the text around it. `href` is mirrored
+    onto the inner anchor; removing it removes the anchor's `href`, which drops link semantics and
+    focusability. `click()` activates the inner anchor, as a native `<a>.click()` would.

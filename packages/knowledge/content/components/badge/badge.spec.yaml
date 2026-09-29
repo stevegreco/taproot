@@ -1,41 +1,30 @@
+# yaml-language-server: $schema=../../../src/schema/knowledge-record.schema.json
 id: component.badge
 type: component
 title: Badge
 summary: Use Badge for status or metadata. It is not a control.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
-  - badge
   - status
   - metadata
-relations:
-  related:
-    - component.button
+related:
+  - component.button
 sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:
-  specVersion: 5
   description: Labels status or metadata. Not a control.
   usage:
     do:
-      - id: status-or-metadata
-        situation: Display status, category, or supporting metadata.
+      - situation: Display status, category, or supporting metadata.
     avoid:
-      - id: trigger-action
-        situation: Trigger an action in the current view.
+      - situation: Trigger an action in the current view.
         instead: Button
         why: Badge is not interactive and does not communicate an available action.
-      - id: navigation
-        situation: Navigate to another location.
+      - situation: Navigate to another location.
         instead: Link
         why: Links provide native navigation semantics.
-      - id: live-status
-        situation: Announce a live status change by itself.
-        instead: Host live-region semantics
+      - situation: Announce a live status change by itself.
+        instead: a live region in the surrounding page
         why: Badge sets no live-region role.
   content:
     - id: keep-label-short
@@ -98,8 +87,8 @@ contract:
   visuals:
     surface:
       base:
-        padding-block: primitives.space.1
-        padding-inline: primitives.space.2
+        padding-vertical: primitives.space.1
+        padding-horizontal: primitives.space.2
         radius: semantic.radius.pill
         font-family: semantic.typography.label.small.fontFamily
         font-size: semantic.typography.label.small.fontSize
@@ -131,3 +120,24 @@ contract:
           background: semantic.color.background.status.info.default
           foreground: semantic.color.foreground.status.info.default
           border: semantic.color.border.status.info.default
+web:
+  package: "@stevegreco/design-system-components"
+  export: DsBadge
+  defaultTagName: ds-badge
+  registration:
+    export: defineBadge
+    supportsAliases: true
+  anatomy:
+    surface:
+      element: span
+      part: badge
+    content:
+      slot: default
+      required: true
+      accepts:
+        - text
+  events: {}
+  example: |
+    <ds-badge variant="success">Active</ds-badge>
+  notes: |
+    The element honors the native `hidden` attribute.

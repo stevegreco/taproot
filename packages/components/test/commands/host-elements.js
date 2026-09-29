@@ -1,20 +1,19 @@
 /**
  * Browser command (runs in Node): what test/host-checks.test.js needs from
- * each web-component binding in the compiled catalog.
+ * each component's web section in the compiled catalog.
  */
 import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
 
 export async function hostElements() {
   const catalog = await openCatalog();
-  const bindings = catalog
-    .list({ type: "binding" })
+  const components = catalog
+    .list({ type: "component" })
     .map((summary) => catalog.get(summary.id))
-    .filter((binding) => binding.host.platform === "web-component");
-  if (bindings.length === 0) throw new Error("compiled catalog has no web-component bindings");
+    .filter((component) => component.web);
+  if (components.length === 0) throw new Error("compiled catalog has no web components");
 
-  return bindings.map(({ host, relations }) => {
-    const component = catalog.get(relations.implements[0]);
-    const { contract } = component;
+  return components.map((component) => {
+    const { contract, web: host } = component;
     return {
       id: component.id,
       slug: component.id.slice("component.".length),
@@ -29,6 +28,35 @@ export async function hostElements() {
       ),
       properties: sampleProperties(contract.parameters ?? {}, host.parameters ?? {}),
       enums: enumProperties(contract.parameters ?? {}, host.parameters ?? {}),
+      // Every string attribute set, so parts that render only with text are present.
+      textAttributes: Object.fromEntries(
+        Object.entries(contract.parameters ?? {})
+          .filter(
+            ([name, parameter]) =>
+              parameter.kind === "string" && host.parameters?.[name]?.attribute,
+          )
+          .filter(([name]) => !host.parameters[name].attribute.startsWith("aria-"))
+          .map(([name]) => [host.parameters[name].attribute, `Sample ${name}`]),
+      ),
+      parts: Object.values(host.anatomy ?? {})
+        .map((node) => node.part)
+        .filter(Boolean),
+      requiresDefaultSlot: Object.values(host.anatomy ?? {}).some(
+        (node) => node.slot === "default" && node.required,
+      ),
+      disabledAttribute: host.parameters?.disabled?.attribute ?? null,
+      fieldsetDisables: host.formAssociation?.fieldsetDisables === true,
+      suppressedWhenDisabled: [
+        ...new Set(
+          Object.values(host.events ?? {})
+            .filter((entry) => entry.suppressedWhen === "effectively-disabled")
+            .map((entry) => entry.event),
+        ),
+      ],
+      hasFormProperty: Object.hasOwn(host.properties ?? {}, "form"),
+      activationKeys: (contract.accessibility?.keyboard ?? [])
+        .map((binding) => binding.key)
+        .filter((key) => key === "Enter" || key === "Space"),
     };
   });
 }

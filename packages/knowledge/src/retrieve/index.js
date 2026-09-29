@@ -6,27 +6,23 @@
  * | Entry | `openCatalog(source?, options?)`. Omitted source → this package's `dist/public`. String or `URL` → bundle directory. Object → `{ records, searchIndex, manifest }` already parsed. Always returns `Promise<Catalog>`. |
  * | Missing `get(id)` | `undefined`. Malformed id → `KnowledgeQueryError` `malformed-id`. Non-string → `TypeError`. |
  * | `list` | Filters `type`, `status`, `visibility`, `jobs`, `tags`. String means one-element array. AND across keys, OR within a key. Always id order (UTF-16 code unit). No paging. Unknown key/enum → `KnowledgeQueryError`. |
- * | `search` | Shared `tokenize`. Index membership only. OR across query terms. Rank: term coverage desc, field weight desc (title 8, tags 4, summary 2, body 1), id asc. Return `SearchHit[]` `{ record, terms }`. No public `score`. Empty/stopword query → `[]`. No scan of `id`/`type`/`jobs`. Structured facts from `contract`, `host`, and `checks` are indexed with body weight. |
+ * | `search` | Shared `tokenize`. Index membership only. OR across query terms. Rank: term coverage desc, then the sum of field weight (title 8, tags 4, summary 2, body 1) times term rarity desc, then type (component, pattern, guideline, example), then id. Return `SearchHit[]` `{ record, terms }`. No public `score`. Empty/stopword query → `[]`. No scan of `id`/`type`/`jobs`. Structured facts from `contract` and `web` are indexed with body weight. |
  * | `related(id)` | Full neighborhood, grouped by neighbor. `{ record, via: [{ relation, direction }] }`. `relation` is always the forward name. `direction` is `"outbound"` \| `"inbound"` \| `"symmetric"`. Missing seed → `KnowledgeQueryError` `unknown-record`. Isolated record → `[]`. |
  * | Export | `./retrieve` only. `.` stays `parseRecord`, `parseYamlRecord`, and `parseAuthoredRecord`. |
  * | Tokenizer | `export function tokenize` from `src/compile/search-index.js`. In-package import only. Not on the package `exports` map. |
  *
- * Directory opens verify SHA-256 and byte length for `records.json` and `search-index.json`
- * against `manifest.content.files`. In-memory `{ records, searchIndex, manifest }` skips that check.
+ * Every open checks that the manifest digest matches its content. Directory opens also verify
+ * SHA-256 and byte length for `records.json` and `search-index.json` against
+ * `manifest.content.files`; in-memory `{ records, searchIndex, manifest }` skips that file check.
  * Bundle visibility comes from `manifest.content.visibility`. `expectVisibility` compares against
  * that declared projection, not a guess from record contents.
  */
 
+import { join } from "node:path";
 import { tokenize } from "../compile/search-index.js";
 import { REVERSE_RELATION } from "../compile/tables.js";
-import {
-  DOTTED_ID,
-  KnowledgeBundleError,
-  SLUG,
-  VOCABULARY,
-  byCodeUnit,
-  loadBundle,
-} from "./load.js";
+import { DOTTED_ID, KnowledgeBundleError, SLUG, VOCABULARY, loadBundle } from "./load.js";
+import { byCodeUnit } from "../sort.js";
 
 export { KnowledgeBundleError };
 export { formatAvoid, formatRule, referenceLabel } from "../render.js";
@@ -63,6 +59,7 @@ const SYMMETRIC = new Set(
  * @property {number} compiledSchemaVersion
  * @property {string|null} revision
  * @property {string} builtAt
+ * @property {string|null} root The bundle directory, or null for an in-memory bundle.
  *
  * @typedef {object} Catalog
  * @property {CatalogInfo} info
@@ -70,6 +67,8 @@ const SYMMETRIC = new Set(
  * @property {(filters?: object) => readonly object[]} list
  * @property {(query: string) => readonly SearchHit[]} search
  * @property {(id: string) => readonly Neighbor[]} related
+ * @property {(id: string) => string|undefined} markdownPath
+ *   The readable Markdown file for a record, or undefined for an unknown id or in-memory bundle.
  *
  * @typedef {object} OpenOptions
  * @property {"public"|"internal"} [expectVisibility]
@@ -134,13 +133,15 @@ function createCatalog(bundle) {
     const ranked = [];
     for (const [id, terms] of matched) {
       let weight = 0;
-      for (const term of terms) weight += fieldWeight(bundle, id, term);
+      for (const term of terms) weight += fieldWeight(bundle, id, term) * rarity(bundle, term);
       ranked.push({ id, terms, coverage: terms.length, weight });
     }
     ranked.sort((left, right) => {
       if (right.coverage !== left.coverage) return right.coverage - left.coverage;
       if (right.weight !== left.weight) return right.weight - left.weight;
-      return byCodeUnit(left.id, right.id);
+      return (
+        typeRank(bundle, left.id) - typeRank(bundle, right.id) || byCodeUnit(left.id, right.id)
+      );
     });
 
     return Object.freeze(
@@ -180,7 +181,12 @@ function createCatalog(bundle) {
     );
   }
 
-  return Object.freeze({ info: bundle.info, get, list, search, related });
+  function markdownPath(id) {
+    if (bundle.info.root == null || !bundle.byId.has(id)) return undefined;
+    return join(bundle.info.root, "markdown", `${id}.md`);
+  }
+
+  return Object.freeze({ info: bundle.info, get, list, search, related, markdownPath });
 }
 
 /**
@@ -229,6 +235,19 @@ function pushEdge(viaByNeighbor, neighborId, relation, direction) {
  * @param {string} id
  * @param {string} term
  */
+/** A term in fewer records says more about the ones it is in: log(1 + records / postings). */
+function rarity(bundle, term) {
+  return Math.log1p(bundle.ids.length / (bundle.postings.get(term)?.length ?? 1));
+}
+
+/** Search ties go to the record an agent most likely wants first. */
+const TYPE_ORDER = Object.freeze(["component", "pattern", "guideline", "example"]);
+
+function typeRank(bundle, id) {
+  const rank = TYPE_ORDER.indexOf(bundle.byId.get(id).type);
+  return rank === -1 ? TYPE_ORDER.length : rank;
+}
+
 function fieldWeight(bundle, id, term) {
   const fields = bundle.fieldTerms.get(id);
   if (fields.title.has(term)) return FIELD_WEIGHT.title;

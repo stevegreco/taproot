@@ -47,7 +47,6 @@ test("parseYamlRecord accepts a YAML-only component without a body", () => {
   assert.equal(record.id, "component.yaml-button");
   assert.equal(record.type, "component");
   assert.equal(Object.hasOwn(record, "body"), false);
-  assert.equal(record.contract.specVersion, 5);
   assert.equal(record.contract.usage.avoid[0].instead, "Link");
 });
 
@@ -244,7 +243,7 @@ test("YAML components coexist with Markdown records and generate a useful body",
         type: "pattern",
         sources: [{ kind: "authored", path: patternPath }],
       },
-      "Assign emphasis.",
+      "## Assign emphasis\n\nOne primary action per group.",
     ),
     [markdownPath]: recordMarkdown(
       {

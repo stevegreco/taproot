@@ -88,7 +88,14 @@ test("button slice variants and api come from the public catalog contract", () =
     slice.together && slice.together.patterns[0].avoid.length > 0,
     "pattern Avoid items stay with using-together",
   );
-  assert.equal(slice.review?.checks.length, 8, "review uses guideline checks, not body prose");
+  assert.equal(slice.review?.checks.length, 10, "the review checklist lists every contract rule");
+  assert.deepEqual(
+    slice.review?.checks.slice(0, 2).map((check) => [check.id, check.level]),
+    [
+      ["label-describes-result", "must"],
+      ["danger-for-destructive", "must"],
+    ],
+  );
 });
 
 test("button knowledge markdown keeps ghost and aria-label without reprinting the pattern", () => {
@@ -117,7 +124,7 @@ test("button knowledge markdown keeps ghost and aria-label without reprinting th
     /Highest-emphasis action\. Supporting action\. Low-emphasis action/,
     "enum descriptions are keyed, not concatenated",
   );
-  assert.doesNotMatch(markdown, /^error /m, "review markdown does not lead with severity codes");
+  assert.doesNotMatch(markdown, /^must /m, "review markdown does not lead with severity codes");
 });
 
 test("badge variant examples use the host tag and status labels", () => {

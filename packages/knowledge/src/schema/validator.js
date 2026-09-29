@@ -1,5 +1,6 @@
 import schema from "./knowledge-record.schema.json" with { type: "json" };
 import { createKnowledgeAjv } from "./ajv.js";
+import { byCodeUnit } from "../sort.js";
 
 const validate = createKnowledgeAjv().compile(schema);
 
@@ -58,8 +59,8 @@ function issueMessage(error) {
 }
 
 function compareIssues(left, right) {
-  const byPath = left.path.localeCompare(right.path);
-  return byPath === 0 ? left.keyword.localeCompare(right.keyword) : byPath;
+  const byPath = byCodeUnit(left.path, right.path);
+  return byPath === 0 ? byCodeUnit(left.keyword, right.keyword) : byPath;
 }
 
 export function findSchemaIssues(candidate) {
@@ -132,7 +133,8 @@ function findContractSemanticIssues(candidate) {
         });
       }
     }
-    if (!Object.hasOwn(parameter, "default")) continue;
+    // A non-string default already fails the schema's type check.
+    if (typeof parameter.default !== "string") continue;
     if (!Object.hasOwn(values, parameter.default)) {
       const allowed = Object.keys(values).map((value) => JSON.stringify(value));
       issues.push({

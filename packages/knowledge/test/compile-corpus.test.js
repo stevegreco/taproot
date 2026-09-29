@@ -7,6 +7,7 @@ import {
   createMemoryReader,
   portableContract,
   recordMarkdown,
+  recordYaml,
   tinySvg,
 } from "./helpers/workspace.js";
 
@@ -39,7 +40,7 @@ test("references to a record that failed validation are not reported again", asy
     [pattern]: authored(pattern, {
       id: "pattern.uses-invalid",
       type: "pattern",
-      relations: { uses: ["component.invalid"], related: ["component.missing"] },
+      related: ["component.invalid", "component.missing"],
     }),
   });
 
@@ -191,6 +192,7 @@ Body text.
   assert.equal(record.schemaVersion, 1);
   assert.equal(record.visibility, "public");
   assert.deepEqual(record.relations, {});
+  assert.equal(record.status, "draft");
   assert.equal(record.jobs[0], "design");
   assert.equal(
     record.sources.some((source) => source.kind === "authored" && source.path === path),
@@ -368,7 +370,7 @@ test("CORPUS_UNRESOLVED_RELATION fires for a missing target", async () => {
   const reader = createMemoryReader({
     [path]: authored(path, {
       id: "component.orphan",
-      relations: { uses: ["component.missing"] },
+      related: ["component.missing"],
     }),
   });
 
@@ -420,7 +422,7 @@ test("CORPUS_SELF_RELATION fires when a record targets itself", async () => {
   const reader = createMemoryReader({
     [path]: authored(path, {
       id: "component.self",
-      relations: { related: ["component.self"] },
+      related: ["component.self"],
     }),
   });
 
@@ -442,23 +444,6 @@ test("CORPUS_INCOMPLETE_EXAMPLE fires when an example has no assets or annotatio
 
   assert.equal(problems.length, 1);
   assert.equal(problems[0].recordId, "example.empty");
-});
-
-test("CORPUS_INCOMPLETE_CHECKS fires when a review guideline has no checks", async () => {
-  const path = "content/review.md";
-  const reader = createMemoryReader({
-    [path]: authored(path, {
-      id: "guideline.empty-review",
-      type: "guideline",
-      jobs: ["review"],
-    }),
-  });
-
-  const corpus = await buildCorpus(reader, [publicRoot]);
-  const problems = codes(corpus, PROBLEM.CORPUS_INCOMPLETE_CHECKS);
-
-  assert.equal(problems.length, 1);
-  assert.equal(problems[0].recordId, "guideline.empty-review");
 });
 
 test("SOURCE_MISSING fires when a declared source file is absent", async () => {
@@ -544,26 +529,18 @@ test("SOURCE_CONFLICT fires when the contract namespace is missing from the toke
   assert.ok(problems.some((problem) => /component\.namespace/.test(problem.message)));
 });
 
-test("SOURCE_CONFLICT fires when a binding parameter is not a bijection", async () => {
+test("SOURCE_CONFLICT fires when a web parameter is not a bijection", async () => {
   const reader = createMemoryReader({
-    "content/bound.md": recordMarkdown({
+    "content/bound.spec.yaml": recordYaml({
       id: "component.bound",
-      sources: [{ kind: "authored", path: "content/bound.md" }],
+      path: "content/bound.spec.yaml",
       contract: portableContract({
-        description: "Needs a matching host parameter.",
+        description: "Needs a matching web parameter.",
         anatomy: [{ name: "control", role: "interactive-surface", description: "Control." }],
         parameters: { disabled: { kind: "boolean", default: false } },
         events: { activate: { description: "Activate." } },
       }),
-    }),
-    "content/bindings/bound.md": recordMarkdown({
-      id: "binding.bound.web-component",
-      type: "binding",
-      sources: [{ kind: "authored", path: "content/bindings/bound.md" }],
-      relations: { implements: ["component.bound"] },
-      host: {
-        specVersion: 1,
-        platform: "web-component",
+      web: {
         package: "@stevegreco/design-system-components",
         export: "DsBound",
         defaultTagName: "ds-bound",
@@ -581,11 +558,11 @@ test("SOURCE_CONFLICT fires when a binding parameter is not a bijection", async 
   );
 });
 
-function defaultedBinding(host) {
+function defaultedComponent(web) {
   return createMemoryReader({
-    "content/defaulted.md": recordMarkdown({
+    "content/defaulted.spec.yaml": recordYaml({
       id: "component.defaulted",
-      sources: [{ kind: "authored", path: "content/defaulted.md" }],
+      path: "content/defaulted.spec.yaml",
       contract: portableContract({
         description: "Maps by default.",
         anatomy: [
@@ -599,15 +576,7 @@ function defaultedBinding(host) {
         },
         events: {},
       }),
-    }),
-    "content/bindings/defaulted.md": recordMarkdown({
-      id: "binding.defaulted.web-component",
-      type: "binding",
-      sources: [{ kind: "authored", path: "content/bindings/defaulted.md" }],
-      relations: { implements: ["component.defaulted"] },
-      host: {
-        specVersion: 1,
-        platform: "web-component",
+      web: {
         package: "@stevegreco/design-system-components",
         export: "DsDefaulted",
         defaultTagName: "ds-defaulted",
@@ -617,27 +586,40 @@ function defaultedBinding(host) {
           hint: { element: "p", part: "hint" },
         },
         events: {},
-        ...host,
+        ...web,
       },
     }),
   });
 }
 
-test("binding parameters default to kebab-case attributes and same-name properties", async () => {
+test("SOURCE_CONFLICT fires when a web state is not a contract state", async () => {
   const corpus = await buildCorpus(
-    defaultedBinding({ parameters: { accessibleName: { attribute: "aria-label" } } }),
+    defaultedComponent({ states: { invalid: { attribute: "error" } } }),
     [publicRoot],
   );
-  assert.deepEqual(corpus.problems, []);
-  const { host } = corpus.records.get("binding.defaulted.web-component");
-  assert.deepEqual(host.parameters, {
+  assert.ok(
+    codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) =>
+      /web states names invalid, which contract\.states does not have/.test(item.message),
+    ),
+  );
+});
+
+test("web parameters default to kebab-case attributes and same-name properties", async () => {
+  const corpus = await buildCorpus(
+    defaultedComponent({ parameters: { accessibleName: { attribute: "aria-label" } } }),
+    [publicRoot],
+  );
+  assert.deepEqual(
+    corpus.problems.filter((item) => item.severity === "error"),
+    [],
+  );
+  const { web } = corpus.records.get("component.defaulted");
+  assert.deepEqual(web.parameters, {
     disabled: { attribute: "disabled", property: "disabled" },
     fullWidth: { attribute: "full-width", property: "fullWidth" },
     accessibleName: { attribute: "aria-label" },
   });
-  assert.deepEqual(Object.keys(host), [
-    "specVersion",
-    "platform",
+  assert.deepEqual(Object.keys(web), [
     "package",
     "export",
     "defaultTagName",
@@ -649,35 +631,38 @@ test("binding parameters default to kebab-case attributes and same-name properti
   ]);
 });
 
-test("binding parts default to the anatomy description unless overridden", async () => {
+test("web parts default to the anatomy description unless overridden", async () => {
   const corpus = await buildCorpus(
-    defaultedBinding({ parts: { hint: { description: "Hint. Hidden when empty." } } }),
+    defaultedComponent({ parts: { hint: { description: "Hint. Hidden when empty." } } }),
     [publicRoot],
   );
-  assert.deepEqual(corpus.problems, []);
-  assert.deepEqual(corpus.records.get("binding.defaulted.web-component").host.parts, {
+  assert.deepEqual(
+    corpus.problems.filter((item) => item.severity === "error"),
+    [],
+  );
+  assert.deepEqual(corpus.records.get("component.defaulted").web.parts, {
     button: { description: "Control." },
     hint: { description: "Hint. Hidden when empty." },
   });
 });
 
-test("SOURCE_CONFLICT fires when a binding overrides a part it does not render", async () => {
+test("SOURCE_CONFLICT fires when a web section overrides a part it does not render", async () => {
   const corpus = await buildCorpus(
-    defaultedBinding({ parts: { missing: { description: "Nowhere." } } }),
+    defaultedComponent({ parts: { missing: { description: "Nowhere." } } }),
     [publicRoot],
   );
   assert.ok(
     codes(corpus, PROBLEM.SOURCE_CONFLICT).some((item) =>
-      /host parts has unknown missing/.test(item.message),
+      /web parts has unknown missing/.test(item.message),
     ),
   );
 });
 
-test("RECORD_INVALID fires for contradictory contracts and empty host mappings", async () => {
+test("RECORD_INVALID fires for contradictory contracts and empty web mappings", async () => {
   const reader = createMemoryReader({
-    "content/enum.md": recordMarkdown({
+    "content/enum.spec.yaml": recordYaml({
       id: "component.enum-default",
-      sources: [{ kind: "authored", path: "content/enum.md" }],
+      path: "content/enum.spec.yaml",
       contract: portableContract({
         anatomy: [
           { name: "control", role: "interactive-surface", description: "Control." },
@@ -687,15 +672,7 @@ test("RECORD_INVALID fires for contradictory contracts and empty host mappings",
           variant: { kind: "enum", values: { primary: "Primary." }, default: "ghost" },
         },
       }),
-    }),
-    "content/bindings/empty.md": recordMarkdown({
-      id: "binding.empty.web-component",
-      type: "binding",
-      sources: [{ kind: "authored", path: "content/bindings/empty.md" }],
-      relations: { implements: ["component.enum-default"] },
-      host: {
-        specVersion: 1,
-        platform: "web-component",
+      web: {
         package: "@stevegreco/design-system-components",
         export: "DsEmpty",
         defaultTagName: "ds-empty",
@@ -711,7 +688,7 @@ test("RECORD_INVALID fires for contradictory contracts and empty host mappings",
   const invalid = codes(corpus, PROBLEM.RECORD_INVALID);
   assert.ok(invalid.some((item) => /\/contract\/anatomy\/1\/name/.test(item.path)));
   assert.ok(invalid.some((item) => /\/contract\/parameters\/variant\/default/.test(item.path)));
-  assert.ok(invalid.some((item) => /\/host\/parameters\/variant/.test(item.path)));
+  assert.ok(invalid.some((item) => /\/web\/parameters\/variant/.test(item.path)));
 });
 
 test("ASSET_MISSING fires when a declared asset file is absent", async () => {

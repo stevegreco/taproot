@@ -2,6 +2,8 @@ import authoredSchema from "./index.js";
 import { PROBLEM, problem } from "../compile/tables.js";
 import { createKnowledgeAjv } from "./ajv.js";
 import {
+  COMPILED_CONTRACT_DEFS,
+  COMPILED_CONTRACT_PROPERTIES,
   COMPILED_DEFS,
   COMPILED_PROPERTIES,
   COMPILED_REQUIRED,
@@ -16,7 +18,9 @@ function deriveCompiledSchema(authoredSchema) {
   schema.title = "Compiled knowledge record";
   schema.properties = { ...schema.properties, ...COMPILED_PROPERTIES };
   schema.required = [...schema.required, ...COMPILED_REQUIRED];
-  schema.$defs = { ...schema.$defs, ...COMPILED_DEFS };
+  schema.$defs = { ...schema.$defs, ...COMPILED_DEFS, ...COMPILED_CONTRACT_DEFS };
+  const contract = schema.$defs.contract;
+  contract.properties = { ...contract.properties, ...COMPILED_CONTRACT_PROPERTIES };
   return schema;
 }
 

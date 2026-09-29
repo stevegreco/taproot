@@ -3,60 +3,90 @@
   "$id": "urn:stevegreco:design-system:knowledge-record:1",
   "title": "Authored knowledge record",
   "type": "object",
-  "required": ["id", "type", "title", "summary", "status", "jobs", "tags"],
+  "required": ["id", "type", "title", "summary"],
   "properties": {
-    "id": { "$ref": "#/$defs/dottedId" },
-    "schemaVersion": { "type": "integer", "const": 1 },
+    "id": {
+      "$ref": "#/$defs/dottedId"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
     "type": {
-      "enum": ["component", "pattern", "guideline", "example", "foundation", "decision", "binding"]
+      "enum": ["component", "pattern", "guideline", "example", "foundation", "decision"]
     },
-    "title": { "type": "string", "minLength": 1 },
-    "summary": { "type": "string", "minLength": 1 },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
     "status": {
-      "enum": ["draft", "accepted", "deprecated", "superseded"]
+      "enum": ["draft", "accepted", "deprecated", "superseded"],
+      "description": "Defaults to draft."
     },
-    "visibility": { "enum": ["public", "internal"] },
+    "visibility": {
+      "enum": ["public", "internal"]
+    },
     "jobs": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": { "enum": ["design", "implement", "review"] }
+      "items": {
+        "enum": ["design", "implement", "review"]
+      },
+      "description": "Who the record serves. The build derives it from type when omitted."
     },
     "tags": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "$ref": "#/$defs/slug" }
+      "items": {
+        "$ref": "#/$defs/slug"
+      },
+      "description": "Extra search terms. The build adds the record name and related record names."
     },
-    "relations": { "$ref": "#/$defs/relations" },
     "sources": {
       "type": "array",
-      "minItems": 1,
       "uniqueItems": true,
-      "items": { "$ref": "#/$defs/source" },
+      "items": {
+        "$ref": "#/$defs/source"
+      },
       "contains": {
         "type": "object",
         "required": ["kind"],
         "properties": {
-          "kind": { "const": "authored" }
+          "kind": {
+            "const": "authored"
+          }
         }
       },
-      "minContains": 1,
-      "maxContains": 1
+      "minContains": 0,
+      "maxContains": 1,
+      "description": "Files this record reads, such as a token file. The build adds the record file itself as the authored source."
     },
-    "body": { "type": "string", "minLength": 1 }
+    "body": {
+      "type": "string",
+      "minLength": 1
+    },
+    "related": {
+      "description": "Records to read alongside this one. The link works both ways.",
+      "$ref": "#/$defs/recordIdList"
+    }
   },
   "allOf": [
     {
       "if": {
-        "properties": { "type": { "const": "guideline" } },
+        "properties": {
+          "type": {
+            "const": "guideline"
+          }
+        },
         "required": ["type"]
       },
       "then": {
         "properties": {
-          "checks": {
-            "type": "array",
-            "items": { "$ref": "#/$defs/check" }
-          },
           "docsSections": {
             "type": "object",
             "additionalProperties": false,
@@ -67,8 +97,13 @@
                 "additionalProperties": false,
                 "required": ["section", "heading"],
                 "properties": {
-                  "section": { "$ref": "#/$defs/slug" },
-                  "heading": { "type": "string", "minLength": 1 }
+                  "section": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "heading": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               }
             }
@@ -78,7 +113,11 @@
     },
     {
       "if": {
-        "properties": { "type": { "const": "pattern" } },
+        "properties": {
+          "type": {
+            "const": "pattern"
+          }
+        },
         "required": ["type"]
       },
       "then": {
@@ -86,19 +125,25 @@
           "variantGuidance": {
             "type": "object",
             "minProperties": 1,
-            "propertyNames": { "$ref": "#/$defs/dottedId" },
+            "propertyNames": {
+              "$ref": "#/$defs/dottedId"
+            },
             "additionalProperties": {
               "anyOf": [
                 {
                   "type": "array",
                   "minItems": 1,
                   "uniqueItems": true,
-                  "items": { "$ref": "#/$defs/slug" }
+                  "items": {
+                    "$ref": "#/$defs/slug"
+                  }
                 },
                 {
                   "type": "object",
                   "minProperties": 1,
-                  "additionalProperties": { "$ref": "#/$defs/slug" }
+                  "additionalProperties": {
+                    "$ref": "#/$defs/slug"
+                  }
                 }
               ]
             }
@@ -108,43 +153,50 @@
     },
     {
       "if": {
-        "properties": { "type": { "const": "example" } },
+        "properties": {
+          "type": {
+            "const": "example"
+          }
+        },
         "required": ["type"]
       },
       "then": {
         "properties": {
           "assets": {
             "type": "array",
-            "items": { "$ref": "#/$defs/asset" }
+            "items": {
+              "$ref": "#/$defs/asset"
+            }
           },
           "annotations": {
             "type": "array",
-            "items": { "$ref": "#/$defs/annotation" }
+            "items": {
+              "$ref": "#/$defs/annotation"
+            }
           }
         }
       }
     },
     {
       "if": {
-        "properties": { "type": { "const": "binding" } },
-        "required": ["type"]
-      },
-      "then": {
-        "required": ["host"],
         "properties": {
-          "host": { "$ref": "#/$defs/hostBinding" }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": { "type": { "const": "component" } },
+          "type": {
+            "const": "component"
+          }
+        },
         "required": ["type"]
       },
       "then": {
         "properties": {
-          "tokenRef": { "$ref": "#/$defs/tokenRef" },
-          "contract": { "$ref": "#/$defs/portableContract" }
+          "tokenRef": {
+            "$ref": "#/$defs/tokenRef"
+          },
+          "contract": {
+            "$ref": "#/$defs/contract"
+          },
+          "web": {
+            "$ref": "#/$defs/web"
+          }
         }
       }
     }
@@ -167,20 +219,9 @@
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": { "$ref": "#/$defs/dottedId" }
-    },
-    "relations": {
-      "type": "object",
-      "properties": {
-        "uses": { "$ref": "#/$defs/recordIdList" },
-        "demonstrates": { "$ref": "#/$defs/recordIdList" },
-        "guides": { "$ref": "#/$defs/recordIdList" },
-        "implements": { "$ref": "#/$defs/recordIdList" },
-        "reviews": { "$ref": "#/$defs/recordIdList" },
-        "supersedes": { "$ref": "#/$defs/recordIdList" },
-        "related": { "$ref": "#/$defs/recordIdList" }
-      },
-      "additionalProperties": false
+      "items": {
+        "$ref": "#/$defs/dottedId"
+      }
     },
     "source": {
       "type": "object",
@@ -190,17 +231,9 @@
           "enum": ["authored", "token-source", "adr"],
           "$comment": "generated is compiler-only and rejected in authored Markdown."
         },
-        "path": { "$ref": "#/$defs/repositoryPath" }
-      },
-      "additionalProperties": false
-    },
-    "check": {
-      "type": "object",
-      "required": ["id", "level", "requirement"],
-      "properties": {
-        "id": { "$ref": "#/$defs/slug" },
-        "level": { "enum": ["error", "warning"] },
-        "requirement": { "type": "string", "minLength": 1 }
+        "path": {
+          "$ref": "#/$defs/repositoryPath"
+        }
       },
       "additionalProperties": false
     },
@@ -208,15 +241,28 @@
       "type": "object",
       "required": ["id", "path", "mediaType", "width", "height", "alt"],
       "properties": {
-        "id": { "$ref": "#/$defs/dottedId" },
-        "path": { "$ref": "#/$defs/repositoryPath" },
+        "id": {
+          "$ref": "#/$defs/dottedId"
+        },
+        "path": {
+          "$ref": "#/$defs/repositoryPath"
+        },
         "mediaType": {
           "type": "string",
           "pattern": "^[a-z]+/[a-zA-Z0-9.+-]+$"
         },
-        "width": { "type": "integer", "minimum": 1 },
-        "height": { "type": "integer", "minimum": 1 },
-        "alt": { "type": "string", "minLength": 1 }
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "alt": {
+          "type": "string",
+          "minLength": 1
+        }
       },
       "additionalProperties": false
     },
@@ -224,27 +270,801 @@
       "type": "object",
       "required": ["id", "label", "description"],
       "properties": {
-        "id": { "$ref": "#/$defs/slug" },
-        "label": { "type": "string", "minLength": 1 },
-        "description": { "type": "string", "minLength": 1 },
-        "relatesTo": { "$ref": "#/$defs/recordIdList" }
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "relatesTo": {
+          "$ref": "#/$defs/recordIdList"
+        }
       },
       "additionalProperties": false
-    },
-    "portableContract": {
-      "$ref": "urn:stevegreco:design-system:portable-contract:5"
-    },
-    "hostBinding": {
-      "$ref": "urn:stevegreco:design-system:host-binding:1"
     },
     "tokenRef": {
       "type": "object",
       "additionalProperties": false,
       "required": ["tier", "namespace", "description"],
       "properties": {
-        "tier": { "enum": ["primitive", "semantic", "component"] },
-        "namespace": { "type": "string", "minLength": 1 },
-        "description": { "type": "string", "minLength": 1 }
+        "tier": {
+          "enum": ["primitive", "semantic", "component"]
+        },
+        "namespace": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["do", "avoid"],
+      "properties": {
+        "do": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/usageDo"
+          }
+        },
+        "avoid": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/usageAvoid"
+          }
+        }
+      }
+    },
+    "usageDo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["situation"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "situation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "usageAvoid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["situation"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "situation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instead": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ruleReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/dottedId"
+        },
+        "fragment": {
+          "$ref": "#/$defs/slug"
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "level", "statement"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "level": {
+          "enum": ["must", "should", "may"]
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "applicability": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ruleReference"
+          }
+        },
+        "examples": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "do": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "avoid": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "anatomyPart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "role", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": ["interactive-surface", "label", "description", "indicator", "container"]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": ["enum", "boolean", "string"]
+        },
+        "values": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "examples": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "default": true,
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "enum"
+              }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["values"],
+            "properties": {
+              "values": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "default": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "boolean"
+              }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "boolean"
+              },
+              "values": false,
+              "examples": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "string"
+              }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "string"
+              },
+              "values": false,
+              "examples": false
+            }
+          }
+        }
+      ]
+    },
+    "configurationAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["values"],
+      "properties": {
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantics", "name"],
+      "properties": {
+        "semantics": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "keyboard": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/keyboardBinding"
+          }
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        }
+      }
+    },
+    "keyboardBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "action"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rationaleItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "rationale"],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "channelValue": {
+      "type": "string",
+      "minLength": 1
+    },
+    "channelMap": {
+      "description": "Token names or literals for the visual channels.",
+      "type": "object",
+      "$ref": "#/$defs/channelMapProperties",
+      "unevaluatedProperties": false
+    },
+    "stateMap": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/channelMap"
+      }
+    },
+    "visualAxisValue": {
+      "description": "Channels for one configuration value, and its states.",
+      "type": "object",
+      "$ref": "#/$defs/channelMapProperties",
+      "properties": {
+        "states": {
+          "$ref": "#/$defs/stateMap"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "visualAxis": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/visualAxisValue"
+      }
+    },
+    "visualPart": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/channelMap"
+        },
+        "states": {
+          "$ref": "#/$defs/stateMap"
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/visualAxis"
+      }
+    },
+    "channelMapProperties": {
+      "description": "The one list of visual channel names. channelMap and visualAxisValue close it.",
+      "type": "object",
+      "properties": {
+        "background": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "foreground": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "border": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "focus-ring": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "padding-horizontal": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "padding-vertical": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "radius": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "gap": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "font-family": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "font-size": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "font-weight": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "line-height": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "letter-spacing": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "motion": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "motion-duration": {
+          "$ref": "#/$defs/channelValue"
+        },
+        "motion-easing": {
+          "$ref": "#/$defs/channelValue"
+        }
+      }
+    },
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["export", "supportsAliases"],
+      "properties": {
+        "export": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supportsAliases": {
+          "type": "boolean"
+        }
+      }
+    },
+    "anatomyMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "element": {
+          "type": "string",
+          "minLength": 1
+        },
+        "part": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "accepts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "parameterMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "attribute": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "values": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["attribute"],
+          "properties": {
+            "attribute": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "required": ["property"],
+          "properties": {
+            "property": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "eventMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event"],
+      "properties": {
+        "event": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suppressedWhen": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "hostProperty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "readonly": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "formAssociation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mechanism"],
+      "properties": {
+        "mechanism": {
+          "const": "FACE"
+        },
+        "fieldsetDisables": {
+          "type": "boolean"
+        },
+        "submitRunsConstraintValidation": {
+          "type": "boolean"
+        },
+        "resetResetsAssociatedForm": {
+          "type": "boolean"
+        },
+        "submitsValue": {
+          "description": "The element contributes a value to its form, so form reset and state restore apply to it.",
+          "type": "boolean"
+        }
+      }
+    },
+    "focus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["forwardsTo"],
+      "properties": {
+        "forwardsTo": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "part": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "contract": {
+      "description": "What the component is, for every platform: usage, anatomy, parameters, states, rules, and visuals.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "usage",
+        "anatomy",
+        "parameters",
+        "events",
+        "states",
+        "behavior",
+        "accessibility"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "usage": {
+          "$ref": "#/$defs/usage"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "anatomy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/anatomyPart"
+          }
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/parameter"
+          }
+        },
+        "configurationAxes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/configurationAxis"
+          }
+        },
+        "events": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/event"
+          }
+        },
+        "states": {
+          "description": "States, highest priority first. For each channel, the first active state that sets it wins. default is the rest state and comes last.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "behavior": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "accessibility": {
+          "$ref": "#/$defs/accessibility"
+        },
+        "rationale": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rationaleItem"
+          }
+        },
+        "visuals": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/visualPart"
+          }
+        }
+      }
+    },
+    "web": {
+      "description": "How the web component implements the contract.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package", "export", "defaultTagName", "registration", "anatomy", "events"],
+      "properties": {
+        "package": {
+          "type": "string",
+          "minLength": 1
+        },
+        "export": {
+          "type": "string",
+          "minLength": 1
+        },
+        "defaultTagName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "registration": {
+          "$ref": "#/$defs/registration"
+        },
+        "anatomy": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/anatomyMap"
+          }
+        },
+        "parameters": {
+          "description": "Exceptions only. A contract parameter with no entry maps to attribute kebab-case(name) and property name. An entry is the whole mapping for its parameter. Compiled records carry the resolved map.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/parameterMap"
+          }
+        },
+        "events": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/eventMap"
+          }
+        },
+        "states": {
+          "description": "States an attribute drives, beyond those named after a boolean parameter. A non-empty value puts the element in the state.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["attribute"],
+            "properties": {
+              "attribute": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/hostProperty"
+          }
+        },
+        "formAssociation": {
+          "$ref": "#/$defs/formAssociation"
+        },
+        "focus": {
+          "$ref": "#/$defs/focus"
+        },
+        "parts": {
+          "description": "Overrides only. A part with no entry uses its contract anatomy description. Compiled records carry the resolved map.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/part"
+          }
+        },
+        "rationale": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rationaleItem"
+          }
+        },
+        "example": {
+          "description": "Markup that shows typical use of the element, such as the usage snippet on its docs page.",
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "description": "Implementation notes for this platform, in Markdown.",
+          "type": "string",
+          "minLength": 1
+        }
       }
     }
   }

@@ -14,7 +14,6 @@ const defaults = {
   visibility: "public",
   jobs: ["design"],
   tags: ["fixture"],
-  relations: {},
 };
 
 export function recordYaml(fields) {
@@ -75,7 +74,6 @@ export function codes(corpus, code) {
 
 export function portableContract(overrides = {}) {
   return {
-    specVersion: 5,
     description: "A fixture contract.",
     usage: { do: [], avoid: [] },
     anatomy: [],

@@ -36,6 +36,6 @@ test("pnpm pack does not include dist/internal", async () => {
   );
   assert.ok(packed.some((path) => path === "src/index.js" || path.startsWith("src/")));
   assert.ok(packed.some((path) => path.startsWith("dist/public/")));
-  assert.ok(packed.includes("dist/public/schema/portable-contract.json"));
-  assert.ok(packed.includes("dist/public/schema/host-binding.json"));
+  assert.ok(packed.includes("dist/public/schema/knowledge-record.json"));
+  assert.ok(packed.includes("dist/public/schema/compiled-knowledge-record.json"));
 });

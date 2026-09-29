@@ -22,14 +22,6 @@ test("parseRecord accepts every authored Markdown content record", () => {
     assert.ok(record.body.length > 0);
     assert.notEqual(record.type, "component");
 
-    if (record.id === "guideline.button-review") {
-      assert.equal(record.checks.length, 8);
-    }
-
-    if (record.type === "guideline" && record.jobs.includes("review")) {
-      assert.ok(Array.isArray(record.checks) && record.checks.length >= 1);
-    }
-
     if (record.type === "example") {
       assert.ok(Array.isArray(record.assets) && record.assets.length >= 1);
       assert.ok(Array.isArray(record.annotations) && record.annotations.length >= 1);
@@ -51,7 +43,6 @@ test("parseAuthoredRecord accepts YAML component specs without bodies", () => {
     assert.equal(record.schemaVersion, 1);
     assert.equal(record.type, "component");
     assert.equal(Object.hasOwn(record, "body"), false);
-    assert.equal(record.contract.specVersion, 5);
-    assert.ok(record.contract.usage.do.every((item) => typeof item.id === "string"));
+    assert.ok(record.contract.usage.do.every((item) => typeof item.situation === "string"));
   }
 });

@@ -57,7 +57,7 @@ describe("DsButton", () => {
     expect(submit).not.toHaveBeenCalled();
   });
 
-  test("submits its associated form after native constraint validation", () => {
+  test("[form-association] submits its associated form after native constraint validation", () => {
     const form = render(`
       <form>
         <input name="email" type="email" required>
@@ -76,7 +76,7 @@ describe("DsButton", () => {
     expect(submit).toHaveBeenCalledOnce();
   });
 
-  test("resets its associated form", () => {
+  test("[form-association] resets its associated form", () => {
     const form = render(`
       <form>
         <input name="query" value="initial">

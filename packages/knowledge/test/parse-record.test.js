@@ -14,7 +14,6 @@ jobs:
   - implement
 tags:
   - button
-relations: {}
 sources:
   - kind: authored
     path: packages/knowledge/content/components/test-button.md
@@ -84,12 +83,13 @@ test("parseRecord rejects unknown fields at every object level", () => {
   assertIssuePath(rootUnknown, "test-button.md", "/spurious");
 
   const nestedUnknown = validComponent.replace(
-    "relations: {}",
-    `relations:
-  unexpected:
-    - component.button`,
+    "\n---\n\n",
+    `\nrelations:
+  related:
+    - component.button
+---\n\n`,
   );
-  assertIssuePath(nestedUnknown, "test-button.md", "/relations/unexpected");
+  assertIssuePath(nestedUnknown, "test-button.md", "/relations");
 
   const sourceUnknown = validComponent.replace(
     "    path: packages/knowledge/content/components/test-button.md",
@@ -181,7 +181,7 @@ Use this component to trigger a test action.
   });
 
   assert.equal(record.schemaVersion, 1);
-  assert.deepEqual(record.relations, {});
+  assert.equal(Object.hasOwn(record, "relations"), false);
   assert.deepEqual(record.sources, [
     { kind: "authored", path: "packages/knowledge/content/components/test-button.md" },
   ]);
@@ -210,15 +210,19 @@ Use this component to trigger a test action.
 
   assert.equal(record.schemaVersion, 1);
   assert.equal(record.visibility, "public");
-  assert.deepEqual(record.relations, {});
+  assert.equal(Object.hasOwn(record, "relations"), false);
   assert.deepEqual(record.sources, [
     { kind: "authored", path: "packages/knowledge/content/components/test-button.md" },
   ]);
 });
 
-test("parseRecord still requires jobs", () => {
-  const markdown = validComponent.replace("\njobs:\n  - implement\n", "\n");
-  assertIssuePath(markdown, "test-button.md", "/jobs");
+test("parseRecord accepts a record without jobs, tags, or status", () => {
+  const markdown = validComponent
+    .replace("\njobs:\n  - implement\n", "\n")
+    .replace("\ntags:\n  - button\n", "\n")
+    .replace("\nstatus: draft\n", "\n");
+  const record = parseRecord(markdown, { sourcePath: "test-button.md" });
+  assert.equal(Object.hasOwn(record, "jobs"), false);
 });
 
 test("parseRecord injects an authored source when only an adr source is declared", () => {
@@ -268,7 +272,6 @@ test("parseRecord rejects malformed YAML frontmatter with a record-level path", 
 });
 
 const validContract = `
-  specVersion: 5
   description: Triggers an action.
   usage:
     do:
@@ -305,8 +308,6 @@ const validContract = `
 `;
 
 const validHost = `
-  specVersion: 1
-  platform: web-component
   package: "@stevegreco/design-system-components"
   export: DsButton
   defaultTagName: ds-button
@@ -339,7 +340,6 @@ jobs:
   - implement
 tags:
   - button
-relations: {}
 sources:
   - kind: authored
     path: packages/knowledge/content/components/test-button.md
@@ -349,36 +349,16 @@ contract:${validContract}
 Use this component to trigger a test action.
 `;
 
-const validBinding = `---
-id: binding.test-button.web-component
-schemaVersion: 1
-type: binding
-title: Test button web component
-summary: Maps the test button onto ds-button.
-status: draft
-visibility: public
-jobs:
-  - implement
-tags:
-  - button
-relations:
-  implements:
-    - component.test-button
-sources:
-  - kind: authored
-    path: packages/knowledge/content/bindings/test-button.web-component.md
-host:${validHost}
----
-
-Register with defineButton().
-`;
+const validComponentWithWeb = validComponentWithContract.replace(
+  "\n---\n\n",
+  `\nweb:${validHost}---\n\n`,
+);
 
 test("parseRecord accepts a component with a portable contract", () => {
   const record = parseRecord(validComponentWithContract, {
     sourcePath: "packages/knowledge/content/components/test-button.md",
   });
   assert.equal(record.type, "component");
-  assert.equal(record.contract.specVersion, 5);
   assert.equal(record.contract.parameters.disabled.kind, "boolean");
   assert.equal(Object.hasOwn(record.contract, "tagName"), false);
 });
@@ -396,8 +376,8 @@ test("parseRecord rejects type spec", () => {
 
 test("parseRecord rejects tagName on an authored component contract", () => {
   const markdown = validComponentWithContract.replace(
-    "  specVersion: 5\n",
-    "  specVersion: 5\n  tagName: ds-button\n",
+    "  description: Triggers an action.\n",
+    "  description: Triggers an action.\n  tagName: ds-button\n",
   );
   assertIssuePath(
     markdown,
@@ -406,22 +386,16 @@ test("parseRecord rejects tagName on an authored component contract", () => {
   );
 });
 
-test("parseRecord accepts a binding with a host mapping", () => {
-  const record = parseRecord(validBinding, {
-    sourcePath: "packages/knowledge/content/bindings/test-button.web-component.md",
+test("parseRecord accepts a component with a web section", () => {
+  const record = parseRecord(validComponentWithWeb, {
+    sourcePath: "packages/knowledge/content/components/test-button.md",
   });
-  assert.equal(record.type, "binding");
-  assert.equal(record.host.defaultTagName, "ds-button");
-  assert.equal(record.host.specVersion, 1);
+  assert.equal(record.web.defaultTagName, "ds-button");
 });
 
-test("parseRecord rejects a binding without host", () => {
-  const markdown = validBinding.replace(/\nhost:[\s\S]*?\n---\n/, "\n---\n");
-  assertIssuePath(
-    markdown,
-    "packages/knowledge/content/bindings/test-button.web-component.md",
-    "/host",
-  );
+test("parseRecord rejects type binding, which the web section replaced", () => {
+  const markdown = validComponentWithWeb.replace("type: component", "type: binding");
+  assertIssuePath(markdown, "packages/knowledge/content/components/test-button.md", "/type");
 });
 
 test("parseRecord rejects contract on an authored pattern", () => {
@@ -434,6 +408,13 @@ test("parseRecord rejects contract on an authored pattern", () => {
 test("parseRecord rejects host on an authored component", () => {
   const markdown = validComponent.replace("\n---\n\n", `\nhost:${validHost}---\n\n`);
   assertIssuePath(markdown, "test-button.md", "/host");
+});
+
+test("parseRecord rejects web on an authored pattern", () => {
+  const markdown = validComponent
+    .replace("type: component", "type: pattern")
+    .replace("\n---\n\n", `\nweb:${validHost}---\n\n`);
+  assertIssuePath(markdown, "test-button.md", "/web");
 });
 
 test("parseRecord rejects an enum parameter that omits values", () => {
@@ -520,14 +501,14 @@ test("parseRecord rejects duplicate portable anatomy names", () => {
   );
 });
 
-test("parseRecord rejects an empty host parameter mapping", () => {
-  const markdown = validBinding.replace(
+test("parseRecord rejects an empty web parameter mapping", () => {
+  const markdown = validComponentWithWeb.replace(
     "    disabled:\n      attribute: disabled\n      property: disabled\n",
     "    disabled: {}\n",
   );
   assertIssuePath(
     markdown,
-    "packages/knowledge/content/bindings/test-button.web-component.md",
-    "/host/parameters/disabled",
+    "packages/knowledge/content/components/test-button.md",
+    "/web/parameters/disabled",
   );
 });

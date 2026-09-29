@@ -1,43 +1,31 @@
+# yaml-language-server: $schema=../../../src/schema/knowledge-record.schema.json
 id: component.text-field
 type: component
 title: Text field
 summary: Use Text field to collect a single line of text with a label, hint, and error.
-status: draft
-jobs:
-  - design
-  - implement
-  - review
 tags:
   - form
   - input
-  - text-field
-relations:
-  related:
-    - component.badge
-    - component.button
+related:
+  - component.badge
+  - component.button
 sources:
   - kind: adr
     path: packages/tokens/docs/adr/0003-token-tier-consumption.md
 contract:
-  specVersion: 5
   description: Collects one line of text and associates a label, optional hint, and optional error with the control.
   usage:
     do:
-      - id: collect-short-text
-        situation: Collect a short value such as a name, email, or search query.
-      - id: pair-with-button
-        situation: Pair with Button when the value should be submitted.
+      - situation: Collect a short value such as a name, email, or search query.
+      - situation: Pair with Button when the value should be submitted.
     avoid:
-      - id: long-text
-        situation: Collect multi-line text.
+      - situation: Collect multi-line text.
         instead: Text area
         why: Text field is a single line.
-      - id: known-options
-        situation: Choose from a known set of options.
+      - situation: Choose from a known set of options.
         instead: Select
         why: Text field does not present choices.
-      - id: trigger-action
-        situation: Trigger an action by itself.
+      - situation: Trigger an action by itself.
         instead: Button
         why: Text field collects a value.
   content:
@@ -72,10 +60,10 @@ contract:
       role: interactive-surface
       description: Single-line text control.
     - name: hint
-      role: label
+      role: description
       description: Optional supporting guidance.
     - name: error
-      role: indicator
+      role: description
       description: Optional message that says what to fix.
   parameters:
     label:
@@ -123,15 +111,18 @@ contract:
     change:
       description: The value was committed.
   states:
-    - default
-    - hover
-    - focus-visible
     - disabled
     - invalid
+    - hover
+    - focus
+    - default
   behavior:
     - id: error-marks-invalid
       level: must
       statement: A non-empty error marks the control invalid, and clearing the error removes that state.
+    - id: error-blocks-submit
+      level: must
+      statement: While a non-empty error is set, the control blocks its form from submitting.
     - id: disabled-blocks-editing
       level: must
       statement: Disabled prevents editing.
@@ -170,17 +161,6 @@ contract:
       rationale: The message is the accessible signal. A variant axis would hide that the state comes from the error.
     - decision: Label, hint, and error belong to the field.
       rationale: A separate field shell does not exist yet. Association stays on this control until that shell lands.
-  stateResolution:
-    suppress:
-      disabled:
-        - hover
-        - invalid
-      invalid:
-        - hover
-    overlay:
-      - hover
-    independent:
-      - focus-visible
   visuals:
     field:
       base:
@@ -202,8 +182,8 @@ contract:
         foreground: semantic.color.foreground.default
         border: semantic.color.border.default
         radius: semantic.radius.control
-        padding-inline: primitives.space.3
-        padding-block: primitives.space.2
+        padding-horizontal: primitives.space.3
+        padding-vertical: primitives.space.2
         font-family: semantic.typography.body.default.fontFamily
         font-size: semantic.typography.body.default.fontSize
         font-weight: semantic.typography.body.default.fontWeight
@@ -212,8 +192,8 @@ contract:
       states:
         hover:
           border: semantic.color.border.strong
-        focus-visible:
-          outline: semantic.color.border.focus
+        focus:
+          focus-ring: semantic.color.border.focus
         disabled:
           background: semantic.color.background.disabled
           foreground: semantic.color.foreground.disabled
@@ -239,3 +219,72 @@ contract:
         font-weight: semantic.typography.body.small.fontWeight
         line-height: semantic.typography.body.small.lineHeight
         letter-spacing: semantic.typography.body.small.letterSpacing
+web:
+  package: "@stevegreco/design-system-components"
+  export: DsTextField
+  defaultTagName: ds-text-field
+  registration:
+    export: defineTextField
+    supportsAliases: true
+  anatomy:
+    field:
+      element: div
+      part: field
+    label:
+      element: label
+      part: label
+    control:
+      element: input
+      part: control
+    hint:
+      element: p
+      part: hint
+    error:
+      element: p
+      part: error
+  events:
+    input:
+      event: input
+      suppressedWhen: effectively-disabled
+    change:
+      event: change
+      suppressedWhen: effectively-disabled
+  states:
+    invalid:
+      attribute: error
+  properties:
+    form:
+      type: "HTMLFormElement | null"
+      readonly: true
+      description: The associated form, including association across the shadow boundary.
+  formAssociation:
+    mechanism: FACE
+    fieldsetDisables: true
+    submitRunsConstraintValidation: true
+    resetResetsAssociatedForm: true
+    submitsValue: true
+  focus:
+    forwardsTo: control
+  parts:
+    control:
+      description: The inner native input.
+    hint:
+      description: Supporting guidance. Hidden when empty.
+    error:
+      description: The error message. Hidden when empty.
+  example: |
+    <form>
+      <ds-text-field label="Email" name="email" type="email" hint="Used for sign-in." required></ds-text-field>
+      <ds-button type="submit">Continue</ds-button>
+    </form>
+  rationale:
+    - decision: Text field is form-associated.
+      rationale: The value must submit and reset across the shadow boundary.
+    - decision: Label, hint, and error live in the shadow root.
+      rationale: Association uses ids inside one shadow root, so it does not depend on light-DOM ids.
+  notes: |
+    The element honors the native `hidden` attribute.
+
+    The visible label is the `label` attribute. Hint and error text are the `hint` and `error`
+    attributes. A non-empty `error` sets `aria-invalid` and includes the message in `aria-describedby`.
+    The required mark is `aria-hidden`; the inner input carries `required`.
