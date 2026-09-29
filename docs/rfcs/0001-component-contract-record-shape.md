@@ -1,9 +1,10 @@
 # RFC 0001: Component contract record shape
 
-**Status:** Accepted
+**Status:** Superseded by [RFC 0002](./0002-knowledge-layer-architecture.md). The ADRs it names
+were removed and are available in git history.
 **Created:** 2026-09-02
-**Accepted in:** [ADR 0003](../adr/0003-component-owned-portable-contracts.md)
-**Authoring changed by:** [ADR 0005](../adr/0005-yaml-component-specs.md). Component records are
+**Accepted in:** ADR 0003 (removed; see git history)
+**Authoring changed by:** ADR 0005 (removed; see git history). Component records are
 now `content/components/<name>/<name>.spec.yaml`, not Markdown under `content/specs/`.
 **Discussion:** [#46](https://github.com/stevegreco/design-system/issues/46)
 
@@ -29,8 +30,8 @@ would remain separate because a component can have more than one host implementa
 ## Status of existing decisions
 
 This section records the state when the RFC was written. It has since been accepted:
-[ADR 0003](../adr/0003-component-owned-portable-contracts.md) supersedes the spec-record half of
-ADR 0002, and [ADR 0005](../adr/0005-yaml-component-specs.md) later replaced the Markdown authoring
+ADR 0003 (removed; see git history) supersedes the spec-record half of
+ADR 0002, and ADR 0005 (removed; see git history) later replaced the Markdown authoring
 of Option B with YAML component specs.
 
 While the RFC was `Proposed`, it did not change the current system. ADR 0002 remained accepted, and

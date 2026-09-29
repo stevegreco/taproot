@@ -1,8 +1,11 @@
 # RFC 0002: Knowledge layer architecture
 
-**Status:** Proposed
+**Status:** Accepted
 **Created:** 2026-09-29
-**Supersedes on acceptance:** ADRs 0001 through 0007
+**Accepted in:** [ADR 0001](../adr/0001-knowledge-layer-scope.md),
+[ADR 0002](../adr/0002-record-format.md), [ADR 0003](../adr/0003-knowledge-delivery.md)
+**Supersedes:** the earlier ADRs 0001 through 0007, removed in the same change (available in git
+history)
 
 ## Summary
 

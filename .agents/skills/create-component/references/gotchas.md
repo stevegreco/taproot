@@ -1,53 +1,39 @@
 # Gotchas
 
-Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the file you are in.
+Grouped by the file you are in.
 
 ## Contents
 
-- Spec and web section
+- Spec
 - Runtime
 - Component tests
-- Computed-style mapping test
-- Docs projector
+- Docs implementation file
 - Docs example and Verify steps
 - Types
-- Build and test commands
+- Commands
 
-## Spec and web section
+## Spec
 
-- Author `visuals`, never `mappings`. `mappings` is compiler output, and the schema rejects it in
-  a spec.
-- `contract.states` is a priority list. For each channel, the first active state that sets it
-  wins (Checkbox: `disabled`, `invalid`, `indeterminate`, `checked`, `hover`, `focus`,
-  `default`). A higher state hides a lower one only on the channels it sets, so give it every
-  channel it must override: Button's ghost `disabled` sets `background: transparent` so hover does
-  not show through.
-- There are no combined states such as hover-and-checked with their own tokens. If a
-  combination needs its own styling, it cannot be expressed. Record that in `rationale` (Checkbox
-  did) instead of styling it anyway, or the mapping test will fail.
-- Channel names are neutral: `focus-ring`, `padding-horizontal`, `padding-vertical`, `motion`,
-  `motion-duration`, `motion-easing`. The state is `focus`, and the axis is `reducedMotion`.
-- A state that is really a boolean parameter (checked, indeterminate, disabled) should be both a
-  `parameters` entry of `kind: boolean` and a `states` entry with the same name. The mapping test
-  drives it through that parameter's attribute automatically.
-- Text decoration, box geometry, and layout are not token channels. State them as behavior rules
-  and rationale (Link's underline, Checkbox's 16px box), not visuals.
-- Semantic tokens first (ADR 0003). A primitive is allowed only when no semantic role fits, and
-  the rationale must say why (Checkbox's `primitives.radius.xs`). Only a component that declares
-  `tokenRef.tier: component` may use `--component-*`, and then only those.
-- Every `must` rule in `behavior` and `accessibility.requirements` needs a test or a reason in
-  `unautomated-rules.js`. Write rules you can test. Keep rules about authored wording in
-  `content`, which the census does not enforce.
-- `web.parameters` list only exceptions. With no entry, a parameter maps to attribute
-  `kebab-case(name)` and property `name`. An entry replaces that default whole: Button's
-  `fullWidth: { attribute: full-width }` is attribute-only, and `action` restates attribute and
-  property because it adds `values`.
-- `web.parts` list only host detail the anatomy description lacks ("Hidden when empty.",
-  "The inner native input."). Other parts take the anatomy description.
-- `web.properties` holds read-only extras such as `form`. Its `type` string is copied into the
-  generated `.d.ts`, so write it as TypeScript.
-- A form control that contributes a value sets `formAssociation.submitsValue: true`. The generated
-  type then declares `formResetCallback` and `formStateRestoreCallback`.
+- The spec is technology-neutral. If you want to write a tag name, attribute, slot, or CSS
+  property, it belongs in `apps/documentation/implementation/<name>.md` or the runtime instead.
+- `states` is an unordered list. Nothing computes a combined style. If a combination needs its own
+  tokens, write it as its own condition joined with ` + ` (`variant.primary + hover`), or explain
+  in `rationale` why it is not styled.
+- A token condition must name `base`, a declared state, a value of a declared enum or boolean
+  parameter, or a declared preference value. Every `tokens` part must be an anatomy part.
+- Property names are neutral: `focus-ring`, `padding-horizontal`, `padding-vertical`, `motion`,
+  `motion-duration`, `motion-easing`. Token references are opaque strings.
+- Geometry and layout are not token properties. State them as rules or rationale.
+- Prefer semantic tokens (tokens ADR 0003). Use a primitive only when no semantic role fits, and
+  say why in `rationale`.
+- A rule ID is unique within its record and must not equal a top-level field name. Its address is
+  `component.<name>#<rule-id>`.
+- An `avoid[].instead` that is a record ID creates an `alternative` link and must resolve. Plain
+  text is allowed for a component that does not exist yet.
+- Links and references may target a section: a heading slug, a rule ID, or a field path such as
+  `parameters.variant.danger`. A missing target is a validation error.
+- A boolean that is also a state (checked, disabled) should be both a `parameters` entry and a
+  `states` entry with the same name, so token conditions can use it either way.
 
 ## Runtime
 
@@ -58,7 +44,7 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
   `customElements.define`.
 - Never set attributes in the constructor. Attribute changes during an upgrade do not reach
   `attributeChangedCallback`.
-- Every property with a setter is replayed on upgrade. A setter that has side effects (Checkbox's
+- Every property with a setter is replayed on upgrade. A setter with side effects (Checkbox's
   `checked` marks the box dirty) must still behave when called from `connectedCallback`.
 - Form controls follow Text field and Checkbox: `static formAssociated = true`, `attachInternals`,
   `formDisabledCallback`, `formResetCallback`, `formStateRestoreCallback`, and `setValidity` with
@@ -66,77 +52,49 @@ Things that cost time on Link, Checkbox, and the #128 checks. Grouped by the fil
 - Events: a native `input` event is composed and reaches the host. `change` is not composed;
   re-dispatch it from the host.
 - Honor `:host([hidden]) { display: none; }`. The shared host checks test it.
+- Put pseudo-classes (`:hover`, `:focus-visible`) on the inner control, not the host.
 
 ## Component tests
 
-- Title each test for a rule with its ID in brackets: `test("[rule-id] …")`. Several IDs can share
-  a title. Tags must name rules that exist in the contract, or the census fails. Skipped, todo,
-  and commented-out tests do not count.
-- Visible focus, alias registration, `hidden`, parts, the required slot, focus forwarding,
-  disabled events, keyboard activation, `form`, and properties set before registration are in
-  `test/host-checks.test.js`, which runs for every component with a web section. Its visible-focus
-  title carries `[a11y-visible-focus]`, and the census credits that tag to every component whose
-  contract has the rule. Use the same rule ID in a new contract.
+- Add the component's row to the table in `test/host-checks.test.js` and to `test/package-root.test.js`.
+  Both tables are hard-coded, so a forgotten row means the component is not tested there.
+- Do not repeat the shared host checks in `<name>.test.js`.
 - Token values: never set `--semantic-*` inline. The setup file loads the real `tokens.css`.
   Compare with `resolvedValue(property, "var(--token)")` from `test/helpers/tokens.js`.
+- No test compares the implementation to the spec. Review them together.
 
-## Computed-style mapping test
+## Docs implementation file
 
-`test/contract-mappings.test.js` with cases from `test/commands/contract-cases.js`.
-
-- Pseudo states (hover, pressed, focus) are forced on the web section's `focus.forwardsTo`
-  part. If the stylesheet puts the pseudo-class somewhere else (`:host(:hover)`, a wrapper), the
-  test fails. Put it on the inner control.
-- A boolean-parameter state is driven by its attribute. Any other attribute-driven state, such as
-  `invalid`, is declared in `web.states` with the attribute that drives it.
-- The test renders each state alone and each pair of states, so the priority order is checked.
-- A configuration axis that is not a parameter must be a media feature listed in `MEDIA_AXES`
-  (only `reducedMotion` today).
-- If a state needs content before it applies (Link needs `href` for `:hover` and focus), add it
-  to `FIXTURES` in `test/helpers/fixtures.js`. The host checks use the same fixtures.
-- `inherit` is compared against the part's parent inside a container with distinctive type. Relative
-  values resolve against the part's own font size.
-- A failure names component, part, channel, configuration, state, and theme. Fix the stylesheet
-  or the spec. Do not special-case the test.
-
-## Docs projector
-
-- Variant guidance is opt-in. Add the component and each variant's `###` anchor to the pattern's
-  `variantGuidance`, and add the component to the pattern's `related`. A matching heading alone
-  does nothing.
-- A component can relate to several patterns; each shows in "Using together".
-- A guideline shows under the page's usage through `docsSections.behavior: { section, heading }`.
-  `section` is a `##` anchor in the guideline body; `heading` is what the page prints.
-- The page itself is generated. A section heading appears only when its section has content, so
-  there is nothing to add or remove by hand. `docs/components/<slug>.mdx` holds only preview
-  prose; a prose file with no matching component fails the docs build.
+- `apps/documentation/implementation/<name>.md` is required for the component page. Its `api`
+  rows map each web attribute, property, and event to a spec parameter or event by name.
+- Keep the body to web-specific guidance. Rules, anatomy, and tokens come from the spec.
+- Copy `implementation/button.md` or `text-field.md`.
 
 ## Docs example and Verify steps
 
 - The example header is exactly:
-  `/**\n * Verify: run the steps in \`<slug>.verify.js\`. The docs tests run them against the built site.\n */`
+  `/**\n * Verify: run the steps in \`<name>.verify.js\`. The docs tests run them against the built site.\n */`
   The docs test fails without it.
-- `<slug>.verify.js` is plain JS: `export default async function verify({ page, step, eventually })`.
+- `<name>.verify.js` is plain JS: `export default async function verify({ page, step, eventually })`.
   Name each step for what it proves. Use `eventually(read, expected, what)` for anything React
   updates after an action.
 - Playwright CSS locators pierce open shadow roots: `form.locator("ds-checkbox input")`.
 - The runner waits for hydration before your steps. Do not add sleeps.
-- Mark stable handles in the example with `data-<slug>-*` attributes and query those, not text
+- Mark stable handles in the example with `data-<name>-*` attributes and query those, not text
   positions or classes.
+- `docs/components/<name>.mdx` holds preview prose only. Nav order is `docs/components/meta.ts`,
+  and is optional.
 
 ## Types
 
-- `pnpm build` writes `src/<slug>.d.ts` from the spec: a property per mapped
-  property, an attribute per mapped attribute (`aria-*` skipped, since frameworks type them), an
-  enum alias `<Slug><Property>` (`LinkVariant`), property prose from the parameter description,
-  and `HTMLElementTagNameMap`. Fix a wrong type in the records, not the file.
-- `examples/custom-elements.d.ts` maps the generated `ElementAttributes` onto JSX once. A new
-  component needs no edit there.
+- `src/<name>.d.ts` and the `src/index.d.ts` entries are hand-written. Declare a property per
+  public property, an attribute per public attribute, an enum alias for enum properties, and the
+  `HTMLElementTagNameMap` entry.
+- `examples/custom-elements.d.ts` maps element attributes onto JSX once. Check whether the new
+  component needs an entry there.
 
-## Build and test commands
+## Commands
 
-- Rebuild knowledge after editing a spec:
-  `pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`. Each mistake is
-  reported once, with its file and line.
+- `pnpm knowledge validate` reports each spec mistake once, with file and line.
 - Several filters can run in one turbo command; each package builds once before its tests.
 - The docs tests build the docs site first, so they take longer than the others.

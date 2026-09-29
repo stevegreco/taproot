@@ -1,107 +1,117 @@
 ---
 name: create-component
-description: Add a new web component to the Ember & Sage design system (packages/knowledge spec with its web section, packages/components runtime and tests, apps/documentation page, example, and Verify steps). Use when asked to build, add, or scaffold a component such as Icon, Checkbox, Field, Radio, or Switch, when finishing a partly built component, or when reviewing a component PR for completeness.
+description: Add a new web component to the Ember & Sage design system (a technology-neutral spec in packages/knowledge, the hand-written runtime and tests in packages/components, and the docs implementation file, example, and Verify steps in apps/documentation). Use when asked to build, add, or scaffold a component such as Icon, Checkbox, Field, Radio, or Switch, when finishing a partly built component, or when reviewing a component PR for completeness.
 ---
 
 # Create a component
 
-The definition of done is `docs/knowledge/new-component.md`. Read it first. This skill is the
-procedure for meeting it and the traps that cost time before. Design system facts go in the
-knowledge records, never only here (see `AGENTS.md`).
+A component has two halves. The spec says what it is and how it behaves, without naming any
+technology. The implementation builds it for the web. Design system facts go in the spec, never
+only here (see `AGENTS.md`).
 
 Pick a reference component and copy its shape:
 
 - **Link**: small, non-form, one inner control, a placement variant.
-- **Checkbox**: form-associated, boolean states, label/hint/error in the shadow root, states in
-  priority order. Text field is the older version of the same shape.
+- **Checkbox**: form-associated, boolean states, label/hint/error in the shadow root.
+  Text field is the older version of the same shape.
 - **Badge**: non-interactive, variants only.
 
-Read [references/gotchas.md](references/gotchas.md) before writing the spec, and again whenever
-a check fails.
+Read [references/gotchas.md](references/gotchas.md) before starting, and again whenever a check
+fails.
 
 ## Workflow
 
-Work in this order. Each step's check must pass before the next, because later checks read the
-compiled records.
+### 1. Confirm the need
 
-### 1. Decide what it ships
+```bash
+pnpm knowledge get guideline.compose-or-propose
+```
 
-Answer every item on the checklist in `docs/knowledge/new-component.md` (disabled, checked,
-loading, invalid, sizes, density, icon-only, RTL, reduced motion, forced colors). Each becomes a
-parameter, state, visual, or rule in the contract, or a `rationale` entry saying why not. Ask the
-user only about decisions that change public API. Decide the rest and record them.
+Compose existing components where you can. Propose a new one only when the guideline says so.
 
-### 2. Author the spec
+### 2. Decide what it ships
 
-`packages/knowledge/content/components/<slug>/<slug>.spec.yaml`, copied from Checkbox so it keeps
-the schema comment on line 1:
+Decide each item on purpose. Each ends up as a parameter, state, token condition, or rule in the
+spec, or as a `rationale` entry saying why the component does not have it. One entry can cover
+several items. Ask the user only about decisions that change public API.
 
-- `id`, `title`, `summary`, and `related`. Leave `status`, `jobs`, and `tags` to the build unless
-  they add something.
-- `contract` with `usage`, `content`, `anatomy`, `parameters`, `events`, `states` (highest
-  priority first, then `default`), `behavior`, `accessibility.requirements`, `rationale`, and
-  `visuals`. Give every rule a stable ID and a `must`, `should`, or `may` level.
-- `web`: package, export, tag, registration, anatomy element and part per anatomy name, events,
-  `states` for attribute-driven states such as `invalid`, `properties`, `formAssociation` if it is
-  a form control, `focus.forwardsTo`, an `example` of typical markup for the docs usage snippet,
-  and `notes`. Add `parameters` and `parts` entries only for exceptions (see gotchas).
-- If a pattern should guide its variants, add the component to the pattern's `related` and
-  `variantGuidance`.
+| Item | Question to answer |
+| --- | --- |
+| Disabled | Can it be unavailable? Is it focusable, and is the reason shown? |
+| Visited, selected, or checked | Does it have a persistent on/off or visited state? |
+| Loading | Can it wait on work? Does it block activation while it does? |
+| Invalid | Can its value be wrong? What message says so? |
+| Sizes | More than one size, or a placement variant? |
+| Density | Does it change in compact layouts, or does the layout handle that? |
+| Icon-only | Can it render without text? Where does its accessible name come from? |
+| Right-to-left | Does anything mirror when the direction is right-to-left? |
+| Reduced motion | Does it animate? What happens when the user prefers reduced motion? |
+| High contrast and forced colors | Does every state stay visible without color alone? |
 
-Check: `pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge`.
+Link is the reference for a small component. Its rationale records no disabled state ("a link with
+no destination is text"), no visited styling, and placement as a variant rather than a size.
 
-### 3. Write the runtime
+### 3. Write the spec
 
-`packages/components/src/<slug>.{js,css}`. Use `./internal/element.js` (`Base`,
-`ForwardsFocus`, `focusTarget`, `lazyStyleSheet`, `defineElement`). The file holds only this
-component's behavior. CSS uses only the tokens the spec maps. Put pseudo-classes on the inner
-control named by `focus.forwardsTo`.
+`packages/knowledge/content/components/<name>/<name>.spec.yaml`, copied from Checkbox so it keeps
+the `# yaml-language-server: $schema=...` header, which gives completion and inline errors. The
+format is in `packages/knowledge/SPEC.md`.
 
-The build writes `src/<slug>.d.ts` and the package-root barrel, `src/index.js` and
-`src/index.d.ts`, from the spec. JSX types in the docs follow from them. Do not
-edit these files; commit what the build writes. The only list a component may edit is
-`apps/documentation/docs/components/meta.ts`, for nav order, and that is optional.
+- Technology-neutral. No element, attribute, slot, framework, or CSS names, and no code.
+- `id`, `title`, `summary`, `description`, `usage` (with `avoid` entries whose `instead` is a
+  record ID where one exists), `anatomy`, `parameters`, `events`, `states`, `preferences`, `rules`
+  (each with a stable `id`, a `level`, and a `topic`), `accessibility`, `tokens`, and `rationale`.
+- `tokens` maps each anatomy part to conditions (`base`, `variant.primary`, `hover`,
+  `variant.primary + hover`) and each condition to properties and token references.
+- Link the component to the patterns and guidelines that apply.
 
-### 4. Prove the contract
+Check: `pnpm knowledge validate`.
 
-- `packages/components/test/<slug>.test.js`. Tag each test covering a rule:
-  `test("[rule-id] …")`. A `must` rule that no test can prove (authored wording, consumer
-  responsibility) gets a reason in `test/unautomated-rules.js` instead.
-- `test/host-checks.test.js` covers alias registration, `hidden`, declared parts, the required
-  slot, focus forwarding, visible focus (`[a11y-visible-focus]`), events and their suppression
-  while disabled, Enter and Space activation, `form`, enum properties, and properties set before
-  registration for every component. Do not repeat them in `<slug>.test.js`.
-- The mapping, census, host, and example-types checks run on their own from the records. Do not edit
-  them for one component. If one fails, fix the spec, CSS, or types. Extend the harness
-  (`test/commands/contract-cases.js`) only when a new kind of state or axis appears, and make the
-  extension generic.
+### 4. Write the runtime
+
+By hand, in `packages/components`:
+
+- `src/<name>.js` and `src/<name>.css`. Use `./internal/element.js` (`Base`, `ForwardsFocus`,
+  `focusTarget`, `lazyStyleSheet`, `defineElement`). CSS uses the tokens the spec maps.
+- `src/<name>.d.ts`: the element class, attribute types for JSX, and `HTMLElementTagNameMap`.
+- Entries in `src/index.js` (import, export, and call the define helper) and `src/index.d.ts`
+  (import, re-export, and the JSX attributes map).
+
+### 5. Test it
+
+- `test/<name>.test.js`: this component's behavior only.
+- A row in the table in `test/host-checks.test.js`. The shared checks cover alias registration,
+  `hidden`, parts, the required slot, focus forwarding, visible focus, events while disabled,
+  keyboard activation, `form`, enum properties, and properties set before registration.
+- A row in `test/package-root.test.js`.
+
+Nothing checks the implementation against the spec. When you change one, read the other.
 
 Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 
-### 5. Document and verify
+### 6. Document and verify
 
-- The `/components/<slug>` page renders from the catalog (`apps/documentation/lib/component-pages.ts`):
-  title, import, the web section's `example` as the usage snippet, the live example, and each
-  `<ComponentKnowledge>` section with content. The review checklist lists the contract rules. Give
-  the web section an `example`.
-- `apps/documentation/docs/components/<slug>.mdx` (optional): only the preview introduction, as
-  plain prose with no front matter. Do not restate the contract.
-- `apps/documentation/examples/<slug>.tsx`: one realistic demo with `data-<slug>-*` handles and
-  the standard `Verify:` header.
-- `apps/documentation/examples/<slug>.verify.js`: named steps that exercise the demo the way a
-  person would.
+In `apps/documentation`:
+
+- `implementation/<name>.md`: front matter with `component`, `package`, `tagName`,
+  `defineExport`, `usage`, and `api` rows that map web attributes, properties, and events to spec
+  parameters and events. The body is web-specific guidance. Copy `implementation/button.md`.
+- `examples/<name>.tsx`: one realistic demo with `data-<name>-*` handles and the standard
+  `Verify:` header.
+- `examples/<name>.verify.js`: named steps that exercise the demo the way a person would.
+- `docs/components/<name>.mdx` (optional): preview prose only. Do not restate the spec.
 
 Check: `pnpm exec turbo run test --filter=documentation`.
 
-### 6. Confirm completeness
+### 7. Confirm completeness
 
 ```bash
-node .agents/skills/create-component/scripts/status.mjs <slug>
+node .agents/skills/create-component/scripts/status.mjs <name>
 ```
 
-It exits 1 when a file or glue entry is missing, and lists where each checklist item is decided.
-A `warn` row on the checklist means no keyword match: read the spec and either add the decision
-or confirm an existing entry covers it.
+It exits 1 when a file or entry is missing and shows where each item in step 2 is decided. A
+`warn` row means no keyword match: read the spec and either add the decision or confirm an
+existing entry covers it.
 
 Then run the repo gates from the root: `pnpm build`, `pnpm test`, `pnpm lint`,
 `pnpm format:check`.
@@ -110,7 +120,5 @@ Then run the repo gates from the root: `pnpm build`, `pnpm test`, `pnpm lint`,
 
 Base on `main` and never stack. The description lists:
 
-- Each checklist item not in the contract, with its `rationale` decision.
-- Any `unautomated-rules.js` entries and why.
-- Any harness change (contract cases, drivers, fixtures) and why it is generic.
+- Each item from step 2 that is not in the spec, with its `rationale` decision.
 - Check results, including what the example's Verify steps prove.
