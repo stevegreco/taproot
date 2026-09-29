@@ -8,10 +8,11 @@ tags:
   - contribution
   - governance
   - rfc
-related:
-  - pattern.action-hierarchy
-  - component.button
-  - component.badge
+links:
+  related:
+    - pattern.action-hierarchy
+    - component.button
+    - component.badge
 ---
 
 Most interface needs are met by composing what the system already publishes. Change the system

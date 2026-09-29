@@ -6,170 +6,143 @@ summary: Use Link to navigate to another page, a location on the page, or a reso
 tags:
   - action
   - navigation
-related:
-  - component.button
 sources:
-  - kind: adr
-    path: packages/tokens/docs/adr/0003-token-tier-consumption.md
-contract:
-  description: Navigates to another page, a location on the current page, or a resource.
-  usage:
-    do:
-      - situation: Navigate to another page or resource.
-      - situation: Move to a location on the current page.
-      - situation: Point to related content from within a sentence.
-    avoid:
-      - situation: Trigger an action or submit a form.
-        instead: Button
-        why: Buttons provide action semantics and form behavior.
-      - situation: Display status or metadata.
-        instead: Badge
-        why: Link communicates a destination.
+  - title: Token tier consumption (tokens ADR 0003)
+    url: packages/tokens/docs/adr/0003-token-tier-consumption.md
+description: Navigates to another page, a location on the current page, or a resource.
+usage:
+  do:
+    - Navigate to another page or resource.
+    - Move to a location on the current page.
+    - Point to related content from within a sentence.
+  avoid:
+    - situation: Trigger an action or submit a form.
+      instead: component.button
+      why: Buttons provide action semantics and form behavior.
+    - situation: Display status or metadata.
+      instead: component.badge
+      why: Link communicates a destination.
+anatomy:
+  control:
+    role: interactive-surface
+    description: Native link that owns the destination and focus.
   content:
-    - id: text-describes-destination
-      level: must
-      statement: Use link text that names the destination, not the gesture.
-      examples:
-        do:
-          - View billing history
-          - token tier ADR
-        avoid:
-          - Click here
-          - Learn more
-    - id: choose-link-or-button
-      level: should
-      statement: Apply the action hierarchy pattern to choose between Link and Button.
-      references:
-        - id: pattern.action-hierarchy
-          fragment: choose-button-or-link
-  anatomy:
-    - name: control
-      role: interactive-surface
-      description: Native link that owns the destination and focus.
-    - name: content
-      role: label
-      description: Link text with an optional decorative icon.
-  parameters:
-    href:
-      kind: string
-      description: Destination. Without it the control is not a link and cannot receive focus.
-    variant:
-      kind: enum
-      values:
-        inline: Link inside a run of text. Inherits the surrounding typography and is always underlined.
-        standalone: Link on its own line or after related content. Uses label typography and is underlined on hover.
-      examples:
-        inline: token tier ADR
-        standalone: View all projects
-      default: inline
-  events:
-    activate:
-      description: Follows the link to its destination.
-  states:
-    - hover
-    - focus
-    - default
-  behavior:
-    - id: native-navigation
-      level: must
-      statement: Activation navigates like a native link, including opening in a new tab or window from browser controls.
-    - id: inline-underline
-      level: must
-      statement: An inline link is underlined at rest, so it is distinguishable from surrounding text without color.
-    - id: standalone-underline-on-hover
-      level: should
-      statement: A standalone link is underlined on hover.
-    - id: no-disabled-state
-      level: must
-      statement: Link has no disabled state. When the destination is unavailable, render text instead of a link.
-  accessibility:
-    semantics: Link.
-    name: Required from the link text.
-    keyboard:
-      - key: Tab
-        action: Move focus to or from the link.
-      - key: Enter
-        action: Follow the link.
-    requirements:
-      - id: a11y-link-purpose
-        level: must
-        statement: The purpose of the link is clear from its text, or from its text and the sentence around it.
-      - id: a11y-not-color-alone
-        level: must
-        statement: An inline link does not depend on color alone to be identified.
-      - id: a11y-visible-focus
-        level: must
-        statement: Keyboard focus remains visibly indicated.
-  rationale:
-    - decision: Link consumes semantic tokens directly.
-      rationale: ADR 0003. Brand foreground is audited as text on the page background, and focus already has a semantic role. No component-token namespace.
-    - decision: Placement is a variant, not a size.
-      rationale: Inline and standalone links differ in typography and underline. Destination semantics are the same.
-    - decision: The underline is not a visual mapping.
-      rationale: Text decoration is fixed component behavior, not a token channel. The behavior rules state when it shows.
-    - decision: Link has no visited or disabled styling.
-      rationale: Browsers limit visited styling to color and no semantic visited role exists. A link with no destination is text.
-  visuals:
-    control:
-      base:
-        foreground: semantic.color.foreground.brand.default
-      states:
-        hover:
-          foreground: semantic.color.foreground.default
-        focus:
-          focus-ring: semantic.color.border.focus
-          radius: semantic.radius.control
-      variant:
-        inline:
-          font-family: inherit
-          font-size: inherit
-          font-weight: inherit
-          line-height: inherit
-          letter-spacing: inherit
-        standalone:
-          font-family: semantic.typography.label.default.fontFamily
-          font-size: semantic.typography.label.default.fontSize
-          font-weight: semantic.typography.label.default.fontWeight
-          line-height: semantic.typography.label.default.lineHeight
-          letter-spacing: semantic.typography.label.default.letterSpacing
-web:
-  package: "@stevegreco/design-system-components"
-  export: DsLink
-  defaultTagName: ds-link
-  registration:
-    export: defineLink
-    supportsAliases: true
-  anatomy:
-    control:
-      element: a
-      part: link
-    content:
-      slot: default
-      required: true
-      accepts:
-        - text
-        - text-and-decorative-icon
-  events:
-    activate:
-      event: click
-  focus:
-    forwardsTo: control
-  parts:
-    link:
-      description: The inner native anchor.
-  example: |
-    <p>Themes resolve through the <ds-link href="/adr/0003">token tier ADR</ds-link>.</p>
-    <ds-link variant="standalone" href="/projects">View all projects</ds-link>
-  rationale:
-    - decision: Link is not form-associated.
-      rationale: A link navigates. It never submits or resets a form.
-    - decision: Navigation is the inner anchor's native behavior.
-      rationale: Middle-click, modifier keys, and the context menu keep working without script.
-    - decision: Content always includes text.
-      rationale: Link text is the accessible name. There is no accessibleName parameter, so an icon-only link would be announced as just "link".
-  notes: |
-    The element honors the native `hidden` attribute.
-
-    The host is `display: inline`, so an inline link wraps with the text around it. `href` is mirrored
-    onto the inner anchor; removing it removes the anchor's `href`, which drops link semantics and
-    focusability. `click()` activates the inner anchor, as a native `<a>.click()` would.
+    role: label
+    description: Link text with an optional decorative icon.
+parameters:
+  href:
+    kind: string
+    description: Destination. Without it the control is not a link and cannot receive focus.
+  variant:
+    kind: enum
+    values:
+      inline: Link inside a run of text. Inherits the surrounding typography and is always underlined.
+      standalone: >-
+        Link on its own line or after related content. Uses label typography and is underlined on
+        hover.
+    examples:
+      inline: token tier ADR
+      standalone: View all projects
+    default: inline
+events:
+  activate: Follows the link to its destination.
+states:
+  - hover
+  - focus
+  - default
+rules:
+  - id: text-describes-destination
+    level: must
+    topic: content
+    statement: Use link text that names the destination, not the gesture.
+    examples:
+      do:
+        - View billing history
+        - token tier ADR
+      avoid:
+        - Click here
+        - Learn more
+  - id: choose-link-or-button
+    level: should
+    topic: content
+    statement: Apply the action hierarchy pattern to choose between Link and Button.
+    references:
+      - pattern.action-hierarchy#choose-button-or-link
+  - id: native-navigation
+    level: must
+    topic: behavior
+    statement: >-
+      Activation navigates like a native link, including opening in a new tab or window from browser
+      controls.
+  - id: inline-underline
+    level: must
+    topic: behavior
+    statement: >-
+      An inline link is underlined at rest, so it is distinguishable from surrounding text without
+      color.
+  - id: standalone-underline-on-hover
+    level: should
+    topic: behavior
+    statement: A standalone link is underlined on hover.
+  - id: no-disabled-state
+    level: must
+    topic: behavior
+    statement: >-
+      Link has no disabled state. When the destination is unavailable, render text instead of a
+      link.
+  - id: a11y-link-purpose
+    level: must
+    topic: accessibility
+    statement: The purpose of the link is clear from its text, or from its text and the sentence around it.
+  - id: a11y-not-color-alone
+    level: must
+    topic: accessibility
+    statement: An inline link does not depend on color alone to be identified.
+  - id: a11y-visible-focus
+    level: must
+    topic: accessibility
+    statement: Keyboard focus remains visibly indicated.
+accessibility:
+  role: Link
+  name: Required from the link text.
+  keyboard:
+    Tab: Move focus to or from the link.
+    Enter: Follow the link.
+tokens:
+  control:
+    base:
+      foreground: semantic.color.foreground.brand.default
+    hover:
+      foreground: semantic.color.foreground.default
+    focus:
+      focus-ring: semantic.color.border.focus
+      radius: semantic.radius.control
+    variant.inline:
+      font-family: inherit
+      font-size: inherit
+      font-weight: inherit
+      line-height: inherit
+      letter-spacing: inherit
+    variant.standalone:
+      font-family: semantic.typography.label.default.fontFamily
+      font-size: semantic.typography.label.default.fontSize
+      font-weight: semantic.typography.label.default.fontWeight
+      line-height: semantic.typography.label.default.lineHeight
+      letter-spacing: semantic.typography.label.default.letterSpacing
+rationale:
+  - decision: Link consumes semantic tokens directly.
+    why: >-
+      ADR 0003. Brand foreground is audited as text on the page background, and focus already has a
+      semantic role. No component-token namespace.
+  - decision: Placement is a variant, not a size.
+    why: >-
+      Inline and standalone links differ in typography and underline. Destination semantics are the
+      same.
+  - decision: The underline is not a visual mapping.
+    why: >-
+      Text decoration is fixed component behavior, not a token channel. The behavior rules state
+      when it shows.
+  - decision: Link has no visited or disabled styling.
+    why: >-
+      Browsers limit visited styling to color and no semantic visited role exists. A link with no
+      destination is text.
