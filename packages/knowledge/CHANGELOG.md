@@ -2,23 +2,22 @@
 
 ## Unreleased
 
-This version breaks compatibility with earlier bundles and specs. See
-[ADR 0007](../../docs/adr/0007-simplified-knowledge-model.md).
+Breaking. The package is now a library over the authored files, and the record format is version 1
+(`urn:design-system-knowledge:record:1`). See [SPEC.md](SPEC.md) and
+[RFC 0002](../../docs/rfcs/0002-knowledge-layer-architecture.md).
 
-- `compiledSchemaVersion` is 8. Bundles at 7 or earlier fail to open, as does a manifest whose
-  digest does not match its content.
-- Binding records are gone. Each component spec has a `web:` section, and compiled components carry
-  `web`. The portable-contract and host-binding schemas and exports are gone; one record schema
-  holds both.
-- `contract.states` is a priority list and replaces `stateResolution`. Channels and states use
-  neutral names: `focus-ring`, `padding-horizontal`, `padding-vertical`, `motion`,
-  `motion-duration`, `motion-easing`, state `focus`, axis `reducedMotion`.
-- `related` is the only relation. Guideline `checks` are gone; contract rules are the review
-  checklist. `status`, `jobs`, `tags`, usage IDs, and `specVersion` are no longer authored.
-- Authored `mappings` and `visualCoverage` are rejected; both are compiler output.
-- Markdown pages add install steps, anatomy, states, events, CSS, the web API, and related records.
-  The package exports `./markdown/*`, `./assets/*`, and `./package.json`, and the catalog adds
-  `info.root` and `markdownPath(id)`.
+- `loadKnowledge`, `validateKnowledge`, and `renderRecord` read the content folder, validate it, and
+  answer `list`, `get`, `section`, `search`, `links`, `rules`, `tokens`, and `render` from an index in
+  memory. Errors name the file, line, and field.
+- There is no compile step and no `dist/`. The compiler, compiled record schema, digest, bundle, and
+  manifest are gone.
+- Removed exports: `./compile`, `./retrieve`, `./records`, `./manifest`, `./markdown/*`,
+  `./search-index`, `./assets/*`, `./schema`, and `./schema/compiled-knowledge-record.json`. New
+  exports: `./SPEC.md`. `./schema/knowledge-record.json` and `./package.json` remain.
+- Component records lose the `contract:` wrapper and the `web:` section. Links use the kinds in
+  the spec, and rule references are checked against real sections.
+- Removed the `build`, `prepack`, and `clean` scripts, and the dependencies `@stevegreco/design-system`,
+  `js-yaml`, `parse5`, and `unist-util-visit`.
 
 ## 0.0.1
 

@@ -1,0 +1,101 @@
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { typeFields } from "./schema/info.js";
+import { isObject } from "./util.js";
+
+/**
+ * Something a link can point at inside a record.
+ *
+ * @typedef {object} SectionEntry
+ * @property {string} title Heading text, rule id, field name, or annotation label.
+ * @property {unknown} content Markdown for headings; the rule, field value, or annotation otherwise.
+ * @property {"heading" | "rule" | "field" | "annotation"} kind
+ * @property {number} [depth] Heading level, for headings.
+ */
+
+/** GitHub-style heading slug: lowercase, punctuation removed, spaces to hyphens. */
+export function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s_-]/gu, "")
+    .trim()
+    .replace(/\s/gu, "-");
+}
+
+/**
+ * Every valid section of a record, keyed by section address, in a stable order.
+ *
+ * @param {Record<string, any>} data The authored record.
+ * @param {string | undefined} body Markdown body, for Markdown records.
+ * @returns {Map<string, SectionEntry>}
+ */
+export function buildSections(data, body) {
+  /** @type {Map<string, SectionEntry>} */
+  const sections = new Map();
+  const add = (address, entry) => {
+    if (!sections.has(address)) sections.set(address, entry);
+  };
+
+  if (data.type === "component") addComponentSections(data, add);
+  if (body) addHeadingSections(body, add);
+  if (data.type === "example" && Array.isArray(data.annotations)) {
+    for (const annotation of data.annotations) {
+      if (isObject(annotation) && typeof annotation.id === "string") {
+        add(annotation.id, {
+          title: annotation.label ?? annotation.id,
+          content: annotation,
+          kind: "annotation",
+        });
+      }
+    }
+  }
+  return sections;
+}
+
+function addComponentSections(data, add) {
+  const fields = new Set(typeFields("component"));
+  for (const [key, value] of Object.entries(data)) {
+    if (!fields.has(key)) continue;
+    add(key, { title: key, content: value, kind: "field" });
+    if (!isObject(value)) continue;
+    if (key === "anatomy" || key === "events") {
+      for (const [name, child] of Object.entries(value)) {
+        add(`${key}.${name}`, { title: name, content: child, kind: "field" });
+      }
+    } else if (key === "parameters") {
+      for (const [name, parameter] of Object.entries(value)) {
+        add(`parameters.${name}`, { title: name, content: parameter, kind: "field" });
+        for (const [option, meaning] of Object.entries(parameter?.values ?? {})) {
+          add(`parameters.${name}.${option}`, { title: option, content: meaning, kind: "field" });
+        }
+      }
+    }
+  }
+  for (const rule of Array.isArray(data.rules) ? data.rules : []) {
+    if (isObject(rule) && typeof rule.id === "string") {
+      add(rule.id, { title: rule.id, content: rule, kind: "rule" });
+    }
+  }
+}
+
+function addHeadingSections(body, add) {
+  const headings = fromMarkdown(body).children.filter((node) => node.type === "heading");
+  const used = new Map();
+  headings.forEach((heading, index) => {
+    const title = plainText(heading).trim();
+    const base = slugify(title);
+    if (!base) return;
+    const count = used.get(base) ?? 0;
+    used.set(base, count + 1);
+    const slug = count === 0 ? base : `${base}-${count}`;
+    const next = headings.slice(index + 1).find((later) => later.depth <= heading.depth);
+    const content = body
+      .slice(heading.position.end.offset, next ? next.position.start.offset : body.length)
+      .trim();
+    add(slug, { title, content, kind: "heading", depth: heading.depth });
+  });
+}
+
+function plainText(node) {
+  if (typeof node.value === "string") return node.value;
+  return (node.children ?? []).map(plainText).join("");
+}

@@ -1,91 +1,72 @@
-# @stevegreco/design-system-knowledge
+# Design system knowledge
 
-The source of truth for Ember & Sage components: what each one is, when to use it, how it behaves,
-which tokens it uses, and how the web component implements it. Authors edit files in `content/`.
-The build validates them and writes a bundle that the component package, the docs site, and agents
-read.
+`@stevegreco/design-system-knowledge` holds the design system's knowledge as plain files, and a small
+library that reads, validates, and queries them.
 
-## Where to edit
+- The format is defined in [SPEC.md](SPEC.md) and the JSON Schema in
+  [`src/schema/knowledge-record.schema.json`](src/schema/knowledge-record.schema.json).
+- The reasoning is in [RFC 0002](../../docs/rfcs/0002-knowledge-layer-architecture.md).
 
-| To change | Edit |
-| --- | --- |
-| A component: usage, rules, parameters, states, tokens, and its web element | `content/components/<name>/<name>.spec.yaml` |
-| Guidance across components, such as action hierarchy | `content/patterns/*.md` |
-| How-to guidance for one job, such as implementing Button | `content/guidelines/*.md` |
-| An annotated example | `content/examples/*.md` |
+There is no build step. The library reads the authored files directly and keeps an index in memory.
+A command-line tool and an MCP server are coming in this package and will call the same library.
 
-A spec reads top to bottom by audience. Usage and content rules come first, then the contract,
-then the `web:` section. Designers and writers can stop before `web:`.
+## Where to edit content
 
-Before adding a component or variant, read `content/guidelines/compose-or-propose.md`, then
-[`docs/knowledge/new-component.md`](../../docs/knowledge/new-component.md). The Checkbox spec is
-the most complete one to copy.
+Edit the files in [`content/`](content). Components are `*.spec.yaml`. Patterns, guidelines, and
+examples are Markdown files with front matter that has an `id`. Folders are up to you. See
+[SPEC.md](SPEC.md) for every field.
 
-Write only what you mean. Each record needs `id`, `type`, `title`, and `summary`. The build fills
-the rest: `status` defaults to `draft`, `jobs` follows from the type, the record's own name is
-added to its `tags`, and the file itself becomes its authored source. List other files in
-`sources` only when the record reads them, such as a token file.
+Validate after a change:
 
-Each spec starts with a `yaml-language-server` comment that names the schema. With the YAML
-extension that `.vscode/extensions.json` recommends, the editor completes fields and marks
-mistakes as you type.
-
-## Build and check
-
-From the repository root:
-
-```bash
-pnpm exec turbo run build --filter=@stevegreco/design-system-knowledge
-pnpm exec turbo run test --filter=@stevegreco/design-system-components
-pnpm exec turbo run dev --filter=documentation
+```sh
+pnpm --filter @stevegreco/design-system-knowledge test
 ```
 
-The first command validates every record. Each error names the file, line, and field, once. The
-second checks that the web components still match their specs. The third serves the docs site,
-where a component page such as `/components/button` renders from the bundle.
+The tests load all content and fail on any issue. Each issue names the file, the line when known,
+the JSON pointer of the field, and the problem.
 
-## Authored and generated
-
-Everything under `content/` is authored. Everything under `dist/` is generated, so do not edit it.
-The component package's `src/*.d.ts` and `src/index.js` are also generated from the bundle, and CI
-fails when they are stale. Component CSS in `packages/components/src/*.css` is written by hand, and
-tests fail when it reads a token its spec does not map.
-
-## Reading the bundle
+## Library
 
 ```js
-import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
+import { loadKnowledge, validateKnowledge } from "@stevegreco/design-system-knowledge";
 
-const catalog = await openCatalog();
-catalog.get("component.button"); // the full compiled record
-catalog.related("component.button"); // records it lists in related, and records that list it
-catalog.search("destructive button"); // ranked hits
-catalog.list({ type: "guideline" });
-catalog.markdownPath("component.button"); // the readable Markdown file
+// Throws a KnowledgeError, with `error.issues`, when any content is invalid.
+const knowledge = await loadKnowledge();
+
+// Or collect the issues instead of throwing.
+const { issues, recordCount } = await validateKnowledge({ contentDir: "./my-content" });
 ```
 
-`markdown/<id>.md` is a readable page for each record, and is also exported as
-`@stevegreco/design-system-knowledge/markdown/<id>.md`. A component page is enough to design,
-build, or review with the component.
+Options: `contentDir` (default: the content shipped in this package) and `resolveToken`, which maps a
+token reference to values, such as `{ light: "#fff", dark: "#000" }`.
 
-## Terms
+```js
+knowledge.list({ type: "component", tag: "action", status: "stable" }); // summaries, sorted by id
+knowledge.get("component.button"); // the whole record, frozen
 
-| Term | Meaning |
-| --- | --- |
-| Record | One file in `content/`, compiled to one object with an id such as `component.button`. |
-| Spec | A component record, written as `<name>.spec.yaml`. |
-| Contract | The part of a spec that holds on every platform, in Figma and in code: parameters, anatomy, states, rules, and visuals. |
-| Visuals | Which token each part uses for each variant and state. The build expands them into `mappings`. |
-| States | A component's states, highest priority first. When two set the same channel, the earlier wins. |
-| Web section | The `web:` part of a spec: the element's tag, attributes, events, and parts. |
-| Related | The records to read alongside this one. A link in either record counts for both. |
-| Bundle | The build output in `dist/public`: `records.json`, `search-index.json`, `manifest.json`, and Markdown. |
+knowledge.section("pattern.action-hierarchy#assign-emphasis"); // heading, rule, field, or annotation
+knowledge.section("component.button#label-describes-result");
 
-`schemaVersion` (1) is the authored format and the build fills it. `compiledSchemaVersion` (8) is
-the bundle format, and `openCatalog` refuses a bundle built with another one. See
-[CHANGELOG.md](CHANGELOG.md) for format changes.
+knowledge.search("destructive action", { type: "pattern", tags: ["action"], limit: 5 });
+// [{ id, type, title, summary, tags, status, score, matches }]
 
-## Design documents
+knowledge.links("component.link", { kind: "alternative-to", direction: "out" });
+// Inverses are included: button lists link as an alternative, so link lists button as alternative-to.
 
-[`docs/knowledge/`](../../docs/knowledge/README.md) holds the requirements, content model, and
-decision records behind this package.
+knowledge.rules({ topic: "accessibility", level: "must", query: "focus" });
+// [{ address: "component.button#a11y-visible-focus", ... }], must first
+
+knowledge.tokens("component.button", { condition: "variant.primary + hover" });
+// [{ part, condition, property, token, values? }]
+
+knowledge.render("component.button"); // Markdown for a record
+knowledge.render("pattern.action-hierarchy#choose-button-or-link"); // or one section
+```
+
+`validateKnowledge`, `renderRecord(knowledge, target)`, `KnowledgeError`, `schema`, and
+`DEFAULT_CONTENT_DIR` are also exported. `render` throws when the record or section does not exist.
+
+Links come from three places: the `links` field, `usage.avoid[].instead` (an `alternative` link), and
+rule `references` (`follows` for a pattern or guideline, `related` otherwise). `links` returns links
+from the record (`direction: "out"`), links to it (`"in"`), or `"both"`. The default, `"out"`, is
+complete on its own because every link is stored with its inverse.

@@ -5,40 +5,27 @@
   "license": "ISC",
   "author": "Steve Greco",
   "files": [
-    "dist/public",
-    "src"
+    "src",
+    "content",
+    "SPEC.md",
+    "README.md"
   ],
   "type": "module",
   "exports": {
     ".": "./src/index.js",
-    "./compile": "./src/compile/index.js",
-    "./retrieve": "./src/retrieve/index.js",
-    "./schema": "./src/schema/index.js",
     "./schema/knowledge-record.json": "./src/schema/knowledge-record.schema.json",
-    "./manifest": "./dist/public/manifest.json",
-    "./markdown/*": "./dist/public/markdown/*",
-    "./assets/*": "./dist/public/assets/*",
-    "./package.json": "./package.json",
-    "./records": "./dist/public/records.json",
-    "./search-index": "./dist/public/search-index.json",
-    "./schema/compiled-knowledge-record.json": "./dist/public/schema/compiled-knowledge-record.json"
+    "./SPEC.md": "./SPEC.md",
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "node build-knowledge.js",
-    "test": "vitest run",
-    "prepack": "pnpm run build"
+    "test": "vitest run"
   },
   "dependencies": {
-    "@stevegreco/design-system": "workspace:*",
     "ajv": "^8.20.0",
-    "js-yaml": "^4.3.1",
     "mdast-util-from-markdown": "^2.0.3",
-    "parse5": "^7.3.0",
-    "unist-util-visit": "^5.1.0",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
