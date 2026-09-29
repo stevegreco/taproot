@@ -55,9 +55,5 @@ export function assertWorkspaceBuilds(): void {
   assertSpecifier("@stevegreco/design-system/tokens/primitives", "@stevegreco/design-system");
   assertSpecifier("@stevegreco/design-system/tokens/semantic-light", "@stevegreco/design-system");
   assertSpecifier("@stevegreco/design-system/flatten", "@stevegreco/design-system");
-  assertSpecifier(
-    "@stevegreco/design-system-knowledge/manifest",
-    "@stevegreco/design-system-knowledge",
-  );
   assertComponentStyles();
 }

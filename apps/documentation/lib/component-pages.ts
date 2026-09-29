@@ -1,11 +1,12 @@
 /**
- * `/components/<slug>` pages, rendered from the catalog.
+ * `/components/<slug>` pages, rendered from the knowledge base and the docs
+ * implementation files.
  *
- * Every public component with a web section gets a page: title and description
- * from the record, the import snippet from its package and
- * registration export, the usage snippet from its `example`, the
- * live example from `examples/<slug>.tsx`, and the `<ComponentKnowledge>`
- * sections that have content.
+ * Every knowledge component with an `implementation/<slug>.md` file gets a page:
+ * title and description from the record, the import snippet from the
+ * implementation's package and registration export, the usage snippet from its
+ * `usage`, the live example from `examples/<slug>.tsx`, and the
+ * `<ComponentKnowledge>` sections that have content.
  *
  * `docs/components/<slug>.mdx` is optional prose, shown as the preview
  * introduction. The filesystem source excludes those files so they only render
@@ -104,14 +105,14 @@ function pageEntry(slug: string, prosePath: string | undefined): SourceEntry {
   };
 }
 
-/** Every component page, in catalog order. */
+/** Every component page, in implementation file-name order. */
 export function componentPageEntries(): SourceEntry[] {
   const slugs = componentSlugs();
   const prose = proseFiles();
   const orphans = [...prose.keys()].filter((slug) => !slugs.includes(slug));
   if (orphans.length > 0) {
     throw new Error(
-      `docs/${PROSE_FOLDER}/ has prose for ${orphans.join(", ")}, but the catalog has no public component with a web section for it. Component pages render from the catalog; that folder holds only optional preview prose.`,
+      `docs/${PROSE_FOLDER}/ has prose for ${orphans.join(", ")}, but there is no implementation/<slug>.md file for it. Component pages render from implementation files and their knowledge records; that folder holds only optional preview prose.`,
     );
   }
   return slugs.map((slug) => pageEntry(slug, prose.get(slug)));

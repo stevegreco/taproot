@@ -1,31 +1,33 @@
 ---
-id: guideline.text-field-implementation
-type: guideline
-title: Implement text fields
-summary: Implement a labeled text field with hint, error, and form submission.
-tags:
-  - form
-  - implementation
-related:
-  - component.text-field
-docsSections:
-  behavior:
-    section: set-form-behavior-deliberately
-    heading: Forms
+component: component.text-field
+package: "@stevegreco/design-system-components"
+tagName: ds-text-field
+defineExport: defineTextField
+usage: |
+  <form>
+    <ds-text-field label="Email" name="email" type="email" hint="Used for sign-in." required></ds-text-field>
+    <ds-button type="submit">Continue</ds-button>
+  </form>
+api:
+  - { name: label, kind: attribute, parameter: label }
+  - { name: hint, kind: attribute, parameter: hint }
+  - { name: error, kind: attribute, parameter: error }
+  - { name: type, kind: attribute, parameter: type }
+  - { name: name, kind: attribute, parameter: name }
+  - { name: value, kind: attribute, parameter: value }
+  - { name: placeholder, kind: attribute, parameter: placeholder }
+  - { name: autocomplete, kind: attribute, parameter: autocomplete }
+  - { name: disabled, kind: attribute, parameter: disabled }
+  - { name: required, kind: attribute, parameter: required }
+  - name: form
+    kind: property
+    type: "HTMLFormElement | null"
+    description: The associated form, including association across the shadow boundary.
+  - { name: input, kind: event, event: input }
+  - { name: change, kind: event, event: change }
 ---
 
-## Register and render Text field
-
-Install the token and component packages, then register Text field once:
-
-```js
-import "@stevegreco/design-system/css";
-import { defineTextField } from "@stevegreco/design-system-components/text-field";
-
-defineTextField();
-```
-
-## Set form behavior deliberately
+## Forms
 
 Text field defaults to `type="text"`. Set `name` so the value is included when the form submits.
 Pair it with Button to submit:

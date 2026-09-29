@@ -1,41 +1,43 @@
 ---
-id: guideline.button-implementation
-type: guideline
-title: Implement button actions
-summary: Implement actions with the Button contract, explicit form behavior, and semantic variants.
-tags:
-  - action
-  - form
-  - implementation
-related:
-  - pattern.action-hierarchy
-  - component.button
-docsSections:
-  behavior:
-    section: set-form-behavior-deliberately
-    heading: Forms
+component: component.button
+package: "@stevegreco/design-system-components"
+tagName: ds-button
+defineExport: defineButton
+usage: |
+  <ds-button variant="primary">Save changes</ds-button>
+api:
+  - name: variant
+    kind: attribute
+    parameter: variant
+  - name: size
+    kind: attribute
+    parameter: size
+  - name: type
+    kind: attribute
+    parameter: action
+    values:
+      activate: button
+      submit: submit
+      reset: reset
+  - name: disabled
+    kind: attribute
+    parameter: disabled
+  - name: full-width
+    kind: attribute
+    parameter: fullWidth
+  - name: aria-label
+    kind: attribute
+    parameter: accessibleName
+  - name: form
+    kind: property
+    type: "HTMLFormElement | null"
+    description: The associated form, including association across the shadow boundary.
+  - name: click
+    kind: event
+    event: activate
 ---
 
-## Register and render Button
-
-Install the token and component packages, then register Button once:
-
-```js
-import "@stevegreco/design-system/css";
-import { defineButton } from "@stevegreco/design-system-components/button";
-
-defineButton();
-```
-
-Use `<ds-button>` for an action in the current view:
-
-```html
-<ds-button variant="primary">Save changes</ds-button>
-```
-
-Use [Link](../components/link/link.spec.yaml) when activation navigates to another location.
-
-## Set form behavior deliberately
+## Forms
 
 Button defaults to `type="button"`. Set the type when it participates in a form:
 

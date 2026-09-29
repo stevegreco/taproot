@@ -1,17 +1,22 @@
 import assert from "node:assert/strict";
-import { readdirSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "vitest";
 import { fileURLToPath } from "node:url";
-import { openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
+import { loadKnowledge } from "@stevegreco/design-system-knowledge";
 import {
+  assembleSlices,
   componentKnowledgeMarkdown,
   componentSlugs,
   DocsKnowledgeError,
   loadComponentSlice,
-  projectTogether,
-  variantGuidance,
 } from "../lib/component-knowledge";
+import {
+  ImplementationError,
+  loadImplementations,
+  parseImplementation,
+} from "../lib/implementation";
 import { componentPageEntries } from "../lib/component-pages";
 
 const docsRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -24,7 +29,7 @@ function pageSource(slug: string): string {
   return source;
 }
 
-test("button slice variants and api come from the public catalog contract", () => {
+test("button slice variants and api come from the knowledge record and the implementation file", () => {
   const slice = loadComponentSlice("button");
 
   assert.deepEqual(
@@ -39,8 +44,8 @@ test("button slice variants and api come from the public catalog contract", () =
   );
   assert.match(
     slice.introMarkdown,
-    /Use Link instead/,
-    "intro uses usage guidance from the compiled contract",
+    /Use \[Link\]\(\/components\/link\) instead\. Links provide native navigation semantics\./,
+    "intro links the alternative component's page and keeps the reason",
   );
   assert.match(
     slice.introMarkdown,
@@ -53,7 +58,13 @@ test("button slice variants and api come from the public catalog contract", () =
     "avoid items are not bare intro paragraphs",
   );
   assert.match(slice.behaviorMarkdown, /Write the label/, "label guidance sits with usage");
+  assert.match(slice.behaviorMarkdown, /### Forms/, "the implementation guide's Forms section");
   assert.match(slice.behaviorMarkdown, /type="submit"/, "form behavior stays with usage");
+  assert.doesNotMatch(
+    slice.behaviorMarkdown,
+    /### Register and render/,
+    "installation comes from the page's Import section, not the guide",
+  );
   assert.match(
     slice.behaviorMarkdown,
     /action hierarchy pattern\]\(#using-together\)/,
@@ -61,7 +72,7 @@ test("button slice variants and api come from the public catalog contract", () =
   );
   assert.ok(
     slice.api.some((row) => row.name === "aria-label"),
-    "api includes the aria-label attribute from the contract",
+    "api includes the aria-label attribute from the implementation",
   );
   assert.ok(
     slice.api.some((row) => row.name === "form" && row.kind === "property"),
@@ -71,6 +82,15 @@ test("button slice variants and api come from the public catalog contract", () =
     slice.api.some((row) => row.name === "click" && row.kind === "event"),
     "api includes the click event from the contract",
   );
+  const type = slice.api.find((row) => row.name === "type");
+  assert.ok(type);
+  assert.deepEqual(
+    type.values.map((value) => value.name),
+    ["button", "submit", "reset"],
+    "the type attribute renames the spec's action values",
+  );
+  assert.equal(type.defaultDisplay, "button", "the default is renamed with the values");
+  assert.equal(type.typeDisplay, '"button" | "submit" | "reset"');
   const variant = slice.api.find((row) => row.name === "variant");
   assert.ok(variant);
   assert.deepEqual(
@@ -78,17 +98,27 @@ test("button slice variants and api come from the public catalog contract", () =
     ["primary", "secondary", "ghost", "danger"],
   );
   assert.equal(variant.description, "", "enum members keep value text off the row description");
-  assert.equal(slice.accessibility.keyboard.length, 3, "keyboard bindings come from the contract");
+  assert.equal(slice.accessibility.keyboard.length, 3, "keyboard bindings come from the record");
   assert.ok(slice.together, "related pattern and example project into using-together");
+  assert.equal(
+    slice.together?.example?.src,
+    "/knowledge-assets/example.action-hierarchy.settings/action-hierarchy-settings.svg",
+    "example image is a docs URL under the example id",
+  );
   assert.ok(
-    slice.together?.example?.src.startsWith("/knowledge-assets/"),
-    "example image is a docs URL, not a bundlePath",
+    existsSync(
+      join(
+        docsRoot,
+        "public/knowledge-assets/example.action-hierarchy.settings/action-hierarchy-settings.svg",
+      ),
+    ),
+    "the example image is copied into public",
   );
   assert.ok(
     slice.together && slice.together.patterns[0].avoid.length > 0,
     "pattern Avoid items stay with using-together",
   );
-  assert.equal(slice.review?.checks.length, 10, "the review checklist lists every contract rule");
+  assert.equal(slice.review?.checks.length, 10, "the review checklist lists every rule");
   assert.deepEqual(
     slice.review?.checks.slice(0, 2).map((check) => [check.id, check.level]),
     [
@@ -106,8 +136,8 @@ test("button knowledge markdown keeps ghost and aria-label without reprinting th
   assert.match(markdown, /\/knowledge-assets\//, "example image is a docs URL");
   assert.doesNotMatch(
     markdown,
-    /assets\/example\.action-hierarchy\.settings/,
-    "markdown must not leak bundle-relative asset paths",
+    /\]\(assets\//,
+    "markdown must not leak record-relative asset paths",
   );
   assert.match(
     markdown,
@@ -127,12 +157,12 @@ test("button knowledge markdown keeps ghost and aria-label without reprinting th
   assert.doesNotMatch(markdown, /^must /m, "review markdown does not lead with severity codes");
 });
 
-test("badge variant examples use the host tag and status labels", () => {
+test("badge variant examples use the implementation tag and status labels", () => {
   const slice = loadComponentSlice("badge");
   const danger = slice.variants.find((variant) => variant.name === "danger");
 
   assert.equal(slice.tagName, "ds-badge");
-  assert.ok(danger, "contract includes danger");
+  assert.ok(danger, "the record includes danger");
   assert.equal(danger.exampleLabel, "Failed");
   assert.equal(danger.exampleHtml, '<ds-badge variant="danger">Failed</ds-badge>');
   assert.doesNotMatch(
@@ -142,49 +172,49 @@ test("badge variant examples use the host tag and status labels", () => {
   );
 });
 
-test("the badge page renders variants, api, and accessibility from the catalog", async () => {
-  const publicRoot = dirname(
-    fileURLToPath(import.meta.resolve("@stevegreco/design-system-knowledge/manifest")),
-  );
-  const catalog = await openCatalog(publicRoot, { expectVisibility: "public" });
-  const record = catalog.get("component.badge");
-  const variantValues = record.contract.parameters.variant.values;
+test("the badge page renders variants, api, and accessibility from the knowledge base", async () => {
+  const knowledge = await loadKnowledge();
+  const record = knowledge.get("component.badge") as unknown as {
+    parameters: { variant: { values: Record<string, string> } };
+    rules: { topic: string; statement: string }[];
+  };
+  const variantValues = record.parameters.variant.values;
   const slice = loadComponentSlice("badge");
   const danger = slice.variants.find((variant) => variant.name === "danger");
   const markdown = componentKnowledgeMarkdown("badge");
   const source = pageSource("badge");
   const banner = source.match(/^---\n([\s\S]*?)\n---/);
 
-  assert.ok(danger, "contract includes danger");
+  assert.ok(danger, "the record includes danger");
   assert.deepEqual(
     Object.fromEntries(slice.variants.map((variant) => [variant.name, variant.description])),
     variantValues,
-    "variant copy tracks the compiled contract",
+    "variant copy tracks the record",
   );
   assert.deepEqual(
     slice.accessibility.requirements,
-    record.contract.accessibility.requirements.map((item) => item.statement),
-    "accessibility tracks the compiled contract",
+    record.rules.filter((rule) => rule.topic === "accessibility").map((rule) => rule.statement),
+    "accessibility tracks the record's accessibility rules",
   );
   assert.equal(
     danger.description,
     "Failed or blocked status, not a destructive action.",
-    "danger meaning comes from the component contract",
+    "danger meaning comes from the component record",
   );
   assert.match(markdown, /not a destructive action/);
   assert.ok(
     slice.api.some((row) => row.name === "variant"),
-    "api includes the variant attribute from the contract",
+    "api includes the variant attribute",
   );
   assert.equal(
     slice.api.some((row) => row.name === "hidden"),
     false,
-    "Badge does not publish hidden; native hiding is a host attribute, not a contract parameter",
+    "Badge does not publish hidden; native hiding is a host attribute, not a parameter",
   );
   assert.equal(slice.accessibility.keyboard.length, 0, "Badge has no keyboard bindings");
   assert.ok(
     slice.accessibility.requirements.some((item) => /live-region/.test(item)),
-    "accessibility keeps the live-region rule from the contract",
+    "accessibility keeps the live-region rule from the record",
   );
 
   assert.ok(banner, "the badge page has YAML frontmatter");
@@ -261,7 +291,11 @@ test("link slice ties placement variants and Button to the action hierarchy", ()
     slice.together?.patterns.map((pattern) => pattern.title),
     ["Action hierarchy"],
   );
-  assert.match(slice.introMarkdown, /Use Button instead\./, "Button is the stated alternative");
+  assert.match(
+    slice.introMarkdown,
+    /Use \[Button\]\(\/components\/button\) instead\./,
+    "Button is the stated alternative, linked to its page",
+  );
   assert.match(
     slice.behaviorMarkdown,
     /\[action hierarchy pattern\]\(#using-together\)/,
@@ -289,36 +323,16 @@ test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
     DocsKnowledgeError,
     "component.button is a record id, not a page slug",
   );
-  assert.equal(
-    loadComponentSlice("badge").title,
-    "Badge",
-    "public component.badge is available to docs",
-  );
+  assert.equal(loadComponentSlice("badge").title, "Badge", "component.badge is available to docs");
   assert.throws(
     () => loadComponentSlice("dialog"),
     DocsKnowledgeError,
-    "missing public component records fail the docs build",
+    "a component without an implementation file has no page",
   );
   assert.throws(
     () => componentKnowledgeMarkdown("button", "hierarchy"),
     DocsKnowledgeError,
     "unknown page sections fail instead of dumping related records",
-  );
-});
-
-test("component record bodies keep bundle-root destinations for docs rewriting", async () => {
-  const publicRoot = dirname(
-    fileURLToPath(import.meta.resolve("@stevegreco/design-system-knowledge/manifest")),
-  );
-  const catalog = await openCatalog(publicRoot, { expectVisibility: "public" });
-  const body = catalog.get("component.button").body;
-  assert.match(body, /\]\(markdown\/pattern\.action-hierarchy\.md#assign-emphasis\)/);
-  assert.match(
-    body.replace(/\]\(markdown\/([^)]+?)\.md(?:#[^)]*)?\)/g, (_match, id) => {
-      const type = id.slice(0, id.indexOf("."));
-      return type === "pattern" ? "](#using-together)" : `](#${id})`;
-    }),
-    /action hierarchy pattern\]\(#using-together\)/,
   );
 });
 
@@ -370,46 +384,77 @@ test("a page imports, registers, and shows usage from the binding", () => {
   assert.doesNotMatch(source, /^## Variants$/m, "no heading for a section without content");
 });
 
-const scratchPattern = {
-  id: "pattern.scratch",
-  title: "Scratch",
-  summary: "Scratch summary.",
-  relations: { guides: ["component.scratch"] },
-  body: "## Assign emphasis\n\n### Primary\n\nScratch primary guidance.\n\n## Avoid\n\n- Scratch item",
-};
-
-test("variant guidance is opt-in, not inferred from pattern headings", () => {
-  assert.equal(
-    variantGuidance("component.scratch", [scratchPattern]).size,
-    0,
-    "a ### Primary heading alone guides nothing",
+test("a knowledge component gets a page only when it has an implementation file", async () => {
+  const knowledge = await loadKnowledge();
+  const components = knowledge
+    .list({ type: "component" })
+    .map((record) => record.id.slice("component.".length));
+  const implemented = loadImplementations(join(docsRoot, "implementation/")).map((item) =>
+    item.component.slice("component.".length),
   );
 
-  const optedIn = {
-    ...scratchPattern,
-    variantGuidance: { "component.scratch": { primary: "primary" } },
-  };
-  assert.equal(
-    variantGuidance("component.scratch", [optedIn]).get("primary"),
-    "Scratch primary guidance.",
+  for (const slug of implemented) assert.ok(components.includes(slug), `component.${slug} exists`);
+  assert.deepEqual([...componentSlugs()].sort(), [...implemented].sort());
+});
+
+test("an implementation file for a component that does not exist fails with its file name", () => {
+  const ghost = parseImplementation(
+    "---\ncomponent: component.ghost\npackage: pkg\ntagName: ds-ghost\ndefineExport: defineGhost\napi:\n  - { name: x, kind: attribute, type: string, description: X. }\n---\n",
+    "implementation/ghost.md",
   );
-  assert.equal(
-    variantGuidance("component.other", [optedIn]).size,
-    0,
-    "another component with the same variant name gets nothing",
+  return loadKnowledge().then((knowledge) => {
+    assert.throws(
+      () => assembleSlices(knowledge, [ghost], mkdtempSync(join(tmpdir(), "assets-"))),
+      /implementation\/ghost\.md: component "component\.ghost" is not a component record/,
+    );
+  });
+});
+
+test("an api table that skips a knowledge parameter or event fails the build", async () => {
+  const knowledge = await loadKnowledge();
+  const badge = parseImplementation(
+    "---\ncomponent: component.badge\npackage: pkg\ntagName: ds-badge\ndefineExport: defineBadge\napi:\n  - { name: hidden, kind: attribute, type: boolean, description: Hides. }\n---\n",
+    "implementation/badge.md",
+  );
+  assert.throws(
+    () => assembleSlices(knowledge, [badge], mkdtempSync(join(tmpdir(), "assets-"))),
+    /does not cover component\.badge parameter "variant"/,
   );
 });
 
-test("using-together keeps every related pattern", () => {
-  const together = projectTogether(
-    [scratchPattern, { ...scratchPattern, id: "pattern.second", title: "Second" }],
-    undefined,
+test("implementation front matter is validated with the file name in every error", () => {
+  const parse = (frontMatter: string) =>
+    parseImplementation(`---\n${frontMatter}\n---\n`, "implementation/x.md");
+  const valid =
+    "component: component.x\npackage: pkg\ntagName: ds-x\ndefineExport: defineX\napi:\n  - { name: a, kind: attribute, parameter: a }";
+
+  assert.doesNotThrow(() => parse(valid));
+  assert.throws(
+    () => parseImplementation("no front matter", "implementation/x.md"),
+    /x\.md: must start with YAML/,
   );
-  assert.deepEqual(
-    together?.patterns.map((pattern) => [pattern.id, pattern.avoid]),
-    [
-      ["pattern.scratch", ["Scratch item"]],
-      ["pattern.second", ["Scratch item"]],
-    ],
+  assert.throws(() => parse(valid.replace("component.x", "button")), /x\.md: component "button"/);
+  assert.throws(() => parse(valid.replace("ds-x", "dsx")), /tagName "dsx"/);
+  assert.throws(() => parse(`${valid}\nextra: 1`), /unknown field "extra"/);
+  assert.throws(() => parse(valid.replace("kind: attribute", "kind: slot")), /kind must be one of/);
+  assert.throws(
+    () => parse(valid.replace("parameter: a", "type: string")),
+    /needs "parameter".*or both "type" and "description"/,
   );
+  assert.throws(
+    () => parse(`${valid}\n  - { name: a, kind: attribute, parameter: b }`),
+    /lists the attribute "a" twice/,
+  );
+  assert.throws(() => parse(valid.replace("api:", "api: []\nold:")), ImplementationError);
+});
+
+test("every implementation file's api rows resolve against its record", () => {
+  for (const slug of componentSlugs()) {
+    const slice = loadComponentSlice(slug);
+    assert.ok(slice.api.length > 0, `${slug} has an api table`);
+    assert.ok(
+      readdirSync(join(docsRoot, "implementation")).includes(`${slug}.md`),
+      `${slug} has an implementation file`,
+    );
+  }
 });

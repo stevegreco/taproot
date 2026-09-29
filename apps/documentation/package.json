@@ -19,7 +19,8 @@
     "astro": "^7.3.4",
     "blume": "^1.7.3",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
