@@ -39,22 +39,20 @@ defineButton("acme-button"); // <acme-button>
 ```
 
 Every `src/<name>.js` is published as the subpath `…/<name>`, with types from
-`src/<name>.d.ts`. The build generates those types and the package-root barrel,
-`src/index.js` and `src/index.d.ts`, from the knowledge bindings and contracts;
-do not edit them by hand. For JSX, map `ElementAttributes` (exported from the
+`src/<name>.d.ts`. Those types and the package-root barrel, `src/index.js` and
+`src/index.d.ts`, are written by hand. For JSX, map `ElementAttributes` (exported from the
 package root) onto your framework's intrinsic elements. Helpers that are not public API belong in `src/internal/`,
 which the `exports` map blocks. `…/index` is blocked too; import the package
 root for the barrel.
 
 ## Components
 
-Each component's attributes, parts, and guidance come from its knowledge record
-(`packages/knowledge/content/components/<name>/`) and binding
-(`packages/knowledge/content/bindings/<name>.web-component.md`). The docs site
-renders them at `/components/<name>`, with the live example from
+Each component implements the technology-neutral contract in
+`packages/knowledge/content/components/<name>/<name>.spec.yaml`. The docs site
+renders it at `/components/<name>`, with the live example from
 `apps/documentation/examples/<name>.tsx`.
 
-Every attribute in a binding has a matching property (`el.variant`,
+Every attribute has a matching property (`el.variant`,
 `el.disabled`, …). Programmatic `focus()` and `blur()` forward to the inner
 control. The host honors the native `hidden` attribute.
 
@@ -64,8 +62,7 @@ control. The host honors the native `hidden` attribute.
 control silently fails to submit. Form controls here are
 [form-associated custom elements](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals):
 they use `ElementInternals` to find their form, contribute a value, report
-validity, and follow an ancestor disabled `<fieldset>`. Their bindings declare
-this under `formAssociation`.
+validity, and follow an ancestor disabled `<fieldset>`. 
 
 ```html
 <form>
@@ -78,7 +75,7 @@ this under `formAssociation`.
 
 ## Styling escape hatch
 
-Each component exposes its inner surface as a CSS part named in its binding:
+Each component exposes its inner surface as a CSS part named in its source:
 
 ```css
 ds-button::part(button) {
@@ -88,12 +85,10 @@ ds-button::part(button) {
 
 ## Tokens consumed
 
-A component whose knowledge record declares `tokenRef` consumes its published
-`--component-<name>-*` contract; Button is the example. Every component token
-aliases a current semantic or primitive token, so themes still flow through the
-semantic layer while consumers gain a stable customization boundary. Every other
-component consumes `--semantic-*` tokens directly. `test/mapping-css.test.js`
-enforces both rules for every component record.
+Button consumes its published `--component-button-*` contract. Every component
+token aliases a current semantic or primitive token, so themes still flow
+through the semantic layer while consumers gain a stable customization
+boundary. Every other component consumes `--semantic-*` tokens directly.
 
 ## Styles are authored as real CSS
 
@@ -117,34 +112,18 @@ on save.
 
 ## Tests
 
-The component contract runs in real Chromium through Vitest Browser Mode.
-From the repository root:
+Tests run in real Chromium through Vitest Browser Mode. From the repository root:
 
 ```bash
 pnpm exec turbo run test --filter=@stevegreco/design-system-components
 ```
 
 Browser tests load the published token stylesheet (`test/setup/tokens.js`), so
-every `var(--…)` resolves as it does on a page. Three checks run for every
-component record in the knowledge catalog:
-
-- `test/contract-mappings.test.js` renders each configuration in each mapped
-  state, in light and dark themes, and compares each part's computed value per
-  channel with the token `resolveMappings()` picks. Hover, pressed, and
-  focus-visible are forced through CDP; disabled and invalid are host
-  attributes.
-- `test/mapping-css.test.js` checks that the stylesheet names each mapped token
-  in a matching declaration, and that it stays on its token tier. This stays
-  alongside the computed check: a hard-coded value equal to the token in both
-  themes would pass the computed check but fail this one.
-- `test/contract-rules.test.js` is the rule census. Every `must` rule in a
-  contract's behavior and accessibility requirements needs a test in
-  `test/<name>.test.js` whose title starts with the rule ID in brackets, for
-  example `test("[inline-underline] …")`. A rule no test can prove needs a
-  reason in `test/unautomated-rules.js` instead. `should` and `may` rules are
-  reported, not enforced.
-
-Each component also has its own `test/<name>.test.js` for behavior.
+every `var(--…)` resolves as it does on a page. `test/host-checks.test.js` runs
+the shared host behavior (alias registration, `hidden`, parts, focus, events,
+disabled handling, keyboard activation, `form`, enum properties, upgrade order)
+against a table of components; add a row when adding a component. Each
+component also has its own `test/<name>.test.js` for behavior.
 
 ## Local development
 

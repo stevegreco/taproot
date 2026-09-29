@@ -1,18 +1,20 @@
 /**
- * The package root is a generated barrel (build-sources.js). Importing it
- * registers every component under its binding's default tag name.
+ * Importing the package root registers every component under its default tag
+ * name and exports its define helper.
  */
 import { expect, test } from "vitest";
-import { commands } from "vitest/browser";
 
 import * as root from "../src/index.js";
 
-const components = await commands.contractCases();
+const components = [
+  ["ds-badge", "defineBadge"],
+  ["ds-button", "defineButton"],
+  ["ds-checkbox", "defineCheckbox"],
+  ["ds-link", "defineLink"],
+  ["ds-text-field", "defineTextField"],
+];
 
-test.each(components.map((component) => [component.tagName, component]))(
-  "importing the package root registers <%s>",
-  (tagName, component) => {
-    expect(customElements.get(tagName)).toBeDefined();
-    expect(root[component.defineExport]).toBeTypeOf("function");
-  },
-);
+test.each(components)("importing the package root registers <%s>", (tagName, defineExport) => {
+  expect(customElements.get(tagName)).toBeDefined();
+  expect(root[defineExport]).toBeTypeOf("function");
+});
