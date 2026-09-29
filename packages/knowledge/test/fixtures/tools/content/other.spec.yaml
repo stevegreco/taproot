@@ -1,0 +1,18 @@
+id: component.other
+type: component
+title: Other
+summary: Use Other for testing.
+description: A test component.
+usage:
+  do:
+    - Test things.
+  avoid:
+    - situation: Do a thing Other cannot.
+      instead: component.thing
+      why: Thing can.
+    - situation: Do something not built yet.
+      instead: a future component
+anatomy:
+  control:
+    role: interactive-surface
+    description: The control.

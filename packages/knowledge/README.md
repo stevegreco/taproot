@@ -8,7 +8,8 @@ library that reads, validates, and queries them.
 - The reasoning is in [RFC 0002](../../docs/rfcs/0002-knowledge-layer-architecture.md).
 
 There is no build step. The library reads the authored files directly and keeps an index in memory.
-A command-line tool and an MCP server are coming in this package and will call the same library.
+A command-line tool and a local MCP server call the same library. See [CLI](#cli) and
+[MCP server](#mcp-server).
 
 ## Where to edit content
 
@@ -70,3 +71,52 @@ Links come from three places: the `links` field, `usage.avoid[].instead` (an `al
 rule `references` (`follows` for a pattern or guideline, `related` otherwise). `links` returns links
 from the record (`direction: "out"`), links to it (`"in"`), or `"both"`. The default, `"out"`, is
 complete on its own because every link is stored with its inverse.
+
+## Config
+
+Both tools find their content with a `knowledge.config.json`, found by walking up from the working
+directory. Paths are relative to the config file. `tokens` is optional.
+
+```json
+{
+  "content": "packages/knowledge/content",
+  "tokens": {
+    "format": "dtcg",
+    "sets": { "light": ["tokens/base.json", "tokens/light.json"], "dark": ["tokens/base.json", "tokens/dark.json"] }
+  }
+}
+```
+
+The content folder comes from `--content`, then the config, then the folder shipped in this package.
+Each token set lists DTCG files. Later files win, `{alias.path}` references resolve, and values are
+stringified (`{ value: 16, unit: "px" }` becomes `16px`). Token files are read only when values are
+requested. Use `createDtcgResolver` from `@stevegreco/design-system-knowledge/tokens-dtcg` and
+`loadFromConfig` from `.../config` to do the same in code.
+
+## CLI
+
+```sh
+knowledge validate
+knowledge list [--type <t>] [--tag <tag>] [--status <s>]
+knowledge search <query...> [--type <t>] [--tag <tag>] [--limit <n>]
+knowledge get <id | id#section>
+knowledge links <id> [--kind <k>] [--direction out|in|both]
+knowledge rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
+knowledge tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
+knowledge help [command]
+```
+
+Global flags: `--content <dir>`, `--config <path>`, `--json`. Output is Markdown, or the library's
+return values as JSON. Exit codes: 0 ok, 1 validation issues or an unknown id or section, 2 usage
+error. In this repo, run it as `pnpm knowledge ...`.
+
+## MCP server
+
+`knowledge-mcp` is a local stdio server (`--content` and `--config` work as in the CLI). Tools:
+`search`, `get`, `list`, `links`, `rules`, `tokens`, and `validate`. Every record is also a resource
+at `knowledge://<id>`. The server reloads when the content folder changes, and if the new content has
+issues it keeps serving the last valid version and starts each tool result with a warning.
+
+```json
+{ "mcpServers": { "design-system-knowledge": { "command": "node", "args": ["packages/knowledge/bin/knowledge-mcp.js"] } } }
+```

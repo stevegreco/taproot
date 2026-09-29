@@ -1,0 +1,10 @@
+{
+  "content": "content",
+  "tokens": {
+    "format": "dtcg",
+    "sets": {
+      "light": ["tokens/base.tokens.json", "tokens/light.tokens.json"],
+      "dark": ["tokens/base.tokens.json", "tokens/dark.tokens.json"]
+    }
+  }
+}

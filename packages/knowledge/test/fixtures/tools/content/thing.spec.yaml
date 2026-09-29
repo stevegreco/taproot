@@ -1,0 +1,61 @@
+id: component.thing
+type: component
+title: Thing
+summary: Use Thing for testing.
+tags: [test]
+links:
+  composes:
+    - component.other
+description: A test component.
+usage:
+  do:
+    - Test things.
+anatomy:
+  control:
+    role: interactive-surface
+    description: The control.
+parameters:
+  tone:
+    kind: enum
+    values:
+      calm: Quiet.
+      loud: Noisy.
+    examples:
+      calm: Hush
+    default: calm
+  busy:
+    kind: boolean
+    default: false
+events:
+  change: Reports a change.
+states: [hover, disabled]
+preferences:
+  reducedMotion: [reduce]
+rules:
+  - id: keep-it-short
+    level: should
+    topic: content
+    statement: Keep the text short.
+    references:
+      - pattern.guide#first-step
+      - component.other
+  - id: stay-visible
+    level: must
+    topic: behavior
+    statement: Stay visible.
+  - id: name-it
+    level: must
+    topic: accessibility
+    statement: Give it an accessible name.
+tokens:
+  control:
+    base:
+      radius: component.thing.radius
+    tone.loud + hover:
+      background: component.thing.loud.hover
+    busy.true:
+      motion: none
+    reducedMotion.reduce:
+      motion: none
+    disabled:
+      foreground: component.thing.disabled

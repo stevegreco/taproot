@@ -16,6 +16,10 @@ Breaking. The package is now a library over the authored files, and the record f
   exports: `./SPEC.md`. `./schema/knowledge-record.json` and `./package.json` remain.
 - Component records lose the `contract:` wrapper and the `web:` section. Links use the kinds in
   the spec, and rule references are checked against real sections.
+- New `knowledge` CLI and `knowledge-mcp` stdio server (tools `search`, `get`, `list`, `links`,
+  `rules`, `tokens`, `validate`; records as `knowledge://<id>` resources), a `knowledge.config.json`
+  file, and an optional DTCG token resolver. New exports: `./config` and `./tokens-dtcg`. New
+  dependencies: `@modelcontextprotocol/sdk` and `zod`.
 - Removed the `build`, `prepack`, and `clean` scripts, and the dependencies `@stevegreco/design-system`,
   `js-yaml`, `parse5`, and `unist-util-visit`.
 

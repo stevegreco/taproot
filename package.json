@@ -2,6 +2,7 @@
   "name": "design-system",
   "private": true,
   "scripts": {
+    "knowledge": "node packages/knowledge/bin/knowledge.js",
     "build": "turbo run build",
     "clean": "turbo run clean",
     "test": "turbo run test",
