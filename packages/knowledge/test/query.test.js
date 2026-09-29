@@ -104,6 +104,16 @@ describe("search", () => {
     expect(shipped.search("navigate")[0].id).toBe("component.link");
   });
 
+  it("drops weak matches that score far below the top hit", () => {
+    const hits = shipped.search("destructive action");
+    expect(hits.map((hit) => hit.id)).toEqual([
+      "example.action-hierarchy.settings",
+      "pattern.action-hierarchy",
+      "component.button",
+    ]);
+    expect(hits.every((hit) => hit.score >= hits[0].score * 0.25)).toBe(true);
+  });
+
   it("returns summaries with a score and the fields that matched", () => {
     const [hit] = shipped.search("checkbox");
     expect(hit).toMatchObject({ id: "component.checkbox", type: "component", status: "stable" });

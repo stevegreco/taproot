@@ -49,7 +49,8 @@ knowledge.section("pattern.action-hierarchy#assign-emphasis"); // heading, rule,
 knowledge.section("component.button#label-describes-result");
 
 knowledge.search("destructive action", { type: "pattern", tags: ["action"], limit: 5 });
-// [{ id, type, title, summary, tags, status, score, matches }]
+// [{ id, type, title, summary, tags, status, score, matches }], best first. Hits scoring below a
+// quarter of the top hit are dropped, so weak one-word matches do not crowd the results.
 
 knowledge.links("component.link", { kind: "alternative-to", direction: "out" });
 // Inverses are included: button lists link as an alternative, so link lists button as alternative-to.

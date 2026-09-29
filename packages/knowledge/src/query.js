@@ -13,6 +13,8 @@ import { byCodeUnit, recordIdOf } from "./util.js";
 
 const LEVEL_ORDER = { must: 0, should: 1, may: 2 };
 const DEFAULT_SEARCH_LIMIT = 10;
+/** Hits scoring below this fraction of the top hit are dropped. */
+const RELEVANCE_FLOOR = 0.25;
 
 export function summarize(record) {
   const { id, type, title, summary, tags, status } = record;
@@ -57,7 +59,9 @@ export function search(state, query, options = {}) {
     if (score > 0) hits.push({ ...summarize(record), score, matches });
   }
   hits.sort((a, b) => b.score - a.score || byId(a, b));
-  return hits.slice(0, options.limit ?? DEFAULT_SEARCH_LIMIT);
+  // A record that shares one common word with the query is noise next to a strong match.
+  const floor = (hits[0]?.score ?? 0) * RELEVANCE_FLOOR;
+  return hits.filter((hit) => hit.score >= floor).slice(0, options.limit ?? DEFAULT_SEARCH_LIMIT);
 }
 
 export function links(state, id, options = {}) {
