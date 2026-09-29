@@ -698,15 +698,17 @@ function projectComponent(context: Context, implementation: Implementation): Com
     return "";
   };
 
+  const use = (record.usage?.do ?? []).map((situation) => `- ${situation}`);
   const avoid = (record.usage?.avoid ?? []).map((item) => formatAvoid(knowledge, pages, item));
   const introParts = [record.description];
+  if (use.length > 0) introParts.push(`### When to use\n\n${use.join("\n")}`);
   if (avoid.length > 0) introParts.push(`### When to avoid\n\n${avoid.join("\n")}`);
 
   const contentLines = (record.rules ?? [])
     .filter((rule) => rule.topic === "content")
     .flatMap((rule) => formatRule(knowledge, pages, rule));
   const behaviorParts = [
-    contentLines.length > 0 ? `### Write the label\n\n${contentLines.join("\n")}` : "",
+    contentLines.length > 0 ? `### Write the content\n\n${contentLines.join("\n")}` : "",
     bodySections(implementation.body),
   ];
 

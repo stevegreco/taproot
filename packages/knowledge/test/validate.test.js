@@ -96,6 +96,20 @@ const cases = [
     message: "asset file `missing.svg` does not exist",
   },
   {
+    name: "section-no-headings",
+    file: "thing.spec.yaml",
+    line: 7,
+    path: "/links/follows/0",
+    message: "guideline.guide has no section `anything`",
+  },
+  {
+    name: "asset-outside",
+    file: "demo.md",
+    line: 8,
+    path: "/assets/0/path",
+    message: "asset path `../asset-missing/demo.md` must be relative and stay inside",
+  },
+  {
     name: "missing-required",
     file: "thing.spec.yaml",
     line: 1,
@@ -131,6 +145,18 @@ describe("validation", () => {
     const { issues, recordCount } = await validateKnowledge({ contentDir: fixture("valid") });
     expect(issues).toEqual([]);
     expect(recordCount).toBe(4);
+  });
+
+  it("reports a link to a record that failed its schema, once, beside that record's own issue", async () => {
+    const { issues } = await validateKnowledge({ contentDir: fixture("link-to-invalid") });
+    expect(issues.map((issue) => [issue.file, issue.path, issue.message])).toEqual([
+      ["broken.md", "/colour", "`colour` is not an allowed field"],
+      [
+        "thing.spec.yaml",
+        "/links/follows/0",
+        "`pattern.broken#first-step` points at pattern.broken, which is not a valid record",
+      ],
+    ]);
   });
 
   it.each(cases)("reports one mistake once: $name", async ({ name, ...expected }) => {

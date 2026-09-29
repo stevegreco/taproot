@@ -36,7 +36,7 @@ export async function createKnowledgeServer(options = {}) {
   const { cwd = process.cwd(), contentDir, configPath, watch = true, debounceMs = 200 } = options;
   const loadOptions = { cwd, contentDir, configPath };
 
-  let knowledge = await loadFromConfig(loadOptions);
+  let knowledge = await loadFromConfig({ ...loadOptions, resolveTokens: false });
   /** @type {string | undefined} */
   let warning;
 
@@ -47,7 +47,7 @@ export async function createKnowledgeServer(options = {}) {
 
   async function reload() {
     try {
-      knowledge = await loadFromConfig(loadOptions);
+      knowledge = await loadFromConfig({ ...loadOptions, resolveTokens: false });
       warning = undefined;
     } catch (error) {
       if (error instanceof KnowledgeError) {
@@ -146,7 +146,11 @@ export async function createKnowledgeServer(options = {}) {
       property: z.string().optional().describe("A style property, such as background."),
       resolve: z.boolean().optional().describe("Include token values for each configured set."),
     },
-    (args) => ops.tokens(knowledge, args),
+    // Token files are read only here, so a broken token file cannot fail `get` or a resource read.
+    (args) =>
+      ops.tokens(knowledge, args, {
+        resolveToken: args.resolve ? resolveConfig(loadOptions).resolveToken : undefined,
+      }),
   );
   tool(
     "validate",

@@ -81,6 +81,33 @@ describe("knowledge MCP server", () => {
     expect(text(validated)).toMatch(/^OK: /);
   });
 
+  it("reads token files only for tokens with resolve, so a broken token file cannot fail get", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "knowledge-mcp-"));
+    cleanups.push(async () => fs.rmSync(dir, { recursive: true }));
+    fs.writeFileSync(
+      path.join(dir, "knowledge.config.json"),
+      JSON.stringify({
+        content: path.join(repoRoot, "packages/knowledge/content"),
+        tokens: { format: "dtcg", sets: { light: ["missing.tokens.json"] } },
+      }),
+    );
+    const { client } = await connect({ cwd: dir });
+
+    const got = await client.callTool({ name: "get", arguments: { target: "component.button" } });
+    expect(got.isError).toBeFalsy();
+    expect(text(got)).toContain("component.button.primary.background.hover");
+
+    const plain = await client.callTool({ name: "tokens", arguments: { id: "component.button" } });
+    expect(plain.isError).toBeFalsy();
+
+    const resolved = await client.callTool({
+      name: "tokens",
+      arguments: { id: "component.button", resolve: true },
+    });
+    expect(resolved.isError).toBe(true);
+    expect(text(resolved)).toMatch(/Cannot read token file/);
+  });
+
   it("lists and reads resources", async () => {
     const { client } = await connect({ cwd: repoRoot });
     const { resources } = await client.listResources();

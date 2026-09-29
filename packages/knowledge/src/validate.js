@@ -65,9 +65,10 @@ export async function checkSources(sources) {
     if (valid) records.push(record);
   }
 
+  const validById = new Map(records.map((record) => [record.data.id, record]));
   for (const record of records) {
     const report_ = (raw) => report(record.source, raw);
-    checkReferences(record, byId, report_);
+    checkReferences(record, byId, validById, report_);
     if (record.data.type === "component") {
       checkRules(record.data, report_);
       checkParameters(record.data, report_);
@@ -218,16 +219,25 @@ function* targets(data) {
   }
 }
 
-function checkReferences(record, byId, report) {
+/**
+ * Resolve each link target against the records that passed their schema. A target that exists but
+ * is invalid is reported here too, because its sections are unknown.
+ */
+function checkReferences(record, byId, validById, report) {
   for (const [pointer, target] of targets(record.data)) {
     const id = recordIdOf(target);
-    const found = byId.get(id);
+    const found = validById.get(id);
     if (!found) {
-      report({ path: pointer, message: `\`${target}\` does not match any record` });
+      report({
+        path: pointer,
+        message: byId.has(id)
+          ? `\`${target}\` points at ${id}, which is not a valid record`
+          : `\`${target}\` does not match any record`,
+      });
       continue;
     }
     const section = target.slice(id.length + 1);
-    if (target.includes("#") && found.sections.size > 0 && !found.sections.has(section)) {
+    if (target.includes("#") && !found.sections.has(section)) {
       report({ path: pointer, message: `${id} has no section \`${section}\`` });
     }
   }
@@ -335,7 +345,19 @@ function conditionProblem(term, data, states) {
 async function checkAssets(record, report) {
   const directory = path.dirname(record.source.absolute);
   for (const [index, asset] of (record.data.assets ?? []).entries()) {
-    const info = await stat(path.resolve(directory, asset.path)).catch(() => undefined);
+    const resolved = path.resolve(directory, asset.path);
+    const escapes =
+      path.isAbsolute(asset.path) ||
+      asset.path.split(/[\\/]/).includes("..") ||
+      path.relative(directory, resolved).startsWith("..");
+    if (escapes) {
+      report({
+        path: `/assets/${index}/path`,
+        message: `asset path \`${asset.path}\` must be relative and stay inside the record's folder`,
+      });
+      continue;
+    }
+    const info = await stat(resolved).catch(() => undefined);
     if (!info?.isFile()) {
       report({
         path: `/assets/${index}/path`,

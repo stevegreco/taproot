@@ -95,10 +95,20 @@ export function rules(knowledge, { id, topic, level, query } = {}) {
   return { text, data, ok: true };
 }
 
-export function tokens(knowledge, { id, part, condition, property, resolve } = {}) {
+/**
+ * @param {{ resolveToken?: (ref: string) => Record<string, string> | undefined }} [options]
+ *   Resolve values with this instead of the resolver the knowledge was loaded with.
+ */
+export function tokens(knowledge, { id, part, condition, property, resolve } = {}, options = {}) {
   if (!id) throw new UsageError("tokens needs a component id");
   if (!knowledge.get(id)) return notFound(knowledge, `Unknown record "${id}".`, id);
   let data = knowledge.tokens(id, { part, condition, property });
+  if (resolve && options.resolveToken) {
+    data = data.map((row) => {
+      const values = options.resolveToken(row.token);
+      return values ? { ...row, values } : row;
+    });
+  }
   if (!resolve)
     data = data.map((row) => ({
       part: row.part,

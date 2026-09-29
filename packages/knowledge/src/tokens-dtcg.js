@@ -77,8 +77,9 @@ function resolveAlias(name, index, trail) {
 export function createDtcgResolver(sets) {
   /** @type {Map<string, Map<string, unknown>> | undefined} */
   let indexes;
+  // Build into a local map so a failed read leaves nothing cached and the next call retries.
   const load = () => {
-    indexes = new Map();
+    const built = new Map();
     for (const [name, files] of Object.entries(sets)) {
       const merged = {};
       for (const file of files) {
@@ -90,9 +91,10 @@ export function createDtcgResolver(sets) {
         }
         deepMerge(merged, parsed);
       }
-      indexes.set(name, indexTokens(merged, "", new Map()));
+      built.set(name, indexTokens(merged, "", new Map()));
     }
-    return indexes;
+    indexes = built;
+    return built;
   };
   return (ref) => {
     const all = indexes ?? load();

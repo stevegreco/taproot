@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { createDtcgResolver } from "../src/tokens-dtcg.js";
@@ -43,6 +45,16 @@ describe("createDtcgResolver", () => {
   it("detects alias cycles", () => {
     const cyclic = createDtcgResolver({ light: [file("cycle.tokens.json")] });
     expect(() => cyclic("a")).toThrow(/Circular token alias: a -> b -> c -> a/);
+  });
+
+  it("retries after a failed read instead of caching a partial index", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dtcg-"));
+    const later = path.join(dir, "later.tokens.json");
+    const resolve = createDtcgResolver({ light: [later] });
+    expect(() => resolve("a")).toThrow(/Cannot read token file/);
+    fs.writeFileSync(later, JSON.stringify({ a: { $value: "#fff" } }));
+    expect(resolve("a")).toEqual({ light: "#fff" });
+    fs.rmSync(dir, { recursive: true });
   });
 
   it("does not read files until first use", () => {

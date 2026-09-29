@@ -49,6 +49,11 @@ test("button slice variants and api come from the knowledge record and the imple
   );
   assert.match(
     slice.introMarkdown,
+    /### When to use\n\n- Trigger an action in the current view\./,
+    "intro lists the situations the component is for",
+  );
+  assert.match(
+    slice.introMarkdown,
     /### When to avoid\n\n- /,
     "avoid items keep negation framing as a heading plus list the docs renderer can parse",
   );
@@ -57,7 +62,7 @@ test("button slice variants and api come from the knowledge record and the imple
     /Triggers an action or submits or resets a form\.\n\nNavigate to another location/,
     "avoid items are not bare intro paragraphs",
   );
-  assert.match(slice.behaviorMarkdown, /Write the label/, "label guidance sits with usage");
+  assert.match(slice.behaviorMarkdown, /### Write the content/, "content guidance sits with usage");
   assert.match(slice.behaviorMarkdown, /### Forms/, "the implementation guide's Forms section");
   assert.match(slice.behaviorMarkdown, /type="submit"/, "form behavior stays with usage");
   assert.doesNotMatch(
