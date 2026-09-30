@@ -1,0 +1,6 @@
+/* Story canvases, including the ones embedded in docs pages, follow the token theme. */
+body,
+.docs-story {
+  background: var(--semantic-color-background-default);
+  color: var(--semantic-color-foreground-default);
+}

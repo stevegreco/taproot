@@ -103,6 +103,10 @@ In `apps/documentation`:
 
 Check: `pnpm exec turbo run test --filter=documentation`.
 
+In `apps/storybook`, add `stories/<name>.stories.js`: a control for every attribute and one story
+per notable state. Copy `stories/checkbox.stories.js`. Check that the Accessibility panel reports no
+violations in both themes: `pnpm exec turbo run dev --filter=storybook`.
+
 ### 7. Confirm completeness
 
 ```bash
