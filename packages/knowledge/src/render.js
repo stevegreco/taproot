@@ -48,6 +48,7 @@ function renderRecord(state, record) {
   } else if (record.body) {
     blocks.push(record.body);
   }
+  if (record.type === "example") blocks.push(renderAnnotations(state, record));
   blocks.push(renderLinks(state, record.id));
   return blocks;
 }
@@ -67,8 +68,22 @@ function renderLinks(state, id) {
   return lines.join("\n");
 }
 
+function renderAnnotations(state, record) {
+  const annotations = record.annotations ?? [];
+  if (annotations.length === 0) return "";
+  const items = annotations.map((annotation) => {
+    const references = (annotation.references ?? []).map((target) => referenceText(state, target));
+    return [
+      `**${annotation.label}** (\`${record.id}#${annotation.id}\`): ${annotation.description}`,
+      references.length > 0 ? ` See ${references.join(", ")}.` : "",
+    ].join("");
+  });
+  return `## Annotations\n\n${bullets(items)}`;
+}
+
 function linkText(state, link) {
-  const reference = referenceText(state, link.to);
+  const from = link.fromSection ? `\`${link.fromSection}\` → ` : "";
+  const reference = from + referenceText(state, link.to);
   const detail = [link.situation, link.why].filter(Boolean).join(" ");
   return detail ? `${reference} — ${detail}` : reference;
 }
@@ -115,7 +130,7 @@ function renderField(state, record, field) {
         ),
       );
     case "parameters":
-      return section("Parameters", renderParameters(value));
+      return section("Parameters", renderParameters(state, value));
     case "events":
       return section(
         "Events",
@@ -166,7 +181,7 @@ function renderUsage(state, usage) {
   return blocks.join("\n\n");
 }
 
-function renderParameters(parameters) {
+function renderParameters(state, parameters) {
   const rows = Object.entries(parameters).map(([name, parameter]) => [
     name,
     parameter.kind,
@@ -181,7 +196,12 @@ function renderParameters(parameters) {
     if (parameter.kind !== "enum") continue;
     const items = Object.entries(parameter.values).map(([value, meaning]) => {
       const example = parameter.examples?.[value];
-      return `\`${value}\`: ${meaning}${example ? ` Example: ${example}` : ""}`;
+      const guidance = parameter.guidance?.[value];
+      return [
+        `\`${value}\`: ${meaning}`,
+        example ? ` Example: ${example}` : "",
+        guidance ? ` Guidance: ${referenceText(state, guidance)}` : "",
+      ].join("");
     });
     blocks.push(`\`${name}\` values:\n\n${bullets(items)}`);
   }

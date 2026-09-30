@@ -177,15 +177,36 @@ describe("links", () => {
   });
 
   it("makes rule references follow patterns and relate to anything else", () => {
-    expect(brief(valid.links("component.thing", { kind: "follows", direction: "out" }))).toEqual([
+    const rule = (links) => brief(links.filter((link) => link.source === "rule"));
+    expect(rule(valid.links("component.thing", { kind: "follows", direction: "out" }))).toEqual([
       "component.thing follows pattern.guide#first-step (rule)",
     ]);
-    expect(brief(valid.links("pattern.guide", { kind: "followed-by", direction: "out" }))).toEqual([
+    expect(rule(valid.links("pattern.guide", { kind: "followed-by", direction: "out" }))).toEqual([
       "pattern.guide followed-by component.thing (rule)",
     ]);
     expect(
       valid.links("component.thing", { kind: "related", direction: "out" }).map((l) => l.to),
     ).toEqual(["component.other", "pattern.guide"]);
+  });
+
+  it("links each parameter value to its guidance section, whatever the heading is called", () => {
+    // `loud` cites the heading "Second step!", so no naming convention pairs them.
+    const [link] = valid
+      .links("component.thing", { kind: "follows" })
+      .filter((item) => item.source === "parameter");
+    expect(link).toEqual({
+      from: "component.thing",
+      fromSection: "parameters.tone.loud",
+      to: "pattern.guide#second-step",
+      kind: "follows",
+      source: "parameter",
+    });
+    const back = valid
+      .links("pattern.guide", { kind: "followed-by" })
+      .filter((item) => item.source === "parameter");
+    expect(back.map((item) => item.to)).toEqual(["component.thing#parameters.tone.loud"]);
+    const target = valid.get("component.thing").parameters.tone.guidance.loud;
+    expect(valid.section(target).content).toBe("Then this.");
   });
 
   it("gives an example its example-of link and its target the inverse", () => {

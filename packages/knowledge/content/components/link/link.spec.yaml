@@ -43,6 +43,9 @@ parameters:
     examples:
       inline: token tier ADR
       standalone: View all projects
+    guidance:
+      inline: pattern.action-hierarchy#inline
+      standalone: pattern.action-hierarchy#standalone
     default: inline
 events:
   activate: Follows the link to its destination.

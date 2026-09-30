@@ -13,7 +13,7 @@ import { byCodeUnit, deepFreeze } from "./util.js";
  *
  * @typedef {{ id: string, type: RecordType, title: string, summary: string, tags: string[], status: Status }} Summary
  * @typedef {Summary & { score: number, matches: string[] }} Hit
- * @typedef {{ from: string, to: string, kind: LinkKind, source: "links" | "usage" | "rule", situation?: string, why?: string }} Link
+ * @typedef {{ from: string, to: string, kind: LinkKind, source: "links" | "usage" | "rule" | "parameter", fromSection?: string, situation?: string, why?: string }} Link
  * @typedef {{ target: string, recordId: string, section: string, title: string, content: unknown }} Section
  * @typedef {{ part: string, condition: string, property: string, token: string, values?: Record<string, string> }} TokenRow
  * @typedef {{ address: string, recordId: string, recordTitle: string, id: string, level: Level, topic: Topic, statement: string, applicability?: string, rationale?: string, references?: string[], examples?: { do?: string[], avoid?: string[] } }} RuleHit

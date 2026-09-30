@@ -15,7 +15,8 @@ export const INVERSE = {
 
 /**
  * Every link in the corpus: the ones authored or derived from fields, and their inverses.
- * Deduplicated on (from, to, kind, situation), so two `usage.avoid` entries that name the same
+ * A link derived from a parameter value's `guidance` carries `fromSection`, and its inverse points at
+ * that section. Deduplicated on (from, fromSection, to, kind, situation), so two `usage.avoid` entries that name the same
  * alternative both survive, and sorted by kind, then `to`, then `from`.
  *
  * @param {Record<string, any>[]} records
@@ -24,7 +25,7 @@ export const INVERSE = {
 export function buildLinks(records) {
   const links = new Map();
   const add = (link) => {
-    const key = `${link.from}\t${link.to}\t${link.kind}\t${link.situation ?? ""}`;
+    const key = `${link.from}\t${link.fromSection ?? ""}\t${link.to}\t${link.kind}\t${link.situation ?? ""}`;
     if (!links.has(key)) links.set(key, link);
   };
 
@@ -32,7 +33,9 @@ export function buildLinks(records) {
     for (const link of declaredLinks(record)) {
       if (recordIdOf(link.to) === link.from) continue;
       add(link);
-      add({ ...link, from: recordIdOf(link.to), to: link.from, kind: INVERSE[link.kind] });
+      const back = link.fromSection ? `${link.from}#${link.fromSection}` : link.from;
+      const { fromSection: _, ...inverse } = link;
+      add({ ...inverse, from: recordIdOf(link.to), to: back, kind: INVERSE[link.kind] });
     }
   }
   return [...links.values()].sort(
@@ -54,6 +57,17 @@ function* declaredLinks(record) {
         source: "usage",
         situation: item.situation,
         ...(item.why ? { why: item.why } : {}),
+      };
+    }
+  }
+  for (const [name, parameter] of Object.entries(record.parameters ?? {})) {
+    for (const [value, to] of Object.entries(parameter.guidance ?? {})) {
+      yield {
+        from,
+        fromSection: `parameters.${name}.${value}`,
+        to,
+        kind: "follows",
+        source: "parameter",
       };
     }
   }

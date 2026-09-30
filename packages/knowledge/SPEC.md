@@ -147,6 +147,20 @@ Anatomy roles are `interactive-surface`, `label`, `description`, `indicator`, an
 An enum parameter lists its `values` with a meaning for each, and may give `examples`: sample
 content, such as a label, for each value. A `default` must be one of the values.
 
+An enum parameter may also give `guidance`: for each value, the pattern or guideline section that
+says when to choose it. The pairing is explicit, so renaming a heading breaks a link check instead of
+silently dropping the guidance.
+
+```yaml
+parameters:
+  variant:
+    kind: enum
+    values:
+      danger: Destructive or difficult-to-reverse action.
+    guidance:
+      danger: pattern.action-hierarchy#danger
+```
+
 ### Rules
 
 A rule is one requirement a design or an implementation must meet.
@@ -234,6 +248,9 @@ Some links come from fields rather than from `links`:
   prose.
 - A rule's `references` create a `follows` link to each pattern or guideline they name, and a
   `related` link to anything else.
+- An enum parameter's `guidance` creates a `follows` link from the value, such as
+  `parameters.variant.danger`, to the section it names. Its inverse, `followed-by`, points back at
+  that value: `component.button#parameters.variant.danger`.
 - An annotation's `references` create no links. They are checked like any other link.
 
 ### Sections
@@ -255,7 +272,7 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Every link target, `instead` record ID, and reference resolves to a record, and its section, if
   any, exists.
 - Rule IDs are unique within a record, and do not collide with a top-level field name.
-- An enum parameter's `default` and `examples` keys are among its `values`.
+- An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`.
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum
   value or boolean (`true` or `false`) of a declared parameter, or a declared preference value.
 - An example's asset files exist.

@@ -62,11 +62,15 @@ export async function createKnowledgeServer(options = {}) {
     }
   }
 
+  /** Prefix text with the stale-content warning while the last reload has issues. */
+  const disclose = (text) =>
+    warning
+      ? `WARNING: the content has issues, so this answer comes from the last valid version.\n${warning}\n\n${text}`
+      : text;
+
   /** @param {ops.Result} result */
   const toResult = (result) => {
-    const text = warning
-      ? `WARNING: the content has issues, so this answer comes from the last valid version.\n${warning}\n\n${result.text}`
-      : result.text;
+    const text = disclose(result.text);
     return {
       content: [{ type: "text", text }],
       structuredContent: { results: result.data, ...(warning ? { warning } : {}) },
@@ -180,7 +184,9 @@ export async function createKnowledgeServer(options = {}) {
       const target = decodeURIComponent(String(id));
       if (!knowledge.get(target.split("#")[0])) throw new Error(`Unknown record "${target}".`);
       return {
-        contents: [{ uri: uri.href, mimeType: "text/markdown", text: knowledge.render(target) }],
+        contents: [
+          { uri: uri.href, mimeType: "text/markdown", text: disclose(knowledge.render(target)) },
+        ],
       };
     },
   );

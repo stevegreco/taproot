@@ -289,6 +289,17 @@
             "$ref": "#/$defs/text"
           }
         },
+        "guidance": {
+          "description": "For each enum value, the pattern or guideline section that says when to use it. Creates a `follows` link from the value.",
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/key"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/linkTarget"
+          }
+        },
         "default": {}
       },
       "allOf": [
@@ -312,7 +323,8 @@
           "else": {
             "properties": {
               "values": false,
-              "examples": false
+              "examples": false,
+              "guidance": false
             }
           }
         },

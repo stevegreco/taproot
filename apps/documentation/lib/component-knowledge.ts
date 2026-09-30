@@ -172,6 +172,7 @@ interface Parameter {
   description?: string;
   values?: Record<string, string>;
   examples?: Record<string, string>;
+  guidance?: Record<string, string>;
   default?: unknown;
 }
 
@@ -690,12 +691,11 @@ function projectComponent(context: Context, implementation: Implementation): Com
       )
     : undefined;
 
+  // Each variant value names its guidance section in the spec (`parameters.variant.guidance`).
   const guidance = (variant: string): string => {
-    for (const pattern of patterns) {
-      const section = knowledge.section(`${pattern.id}#${variant}`);
-      if (typeof section?.content === "string" && section.content) return section.content;
-    }
-    return "";
+    const target = record.parameters?.variant?.guidance?.[variant];
+    const section = target ? knowledge.section(target) : undefined;
+    return typeof section?.content === "string" ? section.content : "";
   };
 
   const use = (record.usage?.do ?? []).map((situation) => `- ${situation}`);

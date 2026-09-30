@@ -41,6 +41,15 @@ describe("knowledge CLI, real content", () => {
     expect(section.out).toContain("## Assign emphasis");
   });
 
+  it("gets an example with every annotation and its references", () => {
+    const { out } = knowledge(["get", "example.action-hierarchy.settings"]);
+    for (const id of ["profile-actions", "danger-zone", "outcome-labels"]) {
+      expect(out).toContain(`\`example.action-hierarchy.settings#${id}\``);
+    }
+    expect(out).toContain("(pattern.action-hierarchy#separate-unrelated-decisions)");
+    expect(out).toContain("(component.button#label-describes-result)");
+  });
+
   it("shows links grouped by kind", () => {
     const r = knowledge(["links", "component.link", "--kind", "alternative"]);
     expect(r.code).toBe(0);

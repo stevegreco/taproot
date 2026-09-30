@@ -212,6 +212,11 @@ function* targets(data) {
       yield [`/rules/${index}/references/${at}`, target];
     }
   }
+  for (const [name, parameter] of Object.entries(data.parameters ?? {})) {
+    for (const [value, target] of Object.entries(parameter.guidance ?? {})) {
+      yield [`/parameters/${pointerSegment(name)}/guidance/${pointerSegment(value)}`, target];
+    }
+  }
   for (const [index, annotation] of (data.annotations ?? []).entries()) {
     for (const [at, target] of (annotation.references ?? []).entries()) {
       yield [`/annotations/${index}/references/${at}`, target];
@@ -274,12 +279,14 @@ function checkParameters(data, report) {
         message: `\`default\` ${parameter.default} is not one of the values of \`${name}\``,
       });
     }
-    for (const key of Object.keys(parameter.examples ?? {})) {
-      if (!Object.hasOwn(values, key)) {
-        report({
-          path: `/parameters/${pointerSegment(name)}/examples/${pointerSegment(key)}`,
-          message: `example \`${key}\` is not one of the values of \`${name}\``,
-        });
+    for (const field of ["examples", "guidance"]) {
+      for (const key of Object.keys(parameter[field] ?? {})) {
+        if (!Object.hasOwn(values, key)) {
+          report({
+            path: `/parameters/${pointerSegment(name)}/${field}/${pointerSegment(key)}`,
+            message: `${field === "examples" ? "example" : "guidance"} \`${key}\` is not one of the values of \`${name}\``,
+          });
+        }
       }
     }
   }

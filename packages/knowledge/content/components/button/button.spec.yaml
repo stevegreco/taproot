@@ -43,6 +43,11 @@ parameters:
       secondary: Cancel
       ghost: View details
       danger: Delete project
+    guidance:
+      primary: pattern.action-hierarchy#primary
+      secondary: pattern.action-hierarchy#secondary
+      ghost: pattern.action-hierarchy#ghost
+      danger: pattern.action-hierarchy#danger
     default: primary
   size:
     kind: enum

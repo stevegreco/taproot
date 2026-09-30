@@ -75,6 +75,13 @@ const cases = [
     message: "example `loud` is not one of the values of `tone`",
   },
   {
+    name: "guidance-value",
+    file: "thing.spec.yaml",
+    line: 26,
+    path: "/parameters/tone/guidance/quiet",
+    message: "guidance `quiet` is not one of the values of `tone`",
+  },
+  {
     name: "token-part",
     file: "thing.spec.yaml",
     line: 14,

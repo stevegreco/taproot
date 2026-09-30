@@ -54,6 +54,20 @@ describe("render", () => {
     expect(text).toContain("### followed-by");
   });
 
+  it("renders an example's annotations with their addresses and references", () => {
+    const text = valid.render("example.guide.demo");
+    expect(text).toContain("## Annotations");
+    expect(text).toContain(
+      "- **The box** (`example.guide.demo#box`): It is a box. See [Guide](pattern.guide#second-step).",
+    );
+  });
+
+  it("names each parameter value's guidance section", () => {
+    expect(valid.render("component.thing")).toContain(
+      "- `loud`: Noisy. Guidance: [Guide](pattern.guide#second-step)",
+    );
+  });
+
   it("renders only the requested section", () => {
     const heading = valid.render("pattern.guide#detail");
     expect(heading).toBe("### Detail\n\nMore.\n");

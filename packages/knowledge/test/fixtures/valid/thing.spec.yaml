@@ -22,6 +22,8 @@ parameters:
       loud: Noisy.
     examples:
       calm: Hush
+    guidance:
+      loud: pattern.guide#second-step
     default: calm
   busy:
     kind: boolean

@@ -116,6 +116,12 @@ describe("knowledge MCP server", () => {
     const read = await client.readResource({ uri: "knowledge://component.button" });
     expect(read.contents[0].mimeType).toBe("text/markdown");
     expect(read.contents[0].text).toMatch(/^# Button/);
+    const example = await client.readResource({
+      uri: "knowledge://example.action-hierarchy.settings",
+    });
+    for (const id of ["profile-actions", "danger-zone", "outcome-labels"]) {
+      expect(example.contents[0].text).toContain(`example.action-hierarchy.settings#${id}`);
+    }
   });
 
   it("keeps the last good index and warns when a reload has issues", async () => {
@@ -132,11 +138,17 @@ describe("knowledge MCP server", () => {
     expect(text(warned)).toMatch(/^WARNING: /);
     expect(text(warned)).toContain("thing.spec.yaml");
     expect(text(warned)).toContain("# Thing");
+    const read = async () =>
+      (await client.readResource({ uri: "knowledge://component.thing" })).contents[0].text;
+    const staleResource = await read();
+    expect(staleResource).toMatch(/^WARNING: /);
+    expect(staleResource).toContain("# Thing");
 
     fs.writeFileSync(file, original);
     await reload();
     const clean = await client.callTool({ name: "get", arguments: { target: "component.thing" } });
     expect(text(clean)).toMatch(/^# Thing/);
+    expect(await read()).toMatch(/^# Thing/);
   });
 
   it("reloads when files change", async () => {

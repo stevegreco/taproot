@@ -77,7 +77,10 @@ export function links(knowledge, { id, kind, direction } = {}) {
   for (const [heading, group] of groups) {
     lines.push(`## ${heading}`, "");
     for (const link of group) {
-      let line = link.from === id ? `- ${link.to}` : `- ${link.from} → ${link.to}`;
+      // A link from a parameter value names that value, such as `parameters.variant.danger`.
+      const from = link.from === id ? link.fromSection : link.from;
+      const source = link.fromSection && link.from !== id ? `${from}#${link.fromSection}` : from;
+      let line = source ? `- ${source} → ${link.to}` : `- ${link.to}`;
       if (link.situation) line += `: ${link.situation}`;
       if (link.why) line += ` (${link.why})`;
       lines.push(line);

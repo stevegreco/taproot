@@ -68,8 +68,10 @@ knowledge.render("pattern.action-hierarchy#choose-button-or-link"); // or one se
 `validateKnowledge`, `renderRecord(knowledge, target)`, `KnowledgeError`, `schema`, and
 `DEFAULT_CONTENT_DIR` are also exported. `render` throws when the record or section does not exist.
 
-Links come from three places: the `links` field, `usage.avoid[].instead` (an `alternative` link), and
-rule `references` (`follows` for a pattern or guideline, `related` otherwise). `links` returns links
+Links come from four places: the `links` field, `usage.avoid[].instead` (an `alternative` link),
+rule `references` (`follows` for a pattern or guideline, `related` otherwise), and an enum
+parameter's `guidance` (a `follows` link whose `fromSection` names the value, such as
+`parameters.variant.danger`). `links` returns links
 from the record (`direction: "out"`), links to it (`"in"`), or `"both"`. The default, `"out"`, is
 complete on its own because every link is stored with its inverse, so `"both"` lists each
 relationship once. A link's kind reads from its `from` side: an incoming `alternative` link from
@@ -118,7 +120,8 @@ error. In this repo, run it as `pnpm knowledge ...`.
 `knowledge-mcp` is a local stdio server (`--content` and `--config` work as in the CLI). Tools:
 `search`, `get`, `list`, `links`, `rules`, `tokens`, and `validate`. Every record is also a resource
 at `knowledge://<id>`. The server reloads when the content folder changes, and if the new content has
-issues it keeps serving the last valid version and starts each tool result with a warning.
+issues it keeps serving the last valid version and starts each tool result and resource read with a
+warning.
 
 ```json
 { "mcpServers": { "design-system-knowledge": { "command": "node", "args": ["packages/knowledge/bin/knowledge-mcp.js"] } } }

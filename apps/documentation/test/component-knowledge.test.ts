@@ -43,6 +43,11 @@ test("button slice variants and api come from the knowledge record and the imple
     "exactly one variant is the contract default",
   );
   assert.match(
+    slice.variants.find((variant) => variant.name === "danger")?.guidance ?? "",
+    /^Use `danger` only for a destructive or difficult-to-reverse action\./,
+    "variant guidance is the pattern section the spec names in parameters.variant.guidance",
+  );
+  assert.match(
     slice.introMarkdown,
     /Use \[Link\]\(\/components\/link\) instead\. Links provide native navigation semantics\./,
     "intro links the alternative component's page and keeps the reason",
