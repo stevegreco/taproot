@@ -48,6 +48,13 @@ describe("knowledge CLI, real content", () => {
     expect(r.out).toContain("- component.button: ");
   });
 
+  it("shows incoming links with both ends, apart from outgoing ones", () => {
+    const r = knowledge(["links", "component.badge", "--direction", "in", "--kind", "alternative"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("## alternative (incoming)");
+    expect(r.out).toContain("- component.button → component.badge: ");
+  });
+
   it("lists rules as addresses", () => {
     const r = knowledge(["rules", "--level", "must", "--topic", "accessibility"]);
     expect(r.code).toBe(0);

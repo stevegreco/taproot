@@ -1,4 +1,5 @@
 import { scoreRecord, tokenize } from "./search.js";
+import { INVERSE } from "./links.js";
 import { byCodeUnit, recordIdOf } from "./util.js";
 
 /**
@@ -66,15 +67,31 @@ export function search(state, query, options = {}) {
 
 export function links(state, id, options = {}) {
   const direction = options.direction ?? "out";
-  const wanted = (link) => {
-    if (options.kind && link.kind !== options.kind) return false;
-    const out = link.from === id;
-    const incoming = recordIdOf(link.to) === id;
-    return (direction !== "in" && out) || (direction !== "out" && incoming);
-  };
+  const ofKind = (link) => !options.kind || link.kind === options.kind;
   // `state.links` is already sorted by kind, then `to`, then `from`.
-  return state.links.filter(wanted).map((link) => ({ ...link }));
+  const out = state.links.filter((link) => link.from === id);
+  const incoming = state.links.filter((link) => recordIdOf(link.to) === id);
+  let found;
+  if (direction === "out") found = out;
+  else if (direction === "in") found = incoming;
+  else {
+    // Every incoming link is stored again as its inverse going out, so "both" keeps only the
+    // incoming links whose inverse is missing. Otherwise each relationship would appear twice.
+    const outKeys = new Set(out.map(mirrorKey));
+    const extra = incoming.filter(
+      (link) =>
+        !outKeys.has(mirrorKey({ ...link, from: id, to: link.from, kind: INVERSE[link.kind] })),
+    );
+    found = [...out, ...extra].sort(
+      (a, b) => byCodeUnit(a.kind, b.kind) || byCodeUnit(a.to, b.to) || byCodeUnit(a.from, b.from),
+    );
+  }
+  return found.filter(ofKind).map((link) => ({ ...link }));
 }
+
+// An inverse drops the `#section` of the link it mirrors, so compare record ids only.
+const mirrorKey = (link) =>
+  `${link.from}\t${recordIdOf(link.to)}\t${link.kind}\t${link.situation ?? ""}`;
 
 export function rules(state, filter = {}) {
   const [recordId, ruleId] = filter.id ? filter.id.split("#") : [];
@@ -82,12 +99,14 @@ export function rules(state, filter = {}) {
   const hits = [];
   for (const record of state.records.values()) {
     if (recordId && record.id !== recordId) continue;
+    const indexed = state.searchIndex.get(record.id).rules;
     (record.rules ?? []).forEach((rule, order) => {
       if (ruleId && rule.id !== ruleId) return;
       if (filter.topic && rule.topic !== filter.topic) return;
       if (filter.level && rule.level !== filter.level) return;
       if (queryTokens.length > 0) {
-        const words = new Set(tokenize(JSON.stringify(rule)));
+        // The rule's text values only, so field names such as `topic` never match.
+        const words = new Set(indexed[order].tokens);
         if (!queryTokens.every((token) => words.has(token))) return;
       }
       hits.push({

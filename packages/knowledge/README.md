@@ -71,7 +71,9 @@ knowledge.render("pattern.action-hierarchy#choose-button-or-link"); // or one se
 Links come from three places: the `links` field, `usage.avoid[].instead` (an `alternative` link), and
 rule `references` (`follows` for a pattern or guideline, `related` otherwise). `links` returns links
 from the record (`direction: "out"`), links to it (`"in"`), or `"both"`. The default, `"out"`, is
-complete on its own because every link is stored with its inverse.
+complete on its own because every link is stored with its inverse, so `"both"` lists each
+relationship once. A link's kind reads from its `from` side: an incoming `alternative` link from
+Button means Badge is the alternative to Button.
 
 ## Config
 

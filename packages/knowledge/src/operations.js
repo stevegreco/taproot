@@ -64,17 +64,20 @@ export function links(knowledge, { id, kind, direction } = {}) {
   if (!knowledge.get(id)) return notFound(knowledge, `Unknown record "${id}".`, id);
   const data = knowledge.links(id, { kind, direction });
   if (data.length === 0) return { text: `No links for ${id}.`, data, ok: true };
+  // A link's kind reads from its `from` side, so a link into this record is grouped apart and shown
+  // with both ends: under `alternative (incoming)`, `- component.button → component.badge` means
+  // Badge is the alternative to Button.
   const groups = new Map();
   for (const link of data) {
-    if (!groups.has(link.kind)) groups.set(link.kind, []);
-    groups.get(link.kind).push(link);
+    const heading = link.from === id ? link.kind : `${link.kind} (incoming)`;
+    if (!groups.has(heading)) groups.set(heading, []);
+    groups.get(heading).push(link);
   }
   const lines = [];
-  for (const [linkKind, group] of groups) {
-    lines.push(`## ${linkKind}`, "");
+  for (const [heading, group] of groups) {
+    lines.push(`## ${heading}`, "");
     for (const link of group) {
-      const other = link.from === id ? link.to : link.from;
-      let line = `- ${other}`;
+      let line = link.from === id ? `- ${link.to}` : `- ${link.from} → ${link.to}`;
       if (link.situation) line += `: ${link.situation}`;
       if (link.why) line += ` (${link.why})`;
       lines.push(line);

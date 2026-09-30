@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { loadKnowledge } from "../src/index.js";
+import { buildLinks } from "../src/links.js";
 import { fixture } from "./helpers.js";
 
 /** @type {import("../src/index.js").Knowledge} */
@@ -217,9 +218,36 @@ describe("links", () => {
     const incoming = valid.links("pattern.guide", { direction: "in" });
     expect(incoming.every((link) => link.to.split("#")[0] === "pattern.guide")).toBe(true);
     const both = valid.links("pattern.guide", { direction: "both" });
-    expect(both.length).toBeGreaterThan(incoming.length);
+    expect(both.length).toBeGreaterThan(0);
     const keys = both.map((link) => `${link.kind}\0${link.to}`);
     expect(keys).toEqual([...keys].sort());
+  });
+
+  it("lists each relationship once in both directions, since inverses are stored", () => {
+    for (const id of valid.list().map((record) => record.id)) {
+      expect(valid.links(id, { direction: "both" })).toEqual(valid.links(id));
+    }
+  });
+});
+
+describe("buildLinks", () => {
+  it("keeps every usage.avoid entry that names the same alternative", () => {
+    const links = buildLinks([
+      {
+        id: "component.a",
+        usage: {
+          avoid: [
+            { situation: "Navigate.", instead: "component.b" },
+            { situation: "Open a new tab.", instead: "component.b" },
+          ],
+        },
+      },
+      { id: "component.b" },
+    ]);
+    const situations = (from, kind) =>
+      links.filter((l) => l.from === from && l.kind === kind).map((l) => l.situation);
+    expect(situations("component.a", "alternative")).toEqual(["Navigate.", "Open a new tab."]);
+    expect(situations("component.b", "alternative-to")).toEqual(["Navigate.", "Open a new tab."]);
   });
 });
 
@@ -249,6 +277,12 @@ describe("rules", () => {
     expect(valid.rules({ topic: "accessibility" }).map((rule) => rule.id)).toEqual(["name-it"]);
     expect(shipped.rules({ level: "may" }).every((rule) => rule.level === "may")).toBe(true);
     expect(valid.rules({ query: "accessible name" }).map((rule) => rule.id)).toEqual(["name-it"]);
+  });
+
+  it("matches query words against rule text, not field names", () => {
+    for (const field of ["statement", "topic", "level", "references"]) {
+      expect(valid.rules({ query: field })).toEqual([]);
+    }
   });
 });
 

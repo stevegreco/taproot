@@ -1,7 +1,7 @@
 import { RECORD_ID } from "./schema/info.js";
 import { byCodeUnit, recordIdOf } from "./util.js";
 
-const INVERSE = {
+export const INVERSE = {
   alternative: "alternative-to",
   "alternative-to": "alternative",
   composes: "used-in",
@@ -15,7 +15,8 @@ const INVERSE = {
 
 /**
  * Every link in the corpus: the ones authored or derived from fields, and their inverses.
- * Deduplicated on (from, to, kind) and sorted by kind, then `to`, then `from`.
+ * Deduplicated on (from, to, kind, situation), so two `usage.avoid` entries that name the same
+ * alternative both survive, and sorted by kind, then `to`, then `from`.
  *
  * @param {Record<string, any>[]} records
  * @returns {import("./knowledge.js").Link[]}
@@ -23,7 +24,7 @@ const INVERSE = {
 export function buildLinks(records) {
   const links = new Map();
   const add = (link) => {
-    const key = `${link.from}\t${link.to}\t${link.kind}`;
+    const key = `${link.from}\t${link.to}\t${link.kind}\t${link.situation ?? ""}`;
     if (!links.has(key)) links.set(key, link);
   };
 
