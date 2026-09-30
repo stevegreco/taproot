@@ -37,7 +37,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "node build-styles.js && node build-sources.js",
+    "build": "node build-styles.js",
     "test": "vitest run",
     "watch": "chokidar \"src/**/*.css\" -c \"node build-styles.js\" --initial",
     "dev": "pnpm run watch",
@@ -47,7 +47,6 @@
     "@stevegreco/design-system": "workspace:*"
   },
   "devDependencies": {
-    "@stevegreco/design-system-knowledge": "workspace:*",
     "@vitest/browser-playwright": "^5.0.0",
     "chokidar-cli": "^3.0.0",
     "vitest": "^5.0.0"

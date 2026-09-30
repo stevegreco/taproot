@@ -7,12 +7,6 @@ tags:
   - action
   - hierarchy
   - destructive
-related:
-  - component.button
-  - component.link
-variantGuidance:
-  component.button: [primary, secondary, ghost, danger]
-  component.link: [inline, standalone]
 ---
 
 Action hierarchy helps a person identify the next action without making every available action

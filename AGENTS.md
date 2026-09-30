@@ -2,29 +2,51 @@
 
 ## Design system knowledge
 
-`packages/knowledge` is the source of truth for components. Its
-[README](packages/knowledge/README.md) says which file to edit for each change, how to check it,
-and defines the terms. To answer how a component should be used, read its compiled record with
-`openCatalog` from `@stevegreco/design-system-knowledge/retrieve`, or
-`packages/knowledge/dist/public/markdown/<id>.md` after a build.
+`packages/knowledge` is the source of truth for what each component is and how to use it. It is a
+technology-neutral contract: design and engineering agree on it before anyone builds. The format
+is defined in [`packages/knowledge/SPEC.md`](packages/knowledge/SPEC.md) and the reasoning is in
+ADRs 0001 through 0003 in `docs/adr/` and
+[RFC 0002](docs/rfcs/0002-knowledge-layer-architecture.md).
 
-Before changing how the knowledge system itself works, read `docs/knowledge/requirements.md` and
-`docs/knowledge/content-model.md`. Current decisions are ADRs 0002 through 0006 in `docs/adr/`;
-0001 is superseded, and later ADRs note what they replace in earlier ones. Use the stable `KNOW-*`
-requirement IDs in plans, issues, and pull requests. Update the documents when an implementation
-changes an accepted requirement or decision.
+**Query it** rather than reading files. From the repository root:
 
-Domain-owned sources remain authoritative. Token decisions live in `packages/tokens/docs/adr/`.
-Component specs live in `packages/knowledge/content/components/`, host bindings in
-`packages/knowledge/content/bindings/`, and the component runtime in `packages/components`.
+```bash
+pnpm knowledge search "destructive action"
+pnpm knowledge get component.button
+pnpm knowledge get pattern.action-hierarchy#assign-emphasis
+pnpm knowledge links component.button
+pnpm knowledge rules --level must --topic accessibility
+pnpm knowledge tokens component.button --condition "variant.primary + hover" --resolve
+```
 
-Before adding a component or variant, check
-`packages/knowledge/content/guidelines/compose-or-propose.md`, then follow
-`docs/knowledge/new-component.md`. Decide each state and option
-on its checklist, and record the ones the component does not ship in `contract.rationale`.
+Add `--json` for JSON. `pnpm knowledge list` lists every record. The same operations are available
+as tools, and each record as a `knowledge://<id>` resource, from the `design-system-knowledge` MCP
+server registered in `.mcp.json`.
 
-Do not place design system facts only in an MCP server, documentation page, or tool-specific agent
-skill. Those are consumers or delivery adapters for the portable knowledge records.
+**Edit it** in `packages/knowledge/content/`. Components are `components/<name>/<name>.spec.yaml`.
+Patterns, guidelines, and examples are Markdown with front matter. There is no build step. Validate
+with `pnpm knowledge validate` or `pnpm --filter @stevegreco/design-system-knowledge test`.
+
+**What not to put in a spec.** No element, attribute, slot, framework, or CSS names, and no code.
+A spec says what a component is, not how any technology builds it. Token references are opaque
+strings that name a token. Nothing checks an implementation against a spec, so keep the two
+consistent in review.
+
+**Implementation content** lives with the implementation:
+
+- The web components are hand-written in `packages/components`, with tests in
+  `packages/components/test`.
+- The docs site builds a component page from the knowledge record plus
+  `apps/documentation/implementation/<name>.md` (package, tag name, usage, API table mapping web
+  attributes, properties, and events to spec parameters and events, and web-specific guidance).
+  Examples are in `apps/documentation/examples/`.
+
+Before adding a component or variant, read `pnpm knowledge get guideline.compose-or-propose`, then
+use the `create-component` skill in `.agents/skills/create-component/`. Record each option the
+component does not ship in the spec's `rationale`.
+
+Token decisions live in `packages/tokens/docs/adr/`. Do not place design system facts only in a
+documentation page or an agent skill. Those consume the knowledge records.
 
 ## Build and test
 

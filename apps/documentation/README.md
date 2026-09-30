@@ -1,13 +1,15 @@
 # Design System Documentation
 
 The documentation site uses [Blume](https://blume.build), with Markdown and
-MDX content in `docs/`.
+MDX content in `docs/`. Each component page combines a knowledge record
+(`packages/knowledge`) with an implementation file in `implementation/<slug>.md`
+that holds the web-specific facts: tag name, usage markup, the API table's rows,
+and guidance.
 
 ## Commands
 
 From this package directory, `pnpm dev`, `pnpm build`, and `pnpm test` run only
-this app. They do not build `@stevegreco/design-system`, the knowledge bundle, or
-the web components. From the repository root, use Turbo so those workspace
+this app. They do not build `@stevegreco/design-system` or the web components. From the repository root, use Turbo so those workspace
 dependencies are built first:
 
 ```bash

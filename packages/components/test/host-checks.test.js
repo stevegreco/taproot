@@ -1,29 +1,171 @@
 /**
- * Web-section guarantees, checked once for every component with a web section
- * in the catalog: alias registration, the native `hidden` attribute, declared
- * parts and the required slot, focus forwarding to `web.focus.forwardsTo`,
- * visible keyboard focus, events reaching the host and not firing while
- * disabled, keyboard activation, the `form` property, enum properties, and
- * properties set before registration. A component's own test file covers only
- * its behavior.
- *
- * The rule census credits a tag in a title here to every component whose
- * contract has that rule, so the visible-focus title carries
- * `[a11y-visible-focus]`.
+ * Host behavior shared by every component, driven by the table below: alias
+ * registration, the native `hidden` attribute, rendered parts and the default
+ * slot, focus forwarding, visible keyboard focus, events reaching the host and
+ * not firing while disabled, keyboard activation, the `form` property, enum
+ * properties, and properties set before registration. A component's own test
+ * file covers only its behavior. Add a row when adding a component.
  */
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
-import { commands, userEvent } from "vitest/browser";
+import { userEvent } from "vitest/browser";
 
-import { FIXTURES } from "./helpers/fixtures.js";
+const ELEMENTS = [
+  {
+    id: "badge",
+    tagName: "ds-badge",
+    className: "DsBadge",
+    defineExport: "defineBadge",
+    events: [],
+    focusPart: null,
+    parts: ["badge"],
+    requiresDefaultSlot: true,
+    disabledAttribute: null,
+    fieldsetDisables: false,
+    hasFormProperty: false,
+    activationKeys: [],
+    fixture: {},
+    textAttributes: {},
+    enums: [
+      {
+        attribute: "variant",
+        property: "variant",
+        values: ["default", "accent", "success", "danger", "warning", "info"],
+        default: "default",
+      },
+    ],
+    properties: { variant: "accent" },
+  },
+  {
+    id: "button",
+    tagName: "ds-button",
+    className: "DsButton",
+    defineExport: "defineButton",
+    events: ["click"],
+    focusPart: "button",
+    parts: ["button"],
+    requiresDefaultSlot: true,
+    disabledAttribute: "disabled",
+    fieldsetDisables: true,
+    hasFormProperty: true,
+    activationKeys: ["Enter", "Space"],
+    fixture: {},
+    textAttributes: {},
+    enums: [
+      {
+        attribute: "variant",
+        property: "variant",
+        values: ["primary", "secondary", "ghost", "danger"],
+        default: "primary",
+      },
+      { attribute: "size", property: "size", values: ["sm", "md"], default: "md" },
+      {
+        attribute: "type",
+        property: "type",
+        values: ["button", "submit", "reset"],
+        default: "button",
+      },
+    ],
+    properties: { variant: "danger", size: "sm", type: "submit", disabled: true },
+  },
+  {
+    id: "checkbox",
+    tagName: "ds-checkbox",
+    className: "DsCheckbox",
+    defineExport: "defineCheckbox",
+    events: ["change"],
+    focusPart: "control",
+    parts: ["field", "choice", "control", "indicator", "label", "hint", "error"],
+    requiresDefaultSlot: false,
+    disabledAttribute: "disabled",
+    fieldsetDisables: true,
+    hasFormProperty: true,
+    activationKeys: ["Space"],
+    fixture: {},
+    textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+    enums: [],
+    properties: {
+      label: "sample label",
+      hint: "sample hint",
+      error: "sample error",
+      checked: true,
+      indeterminate: true,
+      name: "sample name",
+      value: "sample value",
+      disabled: true,
+      required: true,
+    },
+  },
+  {
+    id: "link",
+    tagName: "ds-link",
+    className: "DsLink",
+    defineExport: "defineLink",
+    events: ["click"],
+    focusPart: "link",
+    parts: ["link"],
+    requiresDefaultSlot: true,
+    disabledAttribute: null,
+    fieldsetDisables: false,
+    hasFormProperty: false,
+    activationKeys: ["Enter"],
+    fixture: { href: "#fixture" },
+    textAttributes: { href: "#fixture" },
+    enums: [
+      {
+        attribute: "variant",
+        property: "variant",
+        values: ["inline", "standalone"],
+        default: "inline",
+      },
+    ],
+    properties: { href: "#sample", variant: "standalone" },
+  },
+  {
+    id: "text-field",
+    tagName: "ds-text-field",
+    className: "DsTextField",
+    defineExport: "defineTextField",
+    events: ["change"],
+    focusPart: "control",
+    parts: ["field", "label", "control", "hint", "error"],
+    requiresDefaultSlot: false,
+    disabledAttribute: "disabled",
+    fieldsetDisables: true,
+    hasFormProperty: true,
+    activationKeys: [],
+    fixture: {},
+    textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+    enums: [
+      {
+        attribute: "type",
+        property: "type",
+        values: ["text", "email", "password", "search", "url", "tel"],
+        default: "text",
+      },
+    ],
+    properties: {
+      label: "sample label",
+      hint: "sample hint",
+      error: "sample error",
+      type: "email",
+      name: "sample name",
+      value: "sample value",
+      placeholder: "sample placeholder",
+      autocomplete: "email",
+      disabled: true,
+      required: true,
+    },
+  },
+];
 
-const elements = await commands.hostElements();
+const elements = ELEMENTS;
 const modules = new Map();
 const rows = (list) => list.map((element) => [element.tagName, element]);
 const focusable = elements.filter((element) => element.focusPart);
 
 beforeAll(async () => {
   for (const element of elements) {
-    const module = await import(`../src/${element.slug}.js`);
+    const module = await import(`../src/${element.id}.js`);
     module[element.defineExport](testTag(element));
     modules.set(element.id, module);
   }
@@ -39,7 +181,7 @@ function testTag(element, suffix = "") {
 
 function render(element, attributes = {}) {
   const host = document.createElement(testTag(element));
-  for (const [name, value] of Object.entries({ ...FIXTURES[element.id], ...attributes })) {
+  for (const [name, value] of Object.entries({ ...element.fixture, ...attributes })) {
     host.setAttribute(name, value);
   }
   host.textContent = "Label";
@@ -65,7 +207,7 @@ async function trigger(event, target, options = {}) {
 }
 
 describe("host checks", () => {
-  test.each(rows(elements.filter((element) => element.supportsAliases)))(
+  test.each(rows(elements))(
     "<%s> can be registered under more than one tag name",
     (_tagName, element) => {
       const module = modules.get(element.id);
@@ -99,7 +241,7 @@ describe("host checks", () => {
   );
 
   test.each(rows(focusable))(
-    "[a11y-visible-focus] <%s> shows a focus outline when reached by keyboard",
+    "<%s> shows a focus outline when reached by keyboard",
     async (_tagName, element) => {
       const host = render(element);
       const target = focusTarget(element, host);
@@ -128,7 +270,7 @@ describe("host checks", () => {
   });
 
   test.each(rows(elements.filter((element) => element.parts.length > 0)))(
-    "<%s> renders every part its web section declares",
+    "<%s> renders every documented part",
     (_tagName, element) => {
       const host = render(element, element.textAttributes);
       const missing = element.parts.filter(
@@ -140,7 +282,7 @@ describe("host checks", () => {
   );
 
   test.each(rows(elements.filter((element) => element.requiresDefaultSlot)))(
-    "<%s> renders the default slot its web section requires",
+    "<%s> renders its default slot",
     (_tagName, element) => {
       const host = render(element);
 
@@ -150,9 +292,7 @@ describe("host checks", () => {
 
   const suppressed = focusable
     .filter((element) => element.disabledAttribute)
-    .flatMap((element) =>
-      element.suppressedWhenDisabled.map((event) => [element.tagName, event, element]),
-    );
+    .flatMap((element) => element.events.map((event) => [element.tagName, event, element]));
 
   test.each(suppressed)(
     "<%s> does not dispatch %s while disabled",
@@ -222,21 +362,12 @@ describe("host checks", () => {
     expect(uncovered).toEqual([]);
   });
 
-  test("every component with a visible-focus rule has a focus target", () => {
-    const uncovered = elements
-      .filter((element) => element.ruleIds.includes("a11y-visible-focus"))
-      .filter((element) => !element.focusPart)
-      .map((element) => element.id);
-
-    expect(uncovered).toEqual([]);
-  });
-
   const enums = elements.flatMap((element) =>
     element.enums.map((entry) => [element.tagName, entry.property, element, entry]),
   );
 
   test.each(enums)(
-    "<%s> %s returns each contract value and falls back to the contract default",
+    "<%s> %s returns each supported value and falls back to its default",
     (_tagName, _property, element, { attribute, property, values, default: fallback }) => {
       const host = render(element);
 
@@ -244,7 +375,7 @@ describe("host checks", () => {
         host.setAttribute(attribute, value);
         expect(host[property], value).toBe(value);
       }
-      host.setAttribute(attribute, "not-a-contract-value");
+      host.setAttribute(attribute, "not-a-supported-value");
       expect(host[property]).toBe(fallback);
       host.removeAttribute(attribute);
       expect(host[property]).toBe(fallback);
@@ -261,7 +392,7 @@ describe("host checks", () => {
     (_tagName, element) => {
       const tagName = testTag(element, "-upgrade");
       const host = document.createElement(tagName);
-      for (const [name, value] of Object.entries(FIXTURES[element.id] ?? {})) {
+      for (const [name, value] of Object.entries(element.fixture)) {
         host.setAttribute(name, value);
       }
       Object.assign(host, element.properties);

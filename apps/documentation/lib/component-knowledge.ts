@@ -1,8 +1,28 @@
-import { access, cp, mkdir, readdir } from "node:fs/promises";
-import { dirname, join } from "node:path";
+/**
+ * The data behind a component page, assembled from two sources.
+ *
+ * - The knowledge library (`@stevegreco/design-system-knowledge`) supplies usage,
+ *   rules, anatomy, parameters, states, accessibility, patterns, and examples.
+ * - Docs-owned implementation files (`implementation/<slug>.md`) supply everything
+ *   specific to the web component: package, tag name, usage markup, the API
+ *   table's rows, and web guidance.
+ *
+ * A knowledge component with an implementation file gets a page. An
+ * implementation file whose component is not in the knowledge base fails the build.
+ */
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { formatAvoid, formatRule, openCatalog } from "@stevegreco/design-system-knowledge/retrieve";
-import { assertSpecifier } from "./workspace-builds";
+import { loadKnowledge } from "@stevegreco/design-system-knowledge";
+import {
+  implementationSlug,
+  loadImplementations,
+  type ApiMemberKind,
+  type Implementation,
+  type ImplementationApiRow,
+} from "./implementation";
+
+export type { ApiMemberKind } from "./implementation";
 
 export type ComponentSlug = string;
 
@@ -15,9 +35,8 @@ export type ComponentKnowledgeSection =
   | "accessibility"
   | "review";
 
-export type ApiMemberKind = "attribute" | "property" | "event";
 export type CheckLevel = "must" | "should" | "may";
-export type RecordStatus = "draft" | "accepted" | "deprecated" | "superseded";
+export type RecordStatus = "draft" | "stable" | "deprecated";
 
 export interface Variant {
   readonly name: string;
@@ -75,7 +94,7 @@ export interface TogetherPattern {
 }
 
 export interface TogetherSection {
-  /** Every pattern that relates to the component, in catalog order. */
+  /** Every pattern the component links to, by id. */
   readonly patterns: readonly TogetherPattern[];
   readonly example: ExampleFigure | undefined;
 }
@@ -97,11 +116,11 @@ export interface ComponentSlice {
   readonly summary: string;
   readonly status: RecordStatus;
   readonly tagName: string;
-  /** npm package that publishes the element, from the web section. */
+  /** npm package that publishes the element, from the implementation file. */
   readonly packageName: string;
   /** The registration function, exported from `<packageName>/<slug>`. */
   readonly defineExport: string;
-  /** The web section's usage markup, or empty when it has none. */
+  /** The implementation file's usage markup, or empty when it has none. */
   readonly usageHtml: string;
   readonly introMarkdown: string;
   readonly behaviorMarkdown: string;
@@ -115,10 +134,9 @@ export interface ComponentSlice {
 export type DocsKnowledgeCode =
   | "invalid-slug"
   | "missing-component"
-  | "malformed-contract"
+  | "invalid-implementation"
   | "unexpected-slice"
-  | "unknown-section"
-  | "bundle";
+  | "unknown-section";
 
 export class DocsKnowledgeError extends Error {
   readonly code: DocsKnowledgeCode;
@@ -130,16 +148,58 @@ export class DocsKnowledgeError extends Error {
   }
 }
 
-type Catalog = Awaited<ReturnType<typeof openCatalog>>;
+/** The parts of the loaded knowledge base this module reads. */
+export interface KnowledgeSource {
+  readonly contentDir: string;
+  get(id: string): unknown;
+  section(target: string): { content: unknown } | undefined;
+  links(id: string): readonly { to: string; kind: string }[];
+}
 
-/** A guideline section shown under the page's usage, with the heading it declares. */
-interface BehaviorSection {
-  readonly heading: string;
-  readonly markdown: string;
+interface Rule {
+  id: string;
+  level: CheckLevel;
+  topic: "content" | "behavior" | "accessibility";
+  statement: string;
+  applicability?: string;
+  rationale?: string;
+  references?: string[];
+  examples?: { do?: string[]; avoid?: string[] };
+}
+
+interface Parameter {
+  kind: string;
+  description?: string;
+  values?: Record<string, string>;
+  examples?: Record<string, string>;
+  guidance?: Record<string, string>;
+  default?: unknown;
+}
+
+interface RecordBase {
+  id: string;
+  type: string;
+  title: string;
+  summary: string;
+  status: RecordStatus;
+  file: string;
+}
+
+interface ComponentRecord extends RecordBase {
+  description: string;
+  usage?: { avoid?: { situation: string; instead?: string; why?: string }[] };
+  parameters?: Record<string, Parameter>;
+  events?: Record<string, string>;
+  rules?: Rule[];
+  accessibility?: { keyboard?: Record<string, string> };
+}
+
+interface ExampleRecord extends RecordBase {
+  assets?: { path: string; alt: string; width: number; height: number }[];
+  annotations?: { label: string; description: string }[];
 }
 
 const SLUG = /^[a-z][a-z0-9-]*$/;
-const DIGEST_PREFIX_LENGTH = 12;
 const SECTIONS: readonly ComponentKnowledgeSection[] = [
   "intro",
   "behavior",
@@ -149,13 +209,7 @@ const SECTIONS: readonly ComponentKnowledgeSection[] = [
   "accessibility",
   "review",
 ];
-function assetPublicDir(): string {
-  return fileURLToPath(new URL("../public/knowledge-assets/", import.meta.url));
-}
-
-function digestPrefix(digest: string): string {
-  return digest.replace(/^sha256:/, "").slice(0, DIGEST_PREFIX_LENGTH);
-}
+const TOPIC_ORDER = ["content", "behavior", "accessibility"] as const;
 
 function assertSlug(slug: string): asserts slug is ComponentSlug {
   if (!SLUG.test(slug)) {
@@ -166,31 +220,19 @@ function assertSlug(slug: string): asserts slug is ComponentSlug {
   }
 }
 
-function fail(code: DocsKnowledgeCode, message: string): never {
-  throw new DocsKnowledgeError(code, message);
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return value != null && typeof value === "object" && !Array.isArray(value);
-}
-
-function asString(value: unknown, fallback = ""): string {
-  return typeof value === "string" ? value : fallback;
-}
-
 export function loadComponentSlice(slug: string): ComponentSlice {
   assertSlug(slug);
   const slice = slices.get(slug);
   if (!slice) {
     throw new DocsKnowledgeError(
       "missing-component",
-      `No public component record for "${slug}". Expected id component.${slug}.`,
+      `No component page for "${slug}". It needs the record component.${slug} and an implementation/${slug}.md file.`,
     );
   }
   return slice;
 }
 
-/** Slugs of every public component record, in catalog order. */
+/** Slugs of every component with a page, in file-name order. */
 export function componentSlugs(): readonly ComponentSlug[] {
   return [...slices.keys()];
 }
@@ -310,123 +352,78 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
   }
 }
 
-async function stageAssets(publicRoot: string, digest: string): Promise<void> {
-  const from = join(publicRoot, "assets");
-  try {
-    await access(from);
-  } catch {
-    return;
+// -- Reading the knowledge base ---------------------------------------------
+
+function fail(code: DocsKnowledgeCode, message: string): never {
+  throw new DocsKnowledgeError(code, message);
+}
+
+function recordOf<T extends RecordBase>(knowledge: KnowledgeSource, target: string): T | undefined {
+  const id = target.split("#")[0];
+  return knowledge.get(id) as T | undefined;
+}
+
+function slugOf(componentId: string): string {
+  return componentId.slice("component.".length);
+}
+
+/** Where a record's page lives, or undefined when it has none. */
+function docsHref(record: RecordBase, pages: ReadonlySet<string>): string | undefined {
+  if (record.type === "component") {
+    const slug = slugOf(record.id);
+    return pages.has(slug) ? `/components/${slug}` : undefined;
   }
-
-  const to = join(assetPublicDir(), digestPrefix(digest));
-  await mkdir(to, { recursive: true });
-  const entries = await readdir(from, { withFileTypes: true });
-  for (const entry of entries) {
-    await cp(join(from, entry.name), join(to, entry.name), { recursive: true });
-  }
-}
-
-function docsHref(recordId: string): string {
-  const dot = recordId.indexOf(".");
-  const type = dot === -1 ? recordId : recordId.slice(0, dot);
-  const rest = dot === -1 ? recordId : recordId.slice(dot + 1);
-  if (type === "component") return `/components/${rest}`;
-  if (type === "pattern") return "#using-together";
-  if (type === "example") return "#using-together";
-  if (type === "guideline") return "#review-checklist";
-  return `#${rest}`;
-}
-
-function rewriteBundleUrls(markdown: string, digest: string): string {
-  const assetsRoot = `/knowledge-assets/${digestPrefix(digest)}`;
-  return markdown
-    .replace(/\]\(assets\/([^)]+)\)/g, (_match, file: string) => `](${assetsRoot}/${file})`)
-    .replace(
-      /\]\(markdown\/([^)]+?)\.md(?:#[^)]*)?\)/g,
-      (_match, id: string) => `](${docsHref(id)})`,
-    );
-}
-
-function exampleHtml(tagName: string, variant: string, label: string): string {
-  return `<${tagName} variant="${variant}">${label}</${tagName}>`;
-}
-
-/** GitHub-style heading anchor: lowercase, runs of other characters become one hyphen. */
-function headingAnchor(heading: string): string {
-  return heading
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-/** The `##` section whose heading has `anchor`, or undefined when no heading does. */
-function sectionByAnchor(body: string, anchor: string): string | undefined {
-  for (const [heading, section] of markdownByHeading(body).sections) {
-    if (headingAnchor(heading) === anchor) return section;
-  }
+  if (record.type === "pattern" || record.type === "example") return "#using-together";
   return undefined;
 }
 
-function markdownByHeading(body: string): { preamble: string; sections: Map<string, string> } {
-  const matches = [...body.matchAll(/^##\s+(.+)$/gm)];
-  if (matches.length === 0) {
-    return { preamble: body.trim(), sections: new Map() };
-  }
-  const preamble = body.slice(0, matches[0]?.index ?? 0).trim();
-  const sections = new Map<string, string>();
-  for (let index = 0; index < matches.length; index += 1) {
-    const match = matches[index];
-    const heading = match[1]?.trim().toLowerCase();
-    if (!heading) continue;
-    const start = (match.index ?? 0) + match[0].length;
-    const end =
-      index + 1 < matches.length ? (matches[index + 1].index ?? body.length) : body.length;
-    sections.set(heading, body.slice(start, end).trim());
-  }
-  return { preamble, sections };
+/** `pattern.action-hierarchy` reads as "action hierarchy pattern". */
+function referenceLabel(record: RecordBase): string {
+  const name = record.id
+    .slice(record.type.length + 1)
+    .replaceAll("-", " ")
+    .replaceAll(".", " ");
+  return `${name} ${record.type}`;
 }
 
-/** Each `###` subsection's text, keyed by its heading anchor. */
-function subsectionsByAnchor(body: string): Map<string, string> {
-  const subsections = new Map<string, string>();
-  const matches = [...body.matchAll(/^###\s+(.+)$/gm)];
-  for (let index = 0; index < matches.length; index += 1) {
-    const match = matches[index];
-    const heading = match[1]?.trim();
-    if (!heading) continue;
-    const start = (match.index ?? 0) + match[0].length;
-    const end =
-      index + 1 < matches.length ? (matches[index + 1].index ?? body.length) : body.length;
-    let text = body.slice(start, end).trim();
-    const cut = text.search(/^##\s+/m);
-    if (cut !== -1) text = text.slice(0, cut).trim();
-    subsections.set(headingAnchor(heading), text);
-  }
-  return subsections;
+/** End with a period unless the text already ends a sentence. */
+function sentence(text: string): string {
+  return /[.!?]$/.test(text) ? text : `${text}.`;
 }
 
-/**
- * Variant guidance a component opts into. A pattern's `variantGuidance` maps a
- * component ID to its variant values, each naming a `###` subsection of the
- * pattern body by anchor. A pattern without an entry for the component
- * contributes nothing, whatever its headings are called. The knowledge compile
- * rejects anchors, variants, and components that do not exist.
- */
-export function variantGuidance(
-  id: string,
-  patterns: readonly Record<string, unknown>[],
-): Map<string, string> {
-  const guidance = new Map<string, string>();
-  for (const pattern of patterns) {
-    const declared = isObject(pattern.variantGuidance) ? pattern.variantGuidance[id] : undefined;
-    if (!isObject(declared)) continue;
-    const subsections = subsectionsByAnchor(asString(pattern.body));
-    for (const [variant, anchor] of Object.entries(declared)) {
-      const text = subsections.get(asString(anchor));
-      if (text) guidance.set(variant, text);
-    }
+/** A usage `avoid` entry as one Markdown list item. */
+function formatAvoid(
+  knowledge: KnowledgeSource,
+  pages: ReadonlySet<string>,
+  item: { situation: string; instead?: string; why?: string },
+): string {
+  let line = `- ${item.situation}`;
+  if (item.instead) {
+    const target = recordOf<RecordBase>(knowledge, item.instead);
+    const href = target ? docsHref(target, pages) : undefined;
+    const name = target ? target.title : item.instead;
+    line += ` Use ${href ? `[${name}](${href})` : name} instead.`;
   }
-  return guidance;
+  if (item.why) line += ` ${item.why}`;
+  return line;
+}
+
+/** A rule as a Markdown list item with indented detail lines. */
+function formatRule(knowledge: KnowledgeSource, pages: ReadonlySet<string>, rule: Rule): string[] {
+  const lines = [`- **${rule.level}:** ${rule.statement}`];
+  if (rule.applicability) lines.push(`  Applies when: ${rule.applicability}`);
+  if (rule.rationale) lines.push(`  Why: ${rule.rationale}`);
+  for (const reference of rule.references ?? []) {
+    const target = recordOf<RecordBase>(knowledge, reference);
+    if (!target) continue;
+    const href = docsHref(target, pages);
+    lines.push(`  See ${href ? `[${referenceLabel(target)}](${href})` : referenceLabel(target)}.`);
+  }
+  if (rule.examples?.do?.length) lines.push(`  Do: ${sentence(rule.examples.do.join("; "))}`);
+  if (rule.examples?.avoid?.length) {
+    lines.push(`  Avoid: ${sentence(rule.examples.avoid.join("; "))}`);
+  }
+  return lines;
 }
 
 function bulletItems(markdown: string): string[] {
@@ -436,349 +433,319 @@ function bulletItems(markdown: string): string[] {
   });
 }
 
-function enumTypeDisplay(values: Record<string, unknown>): string {
-  return Object.keys(values)
-    .map((key) => `"${key}"`)
-    .join(" | ");
+/** The `##` sections of a Markdown body, as `### Heading` blocks. Code fences are left whole. */
+function bodySections(body: string): string {
+  const parts: string[] = [];
+  let current: string[] = [];
+  let fenced = false;
+  const flush = () => {
+    const text = current.join("\n").trim();
+    if (text) parts.push(text);
+    current = [];
+  };
+  for (const line of body.split("\n")) {
+    if (line.startsWith("```")) fenced = !fenced;
+    const heading = !fenced ? line.match(/^##\s+(.+)$/) : null;
+    if (heading) {
+      flush();
+      current.push(`### ${heading[1].trim()}`);
+    } else {
+      current.push(line);
+    }
+  }
+  flush();
+  return parts.join("\n\n");
 }
 
-function projectValues(spec: Record<string, unknown>): ApiValue[] {
-  if (!isObject(spec.values)) return [];
-  return Object.entries(spec.values).flatMap(([name, description]) =>
-    typeof description === "string" ? [{ name, description }] : [],
-  );
+// -- The API table ----------------------------------------------------------
+
+function enumTypeDisplay(names: readonly string[]): string {
+  return names.map((name) => `"${name}"`).join(" | ");
 }
 
-function defaultDisplay(spec: Record<string, unknown>): string | undefined {
-  if (!Object.hasOwn(spec, "default") || spec.default === undefined) return undefined;
-  if (typeof spec.default === "string") return spec.default;
-  return JSON.stringify(spec.default);
+function defaultDisplay(value: unknown): string | undefined {
+  if (value === undefined) return undefined;
+  return typeof value === "string" ? value : JSON.stringify(value);
 }
 
-function typeDisplay(spec: Record<string, unknown>, kind: ApiMemberKind): string {
-  const valueType = typeof spec.kind === "string" ? spec.kind : spec.type;
-  if (valueType === "enum" && isObject(spec.values)) return enumTypeDisplay(spec.values);
-  if (typeof valueType === "string" && valueType.length > 0) return valueType;
-  return kind === "event" ? "event" : "";
-}
-
-function projectMembers(source: unknown, kind: ApiMemberKind): ApiRow[] {
-  if (!isObject(source)) return [];
-  return Object.entries(source).map(([name, spec]) => {
-    const fields = isObject(spec) ? spec : {};
-    const values = projectValues(fields);
+function projectRow(file: string, record: ComponentRecord, row: ImplementationApiRow): ApiRow {
+  const where = `${file}: api row "${row.name}"`;
+  if (row.kind === "event") {
+    const spec = row.event ? record.events?.[row.event] : undefined;
+    if (row.event && spec === undefined) {
+      fail(
+        "invalid-implementation",
+        `${where} implements the event "${row.event}", but ${record.id} has no such event. Its events: ${Object.keys(record.events ?? {}).join(", ") || "none"}.`,
+      );
+    }
     return {
-      name,
-      kind,
-      typeDisplay: typeDisplay(fields, kind),
-      defaultDisplay: defaultDisplay(fields),
-      description: asString(fields.description),
-      values,
-    };
-  });
-}
-
-function hostValueMap(mapped: Record<string, unknown>): Record<string, unknown> | undefined {
-  return isObject(mapped.values) ? mapped.values : undefined;
-}
-
-function remapValues(
-  fields: Record<string, unknown>,
-  valueMap: Record<string, unknown> | undefined,
-): ApiValue[] {
-  const original = projectValues(fields);
-  if (!valueMap) return original;
-  return original.map((item) => ({
-    ...item,
-    name: asString(valueMap[item.name], item.name),
-  }));
-}
-
-function remapDefault(
-  fields: Record<string, unknown>,
-  valueMap: Record<string, unknown> | undefined,
-): string | undefined {
-  const raw = defaultDisplay(fields);
-  if (raw == null || !valueMap) return raw;
-  return asString(valueMap[raw], raw);
-}
-
-function projectApi(contract: Record<string, unknown>, host: Record<string, unknown>): ApiRow[] {
-  const parameters = isObject(contract.parameters) ? contract.parameters : {};
-  const hostParameters = isObject(host.parameters) ? host.parameters : {};
-  const attributes = Object.entries(parameters).map(([portableName, spec]) => {
-    const fields = isObject(spec) ? spec : {};
-    const mapped = isObject(hostParameters[portableName]) ? hostParameters[portableName] : {};
-    const valueMap = hostValueMap(mapped);
-    const values = remapValues(fields, valueMap);
-    const displayed = Object.fromEntries(values.map((item) => [item.name, item.description]));
-    return {
-      name: asString(mapped.attribute, portableName),
-      kind: "attribute" as const,
-      typeDisplay: typeDisplay({ ...fields, values: displayed }, "attribute"),
-      defaultDisplay: remapDefault(fields, valueMap),
-      description: asString(fields.description),
-      values,
-    };
-  });
-  const portableEvents = isObject(contract.events) ? contract.events : {};
-  const hostEvents = isObject(host.events) ? host.events : {};
-  const events = Object.entries(hostEvents).map(([portableName, spec]) => {
-    const fields = isObject(spec) ? spec : {};
-    const portable = isObject(portableEvents[portableName]) ? portableEvents[portableName] : {};
-    return {
-      name: asString(fields.event, portableName),
-      kind: "event" as const,
+      name: row.name,
+      kind: "event",
       typeDisplay: "event",
       defaultDisplay: undefined,
-      description: asString(portable.description, asString(fields.description)),
+      description: row.description ?? spec ?? "",
       values: [],
     };
-  });
-  return [...attributes, ...projectMembers(host.properties, "property"), ...events];
+  }
+  if (!row.parameter) {
+    return {
+      name: row.name,
+      kind: row.kind,
+      typeDisplay: row.type ?? "",
+      defaultDisplay: undefined,
+      description: row.description ?? "",
+      values: [],
+    };
+  }
+
+  const parameter = record.parameters?.[row.parameter];
+  if (!parameter) {
+    fail(
+      "invalid-implementation",
+      `${where} implements the parameter "${row.parameter}", but ${record.id} has no such parameter. Its parameters: ${Object.keys(record.parameters ?? {}).join(", ") || "none"}.`,
+    );
+  }
+  const rename = row.values ?? {};
+  for (const from of Object.keys(rename)) {
+    if (!parameter.values || !(from in parameter.values)) {
+      fail(
+        "invalid-implementation",
+        `${where} renames the value "${from}", but ${record.id} parameter "${row.parameter}" has no such value.`,
+      );
+    }
+  }
+  const values: ApiValue[] = Object.entries(parameter.values ?? {}).map(([name, description]) => ({
+    name: rename[name] ?? name,
+    description,
+  }));
+  const defaultValue = defaultDisplay(parameter.default);
+  return {
+    name: row.name,
+    kind: row.kind,
+    typeDisplay:
+      row.type ??
+      (parameter.kind === "enum" ? enumTypeDisplay(values.map((v) => v.name)) : parameter.kind),
+    defaultDisplay: defaultValue === undefined ? undefined : (rename[defaultValue] ?? defaultValue),
+    description: row.description ?? parameter.description ?? "",
+    values,
+  };
 }
 
-function webSection(record: Record<string, unknown>, id: string): Record<string, unknown> {
-  if (!isObject(record.web)) fail("malformed-contract", `${id} has no web section`);
-  return record.web;
+/** Every knowledge parameter and event must reach the page; a gap is a docs bug. */
+function assertCovered(implementation: Implementation, record: ComponentRecord): void {
+  const parameters = new Set(
+    implementation.api.flatMap((row) => (row.parameter ? [row.parameter] : [])),
+  );
+  const events = new Set(implementation.api.flatMap((row) => (row.event ? [row.event] : [])));
+  const missing = [
+    ...Object.keys(record.parameters ?? {})
+      .filter((name) => !parameters.has(name))
+      .map((name) => `parameter "${name}"`),
+    ...Object.keys(record.events ?? {})
+      .filter((name) => !events.has(name))
+      .map((name) => `event "${name}"`),
+  ];
+  if (missing.length > 0) {
+    fail(
+      "invalid-implementation",
+      `${implementation.file}: the api table does not cover ${record.id} ${missing.join(", ")}. Add a row with "parameter" or "event" for each.`,
+    );
+  }
 }
+
+// -- Sections ---------------------------------------------------------------
 
 function projectVariants(
-  tagName: string,
-  parameters: Record<string, unknown>,
-  guidance: Map<string, string>,
+  implementation: Implementation,
+  record: ComponentRecord,
+  guidance: (variant: string) => string,
 ): Variant[] {
-  const variant = parameters.variant;
-  if (!isObject(variant) || !isObject(variant.values) || Object.keys(variant.values).length === 0) {
-    return [];
-  }
-  const defaultName = asString(variant.default);
-  const examples = isObject(variant.examples) ? variant.examples : {};
+  const variant = record.parameters?.variant;
+  if (!variant?.values || Object.keys(variant.values).length === 0) return [];
+  const row = implementation.api.find((item) => item.parameter === "variant");
+  const attribute = row?.name ?? "variant";
+  const rename = row?.values ?? {};
   return Object.entries(variant.values).map(([name, description]) => {
-    // Authored on the contract's variant parameter; the value name is the fallback.
-    const label = asString(
-      examples[name],
-      name.replace(/^./, (first) => first.toUpperCase()),
-    );
+    // Authored on the record's variant parameter; the value name is the fallback.
+    const label = variant.examples?.[name] ?? name.replace(/^./, (first) => first.toUpperCase());
+    const web = rename[name] ?? name;
     return {
-      name,
-      description: asString(description),
-      guidance: guidance.get(name) ?? "",
-      isDefault: name === defaultName,
-      exampleHtml: exampleHtml(tagName, name, label),
+      name: web,
+      description,
+      guidance: guidance(name),
+      isDefault: name === variant.default,
+      exampleHtml: `<${implementation.tagName} ${attribute}="${web}">${label}</${implementation.tagName}>`,
       exampleLabel: label,
     };
   });
 }
 
-function projectAccessibility(value: unknown, id: string): AccessibilitySection {
-  if (!isObject(value)) {
-    fail("malformed-contract", `${id} contract is missing accessibility`);
-  }
-  const keyboard = Array.isArray(value.keyboard)
-    ? value.keyboard.flatMap((item) => {
-        if (!isObject(item)) return [];
-        return [{ key: asString(item.key), action: asString(item.action) }];
-      })
-    : [];
-  const requirements = Array.isArray(value.requirements)
-    ? value.requirements.flatMap((item) => {
-        if (typeof item === "string") return [item];
-        if (isObject(item) && typeof item.statement === "string") return [item.statement];
-        return [];
-      })
-    : [];
-  return { keyboard, requirements };
-}
-
-function projectExample(record: Record<string, unknown>, digest: string): ExampleFigure {
-  const assets = Array.isArray(record.assets) ? record.assets : [];
-  const asset = assets[0];
-  if (!isObject(asset)) {
-    fail("malformed-contract", `${asString(record.id)} example is missing assets`);
-  }
-  const bundlePath = asString(asset.bundlePath);
-  const file = bundlePath.replace(/^assets\//, "");
-  const annotations = Array.isArray(record.annotations)
-    ? record.annotations.flatMap((item) => {
-        if (!isObject(item)) return [];
-        return [{ label: asString(item.label), description: asString(item.description) }];
-      })
-    : [];
+function projectAccessibility(record: ComponentRecord): AccessibilitySection {
   return {
-    title: asString(record.title),
-    summary: asString(record.summary),
-    src: `/knowledge-assets/${digestPrefix(digest)}/${file}`,
-    alt: asString(asset.alt),
-    width: typeof asset.width === "number" ? asset.width : 0,
-    height: typeof asset.height === "number" ? asset.height : 0,
-    annotations,
+    keyboard: Object.entries(record.accessibility?.keyboard ?? {}).map(([key, action]) => ({
+      key,
+      action,
+    })),
+    requirements: (record.rules ?? [])
+      .filter((rule) => rule.topic === "accessibility")
+      .map((rule) => rule.statement),
   };
 }
 
-/** The review checklist: every rule in the contract, in the order the page presents them. */
-function projectReview(contract: Record<string, unknown>): ReviewSection | undefined {
-  const accessibility = isObject(contract.accessibility) ? contract.accessibility : {};
-  const rules = [contract.content, contract.behavior, accessibility.requirements].flatMap((list) =>
-    Array.isArray(list) ? list.filter(isObject) : [],
+/** The review checklist: every rule, content first, in the order the page presents them. */
+function projectReview(record: ComponentRecord): ReviewSection | undefined {
+  const rules = record.rules ?? [];
+  const checks = TOPIC_ORDER.flatMap((topic) =>
+    rules
+      .filter((rule) => rule.topic === topic)
+      .map((rule) => ({ id: rule.id, level: rule.level, requirement: rule.statement })),
   );
-  const checks = rules.flatMap((rule) => {
-    const level = rule.level;
-    if (level !== "must" && level !== "should" && level !== "may") return [];
-    return [{ id: asString(rule.id), level, requirement: asString(rule.statement) }];
-  });
   return checks.length > 0 ? { title: "Review checklist", checks } : undefined;
 }
 
-/** "Using together": each related pattern's summary and Avoid list, plus the example. */
-export function projectTogether(
-  patterns: readonly Record<string, unknown>[],
-  example: ExampleFigure | undefined,
-): TogetherSection | undefined {
-  if (patterns.length === 0 && !example) return undefined;
+function projectExample(
+  record: ExampleRecord,
+  assetDir: string,
+  contentDir: string,
+): ExampleFigure {
+  const asset = record.assets?.[0];
+  if (!asset) fail("unexpected-slice", `${record.id} has no assets to show.`);
+  const file = basename(asset.path);
+  const to = join(assetDir, record.id);
+  mkdirSync(to, { recursive: true });
+  copyFileSync(join(contentDir, dirname(record.file), asset.path), join(to, file));
   return {
-    patterns: patterns.map((pattern) => ({
-      id: asString(pattern.id),
-      title: asString(pattern.title),
-      summary: asString(pattern.summary),
-      avoid: bulletItems(markdownByHeading(asString(pattern.body)).sections.get("avoid") ?? ""),
+    title: record.title,
+    summary: record.summary,
+    src: `/knowledge-assets/${record.id}/${file}`,
+    alt: asset.alt,
+    width: asset.width,
+    height: asset.height,
+    annotations: (record.annotations ?? []).map((item) => ({
+      label: item.label,
+      description: item.description,
     })),
-    example,
   };
 }
 
-function projectIntro(
-  record: Record<string, unknown>,
-  behaviorSection: BehaviorSection | undefined,
-  digest: string,
-): { introMarkdown: string; behaviorMarkdown: string } {
-  const contract = isObject(record.contract) ? record.contract : {};
-  const introParts = [asString(contract.description)];
-  const usage = isObject(contract.usage) ? contract.usage : {};
-  const avoid = Array.isArray(usage.avoid) ? usage.avoid.filter(isObject) : [];
-  const avoidLines = avoid.map((item) => formatAvoid(item));
-  if (avoidLines.length > 0) {
-    introParts.push(`### When to avoid\n\n${avoidLines.join("\n")}`);
-  }
-
-  const contentRules = Array.isArray(contract.content) ? contract.content.filter(isObject) : [];
-  const contentLines = contentRules.flatMap((rule) => formatRule(rule));
-  const label =
-    contentLines.length > 0
-      ? rewriteBundleUrls(`### Write the label\n\n${contentLines.join("\n")}`, digest)
-      : "";
-  const behavior = behaviorSection
-    ? `### ${behaviorSection.heading}\n\n${rewriteBundleUrls(behaviorSection.markdown, digest)}`
-    : "";
-  return {
-    introMarkdown: introParts.filter((part) => part.length > 0).join("\n\n"),
-    behaviorMarkdown: [label, behavior].filter((part) => part.length > 0).join("\n\n"),
-  };
+interface Context {
+  readonly knowledge: KnowledgeSource;
+  readonly pages: ReadonlySet<string>;
+  readonly assetDir: string;
 }
 
-function projectComponent(catalog: Catalog, record: unknown, digest: string): ComponentSlice {
-  if (!isObject(record)) fail("malformed-contract", "component record must be an object");
-  const id = asString(record.id);
-  if (!id.startsWith("component.")) {
-    fail("malformed-contract", `${id || "<missing id>"} is not a component record`);
+function projectComponent(context: Context, implementation: Implementation): ComponentSlice {
+  const { knowledge, pages, assetDir } = context;
+  const record = recordOf<ComponentRecord>(knowledge, implementation.component);
+  const slug = implementationSlug(implementation);
+  if (record?.type !== "component") {
+    fail(
+      "invalid-implementation",
+      `${implementation.file}: component "${implementation.component}" is not a component record in the knowledge base.`,
+    );
   }
-  const slug = id.slice("component.".length);
-  if (!SLUG.test(slug)) {
-    fail("malformed-contract", `${id} does not map to a page slug`);
+  if (slugOf(record.id) !== slug) {
+    fail(
+      "invalid-implementation",
+      `${implementation.file}: the file name says "${slug}", but it implements ${record.id}. Name the file ${slugOf(record.id)}.md.`,
+    );
   }
-  if (!isObject(record.contract)) {
-    fail("malformed-contract", `${id} is missing a contract`);
-  }
-  const host = webSection(record, id);
-  const tagName = asString(host.defaultTagName);
-  if (!tagName) fail("malformed-contract", `${id} web section is missing defaultTagName`);
-  const packageName = asString(host.package);
-  const registration = isObject(host.registration) ? host.registration : {};
-  const defineExport = asString(registration.export);
-  if (!packageName || !defineExport) {
-    fail("malformed-contract", `${id} web section is missing its package or registration export`);
-  }
-  const parameters = record.contract.parameters;
-  if (!isObject(parameters)) {
-    fail("malformed-contract", `${id} contract is missing parameters`);
-  }
+  assertCovered(implementation, record);
+  const api = implementation.api.map((row) => projectRow(implementation.file, record, row));
 
-  const status = record.status;
-  if (
-    status !== "draft" &&
-    status !== "accepted" &&
-    status !== "deprecated" &&
-    status !== "superseded"
-  ) {
-    fail("malformed-contract", `${id} has an unknown status`);
+  // Patterns the component links to, by any link kind, and the examples of those or of the component.
+  const outgoing = knowledge.links(record.id);
+  const patternIds = [
+    ...new Set(
+      outgoing.flatMap((link) =>
+        recordOf<RecordBase>(knowledge, link.to)?.type === "pattern" ? [link.to.split("#")[0]] : [],
+      ),
+    ),
+  ].sort();
+  const patterns = patternIds.map((id) => recordOf<RecordBase>(knowledge, id) as RecordBase);
+  const exampleIds = [
+    ...new Set(
+      [record.id, ...patternIds].flatMap((id) =>
+        knowledge
+          .links(id)
+          .filter(
+            (link) =>
+              (link.kind === "examples" || link.kind === "related") &&
+              recordOf<RecordBase>(knowledge, link.to)?.type === "example",
+          )
+          .map((link) => link.to.split("#")[0]),
+      ),
+    ),
+  ].sort();
+  if (exampleIds.length > 1) {
+    fail(
+      "unexpected-slice",
+      `${record.id} links to more than one example (${exampleIds.join(", ")}); the page shows one.`,
+    );
   }
+  const example = exampleIds[0]
+    ? projectExample(
+        recordOf<ExampleRecord>(knowledge, exampleIds[0]) as ExampleRecord,
+        assetDir,
+        knowledge.contentDir,
+      )
+    : undefined;
 
-  const patterns: Record<string, unknown>[] = [];
-  let behaviorSection: BehaviorSection | undefined;
-  let example: ExampleFigure | undefined;
+  // Each variant value names its guidance section in the spec (`parameters.variant.guidance`).
+  const guidance = (variant: string): string => {
+    const target = record.parameters?.variant?.guidance?.[variant];
+    const section = target ? knowledge.section(target) : undefined;
+    return typeof section?.content === "string" ? section.content : "";
+  };
 
-  for (const neighbor of catalog.related(id)) {
-    const related = neighbor.record;
-    if (!isObject(related)) continue;
-    const type = related.type;
-    if (type === "pattern") {
-      patterns.push(related);
-    } else if (type === "example") {
-      if (example) fail("unexpected-slice", `${id} has more than one related example`);
-      example = projectExample(related, digest);
-    } else if (type === "guideline") {
-      const sections = isObject(related.docsSections) ? related.docsSections : {};
-      const behavior = isObject(sections.behavior) ? sections.behavior : {};
-      const behaviorAnchor = asString(behavior.section);
-      if (behaviorAnchor) {
-        if (behaviorSection)
-          fail("unexpected-slice", `${id} has more than one guideline with docsSections.behavior`);
-        const section = sectionByAnchor(asString(related.body), behaviorAnchor);
-        if (section === undefined) {
-          fail(
-            "malformed-contract",
-            `${asString(related.id)} docsSections.behavior names #${behaviorAnchor}, but no ## heading has that anchor`,
-          );
-        }
-        if (!section) {
-          fail(
-            "malformed-contract",
-            `${asString(related.id)} docsSections.behavior names #${behaviorAnchor}, but that section is empty`,
-          );
-        }
-        const heading = asString(behavior.heading);
-        if (!heading) {
-          fail(
-            "malformed-contract",
-            `${asString(related.id)} docsSections.behavior has no heading`,
-          );
-        }
-        behaviorSection = { heading, markdown: section };
-      }
-    }
-  }
+  const use = (record.usage?.do ?? []).map((situation) => `- ${situation}`);
+  const avoid = (record.usage?.avoid ?? []).map((item) => formatAvoid(knowledge, pages, item));
+  const introParts = [record.description];
+  if (use.length > 0) introParts.push(`### When to use\n\n${use.join("\n")}`);
+  if (avoid.length > 0) introParts.push(`### When to avoid\n\n${avoid.join("\n")}`);
 
-  const variants = projectVariants(tagName, parameters, variantGuidance(id, patterns));
-  const { introMarkdown, behaviorMarkdown } = projectIntro(record, behaviorSection, digest);
+  const contentLines = (record.rules ?? [])
+    .filter((rule) => rule.topic === "content")
+    .flatMap((rule) => formatRule(knowledge, pages, rule));
+  const behaviorParts = [
+    contentLines.length > 0 ? `### Write the content\n\n${contentLines.join("\n")}` : "",
+    bodySections(implementation.body),
+  ];
 
-  const together = projectTogether(patterns, example);
+  const together =
+    patterns.length === 0 && !example
+      ? undefined
+      : {
+          patterns: patterns.map((pattern) => {
+            const avoidSection = knowledge.section(`${pattern.id}#avoid`);
+            return {
+              id: pattern.id,
+              title: pattern.title,
+              summary: pattern.summary,
+              avoid: bulletItems(
+                typeof avoidSection?.content === "string" ? avoidSection.content : "",
+              ),
+            };
+          }),
+          example,
+        };
 
   return {
     slug,
-    title: asString(record.title),
-    summary: asString(record.summary),
-    status: status as RecordStatus,
-    tagName,
-    packageName,
-    defineExport,
-    usageHtml: asString(host.example).trim(),
-    introMarkdown,
-    behaviorMarkdown,
-    variants,
-    api: projectApi(record.contract, host),
-    accessibility: projectAccessibility(record.contract.accessibility, id),
+    title: record.title,
+    summary: record.summary,
+    status: record.status,
+    tagName: implementation.tagName,
+    packageName: implementation.package,
+    defineExport: implementation.defineExport,
+    usageHtml: implementation.usage,
+    introMarkdown: introParts.filter((part) => part.length > 0).join("\n\n"),
+    behaviorMarkdown: behaviorParts.filter((part) => part.length > 0).join("\n\n"),
+    variants: projectVariants(implementation, record, guidance),
+    api,
+    accessibility: projectAccessibility(record),
     together,
-    review: projectReview(record.contract),
+    review: projectReview(record),
   };
 }
 
@@ -794,45 +761,50 @@ function deepFreeze<T>(value: T): T {
 }
 
 /**
- * The package's public bundle directory. Astro bundles this module, so the loader's own
- * default location does not survive; resolve the package export instead.
+ * One slice per implementation file, in file-name order. Copies each example's
+ * image into `assetDir/<example id>/` so the page can serve it.
  */
-function resolvePublicRoot(): string {
-  try {
-    return dirname(
-      assertSpecifier(
-        "@stevegreco/design-system-knowledge/manifest",
-        "@stevegreco/design-system-knowledge",
-      ),
-    );
-  } catch (error) {
-    if (error instanceof DocsKnowledgeError) throw error;
-    throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
-  }
-}
-
-async function assembleDocsKnowledge(): Promise<ReadonlyMap<string, ComponentSlice>> {
-  let catalog: Catalog;
-  try {
-    catalog = await openCatalog(resolvePublicRoot(), { expectVisibility: "public" });
-  } catch (error) {
-    if (error instanceof DocsKnowledgeError) throw error;
-    throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
-  }
-
-  try {
-    if (!catalog.info.root) throw new Error("the knowledge catalog has no bundle directory");
-    await stageAssets(catalog.info.root, catalog.info.digest);
-  } catch (error) {
-    throw new DocsKnowledgeError("bundle", error instanceof Error ? error.message : String(error));
-  }
-
+export function assembleSlices(
+  knowledge: KnowledgeSource,
+  implementations: readonly Implementation[],
+  assetDir: string,
+): ReadonlyMap<string, ComponentSlice> {
+  const pages = new Set(implementations.map(implementationSlug));
+  const context: Context = { knowledge, pages, assetDir };
   const map = new Map<string, ComponentSlice>();
-  for (const record of catalog.list({ type: "component" })) {
-    const slice = deepFreeze(projectComponent(catalog, record, catalog.info.digest));
+  for (const implementation of implementations) {
+    const slice = deepFreeze(projectComponent(context, implementation));
     map.set(slice.slug, slice);
   }
   return Object.freeze(map);
 }
 
-const slices: ReadonlyMap<string, ComponentSlice> = await assembleDocsKnowledge();
+/**
+ * The docs app's root. Astro bundles this module into `dist/`, where its own
+ * URL no longer points into the app, so walk up to the package that owns the folder.
+ */
+function docsRoot(): string {
+  let dir = dirname(fileURLToPath(import.meta.url));
+  while (!existsSync(join(dir, "implementation")) || !existsSync(join(dir, "package.json"))) {
+    const parent = dirname(dir);
+    if (parent === dir) throw new Error("Could not find the docs app root (implementation/).");
+    dir = parent;
+  }
+  return dir;
+}
+
+/** The knowledge package's content folder, resolved the same way in source and in the bundle. */
+function knowledgeContentDir(): string {
+  const manifest = fileURLToPath(
+    import.meta.resolve("@stevegreco/design-system-knowledge/package.json"),
+  );
+  return join(dirname(manifest), "content");
+}
+
+const root = docsRoot();
+
+const slices: ReadonlyMap<string, ComponentSlice> = assembleSlices(
+  await loadKnowledge({ contentDir: knowledgeContentDir() }),
+  loadImplementations(join(root, "implementation")),
+  join(root, "public", "knowledge-assets"),
+);

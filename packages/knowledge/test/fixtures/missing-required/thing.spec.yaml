@@ -1,0 +1,8 @@
+id: component.thing
+type: component
+title: Thing
+summary: Use Thing for testing.
+description: A test component.
+usage:
+  do:
+    - Test things.

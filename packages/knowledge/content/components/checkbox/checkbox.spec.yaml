@@ -6,351 +6,310 @@ summary: Use Checkbox to turn one independent option on or off, with a label, hi
 tags:
   - form
   - selection
-related:
-  - component.button
-  - component.text-field
+links:
+  related:
+    - component.text-field
 sources:
-  - kind: adr
-    path: packages/tokens/docs/adr/0003-token-tier-consumption.md
-contract:
-  description: Turns one independent option on or off, and associates a label, optional hint, and optional error with the control.
-  usage:
-    do:
-      - situation: Turn one option on or off in a form that is submitted later.
-      - situation: Choose any number of options from a short list, one checkbox per option.
-      - situation: Confirm an agreement or acknowledgement before submit.
-      - situation: Select or clear a list of options at once, showing indeterminate when only some are selected.
-    avoid:
-      - situation: Choose exactly one option from a list.
-        instead: Radio group
-        why: Checkboxes are independent. Nothing stops two being checked.
-      - situation: Apply a setting as soon as it is toggled, with no submit.
-        instead: Switch
-        why: A checkbox value takes effect when its form is submitted.
-      - situation: Trigger an action by itself.
-        instead: Button
-        why: Checkbox records a choice.
-  content:
-    - id: visible-label
-      level: must
-      statement: Provide a visible label that names the option when checked.
-    - id: label-states-positive
-      level: should
-      statement: Word the label so that checked means yes. Avoid negatives that make unchecked a double negative.
-      examples:
-        do:
-          - Email me product updates
-          - I agree to the terms
-        avoid:
-          - Don't email me
-    - id: hint-adds-guidance
-      level: should
-      statement: Use a hint for consequence or detail that the label does not already state.
-    - id: error-says-what-to-fix
-      level: must
-      statement: Write the error as what to fix.
-      examples:
-        do:
-          - Agree to the terms to continue.
-        avoid:
-          - Required
-  anatomy:
-    - name: field
-      role: container
-      description: The choice row, then hint and error, stacked together.
-    - name: choice
-      role: container
-      description: Box and label side by side. The whole row is the click target.
-    - name: control
-      role: interactive-surface
-      description: The box. A native checkbox that owns checked state and focus.
-    - name: indicator
-      role: indicator
-      description: Check mark when checked, dash when indeterminate. Drawn inside the box and hidden from assistive technology.
-    - name: label
-      role: label
-      description: Visible name for the option.
-    - name: hint
-      role: description
-      description: Optional supporting guidance.
-    - name: error
-      role: description
-      description: Optional message that says what to fix.
-  parameters:
-    label:
-      kind: string
-      description: Visible label. This is the accessible name.
-    hint:
-      kind: string
-      description: Supporting guidance. Included in the accessible description when set.
-    error:
-      kind: string
-      description: What to fix. A non-empty value marks the control invalid and is included in the accessible description.
+  - title: Token tier consumption (tokens ADR 0003)
+    url: packages/tokens/docs/adr/0003-token-tier-consumption.md
+description: >-
+  Turns one independent option on or off, and associates a label, optional hint, and optional error
+  with the control.
+usage:
+  do:
+    - Turn one option on or off in a form that is submitted later.
+    - Choose any number of options from a short list, one checkbox per option.
+    - Confirm an agreement or acknowledgement before submit.
+    - Select or clear a list of options at once, showing indeterminate when only some are selected.
+  avoid:
+    - situation: Choose exactly one option from a list.
+      instead: Radio group
+      why: Checkboxes are independent. Nothing stops two being checked.
+    - situation: Apply a setting as soon as it is toggled, with no submit.
+      instead: Switch
+      why: A checkbox value takes effect when its form is submitted.
+    - situation: Trigger an action by itself.
+      instead: component.button
+      why: Checkbox records a choice.
+anatomy:
+  field:
+    role: container
+    description: The choice row, then hint and error, stacked together.
+  choice:
+    role: container
+    description: Box and label side by side. The whole row is the click target.
+  control:
+    role: interactive-surface
+    description: The box. A native checkbox that owns checked state and focus.
+  indicator:
+    role: indicator
+    description: >-
+      Check mark when checked, dash when indeterminate. Drawn inside the box and hidden from
+      assistive technology.
+  label:
+    role: label
+    description: Visible name for the option.
+  hint:
+    role: description
+    description: Optional supporting guidance.
+  error:
+    role: description
+    description: Optional message that says what to fix.
+parameters:
+  label:
+    kind: string
+    description: Visible label. This is the accessible name.
+  hint:
+    kind: string
+    description: Supporting guidance. Included in the accessible description when set.
+  error:
+    kind: string
+    description: >-
+      What to fix. A non-empty value marks the control invalid and is included in the accessible
+      description.
+  checked:
+    kind: boolean
+    default: false
+    description: Whether the option is on. The attribute sets the initial state; form reset restores it.
+  indeterminate:
+    kind: boolean
+    default: false
+    description: >-
+      Shows a mixed state, for a parent whose options are partly selected. Presentational only; it
+      does not change the submitted value.
+  name:
+    kind: string
+    description: Form field name. The value is submitted under this name when checked.
+  value:
+    kind: string
+    description: Value submitted when checked. Defaults to "on", as for a native checkbox.
+  disabled:
+    kind: boolean
+    default: false
+    description: Prevents toggling. A disabled checkbox does not submit its value.
+  required:
+    kind: boolean
+    default: false
+    description: The checkbox must be checked before submit. Conveyed by more than color.
+events:
+  input: The checked state changed from user interaction.
+  change: The checked state was committed from user interaction.
+states:
+  - disabled
+  - invalid
+  - indeterminate
+  - checked
+  - hover
+  - focus
+  - default
+rules:
+  - id: visible-label
+    level: must
+    topic: content
+    statement: Provide a visible label that names the option when checked.
+  - id: label-states-positive
+    level: should
+    topic: content
+    statement: >-
+      Word the label so that checked means yes. Avoid negatives that make unchecked a double
+      negative.
+    examples:
+      do:
+        - Email me product updates
+        - I agree to the terms
+      avoid:
+        - Don't email me
+  - id: hint-adds-guidance
+    level: should
+    topic: content
+    statement: Use a hint for consequence or detail that the label does not already state.
+  - id: error-says-what-to-fix
+    level: must
+    topic: content
+    statement: Write the error as what to fix.
+    examples:
+      do:
+        - Agree to the terms to continue.
+      avoid:
+        - Required
+  - id: toggle-on-activate
+    level: must
+    topic: behavior
+    statement: >-
+      Clicking the box or the label, or pressing Space on the focused box, toggles checked and fires
+      input then change.
+  - id: indeterminate-clears-on-activate
+    level: must
+    topic: behavior
+    statement: >-
+      Activating an indeterminate checkbox clears indeterminate and toggles checked, as a native
+      checkbox does.
+  - id: indeterminate-not-a-value
+    level: must
+    topic: behavior
+    statement: Indeterminate does not change checked or the submitted value.
+  - id: programmatic-no-events
+    level: must
+    topic: behavior
+    statement: Setting checked or indeterminate from script does not fire input or change.
+  - id: error-marks-invalid
+    level: must
+    topic: behavior
+    statement: A non-empty error marks the control invalid, and clearing the error removes that state.
+  - id: error-blocks-submit
+    level: must
+    topic: behavior
+    statement: While a non-empty error is set, the control blocks its form from submitting.
+  - id: disabled-blocks-toggle
+    level: must
+    topic: behavior
+    statement: Disabled prevents toggling from pointer and keyboard.
+  - id: form-value
+    level: should
+    topic: behavior
+    statement: >-
+      When checked, the value submits under the name. Unchecked submits nothing. Reset restores the
+      initial checked state and clears indeterminate.
+    applicability: Hosts that implement form association.
+  - id: a11y-visible-label
+    level: must
+    topic: accessibility
+    statement: >-
+      The checkbox has a visible label that is its accessible name, and clicking the label toggles
+      it.
+  - id: a11y-mixed-state
+    level: must
+    topic: accessibility
+    statement: Indeterminate is exposed to assistive technology as mixed.
+  - id: a11y-described-by
+    level: must
+    topic: accessibility
+    statement: Hint and error are associated so assistive technology can describe the checkbox.
+  - id: a11y-invalid-message
+    level: must
+    topic: accessibility
+    statement: Invalid state includes a text message. Meaning does not depend on color alone.
+  - id: a11y-required
+    level: must
+    topic: accessibility
+    statement: Required is announced and is not conveyed by color alone.
+  - id: a11y-state-not-color-alone
+    level: must
+    topic: accessibility
+    statement: Checked and indeterminate are shown by the indicator's shape, not by fill color alone.
+  - id: a11y-forced-colors
+    level: must
+    topic: accessibility
+    statement: Under forced colors, the box outline, the indicator, and focus stay visible in every state.
+  - id: a11y-visible-focus
+    level: must
+    topic: accessibility
+    statement: Keyboard focus remains visibly indicated.
+accessibility:
+  role: Checkbox
+  name: Required from the visible label.
+  keyboard:
+    Tab: Move focus to or from the checkbox.
+    Space: Toggle checked.
+tokens:
+  field:
+    base:
+      gap: primitives.space.1
+  choice:
+    base:
+      gap: primitives.space.2
+  control:
+    base:
+      background: semantic.color.background.surface
+      border: semantic.color.border.default
+      radius: primitives.radius.xs
+    hover:
+      border: semantic.color.border.strong
+    focus:
+      focus-ring: semantic.color.border.focus
     checked:
-      kind: boolean
-      default: false
-      description: Whether the option is on. The attribute sets the initial state; form reset restores it.
+      background: semantic.color.background.action.primary.default
+      border: semantic.color.border.action.primary.default
     indeterminate:
-      kind: boolean
-      default: false
-      description: Shows a mixed state, for a parent whose options are partly selected. Presentational only; it does not change the submitted value.
-    name:
-      kind: string
-      description: Form field name. The value is submitted under this name when checked.
-    value:
-      kind: string
-      description: Value submitted when checked. Defaults to "on", as for a native checkbox.
+      background: semantic.color.background.action.primary.default
+      border: semantic.color.border.action.primary.default
     disabled:
-      kind: boolean
-      default: false
-      description: Prevents toggling. A disabled checkbox does not submit its value.
-    required:
-      kind: boolean
-      default: false
-      description: The checkbox must be checked before submit. Conveyed by more than color.
-  events:
-    input:
-      description: The checked state changed from user interaction.
-    change:
-      description: The checked state was committed from user interaction.
-  states:
-    - disabled
-    - invalid
-    - indeterminate
-    - checked
-    - hover
-    - focus
-    - default
-  behavior:
-    - id: toggle-on-activate
-      level: must
-      statement: Clicking the box or the label, or pressing Space on the focused box, toggles checked and fires input then change.
-    - id: indeterminate-clears-on-activate
-      level: must
-      statement: Activating an indeterminate checkbox clears indeterminate and toggles checked, as a native checkbox does.
-    - id: indeterminate-not-a-value
-      level: must
-      statement: Indeterminate does not change checked or the submitted value.
-    - id: programmatic-no-events
-      level: must
-      statement: Setting checked or indeterminate from script does not fire input or change.
-    - id: error-marks-invalid
-      level: must
-      statement: A non-empty error marks the control invalid, and clearing the error removes that state.
-    - id: error-blocks-submit
-      level: must
-      statement: While a non-empty error is set, the control blocks its form from submitting.
-    - id: disabled-blocks-toggle
-      level: must
-      statement: Disabled prevents toggling from pointer and keyboard.
-    - id: form-value
-      level: should
-      statement: When checked, the value submits under the name. Unchecked submits nothing. Reset restores the initial checked state and clears indeterminate.
-      applicability: Hosts that implement form association.
-  accessibility:
-    semantics: Checkbox.
-    name: Required from the visible label.
-    keyboard:
-      - key: Tab
-        action: Move focus to or from the checkbox.
-      - key: Space
-        action: Toggle checked.
-    requirements:
-      - id: a11y-visible-label
-        level: must
-        statement: The checkbox has a visible label that is its accessible name, and clicking the label toggles it.
-      - id: a11y-mixed-state
-        level: must
-        statement: Indeterminate is exposed to assistive technology as mixed.
-      - id: a11y-described-by
-        level: must
-        statement: Hint and error are associated so assistive technology can describe the checkbox.
-      - id: a11y-invalid-message
-        level: must
-        statement: Invalid state includes a text message. Meaning does not depend on color alone.
-      - id: a11y-required
-        level: must
-        statement: Required is announced and is not conveyed by color alone.
-      - id: a11y-state-not-color-alone
-        level: must
-        statement: Checked and indeterminate are shown by the indicator's shape, not by fill color alone.
-      - id: a11y-forced-colors
-        level: must
-        statement: Under forced colors, the box outline, the indicator, and focus stay visible in every state.
-      - id: a11y-visible-focus
-        level: must
-        statement: Keyboard focus remains visibly indicated.
-  rationale:
-    - decision: Checkbox consumes semantic tokens directly, plus one radius primitive.
-      rationale: ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is already audited against them. No semantic radius fits a 16px box, so the box uses primitives.radius.xs. No component-token namespace.
-    - decision: Checked and indeterminate are states driven by their parameters.
-      rationale: They change the same box fill, and indeterminate wins over checked. As states, their order says so. As two boolean axes they would assign the fill in overlapping rules.
-    - decision: A checked or indeterminate box does not change on hover.
-      rationale: Checked and indeterminate come before hover, so their border wins, and the indicator already confirms the state. Hover strengthens the unchecked border only.
-    - decision: Disabled overrides checked and indeterminate fills, not the indicator.
-      rationale: Disabled comes first and sets every box channel, so a disabled box uses disabled colors in every state. The indicator shape still shows whether it is checked.
-    - decision: Label, hint, and error belong to the checkbox.
-      rationale: Same decision as Text field. A separate field shell does not exist yet. Association stays on this control until that shell lands.
-    - decision: One size, no density variant, no pressed state.
-      rationale: The box is a fixed 16px square aligned to the first line of the label. Box size is component geometry, not a token channel. The label row is the click target, so compact layouts change spacing around the checkbox, not the checkbox. Activation commits on release, so there is no separate pressed styling.
-    - decision: No icon-only or unlabeled checkbox.
-      rationale: The visible label is the accessible name and part of the click target. A checkbox in a table row still gets a label; hiding it visually is the consumer's choice.
-    - decision: No loading state, nothing mirrors under right-to-left, and no animation.
-      rationale: Toggling is local until submit, so there is no work to wait on; settings that save immediately belong to Switch. The check mark and dash are not directional, and box and label order follows the inline direction. State changes swap colors and the indicator instantly, so there is nothing to reduce under prefers-reduced-motion.
-    - decision: Checkbox groups are not part of this component.
-      rationale: Group a list with a native fieldset and legend. A group-level label and error belong to a field shell.
-  visuals:
-    field:
-      base:
-        gap: primitives.space.1
-    choice:
-      base:
-        gap: primitives.space.2
-    control:
-      base:
-        background: semantic.color.background.surface
-        border: semantic.color.border.default
-        radius: primitives.radius.xs
-      states:
-        hover:
-          border: semantic.color.border.strong
-        focus:
-          focus-ring: semantic.color.border.focus
-        checked:
-          background: semantic.color.background.action.primary.default
-          border: semantic.color.border.action.primary.default
-        indeterminate:
-          background: semantic.color.background.action.primary.default
-          border: semantic.color.border.action.primary.default
-        disabled:
-          background: semantic.color.background.disabled
-          border: semantic.color.border.disabled
-        invalid:
-          border: semantic.color.border.status.danger.default
-    indicator:
-      base:
-        foreground: semantic.color.foreground.on.action.primary
-      states:
-        disabled:
-          foreground: semantic.color.foreground.disabled
-    label:
-      base:
-        foreground: semantic.color.foreground.default
-        font-family: semantic.typography.body.default.fontFamily
-        font-size: semantic.typography.body.default.fontSize
-        font-weight: semantic.typography.body.default.fontWeight
-        line-height: semantic.typography.body.default.lineHeight
-        letter-spacing: semantic.typography.body.default.letterSpacing
-      states:
-        disabled:
-          foreground: semantic.color.foreground.disabled
-    hint:
-      base:
-        foreground: semantic.color.foreground.muted
-        font-family: semantic.typography.body.small.fontFamily
-        font-size: semantic.typography.body.small.fontSize
-        font-weight: semantic.typography.body.small.fontWeight
-        line-height: semantic.typography.body.small.lineHeight
-        letter-spacing: semantic.typography.body.small.letterSpacing
-      states:
-        disabled:
-          foreground: semantic.color.foreground.disabled
-    error:
-      base:
-        foreground: semantic.color.foreground.status.danger.default
-        font-family: semantic.typography.body.small.fontFamily
-        font-size: semantic.typography.body.small.fontSize
-        font-weight: semantic.typography.body.small.fontWeight
-        line-height: semantic.typography.body.small.lineHeight
-        letter-spacing: semantic.typography.body.small.letterSpacing
-web:
-  package: "@stevegreco/design-system-components"
-  export: DsCheckbox
-  defaultTagName: ds-checkbox
-  registration:
-    export: defineCheckbox
-    supportsAliases: true
-  anatomy:
-    field:
-      element: div
-      part: field
-    choice:
-      element: div
-      part: choice
-    control:
-      element: input
-      part: control
-    indicator:
-      element: svg
-      part: indicator
-    label:
-      element: label
-      part: label
-    hint:
-      element: p
-      part: hint
-    error:
-      element: p
-      part: error
-  events:
-    input:
-      event: input
-      suppressedWhen: effectively-disabled
-    change:
-      event: change
-      suppressedWhen: effectively-disabled
-  states:
+      background: semantic.color.background.disabled
+      border: semantic.color.border.disabled
     invalid:
-      attribute: error
-  properties:
-    form:
-      type: "HTMLFormElement | null"
-      readonly: true
-      description: The associated form, including association across the shadow boundary.
-  formAssociation:
-    mechanism: FACE
-    fieldsetDisables: true
-    submitRunsConstraintValidation: true
-    resetResetsAssociatedForm: true
-    submitsValue: true
-  focus:
-    forwardsTo: control
-  parts:
-    control:
-      description: The inner native checkbox, restyled as the box.
-    indicator:
-      description: The check mark or dash drawn over the box. Hidden when neither applies.
-    hint:
-      description: Supporting guidance. Hidden when empty.
-    error:
-      description: The error message. Hidden when empty.
-  example: |
-    <form>
-      <ds-checkbox label="Email me product updates" name="updates" hint="About one email a month." checked></ds-checkbox>
-      <ds-checkbox label="I agree to the terms" name="terms" required></ds-checkbox>
-      <ds-button type="submit">Continue</ds-button>
-    </form>
-  rationale:
-    - decision: Checkbox is form-associated.
-      rationale: The checked value must submit and reset across the shadow boundary.
-    - decision: The control is a native checkbox with its default appearance removed.
-      rationale: The native element supplies role, mixed state, Space to toggle, and label activation. Restyling it keeps those without an ARIA re-implementation.
-    - decision: The checked attribute is the initial state, as on a native checkbox.
-      rationale: The property is the live state. Reset returns to the attribute, matching Text field's value attribute.
-    - decision: Indeterminate has an attribute, unlike a native checkbox.
-      rationale: Declarative markup and frameworks can set it without script. Activation removes the attribute, so it never contradicts the live state.
-    - decision: Label, hint, and error live in the shadow root.
-      rationale: Association uses ids inside one shadow root, so it does not depend on light-DOM ids.
-  notes: |
-    The element honors the native `hidden` attribute.
-
-    The visible label is the `label` attribute, rendered in a `<label for>` so clicking it toggles the
-    box. Hint and error text are the `hint` and `error` attributes. A non-empty `error` sets
-    `aria-invalid` and includes the message in `aria-describedby`. A required checkbox shows a text
-    required mark that is `aria-hidden`; the inner input carries `required`.
-
-    The inner input has `appearance: none` and draws the box with the mapped tokens. The indicator is an
-    inline SVG, `aria-hidden`, drawn in `currentColor` so forced colors repaint it. Under
-    `forced-colors: active` the box keeps a `CanvasText` border on `Canvas`. Checked and
-    indeterminate boxes fill with `Highlight` and draw the indicator in `HighlightText`. Disabled uses
-    `GrayText`.
+      border: semantic.color.border.status.danger.default
+  indicator:
+    base:
+      foreground: semantic.color.foreground.on.action.primary
+    disabled:
+      foreground: semantic.color.foreground.disabled
+  label:
+    base:
+      foreground: semantic.color.foreground.default
+      font-family: semantic.typography.body.default.fontFamily
+      font-size: semantic.typography.body.default.fontSize
+      font-weight: semantic.typography.body.default.fontWeight
+      line-height: semantic.typography.body.default.lineHeight
+      letter-spacing: semantic.typography.body.default.letterSpacing
+    disabled:
+      foreground: semantic.color.foreground.disabled
+  hint:
+    base:
+      foreground: semantic.color.foreground.muted
+      font-family: semantic.typography.body.small.fontFamily
+      font-size: semantic.typography.body.small.fontSize
+      font-weight: semantic.typography.body.small.fontWeight
+      line-height: semantic.typography.body.small.lineHeight
+      letter-spacing: semantic.typography.body.small.letterSpacing
+    disabled:
+      foreground: semantic.color.foreground.disabled
+  error:
+    base:
+      foreground: semantic.color.foreground.status.danger.default
+      font-family: semantic.typography.body.small.fontFamily
+      font-size: semantic.typography.body.small.fontSize
+      font-weight: semantic.typography.body.small.fontWeight
+      line-height: semantic.typography.body.small.lineHeight
+      letter-spacing: semantic.typography.body.small.letterSpacing
+rationale:
+  - decision: Checkbox consumes semantic tokens directly, plus one radius primitive.
+    why: >-
+      ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is
+      already audited against them. No semantic radius fits a 16px box, so the box uses
+      primitives.radius.xs. No component-token namespace.
+  - decision: Checked and indeterminate are states driven by their parameters.
+    why: >-
+      They change the same box fill, and indeterminate wins over checked. As states, their order
+      says so. As two boolean axes they would assign the fill in overlapping rules.
+  - decision: A checked or indeterminate box does not change on hover.
+    why: >-
+      Checked and indeterminate come before hover, so their border wins, and the indicator already
+      confirms the state. Hover strengthens the unchecked border only.
+  - decision: Disabled overrides checked and indeterminate fills, not the indicator.
+    why: >-
+      Disabled comes first and sets every box channel, so a disabled box uses disabled colors in
+      every state. The indicator shape still shows whether it is checked.
+  - decision: Label, hint, and error belong to the checkbox.
+    why: >-
+      Same decision as Text field. A separate field shell does not exist yet. Association stays on
+      this control until that shell lands.
+  - decision: One size, no density variant, no pressed state.
+    why: >-
+      The box is a fixed 16px square aligned to the first line of the label. Box size is component
+      geometry, not a token channel. The label row is the click target, so compact layouts change
+      spacing around the checkbox, not the checkbox. Activation commits on release, so there is no
+      separate pressed styling.
+  - decision: No icon-only or unlabeled checkbox.
+    why: >-
+      The visible label is the accessible name and part of the click target. A checkbox in a table
+      row still gets a label; hiding it visually is the consumer's choice.
+  - decision: No loading state, nothing mirrors under right-to-left, and no animation.
+    why: >-
+      Toggling is local until submit, so there is no work to wait on; settings that save immediately
+      belong to Switch. The check mark and dash are not directional, and box and label order follows
+      the inline direction. State changes swap colors and the indicator instantly, so there is
+      nothing to reduce under prefers-reduced-motion.
+  - decision: Checkbox groups are not part of this component.
+    why: >-
+      Group a list with a native fieldset and legend. A group-level label and error belong to a
+      field shell.

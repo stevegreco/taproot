@@ -7,13 +7,14 @@ tags:
   - action
   - destructive
   - settings
-related:
-  - pattern.action-hierarchy
-  - guideline.button-implementation
-  - component.button
+links:
+  example-of:
+    - pattern.action-hierarchy
+  related:
+    - component.button
 assets:
-  - id: example.action-hierarchy.settings.light
-    path: packages/knowledge/content/examples/assets/action-hierarchy-settings.svg
+  - id: light
+    path: assets/action-hierarchy-settings.svg
     mediaType: image/svg+xml
     width: 960
     height: 640
@@ -22,18 +23,18 @@ annotations:
   - id: profile-actions
     label: Routine action group
     description: Cancel supports the task and Save changes completes it, so the group uses secondary and primary emphasis.
-    relatesTo:
-      - pattern.action-hierarchy
+    references:
+      - pattern.action-hierarchy#assign-emphasis
   - id: danger-zone
     label: Destructive action group
     description: Delete account acts on a different subject and is separated into a labeled danger zone.
-    relatesTo:
-      - pattern.action-hierarchy
+    references:
+      - pattern.action-hierarchy#separate-unrelated-decisions
   - id: outcome-labels
     label: Outcome-based labels
     description: Save changes and Delete account state their results without relying on color.
-    relatesTo:
-      - component.button
+    references:
+      - component.button#label-describes-result
 ---
 
 This account settings screen contains two independent action groups.

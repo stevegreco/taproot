@@ -1,0 +1,6 @@
+{
+  "color": { "accent": { "$value": "#0000ff", "$type": "color" } },
+  "component": {
+    "thing": { "loud": { "hover": { "$value": "{color.accent}", "$type": "color" } } }
+  }
+}

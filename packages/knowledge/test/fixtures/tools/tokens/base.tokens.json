@@ -1,0 +1,10 @@
+{
+  "space": { "md": { "$value": { "value": 16, "unit": "px" }, "$type": "dimension" } },
+  "component": {
+    "thing": {
+      "radius": { "$value": "{space.md}", "$type": "dimension" },
+      "disabled": { "$value": "#999999", "$type": "color" },
+      "shadow": { "$value": { "x": 1, "y": 2 }, "$type": "shadow" }
+    }
+  }
+}
