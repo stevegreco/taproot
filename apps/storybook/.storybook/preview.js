@@ -35,6 +35,16 @@ export default {
   parameters: {
     backgrounds: { disable: true },
     controls: { expanded: true },
+    options: {
+      storySort: {
+        order: [
+          "Introduction",
+          "Tokens",
+          ["Overview", "Primitives", "Semantic", "Component"],
+          "Components",
+        ],
+      },
+    },
     a11y: { test: "error" },
   },
   tags: ["autodocs"],
