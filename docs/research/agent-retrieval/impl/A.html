@@ -1,0 +1,26 @@
+<script type="module">
+  import { defineTextField } from "@stevegreco/design-system-components/text-field";
+  import { defineCheckbox } from "@stevegreco/design-system-components/checkbox";
+  import { defineButton } from "@stevegreco/design-system-components/button";
+
+  defineTextField();
+  defineCheckbox();
+  defineButton();
+</script>
+
+<form>
+  <ds-text-field label="Display name" name="displayName" autocomplete="name"></ds-text-field>
+  <ds-text-field
+    label="Email"
+    name="email"
+    type="email"
+    autocomplete="email"
+    hint="Used for sign-in and account notices."
+  ></ds-text-field>
+  <ds-checkbox label="Send me product updates" name="updates"></ds-checkbox>
+
+  <div>
+    <ds-button type="button" variant="secondary">Cancel</ds-button>
+    <ds-button type="submit" variant="primary">Save changes</ds-button>
+  </div>
+</form>

@@ -40,6 +40,9 @@ The prompt for each task, after the shared rules above:
 | Baseline | A | 8 | 5 | 1 |
 | Baseline | B | 8 | 4 | 0 |
 | Baseline | C | 10 | 5 | 1 |
+| `--impl` | A | 12 | 0 | 0 |
+| `--impl` | B | 11 | 0 | 0 |
+| `--impl` | C | 8 | 0 | 0 |
 
 ### Baseline (2026-10-01, before implementation lookup)
 
@@ -64,3 +67,28 @@ Every run guessed the implementation, because no command returns it:
 
 The two rule mistakes both come from the parameter-to-attribute mapping, not from misreading a
 rule. The knowledge is enough to decide what to build. It is not enough to write it.
+
+### With `get --impl web` (2026-10-01)
+
+Outputs are in [`impl/`](impl/). Same tasks, prompts, and model, after
+`knowledge get <id> --impl web` started serving the implementation files.
+
+Every agent found `--impl` from `knowledge help` and used it on each component. Every element,
+attribute, and import matched the implementation files, including `type="submit"` and
+`aria-label`, so both rule mistakes are gone. Agents also applied the web guidance, such as the
+explicit `type="button"` on Cancel and no product CSS on Button.
+
+Steps did not fall:
+
+- **A** ran three extra commands to re-read the implementation sections, because the output was
+  truncated. A text field record plus its implementation is about 10 KB, and the token table is a
+  large part of it.
+- **B** asked for an implementation of an example record, which has none.
+
+Still guessed in every run:
+
+- **Loading the modules in a page.** Agents wrapped the bare-specifier imports in
+  `<script type="module">`, which needs a bundler or an import map.
+- **The token stylesheet.** Button's guidance says to load it at the application root, but nothing
+  names the package or file.
+

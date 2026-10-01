@@ -1,0 +1,14 @@
+<script type="module">
+  import { defineButton } from "@stevegreco/design-system-components/button";
+  import { defineLink } from "@stevegreco/design-system-components/link";
+
+  defineButton();
+  defineLink();
+</script>
+
+<section aria-labelledby="delete-account-heading">
+  <h2 id="delete-account-heading">Delete account</h2>
+  <p>Deleting your account permanently removes your profile and data. This cannot be undone.</p>
+  <ds-button variant="danger">Delete account</ds-button>
+  <p><ds-link variant="standalone" href="/account">Back to account overview</ds-link></p>
+</section>
