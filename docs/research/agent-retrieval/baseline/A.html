@@ -1,0 +1,32 @@
+<!-- GUESSED: import path / registration and element tag names (ember-*). -->
+<script type="module" src="/node_modules/@ember-sage/components/dist/index.js"></script>
+
+<form action="/profile" method="post">
+  <ember-text-field
+    label="Display name"
+    name="displayName"
+    type="text"
+    autocomplete="name"
+    required
+  ></ember-text-field>
+
+  <ember-text-field
+    label="Email"
+    name="email"
+    type="email"
+    autocomplete="email"
+    hint="We use this address for account notices."
+    required
+  ></ember-text-field>
+
+  <ember-checkbox
+    label="Send me product updates"
+    name="productUpdates"
+    value="yes"
+  ></ember-checkbox>
+
+  <div class="actions">
+    <ember-button variant="secondary" action="activate">Cancel</ember-button>
+    <ember-button variant="primary" action="submit">Save changes</ember-button>
+  </div>
+</form>
