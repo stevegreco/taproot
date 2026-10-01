@@ -27,7 +27,8 @@ Breaking. The package is now a library over the authored files, and the record f
   reader and contract check (`checkImplementation`) the docs site now imports instead of its own
   copies. A file that does not match its record fails with `ERR_INVALID_IMPLEMENTATION`.
 - `get`, `links`, `tokens`, and `rules --id` accept a name that matches one record (`button`,
-  `text field`). `search` tolerates typos and, in the CLI and MCP server, follows each result with
+  `text field`). A one-word `search` tolerates typos, a word that starts a name or title matches it, and, in
+  the CLI and MCP server, `search` follows each result with
   the call that reads it. Unknown ids and sections suggest the nearest ones, and failed lookups carry
   an error code: `{ error, code, suggestions }` with `--json`, and `structuredContent.error` over MCP.
 - `get` of a whole component record, in the CLI and MCP server, leaves out the token table and ends

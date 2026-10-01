@@ -297,6 +297,14 @@ describe("knowledge CLI, short records", () => {
 });
 
 describe("knowledge CLI, forgiving lookups", () => {
+  it("matches the start of a name or title", () => {
+    expect(knowledge(["search", "chec"]).out).toMatch(/^- component\.checkbox — /);
+    expect(knowledge(["search", "textfi"]).out).toMatch(/^- component\.text-field — /);
+    // Too short, or too little of the word, to count.
+    expect(knowledge(["search", "che"]).out).toBe('No results for "che".\n');
+    expect(knowledge(["search", "comp"]).out).not.toContain("component.button");
+  });
+
   it("finds a record by name", () => {
     expect(knowledge(["get", "button"]).out).toMatch(/^# Button/);
     expect(knowledge(["get", "Text", "field"]).out).toMatch(/^# Text field/);
@@ -340,6 +348,9 @@ describe("knowledge CLI, forgiving lookups", () => {
     expect(r.out).toContain("  → knowledge get component.checkbox --impl web");
     // One edit is the allowance for a word this short, so two edits match nothing.
     expect(knowledge(["search", "buxxon"]).out).toBe('No results for "buxxon".\n');
+    // Four letters get no typo allowance, and words in a longer query are not corrected.
+    expect(knowledge(["search", "lnik"]).out).toBe('No results for "lnik".\n');
+    expect(knowledge(["search", "buton", "zzzz"]).out).toBe('No results for "buton zzzz".\n');
     expect(knowledge(["search", "destructive", "action"]).out).toContain(
       "  → knowledge get pattern.action-hierarchy\n",
     );

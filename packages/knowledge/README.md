@@ -136,8 +136,8 @@ With `--json` it returns `{ record, implementation }`. A plain `get` of an imple
 with a line naming the command.
 
 `get`, `links`, `tokens`, and `rules --id` take a record id or a name that matches one record, such
-as `button` or `text field`. `search` tolerates typos and follows each result with the command that
-reads it. An unknown id or section suggests the closest ones. With `--json`, a failed lookup prints
+as `button` or `text field`. A one-word `search` tolerates typos, the start of a
+name or title matches (`chec`, `textfi`), and each result is followed by the command that reads it. An unknown id or section suggests the closest ones. With `--json`, a failed lookup prints
 `{ error, code, suggestions }`, where `code` is one of `ERR_UNKNOWN_RECORD`, `ERR_UNKNOWN_SECTION`,
 `ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, or `ERR_INVALID_IMPLEMENTATION`. Branch on `code`, not on the message.
 

@@ -65,10 +65,13 @@ function vocabulary(state) {
 }
 
 /**
- * Replace each query word the index does not contain with the indexed words it is a likely typo
- * of, so "buton" finds Button. A word with no close match is kept and simply matches nothing.
+ * Replace a one-word query the index does not contain with the indexed words it is a likely typo
+ * of, so "buton" finds Button. A word with no close match is kept and simply matches nothing. In a
+ * query of several words a near miss is usually a different word ("site" is not "side"), so those
+ * are left alone.
  */
 function correctTypos(state, tokens) {
+  if (tokens.length !== 1) return tokens;
   const words = vocabulary(state);
   return tokens.flatMap((token) => {
     if (words.has(token)) return [token];

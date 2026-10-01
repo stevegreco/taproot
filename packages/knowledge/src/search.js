@@ -59,8 +59,16 @@ function collectText(value, out = []) {
 }
 
 /**
- * @typedef {{ fields: Record<string, string[]>, rules: { id: string, tokens: string[] }[] }} IndexedRecord
+ * `names` holds the title's and id's words plus each run together ("textfield"), for matching the
+ * start of a name.
+ *
+ * @typedef {{ fields: Record<string, string[]>, rules: { id: string, tokens: string[] }[], names: string[] }} IndexedRecord
  */
+
+const runTogether = (text) =>
+  String(text)
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "");
 
 /**
  * @param {Record<string, any>} record
@@ -86,7 +94,26 @@ export function indexRecord(record) {
     id: rule.id,
     tokens: tokenize(collectText(rule).join(" ")),
   }));
-  return { fields, rules };
+  const shortId = record.id.slice(record.id.indexOf(".") + 1);
+  const names = [
+    ...new Set([...fields.title, ...fields.id, runTogether(record.title), runTogether(shortId)]),
+  ];
+  return { fields, rules, names };
+}
+
+/** A name prefix scores as a title match at this fraction of the title weight. */
+const PREFIX_FRACTION = 0.6;
+const MIN_PREFIX_LENGTH = 4;
+
+/**
+ * Whether `token` starts a word of a name and covers at least half of it, so "chec" finds Checkbox
+ * and "textfi" finds Text field, but "comp" does not find every component.
+ */
+function startsAName(names, token) {
+  if (token.length < MIN_PREFIX_LENGTH) return false;
+  return names.some(
+    (name) => name !== token && name.startsWith(token) && token.length * 2 >= name.length,
+  );
 }
 
 /**
@@ -106,6 +133,12 @@ export function scoreRecord(index, queryTokens) {
       raw += weight * (1 + 0.25 * Math.min(count - 1, 4));
       matched.add(token);
       matches.add(field);
+    }
+    const inName = index.fields.title.includes(token) || index.fields.id.includes(token);
+    if (!inName && startsAName(index.names, token)) {
+      raw += FIELD_WEIGHTS.title * PREFIX_FRACTION;
+      matched.add(token);
+      matches.add("name-prefix");
     }
     for (const rule of index.rules) {
       if (!rule.tokens.includes(token)) continue;

@@ -46,7 +46,10 @@ export function editDistance(left, right) {
   return d[rows - 1][cols - 1];
 }
 
-/** The edits a word of this length may be off by and still count as a typo of another. */
+/**
+ * The edits a word of this length may be off by and still count as a typo of another. Shorter
+ * words get none, because one edit to a short word usually makes a different real word.
+ */
 export function typoAllowance(word) {
-  return word.length >= 8 ? 2 : word.length >= 4 ? 1 : 0;
+  return word.length >= 8 ? 2 : word.length >= 5 ? 1 : 0;
 }
