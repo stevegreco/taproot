@@ -1,0 +1,47 @@
+/**
+ * <ds-icon> styles.
+ *
+ * Built into dist/icon.styles.js by build-styles.js — this file is the source.
+ */
+
+:host {
+  --_size: 1em;
+
+  display: inline-block;
+  flex-shrink: 0;
+  inline-size: var(--_size);
+  block-size: var(--_size);
+  color: inherit;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([size="small"]) {
+  --_size: var(--primitives-space-4);
+}
+
+:host([size="medium"]) {
+  --_size: var(--primitives-space-5);
+}
+
+:host([size="large"]) {
+  --_size: var(--primitives-space-6);
+}
+
+.icon {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* Scale the artwork into the square without distorting it. Fill and stroke
+ * are left to the artwork, which should paint with currentColor. */
+::slotted(svg) {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}

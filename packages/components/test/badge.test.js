@@ -1,11 +1,15 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
 
 import { defineBadge } from "../src/badge.js";
+import { defineIcon } from "../src/icon.js";
+import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-badge";
+const iconTag = "test-ds-badge-icon";
 
 beforeAll(() => {
   defineBadge(tagName);
+  defineIcon(iconTag);
 });
 
 afterEach(() => {
@@ -56,5 +60,19 @@ describe("DsBadge", () => {
     expect(badge.hasAttribute("role")).toBe(false);
     expect(badge.hasAttribute("aria-live")).toBe(false);
     expect(badge.shadowRoot.querySelector("[role], [aria-live]")).toBe(null);
+  });
+
+  test("spaces a leading icon from the label with the mapped gap token", () => {
+    document.body.innerHTML = `<${tagName} variant="warning"><${iconTag}><svg viewBox="0 0 24 24"></svg></${iconTag}>Pending</${tagName}>`;
+    const badge = document.querySelector(tagName);
+    const surface = badge.shadowRoot.querySelector('[part="badge"]');
+    const icon = badge.querySelector(iconTag).getBoundingClientRect();
+    const range = document.createRange();
+    range.selectNodeContents(badge.lastChild);
+    const label = range.getBoundingClientRect();
+    const gap = resolvedValue("column-gap", "var(--primitives-space-1)");
+
+    expect(getComputedStyle(surface).columnGap).toBe(gap);
+    expect(label.left - icon.right).toBeCloseTo(parseFloat(gap), 0);
   });
 });

@@ -10,6 +10,7 @@ const components = [
   ["ds-badge", "defineBadge"],
   ["ds-button", "defineButton"],
   ["ds-checkbox", "defineCheckbox"],
+  ["ds-icon", "defineIcon"],
   ["ds-link", "defineLink"],
   ["ds-text-field", "defineTextField"],
 ];
