@@ -1,4 +1,5 @@
 import { validateKnowledge } from "./index.js";
+import { loadImplementations, renderImplementation } from "./implementation.js";
 
 /**
  * The operations behind both the CLI and the MCP server. Each returns `{ text, data, ok }`:
@@ -30,13 +31,28 @@ export function search(knowledge, { query, type, tag, limit } = {}) {
   return { text, data, ok: true };
 }
 
-export function get(knowledge, { target }) {
+/**
+ * @param {{ target: string, implementation?: string }} args `implementation` names a configured
+ *   implementation, such as `web`, to print after the record.
+ * @param {{ implementations?: Record<string, string>, hint?: (id: string, names: string[]) => string }} [options]
+ *   Implementation folders by name, and the line that tells the caller how to ask for one.
+ */
+export function get(knowledge, { target, implementation }, options = {}) {
   if (!target) throw new UsageError("get needs an id or id#section");
   const [id, section] = target.split("#");
   const record = knowledge.get(id);
   if (!record) return notFound(knowledge, `Unknown record "${id}".`, id);
+  const folders = options.implementations ?? {};
+  if (implementation !== undefined) {
+    if (section !== undefined) {
+      throw new UsageError("an implementation goes with a whole record, not a section");
+    }
+    return getWithImplementation(knowledge, record, implementation, folders);
+  }
   if (section === undefined) {
-    return { text: knowledge.render(target), data: record, ok: true };
+    const names = record.type === "component" ? implementedBy(folders, id) : [];
+    const hint = names.length && options.hint ? `\n${options.hint(id, names)}\n` : "";
+    return { text: knowledge.render(target) + hint, data: record, ok: true };
   }
   const found = knowledge.section(target);
   if (!found) {
@@ -48,6 +64,41 @@ export function get(knowledge, { target }) {
     };
   }
   return { text: knowledge.render(target), data: found, ok: true };
+}
+
+function getWithImplementation(knowledge, record, name, folders) {
+  const configured = Object.keys(folders);
+  if (!folders[name]) {
+    const text = configured.length
+      ? `No implementation named "${name}". Configured: ${configured.join(", ")}.`
+      : "No implementations are configured. Add `implementations` to knowledge.config.json.";
+    return { text, data: null, ok: false };
+  }
+  const found = loadImplementations(folders[name]).find((item) => item.component === record.id);
+  if (!found) {
+    return { text: `No ${name} implementation for ${record.id}.`, data: null, ok: false };
+  }
+  return {
+    text: `${knowledge.render(record.id)}\n${renderImplementation(record, found, name)}`,
+    data: { record, implementation: found },
+    ok: true,
+  };
+}
+
+/**
+ * The configured implementation names that have a file for `id`. A folder that cannot be read or
+ * parsed is skipped here, so it cannot break a plain `get`; asking for it reports the error.
+ */
+function implementedBy(folders, id) {
+  return Object.entries(folders)
+    .filter(([, dir]) => {
+      try {
+        return loadImplementations(dir).some((item) => item.component === id);
+      } catch {
+        return false;
+      }
+    })
+    .map(([name]) => name);
 }
 
 function notFound(knowledge, message, id) {

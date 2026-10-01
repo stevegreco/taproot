@@ -13,13 +13,16 @@ ADRs 0001 through 0003 in `docs/adr/` and
 ```bash
 pnpm knowledge search "destructive action"
 pnpm knowledge get component.button
+pnpm knowledge get component.button --impl web
 pnpm knowledge get pattern.action-hierarchy#assign-emphasis
 pnpm knowledge links component.button
 pnpm knowledge rules --level must --topic accessibility
 pnpm knowledge tokens component.button --condition "variant.primary + hover" --resolve
 ```
 
-Add `--json` for JSON. `pnpm knowledge list` lists every record. The same operations are available
+Before writing markup, use `--impl web` for the package, element name, and the attribute that
+implements each parameter. Attribute names do not always follow parameter names (Button's `action`
+is the `type` attribute). Add `--json` for JSON. `pnpm knowledge list` lists every record. The same operations are available
 as tools, and each record as a `knowledge://<id>` resource, from the `design-system-knowledge` MCP
 server registered in `.mcp.json`.
 
@@ -39,6 +42,7 @@ consistent in review.
 - The docs site builds a component page from the knowledge record plus
   `apps/documentation/implementation/<name>.md` (package, tag name, usage, API table mapping web
   attributes, properties, and events to spec parameters and events, and web-specific guidance).
+  `knowledge.config.json` points the CLI at the same folder, so `get --impl web` serves it.
   Examples are in `apps/documentation/examples/`.
 - Storybook in `apps/storybook` has a story file per component in `stories/`. It is a workbench
   for exploring states and themes, not a source of usage guidance. Run it with

@@ -1,5 +1,8 @@
 {
   "content": "packages/knowledge/content",
+  "implementations": {
+    "web": "apps/documentation/implementation"
+  },
   "tokens": {
     "format": "dtcg",
     "sets": {

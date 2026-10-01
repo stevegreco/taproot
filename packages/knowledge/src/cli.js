@@ -22,9 +22,10 @@ const COMMANDS = {
     options: { type: str, tag: str, limit: str },
   },
   get: {
-    usage: "knowledge get <id | id#section>",
-    summary: "Print a record, or one section of it, as Markdown.",
-    options: {},
+    usage: "knowledge get <id | id#section> [--impl <name>]",
+    summary:
+      "Print a record, or one section of it, as Markdown. --impl web adds the package, element, and attributes.",
+    options: { impl: str },
   },
   links: {
     usage: "knowledge links <id> [--kind <k>] [--direction out|in|both]",
@@ -155,8 +156,20 @@ export async function run(argv, io = {}) {
         return print(ops.list(knowledge, args));
       case "search":
         return print(ops.search(knowledge, { ...args, query: positionals.join(" ") }));
-      case "get":
-        return print(ops.get(knowledge, { target: first }));
+      case "get": {
+        const { implementations } = resolveConfig(loadOptions);
+        return print(
+          ops.get(
+            knowledge,
+            { target: first, implementation: values.impl },
+            {
+              implementations,
+              hint: (id, names) =>
+                `Implementation: run \`knowledge get ${id} --impl ${names[0]}\` for the package, element, and attribute names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
+            },
+          ),
+        );
+      }
       case "links":
         return print(ops.links(knowledge, { ...args, id: first }));
       case "rules":

@@ -63,6 +63,25 @@ describe("knowledge MCP server", () => {
     expect(missing.isError).toBe(true);
   });
 
+  it("gets a component with its implementation", async () => {
+    const { client } = await connect({ cwd: repoRoot });
+    const plain = await client.callTool({ name: "get", arguments: { target: "component.button" } });
+    expect(text(plain)).toContain('call `get` with implementation "web"');
+
+    const got = await client.callTool({
+      name: "get",
+      arguments: { target: "component.button", implementation: "web" },
+    });
+    expect(text(got)).toContain("- Element: `<ds-button>`");
+    expect(got.structuredContent.results.implementation.component).toBe("component.button");
+
+    const pattern = await client.callTool({
+      name: "get",
+      arguments: { target: "pattern.action-hierarchy", implementation: "web" },
+    });
+    expect(pattern.isError).toBe(true);
+  });
+
   it("resolves tokens, and lists rules and links", async () => {
     const { client } = await connect({ cwd: repoRoot });
     const tokens = await client.callTool({

@@ -20,6 +20,11 @@ Breaking. The package is now a library over the authored files, and the record f
   `rules`, `tokens`, `validate`; records as `knowledge://<id>` resources), a `knowledge.config.json`
   file, and an optional DTCG token resolver. New exports: `./config` and `./tokens-dtcg`. New
   dependencies: `@modelcontextprotocol/sdk` and `zod`.
+- `knowledge get <id> --impl <name>` and the MCP `get` tool's `implementation` argument print a
+  component's implementation after its record: package, element, import, usage, and an API table
+  mapping attributes, properties, and events to record parameters and events. Folders come from a
+  new `implementations` field in `knowledge.config.json`. New export: `./implementation`, the
+  reader the docs site now imports instead of its own copy.
 - Removed the `build`, `prepack`, and `clean` scripts, and the dependencies `@stevegreco/design-system`,
   `js-yaml`, `parse5`, and `unist-util-visit`.
 

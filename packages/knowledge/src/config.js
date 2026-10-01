@@ -10,6 +10,9 @@ export const CONFIG_FILE = "knowledge.config.json";
  * @property {string} [content] Content folder, relative to the config file.
  * @property {{ format: "dtcg", sets: Record<string, string[]> }} [tokens]
  *   Token sets; each set lists DTCG files, relative to the config file.
+ * @property {Record<string, string>} [implementations]
+ *   Implementation folders by name, such as `web`, relative to the config file. Each folder holds
+ *   one `<slug>.md` implementation file per component.
  */
 
 /**
@@ -61,10 +64,25 @@ function validateConfig(config, file) {
     fail("expected an object");
   }
   for (const key of Object.keys(config)) {
-    if (key !== "content" && key !== "tokens") fail(`unknown field "${key}"`);
+    if (!["content", "tokens", "implementations"].includes(key)) fail(`unknown field "${key}"`);
   }
   if (config.content !== undefined && (typeof config.content !== "string" || !config.content)) {
     fail('"content" must be a non-empty string path');
+  }
+  const { implementations } = config;
+  if (implementations !== undefined) {
+    if (
+      typeof implementations !== "object" ||
+      implementations === null ||
+      Array.isArray(implementations)
+    ) {
+      fail('"implementations" must be an object of name to folder path');
+    }
+    for (const [name, dir] of Object.entries(implementations)) {
+      if (typeof dir !== "string" || !dir) {
+        fail(`"implementations.${name}" must be a non-empty string path`);
+      }
+    }
   }
   if (config.tokens === undefined) return;
   const { tokens } = config;
@@ -87,7 +105,7 @@ function validateConfig(config, file) {
  * Precedence for the content folder: `contentDir` > config `content` > library default.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
- * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, configPath?: string }}
+ * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, implementations: Record<string, string>, configPath?: string }}
  */
 export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = {}) {
   const found = configPath ? readConfig(path.resolve(cwd, configPath)) : findConfig(cwd);
@@ -105,7 +123,13 @@ export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = 
     );
     resolveToken = createDtcgResolver(sets);
   }
-  return { contentDir: dir, resolveToken, configPath: found?.path };
+  const implementations = Object.fromEntries(
+    Object.entries(found?.config.implementations ?? {}).map(([name, folder]) => [
+      name,
+      path.resolve(base, folder),
+    ]),
+  );
+  return { contentDir: dir, resolveToken, implementations, configPath: found?.path };
 }
 
 /**

@@ -263,7 +263,7 @@ function renderTokens(rows) {
 
 // --- Tables ---
 
-function table(headers, rows) {
+export function table(headers, rows) {
   const cell = (text) =>
     String(text ?? "")
       .replaceAll("|", "\\|")

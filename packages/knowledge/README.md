@@ -80,11 +80,12 @@ Button means Badge is the alternative to Button.
 ## Config
 
 Both tools find their content with a `knowledge.config.json`, found by walking up from the working
-directory. Paths are relative to the config file. `tokens` is optional.
+directory. Paths are relative to the config file. `implementations` and `tokens` are optional.
 
 ```json
 {
   "content": "packages/knowledge/content",
+  "implementations": { "web": "apps/documentation/implementation" },
   "tokens": {
     "format": "dtcg",
     "sets": { "light": ["tokens/base.json", "tokens/light.json"], "dark": ["tokens/base.json", "tokens/dark.json"] }
@@ -98,13 +99,20 @@ stringified (`{ value: 16, unit: "px" }` becomes `16px`). Token files are read o
 requested. Use `createDtcgResolver` from `@stevegreco/design-system-knowledge/tokens-dtcg` and
 `loadFromConfig` from `.../config` to do the same in code.
 
+Each implementation folder holds one `<slug>.md` file per component that a technology implements:
+front matter with the record id, package, element name, registration export, usage markup, and API
+rows that name the record parameter or event each attribute, property, or event implements, then
+Markdown guidance. Records stay technology-neutral; these files live with the implementation. The
+docs site reads the same files with `loadImplementations` and `parseImplementation` from
+`@stevegreco/design-system-knowledge/implementation`.
+
 ## CLI
 
 ```sh
 knowledge validate
 knowledge list [--type <t>] [--tag <tag>] [--status <s>]
 knowledge search <query...> [--type <t>] [--tag <tag>] [--limit <n>]
-knowledge get <id | id#section>
+knowledge get <id | id#section> [--impl <name>]
 knowledge links <id> [--kind <k>] [--direction out|in|both]
 knowledge rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
 knowledge tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
@@ -115,10 +123,16 @@ Global flags: `--content <dir>`, `--config <path>`, `--json`. Output is Markdown
 return values as JSON. Exit codes: 0 ok, 1 validation issues or an unknown id or section, 2 usage
 error. In this repo, run it as `pnpm knowledge ...`.
 
+`get <id> --impl web` prints the record followed by its web implementation: package, element,
+import, usage, an API table mapping each attribute to the parameter it implements, and the guidance.
+With `--json` it returns `{ record, implementation }`. A plain `get` of an implemented component ends
+with a line naming the command.
+
 ## MCP server
 
 `knowledge-mcp` is a local stdio server (`--content` and `--config` work as in the CLI). Tools:
-`search`, `get`, `list`, `links`, `rules`, `tokens`, and `validate`. Every record is also a resource
+`search`, `get`, `list`, `links`, `rules`, `tokens`, and `validate`. `get` takes an optional
+`implementation`, such as `"web"`, that works like `--impl`. Every record is also a resource
 at `knowledge://<id>`. The server reloads when the content folder changes, and if the new content has
 issues it keeps serving the last valid version and starts each tool result and resource read with a
 warning.

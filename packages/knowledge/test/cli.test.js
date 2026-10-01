@@ -181,3 +181,55 @@ describe("knowledge CLI, fixture config", () => {
     expect(r.out).toContain("`#ffff00`");
   });
 });
+
+describe("knowledge CLI, implementations", () => {
+  it("gets a component with its web implementation", () => {
+    const r = knowledge(["get", "component.button", "--impl", "web"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toMatch(/^# Button/);
+    expect(r.out).toContain("## Web implementation");
+    expect(r.out).toContain("- Element: `<ds-button>`");
+    expect(r.out).toContain(
+      'import { defineButton } from "@stevegreco/design-system-components/button";',
+    );
+    expect(r.out).toContain(
+      "| `type` | attribute | parameter `action` | `activate` → `button`, `submit`, `reset` |",
+    );
+    expect(r.out).toContain("| `aria-label` | attribute | parameter `accessibleName` |");
+    // The implementation's own guidance follows, one heading level down.
+    expect(r.out).toContain("### Forms");
+  });
+
+  it("points a plain get at the implementation", () => {
+    const { out } = knowledge(["get", "component.button"]);
+    expect(out).not.toContain("## Web implementation");
+    expect(out.trimEnd().split("\n").at(-1)).toBe(
+      "Implementation: run `knowledge get component.button --impl web` for the package, element, and attribute names.",
+    );
+    expect(knowledge(["get", "pattern.action-hierarchy"]).out).not.toContain("Implementation:");
+  });
+
+  it("returns the record and implementation as JSON", () => {
+    const data = JSON.parse(knowledge(["get", "component.link", "--impl", "web", "--json"]).out);
+    expect(data.record.id).toBe("component.link");
+    expect(data.implementation.tagName).toBe("ds-link");
+  });
+
+  it("explains a missing or unknown implementation", () => {
+    const pattern = knowledge(["get", "pattern.action-hierarchy", "--impl", "web"]);
+    expect(pattern.code).toBe(1);
+    expect(pattern.out).toContain("No web implementation for pattern.action-hierarchy.");
+    const unknown = knowledge(["get", "component.button", "--impl", "ios"]);
+    expect(unknown.code).toBe(1);
+    expect(unknown.out).toContain('No implementation named "ios". Configured: web.');
+    const section = knowledge(["get", "component.button#rules", "--impl", "web"]);
+    expect(section.code).toBe(2);
+    expect(section.err).toContain("not a section");
+  });
+
+  it("explains that no implementations are configured", () => {
+    const r = knowledge(["get", "component.thing", "--impl", "web"], tools);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("No implementations are configured.");
+  });
+});
