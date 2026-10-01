@@ -15,6 +15,8 @@ import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadKnowledge } from "@stevegreco/design-system-knowledge";
 import {
+  checkImplementation,
+  ImplementationError,
   implementationSlug,
   loadImplementations,
   type ApiMemberKind,
@@ -468,16 +470,9 @@ function defaultDisplay(value: unknown): string | undefined {
   return typeof value === "string" ? value : JSON.stringify(value);
 }
 
-function projectRow(file: string, record: ComponentRecord, row: ImplementationApiRow): ApiRow {
-  const where = `${file}: api row "${row.name}"`;
+function projectRow(record: ComponentRecord, row: ImplementationApiRow): ApiRow {
   if (row.kind === "event") {
     const spec = row.event ? record.events?.[row.event] : undefined;
-    if (row.event && spec === undefined) {
-      fail(
-        "invalid-implementation",
-        `${where} implements the event "${row.event}", but ${record.id} has no such event. Its events: ${Object.keys(record.events ?? {}).join(", ") || "none"}.`,
-      );
-    }
     return {
       name: row.name,
       kind: "event",
@@ -498,22 +493,9 @@ function projectRow(file: string, record: ComponentRecord, row: ImplementationAp
     };
   }
 
-  const parameter = record.parameters?.[row.parameter];
-  if (!parameter) {
-    fail(
-      "invalid-implementation",
-      `${where} implements the parameter "${row.parameter}", but ${record.id} has no such parameter. Its parameters: ${Object.keys(record.parameters ?? {}).join(", ") || "none"}.`,
-    );
-  }
+  // checkImplementation has confirmed the parameter and every renamed value exist.
+  const parameter = record.parameters![row.parameter]!;
   const rename = row.values ?? {};
-  for (const from of Object.keys(rename)) {
-    if (!parameter.values || !(from in parameter.values)) {
-      fail(
-        "invalid-implementation",
-        `${where} renames the value "${from}", but ${record.id} parameter "${row.parameter}" has no such value.`,
-      );
-    }
-  }
   const values: ApiValue[] = Object.entries(parameter.values ?? {}).map(([name, description]) => ({
     name: rename[name] ?? name,
     description,
@@ -529,28 +511,6 @@ function projectRow(file: string, record: ComponentRecord, row: ImplementationAp
     description: row.description ?? parameter.description ?? "",
     values,
   };
-}
-
-/** Every knowledge parameter and event must reach the page; a gap is a docs bug. */
-function assertCovered(implementation: Implementation, record: ComponentRecord): void {
-  const parameters = new Set(
-    implementation.api.flatMap((row) => (row.parameter ? [row.parameter] : [])),
-  );
-  const events = new Set(implementation.api.flatMap((row) => (row.event ? [row.event] : [])));
-  const missing = [
-    ...Object.keys(record.parameters ?? {})
-      .filter((name) => !parameters.has(name))
-      .map((name) => `parameter "${name}"`),
-    ...Object.keys(record.events ?? {})
-      .filter((name) => !events.has(name))
-      .map((name) => `event "${name}"`),
-  ];
-  if (missing.length > 0) {
-    fail(
-      "invalid-implementation",
-      `${implementation.file}: the api table does not cover ${record.id} ${missing.join(", ")}. Add a row with "parameter" or "event" for each.`,
-    );
-  }
 }
 
 // -- Sections ---------------------------------------------------------------
@@ -636,22 +596,17 @@ interface Context {
 
 function projectComponent(context: Context, implementation: Implementation): ComponentSlice {
   const { knowledge, pages, assetDir } = context;
-  const record = recordOf<ComponentRecord>(knowledge, implementation.component);
+  const found = recordOf<ComponentRecord>(knowledge, implementation.component);
   const slug = implementationSlug(implementation);
-  if (record?.type !== "component") {
-    fail(
-      "invalid-implementation",
-      `${implementation.file}: component "${implementation.component}" is not a component record in the knowledge base.`,
-    );
+  // The knowledge CLI runs the same check, so the site and `get --impl` agree on what is valid.
+  try {
+    checkImplementation(implementation, found);
+  } catch (error) {
+    if (error instanceof ImplementationError) fail("invalid-implementation", error.message);
+    throw error;
   }
-  if (slugOf(record.id) !== slug) {
-    fail(
-      "invalid-implementation",
-      `${implementation.file}: the file name says "${slug}", but it implements ${record.id}. Name the file ${slugOf(record.id)}.md.`,
-    );
-  }
-  assertCovered(implementation, record);
-  const api = implementation.api.map((row) => projectRow(implementation.file, record, row));
+  const record = found as ComponentRecord;
+  const api = implementation.api.map((row) => projectRow(record, row));
 
   // Patterns the component links to, by any link kind, and the examples of those or of the component.
   const outgoing = knowledge.links(record.id);

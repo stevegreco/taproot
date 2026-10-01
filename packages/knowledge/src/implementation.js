@@ -262,6 +262,77 @@ export function loadImplementations(dir) {
 }
 
 /**
+ * Check an implementation against the component record it implements, so a broken mapping fails
+ * instead of serving incomplete guidance. The record must be a component, the file must be named
+ * after it, every parameter and event needs a row, and every row must name a parameter, value, or
+ * event the record has.
+ *
+ * @param {Implementation} implementation
+ * @param {Record<string, any> | undefined} record The record `implementation.component` names.
+ * @throws {ImplementationError}
+ */
+export function checkImplementation(implementation, record) {
+  const { file } = implementation;
+  if (record?.type !== "component") {
+    throw new ImplementationError(
+      file,
+      `component "${implementation.component}" is not a component record in the knowledge base.`,
+    );
+  }
+  const slug = implementationSlug(implementation);
+  const expected = record.id.slice("component.".length);
+  if (slug !== expected) {
+    throw new ImplementationError(
+      file,
+      `the file name says "${slug}", but it implements ${record.id}. Name the file ${expected}.md.`,
+    );
+  }
+  const parameters = record.parameters ?? {};
+  const events = record.events ?? {};
+  for (const row of implementation.api) {
+    const where = `api row "${row.name}"`;
+    if (row.event && !(row.event in events)) {
+      throw new ImplementationError(
+        file,
+        `${where} implements the event "${row.event}", but ${record.id} has no such event. Its events: ${Object.keys(events).join(", ") || "none"}.`,
+      );
+    }
+    if (!row.parameter) continue;
+    const parameter = parameters[row.parameter];
+    if (!parameter) {
+      throw new ImplementationError(
+        file,
+        `${where} implements the parameter "${row.parameter}", but ${record.id} has no such parameter. Its parameters: ${Object.keys(parameters).join(", ") || "none"}.`,
+      );
+    }
+    for (const from of Object.keys(row.values ?? {})) {
+      if (!parameter.values || !(from in parameter.values)) {
+        throw new ImplementationError(
+          file,
+          `${where} renames the value "${from}", but ${record.id} parameter "${row.parameter}" has no such value.`,
+        );
+      }
+    }
+  }
+  const coveredParameters = new Set(implementation.api.map((row) => row.parameter));
+  const coveredEvents = new Set(implementation.api.map((row) => row.event));
+  const missing = [
+    ...Object.keys(parameters)
+      .filter((name) => !coveredParameters.has(name))
+      .map((name) => `parameter "${name}"`),
+    ...Object.keys(events)
+      .filter((name) => !coveredEvents.has(name))
+      .map((name) => `event "${name}"`),
+  ];
+  if (missing.length > 0) {
+    throw new ImplementationError(
+      file,
+      `the api table does not cover ${record.id} ${missing.join(", ")}. Add a row with "parameter" or "event" for each.`,
+    );
+  }
+}
+
+/**
  * `implementation/button.md` -> `button`.
  *
  * @param {Implementation} implementation

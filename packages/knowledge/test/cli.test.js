@@ -1,4 +1,6 @@
 import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -229,6 +231,32 @@ describe("knowledge CLI, implementations", () => {
     expect(section.err).toContain("not a section");
   });
 
+  it("rejects an implementation that does not match its record", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "knowledge-impl-"));
+    fs.mkdirSync(path.join(tmp, "web"));
+    const button = fs.readFileSync(
+      path.join(repoRoot, "apps/documentation/implementation/button.md"),
+      "utf8",
+    );
+    fs.writeFileSync(
+      path.join(tmp, "web/button.md"),
+      button.replace("parameter: action", "parameter: actoin"),
+    );
+    fs.writeFileSync(
+      path.join(tmp, "knowledge.config.json"),
+      JSON.stringify({
+        content: path.join(repoRoot, "packages/knowledge/content"),
+        implementations: { web: "web" },
+      }),
+    );
+    const r = knowledge(["get", "button", "--impl", "web", "--json"], tmp);
+    expect(r.code).toBe(1);
+    const error = JSON.parse(r.out);
+    expect(error.code).toBe("ERR_INVALID_IMPLEMENTATION");
+    expect(error.error).toContain('implements the parameter "actoin"');
+    fs.rmSync(tmp, { recursive: true });
+  });
+
   it("explains that no implementations are configured", () => {
     const r = knowledge(["get", "component.thing", "--impl", "web"], tools);
     expect(r.code).toBe(1);
@@ -310,6 +338,8 @@ describe("knowledge CLI, forgiving lookups", () => {
     const r = knowledge(["search", "chekbox"]);
     expect(r.out).toContain("- component.checkbox — Checkbox: ");
     expect(r.out).toContain("  → knowledge get component.checkbox --impl web");
+    // One edit is the allowance for a word this short, so two edits match nothing.
+    expect(knowledge(["search", "buxxon"]).out).toBe('No results for "buxxon".\n');
     expect(knowledge(["search", "destructive", "action"]).out).toContain(
       "  → knowledge get pattern.action-hierarchy\n",
     );

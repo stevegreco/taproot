@@ -1,5 +1,10 @@
 import { validateKnowledge } from "./index.js";
-import { loadImplementations, renderImplementation } from "./implementation.js";
+import {
+  ImplementationError,
+  checkImplementation,
+  loadImplementations,
+  renderImplementation,
+} from "./implementation.js";
 import { editDistance, typoAllowance } from "./util.js";
 
 /**
@@ -8,7 +13,7 @@ import { editDistance, typoAllowance } from "./util.js";
  * it was asked for. A call that found nothing also returns `error`, with a stable code to branch
  * on and what the caller probably meant.
  *
- * @typedef {"ERR_UNKNOWN_RECORD" | "ERR_UNKNOWN_SECTION" | "ERR_UNKNOWN_IMPLEMENTATION" | "ERR_NO_IMPLEMENTATION"} ErrorCode
+ * @typedef {"ERR_UNKNOWN_RECORD" | "ERR_UNKNOWN_SECTION" | "ERR_UNKNOWN_IMPLEMENTATION" | "ERR_NO_IMPLEMENTATION" | "ERR_INVALID_IMPLEMENTATION"} ErrorCode
  * @typedef {{ code: ErrorCode, suggestions: string[] }} ResultError
  * @typedef {{ text: string, data: unknown, ok: boolean, error?: ResultError }} Result
  */
@@ -138,7 +143,20 @@ function getWithImplementation(knowledge, record, name, folders, options) {
       : "No implementations are configured. Add `implementations` to knowledge.config.json.";
     return failure(text, "ERR_UNKNOWN_IMPLEMENTATION", configured);
   }
-  const found = loadImplementations(folders[name]).find((item) => item.component === record.id);
+  // A broken file or a mapping that does not match the record fails, rather than serving guidance
+  // with missing values or descriptions.
+  let found;
+  try {
+    found = loadImplementations(folders[name]).find((item) => item.component === record.id);
+    if (found) checkImplementation(found, record);
+  } catch (error) {
+    if (!(error instanceof ImplementationError)) throw error;
+    return failure(
+      `The ${name} implementation of ${record.id} is invalid: ${error.message}`,
+      "ERR_INVALID_IMPLEMENTATION",
+      [],
+    );
+  }
   if (!found) {
     const why =
       record.type === "component"

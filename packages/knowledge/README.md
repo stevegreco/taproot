@@ -103,8 +103,11 @@ Each implementation folder holds one `<slug>.md` file per component that a techn
 front matter with the record id, package, element name, registration export, usage markup, and API
 rows that name the record parameter or event each attribute, property, or event implements, then
 Markdown guidance. Records stay technology-neutral; these files live with the implementation. The
-docs site reads the same files with `loadImplementations` and `parseImplementation` from
-`@stevegreco/design-system-knowledge/implementation`.
+docs site reads the same files with `loadImplementations`, `parseImplementation`, and
+`checkImplementation` from `@stevegreco/design-system-knowledge/implementation`.
+`checkImplementation` confirms the file is named after a component record and that every
+parameter, value, and event a row names exists and every one the record has is covered; `get
+--impl` reports a mismatch as `ERR_INVALID_IMPLEMENTATION` instead of printing incomplete rows.
 
 ## CLI
 
@@ -136,7 +139,7 @@ with a line naming the command.
 as `button` or `text field`. `search` tolerates typos and follows each result with the command that
 reads it. An unknown id or section suggests the closest ones. With `--json`, a failed lookup prints
 `{ error, code, suggestions }`, where `code` is one of `ERR_UNKNOWN_RECORD`, `ERR_UNKNOWN_SECTION`,
-`ERR_UNKNOWN_IMPLEMENTATION`, or `ERR_NO_IMPLEMENTATION`. Branch on `code`, not on the message.
+`ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, or `ERR_INVALID_IMPLEMENTATION`. Branch on `code`, not on the message.
 
 ## MCP server
 

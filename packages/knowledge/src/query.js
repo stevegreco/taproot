@@ -74,11 +74,12 @@ function correctTypos(state, tokens) {
     if (words.has(token)) return [token];
     const allowance = typoAllowance(token);
     if (allowance === 0) return [token];
-    let best = allowance + 1;
+    let best = allowance;
     let found = [];
     for (const word of words) {
       if (Math.abs(word.length - token.length) > allowance) continue;
       const distance = editDistance(token, word);
+      if (distance > allowance) continue;
       if (distance < best) [best, found] = [distance, [word]];
       else if (distance === best) found.push(word);
     }

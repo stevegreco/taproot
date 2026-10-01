@@ -5,6 +5,7 @@
  * CLI (`knowledge get <id> --impl web`) parse the same files the same way.
  */
 export {
+  checkImplementation,
   ImplementationError,
   implementationSlug,
   loadImplementations,
