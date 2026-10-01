@@ -112,7 +112,7 @@ docs site reads the same files with `loadImplementations` and `parseImplementati
 knowledge validate
 knowledge list [--type <t>] [--tag <tag>] [--status <s>]
 knowledge search <query...> [--type <t>] [--tag <tag>] [--limit <n>]
-knowledge get <id | id#section> [--impl <name>]
+knowledge get <id | name | id#section> [--impl <name>]
 knowledge links <id> [--kind <k>] [--direction out|in|both]
 knowledge rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
 knowledge tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
@@ -128,11 +128,18 @@ import, usage, an API table mapping each attribute to the parameter it implement
 With `--json` it returns `{ record, implementation }`. A plain `get` of an implemented component ends
 with a line naming the command.
 
+`get`, `links`, `tokens`, and `rules --id` take a record id or a name that matches one record, such
+as `button` or `text field`. `search` tolerates typos and follows each result with the command that
+reads it. An unknown id or section suggests the closest ones. With `--json`, a failed lookup prints
+`{ error, code, suggestions }`, where `code` is one of `ERR_UNKNOWN_RECORD`, `ERR_UNKNOWN_SECTION`,
+`ERR_UNKNOWN_IMPLEMENTATION`, or `ERR_NO_IMPLEMENTATION`. Branch on `code`, not on the message.
+
 ## MCP server
 
 `knowledge-mcp` is a local stdio server (`--content` and `--config` work as in the CLI). Tools:
 `search`, `get`, `list`, `links`, `rules`, `tokens`, and `validate`. `get` takes an optional
-`implementation`, such as `"web"`, that works like `--impl`. Every record is also a resource
+`implementation`, such as `"web"`, that works like `--impl`. Names, typo suggestions, and next-step
+lines work as in the CLI, and a failed call's `structuredContent.error` holds `{ code, suggestions }`. Every record is also a resource
 at `knowledge://<id>`. The server reloads when the content folder changes, and if the new content has
 issues it keeps serving the last valid version and starts each tool result and resource read with a
 warning.

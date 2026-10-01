@@ -20,11 +20,13 @@ pnpm knowledge rules --level must --topic accessibility
 pnpm knowledge tokens component.button --condition "variant.primary + hover" --resolve
 ```
 
-Before writing markup, use `--impl web` for the package, element name, and the attribute that
-implements each parameter. Attribute names do not always follow parameter names (Button's `action`
-is the `type` attribute). Add `--json` for JSON. `pnpm knowledge list` lists every record. The same operations are available
-as tools, and each record as a `knowledge://<id>` resource, from the `design-system-knowledge` MCP
-server registered in `.mcp.json`.
+Ids or plain names work (`pnpm knowledge get button`), search tolerates typos, and each search
+result names the command that reads it. Before writing markup, use `--impl web` for the package,
+element name, and the attribute that implements each parameter. Attribute names do not always follow
+parameter names (Button's `action` is the `type` attribute). Add `--json` for JSON. `pnpm knowledge
+list` lists every record. The same operations are available as tools, and each record as a
+`knowledge://<id>` resource, from the `design-system-knowledge` MCP server registered in
+`.mcp.json`.
 
 **Edit it** in `packages/knowledge/content/`. Components are `components/<name>/<name>.spec.yaml`.
 Patterns, guidelines, and examples are Markdown with front matter. There is no build step. Validate

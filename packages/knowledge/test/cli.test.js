@@ -131,7 +131,8 @@ describe("knowledge CLI, failures", () => {
     expect(knowledge(["search", "x", "--limit", "abc"]).code).toBe(2);
     expect(knowledge(["links", "component.button", "--direction", "up"]).code).toBe(2);
     expect(knowledge(["help", "bogus"]).code).toBe(2);
-    expect(knowledge(["get", "a", "b"]).err).toContain("needs exactly one id");
+    expect(knowledge(["get"]).err).toContain("get needs an id");
+    expect(knowledge(["list", "extra"]).err).toContain("takes no positional arguments");
   });
 
   it("exits 1 for unknown ids and sections, with the error on stderr", () => {
@@ -231,5 +232,53 @@ describe("knowledge CLI, implementations", () => {
     const r = knowledge(["get", "component.thing", "--impl", "web"], tools);
     expect(r.code).toBe(1);
     expect(r.out).toContain("No implementations are configured.");
+  });
+});
+
+describe("knowledge CLI, forgiving lookups", () => {
+  it("finds a record by name", () => {
+    expect(knowledge(["get", "button"]).out).toMatch(/^# Button/);
+    expect(knowledge(["get", "Text", "field"]).out).toMatch(/^# Text field/);
+    expect(knowledge(["get", "textfield", "--impl", "web"]).out).toContain("`<ds-text-field>`");
+    expect(knowledge(["get", "button#rules"]).out).toContain("## Rules");
+    expect(knowledge(["tokens", "button", "--part", "control"]).code).toBe(0);
+    expect(knowledge(["links", "link"]).out).toContain("component.button");
+    expect(knowledge(["rules", "--id", "button#label-describes-result"]).out).toContain(
+      "component.button#label-describes-result",
+    );
+  });
+
+  it("suggests the record a typo meant", () => {
+    const typo = knowledge(["get", "buton"]);
+    expect(typo.code).toBe(1);
+    expect(typo.out).toContain('Unknown record "buton". Did you mean: component.button?');
+    expect(knowledge(["get", "hierarchy"]).out).toContain("pattern.action-hierarchy");
+  });
+
+  it("returns an error envelope in JSON", () => {
+    const record = JSON.parse(knowledge(["get", "buton", "--json"]).out);
+    expect(record).toEqual({
+      error: 'Unknown record "buton". Did you mean: component.button?',
+      code: "ERR_UNKNOWN_RECORD",
+      suggestions: ["component.button"],
+    });
+    const section = JSON.parse(knowledge(["get", "component.button#rule", "--json"]).out);
+    expect(section.code).toBe("ERR_UNKNOWN_SECTION");
+    expect(section.suggestions).toContain("component.button#rules");
+    const impl = JSON.parse(knowledge(["get", "button", "--impl", "ios", "--json"]).out);
+    expect(impl).toMatchObject({ code: "ERR_UNKNOWN_IMPLEMENTATION", suggestions: ["web"] });
+    const none = JSON.parse(
+      knowledge(["get", "pattern.action-hierarchy", "--impl", "web", "--json"]).out,
+    );
+    expect(none.code).toBe("ERR_NO_IMPLEMENTATION");
+  });
+
+  it("searches through typos and names the next command", () => {
+    const r = knowledge(["search", "chekbox"]);
+    expect(r.out).toContain("- component.checkbox — Checkbox: ");
+    expect(r.out).toContain("  → knowledge get component.checkbox --impl web");
+    expect(knowledge(["search", "destructive", "action"]).out).toContain(
+      "  → knowledge get pattern.action-hierarchy\n",
+    );
   });
 });

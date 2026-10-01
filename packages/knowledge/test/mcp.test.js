@@ -82,6 +82,22 @@ describe("knowledge MCP server", () => {
     expect(pattern.isError).toBe(true);
   });
 
+  it("resolves names, suggests typos, and names the next call", async () => {
+    const { client } = await connect({ cwd: repoRoot });
+    const named = await client.callTool({ name: "get", arguments: { target: "text field" } });
+    expect(text(named)).toMatch(/^# Text field/);
+
+    const typo = await client.callTool({ name: "get", arguments: { target: "buton" } });
+    expect(typo.isError).toBe(true);
+    expect(typo.structuredContent.error).toEqual({
+      code: "ERR_UNKNOWN_RECORD",
+      suggestions: ["component.button"],
+    });
+
+    const found = await client.callTool({ name: "search", arguments: { query: "buton" } });
+    expect(text(found)).toContain('  → get component.button with implementation "web"');
+  });
+
   it("resolves tokens, and lists rules and links", async () => {
     const { client } = await connect({ cwd: repoRoot });
     const tokens = await client.callTool({

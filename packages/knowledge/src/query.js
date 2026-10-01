@@ -1,6 +1,6 @@
 import { scoreRecord, tokenize } from "./search.js";
 import { INVERSE } from "./links.js";
-import { byCodeUnit, recordIdOf } from "./util.js";
+import { byCodeUnit, editDistance, recordIdOf, typoAllowance } from "./util.js";
 
 /**
  * @typedef {object} State
@@ -49,8 +49,45 @@ export function section(state, target) {
   });
 }
 
+/** Every word in the search index, built once per state. */
+const vocabularies = new WeakMap();
+function vocabulary(state) {
+  let words = vocabularies.get(state);
+  if (!words) {
+    words = new Set();
+    for (const { fields, rules } of state.searchIndex.values()) {
+      for (const tokens of Object.values(fields)) for (const token of tokens) words.add(token);
+      for (const rule of rules) for (const token of rule.tokens) words.add(token);
+    }
+    vocabularies.set(state, words);
+  }
+  return words;
+}
+
+/**
+ * Replace each query word the index does not contain with the indexed words it is a likely typo
+ * of, so "buton" finds Button. A word with no close match is kept and simply matches nothing.
+ */
+function correctTypos(state, tokens) {
+  const words = vocabulary(state);
+  return tokens.flatMap((token) => {
+    if (words.has(token)) return [token];
+    const allowance = typoAllowance(token);
+    if (allowance === 0) return [token];
+    let best = allowance + 1;
+    let found = [];
+    for (const word of words) {
+      if (Math.abs(word.length - token.length) > allowance) continue;
+      const distance = editDistance(token, word);
+      if (distance < best) [best, found] = [distance, [word]];
+      else if (distance === best) found.push(word);
+    }
+    return found.length ? found.sort(byCodeUnit) : [token];
+  });
+}
+
 export function search(state, query, options = {}) {
-  const queryTokens = [...new Set(tokenize(query))];
+  const queryTokens = [...new Set(correctTypos(state, [...new Set(tokenize(query))]))];
   if (queryTokens.length === 0) return [];
   const hits = [];
   for (const record of state.records.values()) {

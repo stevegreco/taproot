@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { loadKnowledge } from "../src/index.js";
 import { buildLinks } from "../src/links.js";
+import { editDistance } from "../src/util.js";
 import { fixture } from "./helpers.js";
 
 /** @type {import("../src/index.js").Knowledge} */
@@ -339,5 +340,15 @@ describe("tokens", () => {
     const [radius, hover] = valid.tokens("component.thing");
     expect(radius.values).toEqual({ light: "4px", dark: "4px" });
     expect(hover).not.toHaveProperty("values");
+  });
+});
+
+describe("editDistance", () => {
+  it("counts inserts, deletes, substitutions, and adjacent swaps", () => {
+    expect(editDistance("button", "button")).toBe(0);
+    expect(editDistance("buton", "button")).toBe(1);
+    expect(editDistance("chekbox", "checkbox")).toBe(1);
+    expect(editDistance("lnik", "link")).toBe(1);
+    expect(editDistance("rulz", "rules")).toBe(2);
   });
 });

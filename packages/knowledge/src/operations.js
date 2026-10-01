@@ -1,12 +1,16 @@
 import { validateKnowledge } from "./index.js";
 import { loadImplementations, renderImplementation } from "./implementation.js";
+import { editDistance, typoAllowance } from "./util.js";
 
 /**
  * The operations behind both the CLI and the MCP server. Each returns `{ text, data, ok }`:
  * Markdown for agents, the library's return value for `--json`, and whether the call found what
- * it was asked for.
+ * it was asked for. A call that found nothing also returns `error`, with a stable code to branch
+ * on and what the caller probably meant.
  *
- * @typedef {{ text: string, data: unknown, ok: boolean }} Result
+ * @typedef {"ERR_UNKNOWN_RECORD" | "ERR_UNKNOWN_SECTION" | "ERR_UNKNOWN_IMPLEMENTATION" | "ERR_NO_IMPLEMENTATION"} ErrorCode
+ * @typedef {{ code: ErrorCode, suggestions: string[] }} ResultError
+ * @typedef {{ text: string, data: unknown, ok: boolean, error?: ResultError }} Result
  */
 
 const cell = (value) =>
@@ -24,11 +28,55 @@ export function list(knowledge, { type, tag, status } = {}) {
   return { text: data.length ? summaryList(data) : "No records match.", data, ok: true };
 }
 
-export function search(knowledge, { query, type, tag, limit } = {}) {
+/**
+ * @param {{ implementations?: Record<string, string>, next?: (id: string, implementation?: string) => string }} [options]
+ *   With `next`, each result is followed by the call that reads it, with its implementation when
+ *   it has one.
+ */
+export function search(knowledge, { query, type, tag, limit } = {}, options = {}) {
   if (!query || !query.trim()) throw new UsageError("search needs a query");
   const data = knowledge.search(query, { type, tags: tag ? [tag] : undefined, limit });
-  const text = data.length ? summaryList(data) : `No results for "${query}".`;
+  if (data.length === 0) return { text: `No results for "${query}".`, data, ok: true };
+  if (!options.next) return { text: summaryList(data), data, ok: true };
+  const implemented = implementationIndex(options.implementations ?? {});
+  const text = data
+    .map(
+      (item) =>
+        `- ${item.id} — ${item.title}: ${item.summary}\n  → ${options.next(item.id, implemented.get(item.id)?.[0])}`,
+    )
+    .join("\n");
   return { text, data, ok: true };
+}
+
+const shortName = (id) => id.slice(id.indexOf(".") + 1);
+const squash = (text) =>
+  String(text)
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+
+/**
+ * The record id a caller meant: the id itself, or a name that matches exactly one record by the
+ * part of its id after the type or by its title, ignoring case, spaces, and hyphens. `button`,
+ * `Text field`, and `textfield` all find their component.
+ *
+ * @returns {string | undefined}
+ */
+export function resolveId(knowledge, input) {
+  if (knowledge.get(input)) return input;
+  const wanted = squash(input);
+  if (!wanted) return undefined;
+  const matches = knowledge
+    .list()
+    .filter((record) => squash(shortName(record.id)) === wanted || squash(record.title) === wanted);
+  return matches.length === 1 ? matches[0].id : undefined;
+}
+
+/** Split `id#section` and resolve the id part. */
+function resolveTarget(knowledge, target) {
+  const hash = target.indexOf("#");
+  const typed = hash === -1 ? target : target.slice(0, hash);
+  const section = hash === -1 ? undefined : target.slice(hash + 1);
+  return { typed, id: resolveId(knowledge, typed), section };
 }
 
 /**
@@ -37,11 +85,12 @@ export function search(knowledge, { query, type, tag, limit } = {}) {
  * @param {{ implementations?: Record<string, string>, hint?: (id: string, names: string[]) => string }} [options]
  *   Implementation folders by name, and the line that tells the caller how to ask for one.
  */
-export function get(knowledge, { target, implementation }, options = {}) {
-  if (!target) throw new UsageError("get needs an id or id#section");
-  const [id, section] = target.split("#");
+export function get(knowledge, { target: typedTarget, implementation }, options = {}) {
+  if (!typedTarget) throw new UsageError("get needs an id or id#section");
+  const { typed, id, section } = resolveTarget(knowledge, typedTarget);
+  if (!id) return notFound(knowledge, typed);
   const record = knowledge.get(id);
-  if (!record) return notFound(knowledge, `Unknown record "${id}".`, id);
+  const target = section === undefined ? id : `${id}#${section}`;
   const folders = options.implementations ?? {};
   if (implementation !== undefined) {
     if (section !== undefined) {
@@ -50,18 +99,18 @@ export function get(knowledge, { target, implementation }, options = {}) {
     return getWithImplementation(knowledge, record, implementation, folders);
   }
   if (section === undefined) {
-    const names = record.type === "component" ? implementedBy(folders, id) : [];
+    const names = record.type === "component" ? (implementationIndex(folders).get(id) ?? []) : [];
     const hint = names.length && options.hint ? `\n${options.hint(id, names)}\n` : "";
     return { text: knowledge.render(target) + hint, data: record, ok: true };
   }
   const found = knowledge.section(target);
   if (!found) {
-    const known = record.sections.map((s) => `${id}#${s}`).join(", ");
-    return {
-      text: `Unknown section "${target}". Sections: ${known || "none"}.`,
-      data: null,
-      ok: false,
-    };
+    const known = record.sections.map((name) => `${id}#${name}`);
+    return failure(
+      `Unknown section "${target}". Sections: ${known.join(", ") || "none"}.`,
+      "ERR_UNKNOWN_SECTION",
+      nearest(section, record.sections).map((name) => `${id}#${name}`),
+    );
   }
   return { text: knowledge.render(target), data: found, ok: true };
 }
@@ -72,11 +121,19 @@ function getWithImplementation(knowledge, record, name, folders) {
     const text = configured.length
       ? `No implementation named "${name}". Configured: ${configured.join(", ")}.`
       : "No implementations are configured. Add `implementations` to knowledge.config.json.";
-    return { text, data: null, ok: false };
+    return failure(text, "ERR_UNKNOWN_IMPLEMENTATION", configured);
   }
   const found = loadImplementations(folders[name]).find((item) => item.component === record.id);
   if (!found) {
-    return { text: `No ${name} implementation for ${record.id}.`, data: null, ok: false };
+    const why =
+      record.type === "component"
+        ? ""
+        : " Only components have implementations; get the components it links to.";
+    return failure(
+      `No ${name} implementation for ${record.id}.${why}`,
+      "ERR_NO_IMPLEMENTATION",
+      [],
+    );
   }
   return {
     text: `${knowledge.render(record.id)}\n${renderImplementation(record, found, name)}`,
@@ -86,33 +143,67 @@ function getWithImplementation(knowledge, record, name, folders) {
 }
 
 /**
- * The configured implementation names that have a file for `id`. A folder that cannot be read or
- * parsed is skipped here, so it cannot break a plain `get`; asking for it reports the error.
+ * Component id -> the configured implementation names that have a file for it. A folder that
+ * cannot be read or parsed is skipped here, so it cannot break `get` or `search`; asking for that
+ * implementation reports the error.
+ *
+ * @param {Record<string, string>} folders
+ * @returns {Map<string, string[]>}
  */
-function implementedBy(folders, id) {
-  return Object.entries(folders)
-    .filter(([, dir]) => {
-      try {
-        return loadImplementations(dir).some((item) => item.component === id);
-      } catch {
-        return false;
-      }
-    })
-    .map(([name]) => name);
+function implementationIndex(folders) {
+  const index = new Map();
+  for (const [name, dir] of Object.entries(folders)) {
+    let items;
+    try {
+      items = loadImplementations(dir);
+    } catch {
+      continue;
+    }
+    for (const item of items) {
+      if (!index.has(item.component)) index.set(item.component, []);
+      index.get(item.component).push(name);
+    }
+  }
+  return index;
 }
 
-function notFound(knowledge, message, id) {
-  const near = knowledge
+/** @param {string} text @param {ErrorCode} code @param {string[]} suggestions @returns {Result} */
+function failure(text, code, suggestions) {
+  return { text, data: null, ok: false, error: { code, suggestions } };
+}
+
+/** The candidates within a typo of `input`, nearest first. */
+function nearest(input, candidates) {
+  const allowance = Math.max(typoAllowance(input), 1);
+  return candidates
+    .map((candidate) => ({ candidate, distance: editDistance(input, candidate) }))
+    .filter(({ distance }) => distance <= allowance)
+    .sort((a, b) => a.distance - b.distance)
+    .map(({ candidate }) => candidate);
+}
+
+/** An unknown record, with the ids the caller probably meant. */
+function notFound(knowledge, typed) {
+  const wanted = squash(typed);
+  const suggestions = knowledge
     .list()
-    .map((r) => r.id)
-    .filter((known) => known.includes(id) || id.includes(known.split(".").at(-1)));
-  const hint = near.length ? ` Did you mean: ${near.join(", ")}?` : "";
-  return { text: message + hint, data: null, ok: false };
+    .map((record) => record.id)
+    .filter(
+      (id) =>
+        // An id fragment, such as "hierarchy", or a name several records share.
+        (wanted.length >= 3 && squash(id).includes(wanted)) ||
+        // A typo of a name, such as "buton", or of a whole id.
+        nearest(wanted, [squash(shortName(id))]).length > 0 ||
+        nearest(String(typed).toLowerCase(), [id]).length > 0,
+    );
+  const hint = suggestions.length ? ` Did you mean: ${suggestions.join(", ")}?` : "";
+  return failure(`Unknown record "${typed}".${hint}`, "ERR_UNKNOWN_RECORD", suggestions);
 }
 
-export function links(knowledge, { id, kind, direction } = {}) {
-  if (!id) throw new UsageError("links needs a record id");
-  if (!knowledge.get(id)) return notFound(knowledge, `Unknown record "${id}".`, id);
+export function links(knowledge, { id: typed, kind, direction } = {}) {
+  if (!typed) throw new UsageError("links needs a record id");
+  const id = resolveId(knowledge, typed);
+  if (!id) return notFound(knowledge, typed);
   const data = knowledge.links(id, { kind, direction });
   if (data.length === 0) return { text: `No links for ${id}.`, data, ok: true };
   // A link's kind reads from its `from` side, so a link into this record is grouped apart and shown
@@ -141,9 +232,12 @@ export function links(knowledge, { id, kind, direction } = {}) {
   return { text: lines.join("\n").trimEnd(), data, ok: true };
 }
 
-export function rules(knowledge, { id, topic, level, query } = {}) {
-  if (id && !knowledge.get(id.split("#")[0])) {
-    return notFound(knowledge, `Unknown record "${id}".`, id);
+export function rules(knowledge, { id: typed, topic, level, query } = {}) {
+  let id;
+  if (typed) {
+    const target = resolveTarget(knowledge, typed);
+    if (!target.id) return notFound(knowledge, target.typed);
+    id = target.section === undefined ? target.id : `${target.id}#${target.section}`;
   }
   const data = knowledge.rules({ id, topic, level, query });
   const text = data.length
@@ -156,9 +250,14 @@ export function rules(knowledge, { id, topic, level, query } = {}) {
  * @param {{ resolveToken?: (ref: string) => Record<string, string> | undefined }} [options]
  *   Resolve values with this instead of the resolver the knowledge was loaded with.
  */
-export function tokens(knowledge, { id, part, condition, property, resolve } = {}, options = {}) {
-  if (!id) throw new UsageError("tokens needs a component id");
-  if (!knowledge.get(id)) return notFound(knowledge, `Unknown record "${id}".`, id);
+export function tokens(
+  knowledge,
+  { id: typed, part, condition, property, resolve } = {},
+  options = {},
+) {
+  if (!typed) throw new UsageError("tokens needs a component id");
+  const id = resolveId(knowledge, typed);
+  if (!id) return notFound(knowledge, typed);
   let data = knowledge.tokens(id, { part, condition, property });
   if (resolve && options.resolveToken) {
     data = data.map((row) => {

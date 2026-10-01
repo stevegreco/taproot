@@ -22,7 +22,7 @@ const COMMANDS = {
     options: { type: str, tag: str, limit: str },
   },
   get: {
-    usage: "knowledge get <id | id#section> [--impl <name>]",
+    usage: "knowledge get <id | name | id#section> [--impl <name>]",
     summary:
       "Print a record, or one section of it, as Markdown. --impl web adds the package, element, and attributes.",
     options: { impl: str },
@@ -120,7 +120,11 @@ export async function run(argv, io = {}) {
     configPath: values.config,
   };
   const print = (result) => {
-    out(`${values.json ? JSON.stringify(result.data, null, 2) : result.text}\n`);
+    // A failed lookup prints an error envelope in JSON: branch on `code`, not on the message.
+    const json = result.error
+      ? { error: result.text, code: result.error.code, suggestions: result.error.suggestions }
+      : result.data;
+    out(`${values.json ? JSON.stringify(json, null, 2) : result.text}\n`);
     return result.ok ? 0 : 1;
   };
 
@@ -130,13 +134,11 @@ export async function run(argv, io = {}) {
       return print(await ops.validate({ contentDir }));
     }
 
-    const needsPositional = { get: 1, links: 1, tokens: 1 }[command] ?? 0;
-    if (command !== "search" && positionals.length !== needsPositional) {
-      return usageError(
-        needsPositional
-          ? `${command} needs exactly one id.`
-          : `${command} takes no positional arguments.`,
-      );
+    // An id can be a name with spaces, such as `get text field`, so its words are joined.
+    const takesId = ["get", "links", "tokens"].includes(command);
+    if (takesId && positionals.length === 0) return usageError(`${command} needs an id.`);
+    if (!takesId && command !== "search" && positionals.length > 0) {
+      return usageError(`${command} takes no positional arguments.`);
     }
     if (values.limit !== undefined && !/^[1-9]\d*$/.test(values.limit)) {
       return usageError("--limit must be a positive integer.");
@@ -149,15 +151,24 @@ export async function run(argv, io = {}) {
       ...loadOptions,
       resolveTokens: command === "tokens" && Boolean(values.resolve),
     });
-    const [first] = positionals;
+    const first = positionals.join(" ");
+    const { implementations } = resolveConfig(loadOptions);
     const args = { ...values, limit: values.limit ? Number(values.limit) : undefined };
     switch (command) {
       case "list":
         return print(ops.list(knowledge, args));
       case "search":
-        return print(ops.search(knowledge, { ...args, query: positionals.join(" ") }));
+        return print(
+          ops.search(
+            knowledge,
+            { ...args, query: positionals.join(" ") },
+            {
+              implementations,
+              next: (id, impl) => `knowledge get ${id}${impl ? ` --impl ${impl}` : ""}`,
+            },
+          ),
+        );
       case "get": {
-        const { implementations } = resolveConfig(loadOptions);
         return print(
           ops.get(
             knowledge,
