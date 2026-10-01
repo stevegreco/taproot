@@ -4,17 +4,23 @@
 `src/Root.tsx` loads `tokens.css` and registers every `ds-*` element once, so any composition can
 use `var(--semantic-…)` tokens and render `<ds-button>`, `<ds-badge>`, and the rest directly in JSX.
 
-From the repository root:
+This app is opt in. It is outside the repository's pnpm workspace, so a normal `pnpm install`,
+`pnpm build`, `pnpm test`, and CI never install Remotion or touch it. It has its own
+`pnpm-workspace.yaml` and lockfile, and links the tokens and components from `packages/`.
+
+To work on videos, build the packages it links, then install and start it:
 
 ```bash
-pnpm exec turbo run dev --filter=videos
+pnpm build
+pnpm --dir apps/videos install
+pnpm --dir apps/videos dev
 ```
 
-Opens Remotion Studio after building the tokens and components. To render a composition to
-`out/`, build the workspace dependencies first, then:
+`dev` opens Remotion Studio. Run `pnpm build` again after changing the tokens or components. To
+render a composition to `out/`:
 
 ```bash
-pnpm --filter videos render ComponentShowcase out/component-showcase.mp4
+pnpm --dir apps/videos render ComponentShowcase out/component-showcase.mp4
 ```
 
 `KnowledgeLayer` is a 56-second explainer of the knowledge layer and what makes it agent ready:
@@ -23,7 +29,7 @@ and an agent building correct markup from it. Its scenes are in `src/scenes/`, t
 lengths in `src/KnowledgeLayer.tsx`. Render it with:
 
 ```bash
-pnpm --filter videos render KnowledgeLayer out/knowledge-layer.mp4
+pnpm --dir apps/videos render KnowledgeLayer out/knowledge-layer.mp4
 ```
 
 Add a composition by writing a component in `src/` and registering it with `<Composition>` in

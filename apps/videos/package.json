@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "remotion studio",
-    "build": "remotion bundle --out-dir=dist",
     "render": "remotion render",
     "typecheck": "tsc --noEmit",
     "still": "remotion still"
@@ -13,8 +12,8 @@
   "dependencies": {
     "@remotion/cli": "4.0.529",
     "@remotion/google-fonts": "4.0.529",
-    "@stevegreco/design-system": "workspace:*",
-    "@stevegreco/design-system-components": "workspace:*",
+    "@stevegreco/design-system": "link:../../packages/tokens",
+    "@stevegreco/design-system-components": "link:../../packages/components",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "remotion": "4.0.529"
@@ -25,5 +24,6 @@
   },
   "engines": {
     "node": ">=22.12.0"
-  }
+  },
+  "packageManager": "pnpm@11.22.0"
 }
