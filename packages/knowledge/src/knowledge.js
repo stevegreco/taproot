@@ -27,7 +27,7 @@ import { byCodeUnit, deepFreeze } from "./util.js";
  * @property {(id: string, options?: { kind?: LinkKind, direction?: "out" | "in" | "both" }) => Link[]} links
  * @property {(filter?: { id?: string, topic?: Topic, level?: Level, query?: string }) => RuleHit[]} rules
  * @property {(id: string, filter?: { part?: string, condition?: string, property?: string }) => TokenRow[]} tokens
- * @property {(target: string) => string} render
+ * @property {(target: string, options?: { omit?: string[] }) => string} render
  */
 
 /**
@@ -74,6 +74,6 @@ export function createKnowledge(contentDir, checked, resolveToken) {
     links: (id, options) => query.links(state, id, options),
     rules: (filter) => query.rules(state, filter),
     tokens: (id, filter) => query.tokens(state, id, filter),
-    render: (target) => render(state, target),
+    render: (target, options) => render(state, target, options),
   });
 }

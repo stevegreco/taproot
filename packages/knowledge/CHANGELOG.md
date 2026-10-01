@@ -29,6 +29,9 @@ Breaking. The package is now a library over the authored files, and the record f
   `text field`). `search` tolerates typos and, in the CLI and MCP server, follows each result with
   the call that reads it. Unknown ids and sections suggest the nearest ones, and failed lookups carry
   an error code: `{ error, code, suggestions }` with `--json`, and `structuredContent.error` over MCP.
+- `get` of a whole component record, in the CLI and MCP server, leaves out the token table and ends
+  with a line giving the binding count and the `tokens` call. `get <id>#tokens`, `tokens`, JSON
+  output, and `knowledge://` resources are unchanged. `Knowledge.render` takes `{ omit }`.
 - Removed the `build`, `prepack`, and `clean` scripts, and the dependencies `@stevegreco/design-system`,
   `js-yaml`, `parse5`, and `unist-util-visit`.
 

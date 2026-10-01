@@ -123,6 +123,10 @@ Global flags: `--content <dir>`, `--config <path>`, `--json`. Output is Markdown
 return values as JSON. Exit codes: 0 ok, 1 validation issues or an unknown id or section, 2 usage
 error. In this repo, run it as `pnpm knowledge ...`.
 
+A whole component record leaves out its token table, which is most of its length; a closing line
+gives the count and the command. Read the table with `get <id>#tokens` or filter it with `tokens`.
+JSON output and `knowledge://` resources keep the full record.
+
 `get <id> --impl web` prints the record followed by its web implementation: package, element,
 import, usage, an API table mapping each attribute to the parameter it implements, and the guidance.
 With `--json` it returns `{ record, implementation }`. A plain `get` of an implemented component ends

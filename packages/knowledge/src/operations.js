@@ -82,8 +82,12 @@ function resolveTarget(knowledge, target) {
 /**
  * @param {{ target: string, implementation?: string }} args `implementation` names a configured
  *   implementation, such as `web`, to print after the record.
- * @param {{ implementations?: Record<string, string>, hint?: (id: string, names: string[]) => string }} [options]
- *   Implementation folders by name, and the line that tells the caller how to ask for one.
+ * A whole component record leaves out its token table, which is most of its length and rarely
+ * needed to choose or use the component. A closing line names the call that reads it.
+ *
+ * @param {{ implementations?: Record<string, string>, implementationHint?: (id: string, names: string[]) => string, tokensHint?: (id: string, count: number) => string }} [options]
+ *   Implementation folders by name, and the lines that tell the caller how to ask for an
+ *   implementation or the tokens.
  */
 export function get(knowledge, { target: typedTarget, implementation }, options = {}) {
   if (!typedTarget) throw new UsageError("get needs an id or id#section");
@@ -96,12 +100,16 @@ export function get(knowledge, { target: typedTarget, implementation }, options 
     if (section !== undefined) {
       throw new UsageError("an implementation goes with a whole record, not a section");
     }
-    return getWithImplementation(knowledge, record, implementation, folders);
+    return getWithImplementation(knowledge, record, implementation, folders, options);
   }
   if (section === undefined) {
     const names = record.type === "component" ? (implementationIndex(folders).get(id) ?? []) : [];
-    const hint = names.length && options.hint ? `\n${options.hint(id, names)}\n` : "";
-    return { text: knowledge.render(target) + hint, data: record, ok: true };
+    const lines = [
+      names.length && options.implementationHint?.(id, names),
+      tokensLine(knowledge, record, options),
+    ].filter(Boolean);
+    const more = lines.length ? `\n${lines.join("\n")}\n` : "";
+    return { text: renderWithoutTokens(knowledge, id) + more, data: record, ok: true };
   }
   const found = knowledge.section(target);
   if (!found) {
@@ -115,7 +123,14 @@ export function get(knowledge, { target: typedTarget, implementation }, options 
   return { text: knowledge.render(target), data: found, ok: true };
 }
 
-function getWithImplementation(knowledge, record, name, folders) {
+const renderWithoutTokens = (knowledge, id) => knowledge.render(id, { omit: ["tokens"] });
+
+function tokensLine(knowledge, record, options) {
+  const count = knowledge.tokens(record.id).length;
+  return count > 0 && options.tokensHint ? options.tokensHint(record.id, count) : "";
+}
+
+function getWithImplementation(knowledge, record, name, folders, options) {
   const configured = Object.keys(folders);
   if (!folders[name]) {
     const text = configured.length
@@ -135,8 +150,9 @@ function getWithImplementation(knowledge, record, name, folders) {
       [],
     );
   }
+  const tokens = tokensLine(knowledge, record, options);
   return {
-    text: `${knowledge.render(record.id)}\n${renderImplementation(record, found, name)}`,
+    text: `${renderWithoutTokens(knowledge, record.id)}\n${renderImplementation(record, found, name)}${tokens ? `\n${tokens}\n` : ""}`,
     data: { record, implementation: found },
     ok: true,
   };

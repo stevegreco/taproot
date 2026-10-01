@@ -175,7 +175,9 @@ export async function run(argv, io = {}) {
             { target: first, implementation: values.impl },
             {
               implementations,
-              hint: (id, names) =>
+              tokensHint: (id, count) =>
+                `Tokens: ${count} bindings, left out here. Run \`knowledge tokens ${id}\` to filter them by part, condition, or property.`,
+              implementationHint: (id, names) =>
                 `Implementation: run \`knowledge get ${id} --impl ${names[0]}\` for the package, element, and attribute names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
             },
           ),

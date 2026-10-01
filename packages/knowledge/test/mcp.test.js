@@ -128,7 +128,10 @@ describe("knowledge MCP server", () => {
     );
     const { client } = await connect({ cwd: dir });
 
-    const got = await client.callTool({ name: "get", arguments: { target: "component.button" } });
+    const got = await client.callTool({
+      name: "get",
+      arguments: { target: "component.button#tokens" },
+    });
     expect(got.isError).toBeFalsy();
     expect(text(got)).toContain("component.button.primary.background.hover");
 

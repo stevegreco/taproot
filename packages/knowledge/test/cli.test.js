@@ -204,9 +204,10 @@ describe("knowledge CLI, implementations", () => {
   it("points a plain get at the implementation", () => {
     const { out } = knowledge(["get", "component.button"]);
     expect(out).not.toContain("## Web implementation");
-    expect(out.trimEnd().split("\n").at(-1)).toBe(
+    expect(out.trimEnd().split("\n").slice(-2)).toEqual([
       "Implementation: run `knowledge get component.button --impl web` for the package, element, and attribute names.",
-    );
+      "Tokens: 50 bindings, left out here. Run `knowledge tokens component.button` to filter them by part, condition, or property.",
+    ]);
     expect(knowledge(["get", "pattern.action-hierarchy"]).out).not.toContain("Implementation:");
   });
 
@@ -232,6 +233,38 @@ describe("knowledge CLI, implementations", () => {
     const r = knowledge(["get", "component.thing", "--impl", "web"], tools);
     expect(r.code).toBe(1);
     expect(r.out).toContain("No implementations are configured.");
+  });
+});
+
+describe("knowledge CLI, short records", () => {
+  it("leaves the token table out of a whole component record", () => {
+    for (const args of [
+      ["get", "button"],
+      ["get", "button", "--impl", "web"],
+    ]) {
+      const { out } = knowledge(args);
+      expect(out).not.toContain("## Tokens");
+      expect(out).not.toContain("component.button.primary.background.hover");
+      expect(out).toContain("Tokens: 50 bindings, left out here.");
+    }
+  });
+
+  it("still prints the tokens section and the tokens command", () => {
+    expect(knowledge(["get", "button#tokens"]).out).toContain(
+      "component.button.primary.background.hover",
+    );
+    expect(knowledge(["tokens", "button"]).out).toContain(
+      "component.button.primary.background.hover",
+    );
+  });
+
+  it("keeps the full record in JSON", () => {
+    const data = JSON.parse(knowledge(["get", "button", "--json"]).out);
+    expect(Object.keys(data.tokens)).toContain("control");
+  });
+
+  it("adds no tokens line to a record without tokens", () => {
+    expect(knowledge(["get", "pattern.action-hierarchy"]).out).not.toContain("Tokens:");
   });
 });
 

@@ -129,7 +129,9 @@ export async function createKnowledgeServer(options = {}) {
         { target, implementation },
         {
           implementations: resolveConfig(loadOptions).implementations,
-          hint: (_id, names) =>
+          tokensHint: (_id, count) =>
+            `Tokens: ${count} bindings, left out here. Call \`tokens\` to filter them by part, condition, or property.`,
+          implementationHint: (_id, names) =>
             `Implementation: call \`get\` with implementation "${names[0]}" for the package, element, and attribute names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
         },
       ),
