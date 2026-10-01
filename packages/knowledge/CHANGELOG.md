@@ -20,6 +20,20 @@ Breaking. The package is now a library over the authored files, and the record f
   `rules`, `tokens`, `validate`; records as `knowledge://<id>` resources), a `knowledge.config.json`
   file, and an optional DTCG token resolver. New exports: `./config` and `./tokens-dtcg`. New
   dependencies: `@modelcontextprotocol/sdk` and `zod`.
+- `knowledge get <id> --impl <name>` and the MCP `get` tool's `implementation` argument print a
+  component's implementation after its record: package, element, import, usage, and an API table
+  mapping attributes, properties, and events to record parameters and events. Folders come from a
+  new `implementations` field in `knowledge.config.json`. New export: `./implementation`, the
+  reader and contract check (`checkImplementation`) the docs site now imports instead of its own
+  copies. A file that does not match its record fails with `ERR_INVALID_IMPLEMENTATION`.
+- `get`, `links`, `tokens`, and `rules --id` accept a name that matches one record (`button`,
+  `text field`). A one-word `search` tolerates typos, a word that starts a name or title matches it, and, in
+  the CLI and MCP server, `search` follows each result with
+  the call that reads it. Unknown ids and sections suggest the nearest ones, and failed lookups carry
+  an error code: `{ error, code, suggestions }` with `--json`, and `structuredContent.error` over MCP.
+- `get` of a whole component record, in the CLI and MCP server, leaves out the token table and ends
+  with a line giving the binding count and the `tokens` call. `get <id>#tokens`, `tokens`, JSON
+  output, and `knowledge://` resources are unchanged. `Knowledge.render` takes `{ omit }`.
 - Removed the `build`, `prepack`, and `clean` scripts, and the dependencies `@stevegreco/design-system`,
   `js-yaml`, `parse5`, and `unist-util-visit`.
 

@@ -84,6 +84,20 @@ describe("loadFromConfig", () => {
     expect(write({ nope: 1 })).toThrow(/unknown field "nope"/);
     expect(write({ tokens: { format: "css", sets: {} } })).toThrow(/must be "dtcg"/);
     expect(write({ tokens: { format: "dtcg", sets: { a: "x" } } })).toThrow(/tokens.sets.a/);
+    expect(write({ implementations: ["web"] })).toThrow(/"implementations" must be an object/);
+    expect(write({ implementations: { web: "" } })).toThrow(/implementations.web/);
+    fs.rmSync(tmp, { recursive: true });
+  });
+
+  it("resolves implementation folders relative to the config file", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "knowledge-config-"));
+    fs.writeFileSync(
+      path.join(tmp, "knowledge.config.json"),
+      JSON.stringify({ implementations: { web: "impl/web" } }),
+    );
+    const { implementations } = resolveConfig({ cwd: tmp });
+    expect(implementations.web).toBe(path.join(tmp, "impl/web"));
+    expect(resolveConfig({ cwd: tools }).implementations).toEqual({});
     fs.rmSync(tmp, { recursive: true });
   });
 });

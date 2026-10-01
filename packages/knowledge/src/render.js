@@ -21,12 +21,14 @@ const FIELD_ORDER = [
  *
  * @param {import("./query.js").State} state
  * @param {string} target A record ID, or `id#section`.
+ * @param {{ omit?: string[] }} [options] Component fields to leave out of a whole record, such as
+ *   `tokens`. Ignored for a section.
  */
-export function render(state, target) {
+export function render(state, target, options = {}) {
   const id = recordIdOf(target);
   const record = state.records.get(id);
   if (!record) throw new Error(`No record has the id ${id}`);
-  if (!target.includes("#")) return join(renderRecord(state, record));
+  if (!target.includes("#")) return join(renderRecord(state, record, options.omit ?? []));
 
   const name = target.slice(id.length + 1);
   const entry = state.sections.get(id).get(name);
@@ -38,12 +40,14 @@ const join = (blocks) => `${blocks.filter(Boolean).join("\n\n")}\n`;
 
 // --- Records ---
 
-function renderRecord(state, record) {
+function renderRecord(state, record, omit) {
   const blocks = [`# ${record.title}`, record.summary];
   if (record.type === "component") {
     blocks.push(record.description);
     for (const field of FIELD_ORDER) {
-      if (record[field] !== undefined) blocks.push(renderField(state, record, field));
+      if (record[field] !== undefined && !omit.includes(field)) {
+        blocks.push(renderField(state, record, field));
+      }
     }
   } else if (record.body) {
     blocks.push(record.body);
@@ -263,7 +267,7 @@ function renderTokens(rows) {
 
 // --- Tables ---
 
-function table(headers, rows) {
+export function table(headers, rows) {
   const cell = (text) =>
     String(text ?? "")
       .replaceAll("|", "\\|")

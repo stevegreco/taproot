@@ -63,6 +63,41 @@ describe("knowledge MCP server", () => {
     expect(missing.isError).toBe(true);
   });
 
+  it("gets a component with its implementation", async () => {
+    const { client } = await connect({ cwd: repoRoot });
+    const plain = await client.callTool({ name: "get", arguments: { target: "component.button" } });
+    expect(text(plain)).toContain('call `get` with implementation "web"');
+
+    const got = await client.callTool({
+      name: "get",
+      arguments: { target: "component.button", implementation: "web" },
+    });
+    expect(text(got)).toContain("- Element: `<ds-button>`");
+    expect(got.structuredContent.results.implementation.component).toBe("component.button");
+
+    const pattern = await client.callTool({
+      name: "get",
+      arguments: { target: "pattern.action-hierarchy", implementation: "web" },
+    });
+    expect(pattern.isError).toBe(true);
+  });
+
+  it("resolves names, suggests typos, and names the next call", async () => {
+    const { client } = await connect({ cwd: repoRoot });
+    const named = await client.callTool({ name: "get", arguments: { target: "text field" } });
+    expect(text(named)).toMatch(/^# Text field/);
+
+    const typo = await client.callTool({ name: "get", arguments: { target: "buton" } });
+    expect(typo.isError).toBe(true);
+    expect(typo.structuredContent.error).toEqual({
+      code: "ERR_UNKNOWN_RECORD",
+      suggestions: ["component.button"],
+    });
+
+    const found = await client.callTool({ name: "search", arguments: { query: "buton" } });
+    expect(text(found)).toContain('  → get component.button with implementation "web"');
+  });
+
   it("resolves tokens, and lists rules and links", async () => {
     const { client } = await connect({ cwd: repoRoot });
     const tokens = await client.callTool({
@@ -93,7 +128,10 @@ describe("knowledge MCP server", () => {
     );
     const { client } = await connect({ cwd: dir });
 
-    const got = await client.callTool({ name: "get", arguments: { target: "component.button" } });
+    const got = await client.callTool({
+      name: "get",
+      arguments: { target: "component.button#tokens" },
+    });
     expect(got.isError).toBeFalsy();
     expect(text(got)).toContain("component.button.primary.background.hover");
 

@@ -27,3 +27,29 @@ export function recordIdOf(target) {
   const hash = target.indexOf("#");
   return hash === -1 ? target : target.slice(0, hash);
 }
+
+/** Levenshtein distance between two strings, counting an adjacent swap as one edit. */
+export function editDistance(left, right) {
+  const rows = left.length + 1;
+  const cols = right.length + 1;
+  const d = Array.from({ length: rows }, (_, i) => [i, ...Array(cols - 1).fill(0)]);
+  for (let j = 1; j < cols; j++) d[0][j] = j;
+  for (let i = 1; i < rows; i++) {
+    for (let j = 1; j < cols; j++) {
+      const cost = left[i - 1] === right[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+      if (i > 1 && j > 1 && left[i - 1] === right[j - 2] && left[i - 2] === right[j - 1]) {
+        d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      }
+    }
+  }
+  return d[rows - 1][cols - 1];
+}
+
+/**
+ * The edits a word of this length may be off by and still count as a typo of another. Shorter
+ * words get none, because one edit to a short word usually makes a different real word.
+ */
+export function typoAllowance(word) {
+  return word.length >= 8 ? 2 : word.length >= 5 ? 1 : 0;
+}

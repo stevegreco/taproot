@@ -1,0 +1,25 @@
+<!-- Element names, attribute names, and the import are GUESSES; the CLI gave no tag names or registration. -->
+<script type="module" src="@ember-sage/components"></script>
+
+<header class="document-row-header" style="display: flex; align-items: center; gap: 8px">
+  <h2 style="margin: 0">Quarterly planning notes</h2>
+  <es-badge variant="warning">Draft</es-badge>
+  <div
+    role="group"
+    aria-label="Document actions"
+    style="margin-inline-start: auto; display: flex; gap: 8px"
+  >
+    <es-button variant="ghost" size="sm" accessible-name="Edit document">
+      <es-icon size="inherit"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 20h4L19 9l-4-4L4 16z" fill="currentColor" /></svg
+      ></es-icon>
+    </es-button>
+    <es-button variant="danger" size="sm" accessible-name="Delete document">
+      <es-icon size="inherit"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 7h12l-1 13H7zM9 4h6v2H9z" fill="currentColor" /></svg
+      ></es-icon>
+    </es-button>
+  </div>
+</header>

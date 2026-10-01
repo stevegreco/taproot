@@ -24,6 +24,7 @@ export const INSTRUCTIONS = [
   "Start with `search` to choose a component, then `get` it and follow its links: `alternative` for when it is the wrong choice, `follows` for the patterns and guidelines it applies, `examples` for worked usage.",
   "Use `rules` to review work, and cite each rule by its address (for example component.button#label-describes-result) with its level (MUST, SHOULD, MAY).",
   "Use `tokens` for the design tokens a component part uses in a variant or state; set resolve to get values.",
+  'Before writing code, call `get` with `implementation` (for example "web") for the package, element name, and the attribute that implements each parameter; never derive attribute names from parameter names.',
 ].join(" ");
 
 /**
@@ -73,7 +74,11 @@ export async function createKnowledgeServer(options = {}) {
     const text = disclose(result.text);
     return {
       content: [{ type: "text", text }],
-      structuredContent: { results: result.data, ...(warning ? { warning } : {}) },
+      structuredContent: {
+        results: result.data,
+        ...(result.error ? { error: result.error } : {}),
+        ...(warning ? { warning } : {}),
+      },
       isError: !result.ok,
     };
   };
@@ -98,13 +103,38 @@ export async function createKnowledgeServer(options = {}) {
       tag,
       limit: z.number().int().positive().optional().describe("Maximum number of results."),
     },
-    (args) => ops.search(knowledge, args),
+    (args) =>
+      ops.search(knowledge, args, {
+        implementations: resolveConfig(loadOptions).implementations,
+        next: (id, impl) => `get ${id}${impl ? ` with implementation "${impl}"` : ""}`,
+      }),
   );
   tool(
     "get",
-    "Read a record as Markdown: a component's contract, or a pattern, guideline, or example. Pass `id#section` to read one section or one rule. Use after `search` to read the top result.",
-    { target: z.string().describe('A record id, or "id#section", such as component.button.') },
-    ({ target }) => ops.get(knowledge, { target }),
+    "Read a record as Markdown: a component's contract, or a pattern, guideline, or example. Pass `id#section` to read one section or one rule. Set `implementation` to also get how a technology realizes a component: package, element, and the attribute, property, or event for each parameter and event. Use after `search` to read the top result.",
+    {
+      target: z
+        .string()
+        .describe(
+          'A record id, a name such as "button", or "id#section", such as component.button#rules.',
+        ),
+      implementation: z
+        .string()
+        .optional()
+        .describe('An implementation name, such as "web". Only with a whole record.'),
+    },
+    ({ target, implementation }) =>
+      ops.get(
+        knowledge,
+        { target, implementation },
+        {
+          implementations: resolveConfig(loadOptions).implementations,
+          tokensHint: (_id, count) =>
+            `Tokens: ${count} bindings, left out here. Call \`tokens\` to filter them by part, condition, or property.`,
+          implementationHint: (_id, names) =>
+            `Implementation: call \`get\` with implementation "${names[0]}" for the package, element, and attribute names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
+        },
+      ),
   );
   tool(
     "list",

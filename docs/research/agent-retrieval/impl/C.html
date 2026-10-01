@@ -1,0 +1,27 @@
+<script type="module">
+  import { defineButton } from "@stevegreco/design-system-components/button";
+  import { defineBadge } from "@stevegreco/design-system-components/badge";
+  import { defineIcon } from "@stevegreco/design-system-components/icon";
+  defineButton();
+  defineBadge();
+  defineIcon();
+</script>
+
+<header class="doc-row-header" style="display: flex; align-items: center; gap: 12px">
+  <h2 style="margin: 0">Quarterly planning notes</h2>
+  <ds-badge variant="warning">Draft</ds-badge>
+  <div class="actions" style="margin-inline-start: auto; display: flex; gap: 8px">
+    <ds-button variant="ghost" size="sm" aria-label="Edit document">
+      <ds-icon
+        ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4" /></svg
+      ></ds-icon>
+    </ds-button>
+    <ds-button variant="danger" size="sm" aria-label="Delete document">
+      <ds-icon
+        ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg
+      ></ds-icon>
+    </ds-button>
+  </div>
+</header>

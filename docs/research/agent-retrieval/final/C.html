@@ -1,0 +1,27 @@
+<script type="module">
+  import { defineBadge } from "@stevegreco/design-system-components/badge";
+  import { defineButton } from "@stevegreco/design-system-components/button";
+  import { defineIcon } from "@stevegreco/design-system-components/icon";
+  defineBadge();
+  defineButton();
+  defineIcon();
+</script>
+
+<header class="document-row-header">
+  <h3 class="document-title">Q3 planning notes</h3>
+  <ds-badge variant="default">Draft</ds-badge>
+  <div class="document-actions">
+    <ds-button variant="ghost" size="sm" aria-label="Edit">
+      <ds-icon
+        ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 20h4L19 9l-4-4L4 16v4z" /></svg
+      ></ds-icon>
+    </ds-button>
+    <ds-button variant="danger" size="sm" aria-label="Delete">
+      <ds-icon
+        ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg
+      ></ds-icon>
+    </ds-button>
+  </div>
+</header>

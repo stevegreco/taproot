@@ -20,6 +20,7 @@
     ".": "./src/index.js",
     "./config": "./src/config.js",
     "./tokens-dtcg": "./src/tokens-dtcg.js",
+    "./implementation": "./src/implementation.js",
     "./schema/knowledge-record.json": "./src/schema/knowledge-record.schema.json",
     "./SPEC.md": "./SPEC.md",
     "./package.json": "./package.json"
