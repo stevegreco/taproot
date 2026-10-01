@@ -43,6 +43,9 @@ The prompt for each task, after the shared rules above:
 | `--impl` | A | 12 | 0 | 0 |
 | `--impl` | B | 11 | 0 | 0 |
 | `--impl` | C | 8 | 0 | 0 |
+| Final | A | 9 | 0 | 0 |
+| Final | B | 8 | 0 | 0 |
+| Final | C | 9 | 0 | 0 |
 
 ### Baseline (2026-10-01, before implementation lookup)
 
@@ -91,4 +94,32 @@ Still guessed in every run:
   `<script type="module">`, which needs a bundler or an import map.
 - **The token stylesheet.** Button's guidance says to load it at the application root, but nothing
   names the package or file.
+
+### Final (2026-10-01, with names, typo search, next steps, and short records)
+
+Outputs are in [`final/`](final/). Same tasks, prompts, and model, after forgiving lookups,
+next-step lines in search results, and a default `get` without the token table.
+
+Totals across the three tasks:
+
+| Run | Steps | Invented APIs | Rule mistakes |
+| --- | --- | --- | --- |
+| Baseline | 26 | 14 | 2 |
+| `--impl` | 31 | 0 | 0 |
+| Final | 26 | 0 | 0 |
+
+Steps came back to the baseline while every run now also reads the implementation. No run
+re-read truncated output or asked for an implementation of a non-component. A also ran six
+commands that failed because it quoted the whole subcommand as one shell word; they are not
+counted, since no CLI change affects them.
+
+Judgment calls, not counted as mistakes:
+
+- C labeled the icon-only buttons "Edit" and "Delete". `component.button#label-describes-result`
+  gives "Delete account" as its example, so "Delete document" would follow it more closely.
+- C used the `default` Badge variant for Draft, and the earlier C run used `warning`. The Badge
+  record gives no guidance for a draft state.
+
+Still guessed in every run that needed it: loading bare-specifier imports in a static page, and the
+token stylesheet. Both need a getting-started record or implementation note, not a CLI change.
 
