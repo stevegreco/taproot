@@ -7,10 +7,12 @@
     "dev": "remotion studio",
     "build": "remotion bundle --out-dir=dist",
     "render": "remotion render",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "still": "remotion still"
   },
   "dependencies": {
     "@remotion/cli": "4.0.529",
+    "@remotion/google-fonts": "4.0.529",
     "@stevegreco/design-system": "workspace:*",
     "@stevegreco/design-system-components": "workspace:*",
     "react": "^19.2.8",

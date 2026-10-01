@@ -17,6 +17,15 @@ Opens Remotion Studio after building the tokens and components. To render a comp
 pnpm --filter videos render ComponentShowcase out/component-showcase.mp4
 ```
 
+`KnowledgeLayer` is a 56-second explainer of the knowledge layer and what makes it agent ready:
+the problem, writing context down once, distributing it through the CLI, MCP server, and docs site,
+and an agent building correct markup from it. Its scenes are in `src/scenes/`, their order and
+lengths in `src/KnowledgeLayer.tsx`. Render it with:
+
+```bash
+pnpm --filter videos render KnowledgeLayer out/knowledge-layer.mp4
+```
+
 Add a composition by writing a component in `src/` and registering it with `<Composition>` in
 `src/Root.tsx`. Each composition takes a `theme` prop and sets `data-theme` on the root, because
 headless Chromium always renders the light color scheme.
