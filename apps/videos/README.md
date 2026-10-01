@@ -23,10 +23,11 @@ render a composition to `out/`:
 pnpm --dir apps/videos render ComponentShowcase out/component-showcase.mp4
 ```
 
-`KnowledgeLayer` is a 56-second explainer of the knowledge layer and what makes it agent ready:
-the problem, writing context down once, distributing it through the CLI, MCP server, and docs site,
-and an agent building correct markup from it. Its scenes are in `src/scenes/`, their order and
-lengths in `src/KnowledgeLayer.tsx`. Render it with:
+`KnowledgeLayer` is a one-minute explainer of the knowledge layer as a general idea, not a tour of
+this repository: many sources of truth, an agent that guesses, the knowledge moving to one center,
+design tools, component libraries, docs, and agent context all built from it, and an agent that
+gets it right. The middle is one continuous scene, `src/scenes/Shift.tsx`, so the same boxes
+rearrange. Scene order and lengths are in `src/KnowledgeLayer.tsx`. Render it with:
 
 ```bash
 pnpm --dir apps/videos render KnowledgeLayer out/knowledge-layer.mp4
