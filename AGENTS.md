@@ -40,6 +40,9 @@ consistent in review.
   `apps/documentation/implementation/<name>.md` (package, tag name, usage, API table mapping web
   attributes, properties, and events to spec parameters and events, and web-specific guidance).
   Examples are in `apps/documentation/examples/`.
+- Storybook in `apps/storybook` has a story file per component in `stories/`. It is a workbench
+  for exploring states and themes, not a source of usage guidance. Run it with
+  `pnpm exec turbo run dev --filter=storybook` (port 6006).
 
 Before adding a component or variant, read `pnpm knowledge get guideline.compose-or-propose`, then
 use the `create-component` skill in `.agents/skills/create-component/`. Record each option the

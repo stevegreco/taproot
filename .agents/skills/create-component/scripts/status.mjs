@@ -48,6 +48,7 @@ const files = [
   `apps/documentation/implementation/${slug}.md`,
   `apps/documentation/examples/${slug}.tsx`,
   `apps/documentation/examples/${slug}.verify.js`,
+  `apps/storybook/stories/${slug}.stories.js`,
 ];
 for (const file of files) row(existsSync(path.join(root, file)), file);
 
