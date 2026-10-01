@@ -29,7 +29,7 @@ anatomy:
     description: Non-interactive label surface.
   content:
     role: label
-    description: Short status or metadata text.
+    description: Short status or metadata text, with an optional leading icon.
 parameters:
   variant:
     kind: enum
@@ -83,6 +83,7 @@ tokens:
     base:
       padding-vertical: primitives.space.1
       padding-horizontal: primitives.space.2
+      gap: primitives.space.1
       radius: semantic.radius.pill
       font-family: semantic.typography.label.small.fontFamily
       font-size: semantic.typography.label.small.fontSize
@@ -116,5 +117,9 @@ tokens:
 rationale:
   - decision: Badge consumes semantic tokens directly.
     why: ADR 0003. No component-token namespace.
+  - decision: The gap between a leading icon and the label uses a spacing primitive.
+    why: >-
+      ADR 0003 allows a primitive when no semantic role exists, as for padding. Badge is denser than
+      Button, so it uses the smaller step.
   - decision: Badge is non-interactive and sets no live-region role.
     why: Status that must be announced belongs to the surrounding UI.
