@@ -1,89 +1,99 @@
+import { interpolate, useCurrentFrame } from "remotion";
 import { Heading, Lede } from "../components/Heading";
-import { Pill } from "../components/Pill";
 import { Scene } from "../components/Scene";
 import { UiButton } from "../components/UiButton";
-import { pop, rise, useEnter } from "../components/motion";
+import { rise, useEnter } from "../components/motion";
 import { color, fonts } from "../theme";
 
-// The agent from the Shift scene returns and asks the knowledge layer before it builds.
-const questions = [
-  { q: "Which component?", a: "Button, danger variant.", source: "Contract" },
-  {
-    q: "What rules apply?",
-    a: "Danger only for destructive actions. The label names the result.",
-    source: "Contract",
-  },
-  { q: "Where does it go?", a: "In its own group, away from routine actions.", source: "Pattern" },
-  { q: "How do I build it here?", a: "This platform's element and attributes.", source: "Library" },
+const rules = [
+  ["01", "Choose the emphasis", "Danger, for a destructive action.", "MUST #danger-for-destructive"],
+  ["02", "Name the result", "The label says “Delete project”.", "MUST #label-describes-result"],
+  ["03", "Give it space", "Separate it from routine actions.", "SHOULD #follow-action-hierarchy"],
 ];
 
 export function AgentReady() {
-  const chip = useEnter(10);
-  const result = useEnter(200);
+  const frame = useCurrentFrame();
+  const emphasis = frame >= 55;
+  const label = frame >= 110;
+  const placement = interpolate(frame, [160, 185], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const verified = useEnter(210);
   return (
     <Scene>
-      <Heading eyebrow="The result" title="Agent ready." />
-      <Lede delay={8}>The agent asks the knowledge layer first, then builds the right thing.</Lede>
-      <div style={{ display: "flex", gap: 60, marginTop: 50, alignItems: "center" }}>
-        <div style={{ flex: 1.4 }}>
+      <Heading eyebrow="05 / Agent ready" title="The agent asks first." />
+      <Lede>It queries the spec, then cites the rule behind each choice.</Lede>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "0.9fr 1.1fr",
+          gap: 100,
+          marginTop: 76,
+          alignItems: "start",
+        }}
+      >
+        <div>
+          {rules.map(([number, title, detail, cite], i) => (
+            <Rule
+              key={number}
+              number={number}
+              title={title}
+              detail={detail}
+              cite={cite}
+              delay={20 + i * 55}
+            />
+          ))}
           <div
             style={{
-              ...rise(chip, 16),
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 12,
-              background: color.ink,
-              color: color.paper,
-              borderRadius: 999,
-              padding: "12px 22px",
-              fontSize: 26,
-              fontWeight: 700,
+              ...rise(verified),
+              marginTop: 34,
+              fontSize: 28,
+              color: color.sage,
+              fontWeight: 600,
             }}
           >
-            <div style={{ width: 16, height: 16, borderRadius: 999, background: color.sage }} />
-            AI agent
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 24 }}>
-            {questions.map((item, i) => (
-              <Exchange key={item.q} {...item} delay={30 + i * 38} />
-            ))}
+            ✓ Every choice cites a rule.
           </div>
         </div>
         <div
           style={{
-            ...pop(result),
-            flex: 1,
             background: color.card,
-            border: `2px solid ${color.line}`,
-            borderRadius: 26,
-            padding: "34px 36px",
-            boxShadow: "0 20px 50px rgba(34,26,19,0.10)",
+            border: `1px solid ${color.line}`,
+            borderRadius: 18,
+            padding: 44,
+            boxShadow: "0 12px 36px rgba(34,26,19,.045)",
           }}
         >
           <div
             style={{
-              fontSize: 21,
-              fontWeight: 700,
-              letterSpacing: 2.5,
-              textTransform: "uppercase",
+              fontSize: 23,
+              letterSpacing: 2,
               color: color.faint,
+              textTransform: "uppercase",
             }}
           >
-            Danger zone
+            Project settings
           </div>
-          <div style={{ fontFamily: fonts.display, fontSize: 38, fontWeight: 600, marginTop: 8 }}>
-            Delete this project
+          <div style={{ fontFamily: fonts.display, fontSize: 38, marginTop: 18 }}>
+            Website redesign
           </div>
-          <div style={{ fontSize: 26, color: color.muted, marginTop: 10, lineHeight: 1.35 }}>
-            This removes every file and cannot be undone.
+          <div style={{ display: "flex", gap: 20, marginTop: 28, paddingBottom: 28 }}>
+            <UiButton variant="secondary" label="Rename" />
+            <UiButton variant="ghost" label="Archive" />
           </div>
-          <div style={{ marginTop: 26 }}>
-            <UiButton variant="danger" label="Delete project" />
-          </div>
-          <div style={{ marginTop: 24 }}>
-            <Pill bg={color.sageSoft} fg={color.sage}>
-              ✓ Matches the contract
-            </Pill>
+          <div style={{ borderTop: `1px solid ${color.line}`, paddingTop: 26 + placement * 10 }}>
+            <div style={{ opacity: placement, height: placement * 98, overflow: "hidden" }}>
+              <div style={{ fontSize: 30, fontWeight: 600 }}>Delete this project</div>
+              <div style={{ fontSize: 26, color: color.muted, marginTop: 10 }}>
+                Permanently removes this project and its files.
+              </div>
+            </div>
+            <UiButton
+              variant={emphasis ? "danger" : "primary"}
+              label={label ? "Delete project" : "Remove"}
+              scale={1.12}
+            />
           </div>
         </div>
       </div>
@@ -91,37 +101,38 @@ export function AgentReady() {
   );
 }
 
-function Exchange({
-  q,
-  a,
-  source,
+function Rule({
+  number,
+  title,
+  detail,
+  cite,
   delay,
 }: {
-  q: string;
-  a: string;
-  source: string;
+  number: string;
+  title: string;
+  detail: string;
+  cite: string;
   delay: number;
 }) {
   const p = useEnter(delay);
-  const answer = useEnter(delay + 14);
   return (
-    <div style={{ ...rise(p, 12) }}>
-      <div style={{ fontSize: 27, fontWeight: 700, color: color.ink }}>{q}</div>
-      <div
-        style={{
-          ...rise(answer, 8),
-          display: "flex",
-          alignItems: "center",
-          gap: 14,
-          marginTop: 6,
-          fontSize: 26,
-          color: color.muted,
-        }}
-      >
-        <Pill bg={color.ink} fg={color.paper} style={{ flexShrink: 0, fontSize: 17 }}>
-          {source}
-        </Pill>
-        {a}
+    <div
+      style={{
+        ...rise(p, 12),
+        display: "grid",
+        gridTemplateColumns: "50px 1fr",
+        gap: 20,
+        padding: "24px 0",
+        borderBottom: `1px solid ${color.line}`,
+      }}
+    >
+      <div style={{ fontSize: 24, color: color.sage, paddingTop: 5 }}>{number}</div>
+      <div>
+        <div style={{ fontSize: 34, fontWeight: 600 }}>{title}</div>
+        <div style={{ fontSize: 28, color: color.muted, marginTop: 8 }}>{detail}</div>
+        <div style={{ fontFamily: fonts.mono, fontSize: 21, color: color.sage, marginTop: 10 }}>
+          {cite}
+        </div>
       </div>
     </div>
   );

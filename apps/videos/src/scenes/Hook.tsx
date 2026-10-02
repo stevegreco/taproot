@@ -10,29 +10,29 @@ export function Hook() {
     <Scene>
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <div style={{ ...rise(mark), display: "flex", gap: 14, alignItems: "center" }}>
-          <div style={{ width: 28, height: 28, borderRadius: 999, background: color.ember }} />
-          <div style={{ width: 28, height: 28, borderRadius: 999, background: color.sage }} />
+          <div style={{ width: 16, height: 16, borderRadius: 999, background: color.ember }} />
+          <div style={{ width: 16, height: 16, borderRadius: 999, background: color.sage }} />
           <div
             style={{
-              fontSize: 28,
+              fontSize: 25,
               fontWeight: 700,
               letterSpacing: 4,
               textTransform: "uppercase",
               marginLeft: 10,
             }}
           >
-            The knowledge layer
+            The design system spec
           </div>
         </div>
         <div
           style={{
             ...rise(title),
             fontFamily: fonts.display,
-            fontSize: 96,
+            fontSize: 90,
             fontWeight: 500,
             lineHeight: 1.1,
             marginTop: 40,
-            maxWidth: 1500,
+            maxWidth: 1380,
           }}
         >
           AI changes who reads your design system.

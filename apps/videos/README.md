@@ -23,11 +23,18 @@ render a composition to `out/`:
 pnpm --dir apps/videos render ComponentShowcase out/component-showcase.mp4
 ```
 
-`KnowledgeLayer` is a one-minute explainer of the knowledge layer as a general idea, not a tour of
-this repository: many sources of truth, an agent that guesses, the knowledge moving to one center,
-design tools, component libraries, docs, and agent context all built from it, and an agent that
-gets it right. The middle is one continuous scene, `src/scenes/Shift.tsx`, so the same boxes
-rearrange. Scene order and lengths are in `src/KnowledgeLayer.tsx`. Render it with:
+`KnowledgeLayer` is a 45-second explainer of the design system spec as a general idea. Five
+chapters move from scattered sources to rules with addresses and levels, then show an agent that
+asks first and cites the rule behind each choice.
+The layout uses a shared grid, restrained transitions, and a live before/after button example.
+
+Scene lengths live in `src/KnowledgeLayer.tsx`; chapter timing lives in `src/scenes/Shift.tsx`.
+The voiceover script is in `narration.md`. Generate the audio (needs `ELEVENLABS_KEY` in `.env`),
+then render:
+
+```bash
+pnpm --dir apps/videos narrate
+```
 
 ```bash
 pnpm --dir apps/videos render KnowledgeLayer out/knowledge-layer.mp4

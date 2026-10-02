@@ -7,7 +7,8 @@
     "dev": "remotion studio",
     "render": "remotion render",
     "typecheck": "tsc --noEmit",
-    "still": "remotion still"
+    "still": "remotion still",
+    "narrate": "node --env-file-if-exists=.env scripts/narrate.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.529",
