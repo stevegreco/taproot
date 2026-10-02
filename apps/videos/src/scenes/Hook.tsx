@@ -35,7 +35,7 @@ export function Hook() {
             maxWidth: 1380,
           }}
         >
-          AI changes who reads your design system.
+          AI is changing who reads your design system.
         </div>
       </AbsoluteFill>
     </Scene>

@@ -1,53 +1,95 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { Heading, Lede } from "../components/Heading";
+import { Heading } from "../components/Heading";
 import { Scene } from "../components/Scene";
-import { UiButton } from "../components/UiButton";
+import { ProjectCard } from "../components/ProjectCard";
 import { rise, useEnter } from "../components/motion";
 import { color, fonts } from "../theme";
+import { AGENT_CUES } from "../timeline";
 
-const rules = [
-  ["01", "Choose the emphasis", "Danger, for a destructive action.", "MUST #danger-for-destructive"],
-  ["02", "Name the result", "The label says “Delete project”.", "MUST #label-describes-result"],
-  ["03", "Give it space", "Separate it from routine actions.", "SHOULD #follow-action-hierarchy"],
+// The MCP tool calls the agent makes, as the server names them.
+const calls = [
+  {
+    call: 'search("destructive action")',
+    result: "pattern.action-hierarchy, component.button",
+    cue: AGENT_CUES.search,
+  },
+  {
+    call: 'get("component.button")',
+    result: 'get("pattern.action-hierarchy")',
+    cue: AGENT_CUES.read,
+  },
+];
+
+// Each decision and the rule addresses it cites.
+const decisions = [
+  {
+    title: "Danger, because it is destructive",
+    cites: ["MUST component.button#danger-for-destructive"],
+    cue: AGENT_CUES.emphasis,
+  },
+  {
+    title: "A label that names the result",
+    cites: ["MUST component.button#label-describes-result"],
+    cue: AGENT_CUES.label,
+  },
+  {
+    title: "A place apart from routine actions",
+    cites: [
+      "SHOULD component.button#follow-action-hierarchy",
+      "→ pattern.action-hierarchy#separate-unrelated-decisions",
+    ],
+    cue: AGENT_CUES.placement,
+  },
 ];
 
 export function AgentReady() {
   const frame = useCurrentFrame();
-  const emphasis = frame >= 55;
-  const label = frame >= 110;
-  const placement = interpolate(frame, [160, 185], [0, 1], {
+  const emphasis = frame >= AGENT_CUES.emphasis;
+  const label = frame >= AGENT_CUES.label;
+  const placement = interpolate(frame, [AGENT_CUES.placement, AGENT_CUES.placement + 18], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const verified = useEnter(210);
+  const verified = useEnter(AGENT_CUES.verified);
+  const request = useEnter(8);
   return (
     <Scene>
-      <Heading eyebrow="05 / Agent ready" title="The agent asks first." />
-      <Lede>It queries the spec, then cites the rule behind each choice.</Lede>
+      <Heading eyebrow="07 / Agent ready" title="The agent asks first." />
+      <div style={{ ...rise(request, 12), fontSize: 32, color: color.muted, marginTop: 22 }}>
+        Same request:{" "}
+        <span style={{ fontFamily: fonts.display }}>“Add an action to delete this project.”</span>
+      </div>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "0.9fr 1.1fr",
-          gap: 100,
-          marginTop: 76,
+          gridTemplateColumns: "1fr 0.95fr",
+          gap: 80,
+          marginTop: 48,
           alignItems: "start",
         }}
       >
         <div>
-          {rules.map(([number, title, detail, cite], i) => (
-            <Rule
-              key={number}
-              number={number}
-              title={title}
-              detail={detail}
-              cite={cite}
-              delay={20 + i * 55}
-            />
+          <div
+            style={{
+              background: color.ink,
+              borderRadius: 14,
+              padding: "22px 28px",
+              fontFamily: fonts.mono,
+              fontSize: 21,
+              lineHeight: 1.5,
+            }}
+          >
+            {calls.map((call, i) => (
+              <Call key={call.call} {...call} first={i === 0} />
+            ))}
+          </div>
+          {decisions.map((decision) => (
+            <Decision key={decision.title} {...decision} />
           ))}
           <div
             style={{
               ...rise(verified),
-              marginTop: 34,
+              marginTop: 26,
               fontSize: 28,
               color: color.sage,
               fontWeight: 600,
@@ -56,84 +98,48 @@ export function AgentReady() {
             ✓ Every choice cites a rule.
           </div>
         </div>
-        <div
-          style={{
-            background: color.card,
-            border: `1px solid ${color.line}`,
-            borderRadius: 18,
-            padding: 44,
-            boxShadow: "0 12px 36px rgba(34,26,19,.045)",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 23,
-              letterSpacing: 2,
-              color: color.faint,
-              textTransform: "uppercase",
-            }}
-          >
-            Project settings
-          </div>
-          <div style={{ fontFamily: fonts.display, fontSize: 38, marginTop: 18 }}>
-            Website redesign
-          </div>
-          <div style={{ display: "flex", gap: 20, marginTop: 28, paddingBottom: 28 }}>
-            <UiButton variant="secondary" label="Rename" />
-            <UiButton variant="ghost" label="Archive" />
-          </div>
-          <div style={{ borderTop: `1px solid ${color.line}`, paddingTop: 26 + placement * 10 }}>
-            <div style={{ opacity: placement, height: placement * 98, overflow: "hidden" }}>
-              <div style={{ fontSize: 30, fontWeight: 600 }}>Delete this project</div>
-              <div style={{ fontSize: 26, color: color.muted, marginTop: 10 }}>
-                Permanently removes this project and its files.
-              </div>
-            </div>
-            <UiButton
-              variant={emphasis ? "danger" : "primary"}
-              label={label ? "Delete project" : "Remove"}
-              scale={1.12}
-            />
-          </div>
-        </div>
+        <ProjectCard emphasis={emphasis} label={label} placement={placement} />
       </div>
     </Scene>
   );
 }
 
-function Rule({
-  number,
-  title,
-  detail,
-  cite,
-  delay,
+function Call({
+  call,
+  result,
+  cue,
+  first,
 }: {
-  number: string;
-  title: string;
-  detail: string;
-  cite: string;
-  delay: number;
+  call: string;
+  result: string;
+  cue: number;
+  first: boolean;
 }) {
-  const p = useEnter(delay);
+  const p = useEnter(cue - 6);
   return (
-    <div
-      style={{
-        ...rise(p, 12),
-        display: "grid",
-        gridTemplateColumns: "50px 1fr",
-        gap: 20,
-        padding: "24px 0",
-        borderBottom: `1px solid ${color.line}`,
-      }}
-    >
-      <div style={{ fontSize: 24, color: color.sage, paddingTop: 5 }}>{number}</div>
-      <div>
-        <div style={{ fontSize: 34, fontWeight: 600 }}>{title}</div>
-        <div style={{ fontSize: 28, color: color.muted, marginTop: 8 }}>{detail}</div>
-        <div style={{ fontFamily: fonts.mono, fontSize: 21, color: color.sage, marginTop: 10 }}>
+    <div style={{ ...rise(p, 8), marginTop: first ? 0 : 12 }}>
+      <div style={{ color: color.emberSoft }}>{call}</div>
+      {/* A search returns records; the second line of reads is another call. */}
+      <div style={{ color: first ? color.line : color.emberSoft }}>
+        {first ? `→ ${result}` : result}
+      </div>
+    </div>
+  );
+}
+
+function Decision({ title, cites, cue }: { title: string; cites: string[]; cue: number }) {
+  const p = useEnter(cue - 8);
+  return (
+    <div style={{ ...rise(p, 12), padding: "20px 0", borderBottom: `1px solid ${color.line}` }}>
+      <div style={{ fontSize: 30, fontWeight: 600 }}>{title}</div>
+      {cites.map((cite) => (
+        <div
+          key={cite}
+          style={{ fontFamily: fonts.mono, fontSize: 19, color: color.sage, marginTop: 8 }}
+        >
           {cite}
         </div>
-      </div>
+      ))}
     </div>
   );
 }

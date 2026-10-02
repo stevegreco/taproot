@@ -1,11 +1,13 @@
 import type { CSSProperties, ReactNode } from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { Scene } from "../components/Scene";
-import { UiButton } from "../components/UiButton";
+import { Badge, ProjectCard } from "../components/ProjectCard";
+import { SourceWeb } from "../components/SourceWeb";
+import { LinkGraph } from "../components/LinkGraph";
+import { SpecSheet } from "../components/SpecSheet";
 import { color, fonts } from "../theme";
 
-export const PHASE = { before: 0, agent: 210, center: 360, reverse: 600, end: 810 };
-export const SHIFT_DURATION = PHASE.end;
+import { PHASE, SHIFT_CUES } from "../timeline";
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
 function progress(frame: number, start: number, length = 20) {
@@ -15,14 +17,18 @@ function progress(frame: number, start: number, length = 20) {
   });
 }
 
-const sources = [
-  ["01", "Figma", "Visual decisions", color.ember],
-  ["02", "Code", "Behavior and states", color.sage],
-  ["03", "Documentation", "Usage guidance", color.sky],
-  ["04", "Team conversations", "Exceptions and context", color.slate],
-  ["05", "Past decisions", "The reasons why", color.rustDeep],
-  ["06", "People", "How it all fits together", color.faint],
-];
+// Each rule the first attempt breaks, numbered to match the marks on the card. Statements are
+// abridged from component.button; the third points on to the pattern it applies.
+const rules = [
+  ["MUST", "danger-for-destructive", "Use danger only for destructive actions.", ""],
+  ["MUST", "label-describes-result", "Use a concise label that describes the result.", ""],
+  [
+    "SHOULD",
+    "follow-action-hierarchy",
+    "Apply the action hierarchy pattern.",
+    "pattern.action-hierarchy",
+  ],
+] as const;
 
 /** Each chapter shares a grid and crossfades in place. No cards cross other text. */
 function Chapter({
@@ -30,14 +36,12 @@ function Chapter({
   to,
   number,
   title,
-  subtitle,
   children,
 }: {
   from: number;
   to: number;
   number: string;
   title: string;
-  subtitle: string;
   children: ReactNode;
 }) {
   const frame = useCurrentFrame();
@@ -66,9 +70,6 @@ function Chapter({
       <div style={{ fontFamily: fonts.display, fontSize: 66, lineHeight: 1.15, marginTop: 16 }}>
         {title}
       </div>
-      <div style={{ fontSize: 34, lineHeight: 1.4, color: color.muted, marginTop: 22 }}>
-        {subtitle}
-      </div>
       {children}
     </AbsoluteFill>
   );
@@ -94,53 +95,27 @@ function Card({ children, style = {} }: { children: ReactNode; style?: CSSProper
 
 export function Shift() {
   const frame = useCurrentFrame();
+  const rule = (i: number) => progress(frame, PHASE.rules + 24 + i * 36);
+  const levels = progress(frame, SHIFT_CUES.levels - 4, 12);
   return (
     <Scene>
-      <Chapter
-        from={0}
-        to={PHASE.agent}
-        number="01"
-        title="The answers are scattered."
-        subtitle="Every source holds a different part of the design system."
-      >
-        <div
-          style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, marginTop: 72 }}
-        >
-          {sources.map(([n, title, note, tone], i) => {
-            const p = progress(frame, 16 + i * 8);
-            return (
-              <Card
-                key={n}
-                style={{ opacity: p, transform: `translateY(${(1 - p) * 18}px)`, height: 190 }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: 10, background: tone }} />
-                  <div style={{ fontFamily: fonts.display, fontSize: 35 }}>{title}</div>
-                </div>
-                <div style={{ fontSize: 28, marginTop: 18, color: color.muted }}>{note}</div>
-              </Card>
-            );
-          })}
-        </div>
-        <div
-          style={{ opacity: progress(frame, 105), marginTop: 38, fontSize: 30, color: color.muted }}
-        >
-          People connect the dots. Agents guess.
-        </div>
+      <Chapter from={0} to={PHASE.agent} number="01" title="The answers are scattered.">
+        <SourceWeb
+          cues={{ figma: SHIFT_CUES.figma, code: SHIFT_CUES.code, head: SHIFT_CUES.head }}
+        />
       </Chapter>
       <Chapter
         from={PHASE.agent - 6}
-        to={PHASE.center}
+        to={PHASE.spec}
         number="02"
         title="A plausible answer can still be wrong."
-        subtitle="The agent sees the button. It misses the rules behind it."
       >
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: 72,
-            marginTop: 78,
+            marginTop: 96,
             alignItems: "center",
           }}
         >
@@ -164,71 +139,45 @@ export function Shift() {
             </div>
             <div
               style={{
-                opacity: progress(frame, PHASE.agent + 45),
+                opacity: progress(frame, PHASE.agent + 75),
                 fontSize: 30,
                 marginTop: 38,
                 color: color.rustDeep,
               }}
             >
-              Missing: intent, emphasis, placement.
+              It looks right. It misses the point.
             </div>
           </div>
-          <Card style={{ padding: 48 }}>
-            <div style={{ fontFamily: fonts.display, fontSize: 40 }}>Project settings</div>
-            <div style={{ marginTop: 32, paddingTop: 32, borderTop: `1px solid ${color.line}` }}>
-              <UiButton variant="primary" label="Remove" scale={1.2} />
-            </div>
-            <div
-              style={{
-                opacity: progress(frame, PHASE.agent + 65),
-                marginTop: 30,
-                color: color.rustDeep,
-                fontSize: 28,
-              }}
-            >
-              An unclear label. The wrong emphasis.
-            </div>
-          </Card>
+          <ProjectCard style={{ opacity: progress(frame, PHASE.agent + 30) }} />
         </div>
       </Chapter>
+      <Chapter from={PHASE.spec - 6} to={PHASE.links} number="03" title="Write the contract once.">
+        <SpecSheet cues={SHIFT_CUES} />
+      </Chapter>
       <Chapter
-        from={PHASE.center - 6}
-        to={PHASE.reverse}
-        number="03"
-        title="Make the rules explicit."
-        subtitle="Write the rules down once, in a form people and agents can both read."
+        from={PHASE.links - 6}
+        to={PHASE.rules}
+        number="04"
+        title="The reasons travel with the rules."
+      >
+        <LinkGraph cues={{ ...SHIFT_CUES, start: PHASE.links + 10 }} />
+      </Chapter>
+      <Chapter
+        from={PHASE.rules - 6}
+        to={PHASE.validate}
+        number="05"
+        title="Give every rule an address."
       >
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "0.8fr 1.2fr",
-            gap: 80,
-            marginTop: 64,
+            gridTemplateColumns: "1fr 1.15fr",
+            gap: 64,
+            marginTop: 80,
             alignItems: "center",
           }}
         >
-          <div>
-            <div style={{ fontFamily: fonts.display, fontSize: 48, lineHeight: 1.25 }}>
-              Rules with
-              <br />
-              an address.
-            </div>
-            <div
-              style={{
-                fontSize: 30,
-                color: color.muted,
-                lineHeight: 1.5,
-                marginTop: 28,
-                maxWidth: 520,
-              }}
-            >
-              Each rule has an ID
-              <br />
-              and a level, so every
-              <br />
-              answer can be cited.
-            </div>
-          </div>
+          <ProjectCard marks={[rule(0), rule(1), rule(2)]} />
           <Card
             style={{
               background: color.ink,
@@ -247,29 +196,44 @@ export function Shift() {
             >
               component.button
             </div>
-            {[
-              ["MUST", "danger-for-destructive", "Use danger only for destructive actions"],
-              ["MUST", "label-describes-result", "Name the result: Delete project"],
-              ["SHOULD", "follow-action-hierarchy", "Separate it from routine actions"],
-            ].map(([level, id, value], i) => (
+            {rules.map(([level, id, value, follows], i) => (
               <div
                 key={id}
                 style={{
-                  opacity: progress(frame, PHASE.center + 18 + i * 34),
+                  opacity: rule(i),
                   display: "grid",
-                  gridTemplateColumns: "140px 1fr",
-                  gap: 24,
+                  gridTemplateColumns: "54px 120px 1fr",
+                  gap: 16,
                   padding: "22px 0",
                   borderBottom: i < 2 ? "1px solid rgba(255,253,248,.15)" : undefined,
                 }}
               >
-                <div style={{ fontSize: 25, color: color.emberSoft, fontWeight: 700, paddingTop: 4 }}>
+                <div style={{ position: "relative" }}>
+                  <Badge n={i + 1} p={1} />
+                </div>
+                <div
+                  style={{
+                    fontSize: 25,
+                    color: color.emberSoft,
+                    fontWeight: 700,
+                    paddingTop: 4,
+                    opacity: 0.45 + 0.55 * levels,
+                  }}
+                >
                   {level}
                 </div>
                 <div>
                   <div style={{ fontSize: 29 }}>{value}</div>
-                  <div style={{ fontFamily: fonts.mono, fontSize: 22, color: color.line, marginTop: 6 }}>
+                  <div
+                    style={{
+                      fontFamily: fonts.mono,
+                      fontSize: 22,
+                      color: color.line,
+                      marginTop: 6,
+                    }}
+                  >
                     #{id}
+                    {follows && <div style={{ color: color.emberSoft }}>→ {follows}</div>}
                   </div>
                 </div>
               </div>
@@ -278,80 +242,61 @@ export function Shift() {
         </div>
       </Chapter>
       <Chapter
-        from={PHASE.reverse - 6}
-        to={PHASE.end + 12}
-        number="04"
-        title="A common reference for every output."
-        subtitle="Design, code, docs, and agents all read the same spec."
+        from={PHASE.validate - 6}
+        to={PHASE.end}
+        number="06"
+        title="Checked, so it stays true."
       >
-        <div style={{ position: "relative", marginTop: 56, height: 510 }}>
-          <svg width="1680" height="510" style={{ position: "absolute", inset: 0 }}>
-            {[60, 185, 310, 435].map((y, i) => (
-              <path
-                key={y}
-                d={`M 640 255 C 830 255, 810 ${y}, 960 ${y}`}
-                fill="none"
-                stroke={color.line}
-                strokeWidth={3}
-                pathLength={1}
-                strokeDasharray={1}
-                strokeDashoffset={1 - progress(frame, PHASE.reverse + 15 + i * 25, 30)}
-              />
-            ))}
-          </svg>
-          <Card
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 132,
-              width: 640,
-              height: 246,
-              background: color.ink,
-              color: color.paper,
-              borderColor: color.ink,
-            }}
-          >
-            <div
-              style={{
-                fontSize: 23,
-                color: color.emberSoft,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-              }}
-            >
-              Shared contract
-            </div>
-            <div style={{ fontFamily: fonts.display, fontSize: 46, marginTop: 18 }}>
-              The design system spec
-            </div>
-            <div style={{ fontSize: 28, color: color.line, marginTop: 16 }}>
-              Components · rules · tokens
-            </div>
-          </Card>
-          {[
-            ["Design tools", "Visual decisions"],
-            ["Component libraries", "Platform behavior"],
-            ["Documentation", "Usage and examples"],
-            ["Agents", "Exact answers over MCP and CLI"],
-          ].map(([title, note], i) => (
-            <Card
-              key={title}
-              style={{
-                position: "absolute",
-                left: 960,
-                top: i * 125,
-                width: 720,
-                height: 116,
-                padding: "22px 30px",
-                opacity: progress(frame, PHASE.reverse + 25 + i * 25),
-              }}
-            >
-              <div style={{ fontSize: 32, fontWeight: 600 }}>{title}</div>
-              <div style={{ fontSize: 26, color: color.muted, marginTop: 4 }}>{note}</div>
-            </Card>
-          ))}
-        </div>
+        <Validation frame={frame} />
       </Chapter>
     </Scene>
+  );
+}
+
+// The cross-record checks from SPEC.md, ticked off as the narration names them.
+const checks = [
+  "Every link and reference resolves to a record or section",
+  "Every default and example is one of its parameter's values",
+  "Every token part is an anatomy part",
+  "Every ID is unique",
+];
+
+function Validation({ frame }: { frame: number }) {
+  const start = SHIFT_CUES.checked;
+  return (
+    <Card
+      style={{
+        marginTop: 80,
+        background: color.ink,
+        color: color.paper,
+        borderColor: color.ink,
+        padding: "40px 48px",
+        fontFamily: fonts.mono,
+        fontSize: 27,
+      }}
+    >
+      <div style={{ color: color.line, opacity: progress(frame, PHASE.validate + 10, 12) }}>
+        $ knowledge validate
+      </div>
+      {checks.map((check, i) => {
+        const p = progress(frame, start - 6 + i * 12, 12);
+        return (
+          <div key={check} style={{ marginTop: 20, opacity: p, display: "flex", gap: 18 }}>
+            <span style={{ color: color.sageSoft }}>✓</span>
+            {check}
+          </div>
+        );
+      })}
+      <div
+        style={{
+          marginTop: 30,
+          color: color.sageSoft,
+          fontWeight: 600,
+          opacity: progress(frame, start + 48, 12),
+        }}
+      >
+        OK: 9 records, no issues.
+      </div>
+    </Card>
   );
 }

@@ -23,14 +23,15 @@ render a composition to `out/`:
 pnpm --dir apps/videos render ComponentShowcase out/component-showcase.mp4
 ```
 
-`KnowledgeLayer` is a 45-second explainer of the design system spec as a general idea. Five
+`KnowledgeLayer` is a roughly 42-second explainer of the design system spec as a general idea. Five
 chapters move from scattered sources to rules with addresses and levels, then show an agent that
 asks first and cites the rule behind each choice.
 The layout uses a shared grid, restrained transitions, and a live before/after button example.
 
-Scene lengths live in `src/KnowledgeLayer.tsx`; chapter timing lives in `src/scenes/Shift.tsx`.
-The voiceover script is in `narration.md`. Generate the audio (needs `ELEVENLABS_KEY` in `.env`),
-then render:
+Scene timing is derived from the continuous voiceover in `src/timeline.ts`. The voiceover uses
+Eleven v4 with Mark and descriptive delivery tags. `src/narration.ts` holds the spoken script;
+`narration.md` explains the delivery and regeneration workflow. Generate the audio with
+`ELEVENLABS_KEY` in the package's `.env`, then render:
 
 ```bash
 pnpm --dir apps/videos narrate

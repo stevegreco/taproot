@@ -1,0 +1,76 @@
+{
+  "events": {
+    "figma": 4.25,
+    "code": 5.85,
+    "head": 8.81,
+    "parts": 23.25,
+    "options": 24.09,
+    "states": 24.93,
+    "tokens": 25.73,
+    "rules": 26.73,
+    "patterns": 30.65,
+    "guidelines": 31.57,
+    "examples": 32.17,
+    "levels": 38.73,
+    "cite": 41.57,
+    "checked": 43.93,
+    "search": 52.09,
+    "read": 53.45,
+    "emphasis": 57.53,
+    "label": 59.93,
+    "placement": 61.85,
+    "verified": 64.25,
+    "design": 66.33,
+    "libraries": 67.37,
+    "docs": 70.17,
+    "agents": 70.57
+  },
+  "audioStart": 0.25,
+  "audioEnd": 76.81,
+  "sections": {
+    "01-opening": {
+      "start": 0.45,
+      "end": 3.05
+    },
+    "02-scattered": {
+      "start": 3.61,
+      "end": 9.45
+    },
+    "03-mistake": {
+      "start": 9.93,
+      "end": 17.29
+    },
+    "04-spec": {
+      "start": 17.85,
+      "end": 27.45
+    },
+    "05-links": {
+      "start": 27.89,
+      "end": 35.61
+    },
+    "06-rules": {
+      "start": 36.09,
+      "end": 42.01
+    },
+    "07-validate": {
+      "start": 42.53,
+      "end": 47.85
+    },
+    "08-agent": {
+      "start": 48.41,
+      "end": 65.85
+    },
+    "09-shared": {
+      "start": 66.33,
+      "end": 73.13
+    },
+    "10-close": {
+      "start": 73.69,
+      "end": 76.57
+    }
+  },
+  "fingerprint": "6bc637bfad8bfa7e3df6cb43b3820857b7b8e4175f8c1657024a1ab3f88bbd34",
+  "model": "eleven_v4",
+  "voice": "UgBBYS2sOqTuMpoF3BR0",
+  "seed": 42
+}

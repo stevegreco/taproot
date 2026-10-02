@@ -1,23 +1,32 @@
 import { AbsoluteFill, Html5Audio, Sequence, staticFile } from "remotion";
-import { narration } from "./narration";
+import {
+  AGENT_START,
+  AUDIO_SEGMENTS,
+  CLOSE_START,
+  REACH_START,
+  SHIFT_START,
+  TOTAL_DURATION,
+} from "./timeline";
 import { AgentReady } from "./scenes/AgentReady";
 import { Close } from "./scenes/Close";
 import { Hook } from "./scenes/Hook";
-import { SHIFT_DURATION, Shift } from "./scenes/Shift";
-import { color, sec } from "./theme";
+import { Reach } from "./scenes/Reach";
+import { Shift } from "./scenes/Shift";
+import { color } from "./theme";
 
 // The architecture shift, in under a minute: many sources of truth, an agent that guesses, the
-// rules written down once as a spec, every output reading from it, and an agent that asks first and
-// cites the rule behind each choice.
+// rules written down once as a spec, the same request answered by an agent that cites each rule,
+// and every other output reading from that spec.
 // Chapters share a fixed grid and use restrained fades to keep attention on the explanation.
 const scenes = [
-  { name: "Hook", Component: Hook, duration: sec(3) },
-  { name: "Shift", Component: Shift, duration: SHIFT_DURATION },
-  { name: "AgentReady", Component: AgentReady, duration: sec(11) },
-  { name: "Close", Component: Close, duration: sec(4) },
+  { name: "Hook", Component: Hook, duration: SHIFT_START },
+  { name: "Shift", Component: Shift, duration: AGENT_START - SHIFT_START },
+  { name: "AgentReady", Component: AgentReady, duration: REACH_START - AGENT_START },
+  { name: "Reach", Component: Reach, duration: CLOSE_START - REACH_START },
+  { name: "Close", Component: Close, duration: TOTAL_DURATION - CLOSE_START },
 ];
 
-export const TOTAL_DURATION = scenes.reduce((sum, s) => sum + s.duration, 0);
+export { TOTAL_DURATION } from "./timeline";
 
 export function KnowledgeLayer() {
   let from = 0;
@@ -32,9 +41,13 @@ export function KnowledgeLayer() {
           </Sequence>
         );
       })}
-      {narration.map(({ id, start }) => (
-        <Sequence key={id} name={`Voice ${id}`} from={sec(start)} layout="none">
-          <Html5Audio src={staticFile(`narration/${id}.mp3`)} />
+      {AUDIO_SEGMENTS.map(({ id, at, trimBefore, trimAfter }) => (
+        <Sequence key={id} name={`Narration ${id}`} from={at} layout="none">
+          <Html5Audio
+            src={staticFile("narration/continuous.mp3")}
+            trimBefore={trimBefore}
+            trimAfter={trimAfter}
+          />
         </Sequence>
       ))}
     </AbsoluteFill>
