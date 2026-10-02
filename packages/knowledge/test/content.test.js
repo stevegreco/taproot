@@ -5,7 +5,7 @@ describe("shipped content", () => {
   it("loads with zero issues", async () => {
     const result = await validateKnowledge();
     expect(result.issues).toEqual([]);
-    expect(result.recordCount).toBe(9);
+    expect(result.recordCount).toBe(14);
   });
 
   it("finds every record by its id", async () => {
@@ -14,8 +14,13 @@ describe("shipped content", () => {
       "component.badge",
       "component.button",
       "component.checkbox",
+      "component.dialog",
       "component.icon",
       "component.link",
+      "component.radio-group",
+      "component.select",
+      "component.switch",
+      "component.text-area",
       "component.text-field",
       "example.action-hierarchy.settings",
       "guideline.compose-or-propose",

@@ -1,0 +1,181 @@
+:host {
+  display: block;
+  min-width: 0;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitives-space-1);
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--primitives-space-2);
+}
+
+/* One label line tall, so the 32px box centers on the first line of the label. */
+.box {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 1lh;
+  font-size: var(--semantic-typography-body-default-font-size);
+  line-height: var(--semantic-typography-body-default-line-height);
+}
+
+.control {
+  display: block;
+  width: 32px;
+  height: 18px;
+  box-sizing: border-box;
+  margin: 0;
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--semantic-color-border-default);
+  border-radius: var(--semantic-radius-pill);
+  background-color: var(--semantic-color-background-surface);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+:is(.control:hover, .choice:hover .control):not(:disabled, :checked, [aria-invalid="true"]) {
+  border-color: var(--semantic-color-border-strong);
+}
+
+.control:focus-visible {
+  outline: 2px solid var(--semantic-color-border-focus);
+  outline-offset: 2px;
+}
+
+.control:checked:not(:disabled) {
+  background-color: var(--semantic-color-background-action-primary-default);
+  border-color: var(--semantic-color-border-action-primary-default);
+}
+
+.control[aria-invalid="true"]:not(:disabled) {
+  border-color: var(--semantic-color-border-status-danger-default);
+}
+
+.control:disabled {
+  background-color: var(--semantic-color-background-disabled);
+  border-color: var(--semantic-color-border-disabled);
+  cursor: not-allowed;
+}
+
+.indicator {
+  position: absolute;
+  inset-inline-start: 3px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--semantic-radius-pill);
+  transform: translateY(-50%);
+  background: var(--semantic-color-foreground-default);
+  pointer-events: none;
+}
+.control:checked + .indicator {
+  inset-inline-start: 17px;
+  background: var(--semantic-color-foreground-on-action-primary);
+}
+.control:disabled + .indicator {
+  background: var(--semantic-color-foreground-disabled);
+}
+
+.label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--primitives-space-1);
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--semantic-typography-body-default-font-family);
+  font-size: var(--semantic-typography-body-default-font-size);
+  font-weight: var(--semantic-typography-body-default-font-weight);
+  line-height: var(--semantic-typography-body-default-line-height);
+  letter-spacing: var(--semantic-typography-body-default-letter-spacing);
+  cursor: pointer;
+}
+
+/* Hint and error align with the label text, past the box and the row gap. */
+.hint,
+.error {
+  margin: 0;
+  padding-inline-start: calc(32px + var(--primitives-space-2));
+  font-family: var(--semantic-typography-body-small-font-family);
+  font-size: var(--semantic-typography-body-small-font-size);
+  font-weight: var(--semantic-typography-body-small-font-weight);
+  line-height: var(--semantic-typography-body-small-line-height);
+  letter-spacing: var(--semantic-typography-body-small-letter-spacing);
+}
+
+.hint {
+  color: var(--semantic-color-foreground-muted);
+}
+
+.error {
+  color: var(--semantic-color-foreground-status-danger-default);
+}
+
+.field.is-disabled .label,
+.field.is-disabled .hint {
+  color: var(--semantic-color-foreground-disabled);
+}
+
+.field.is-disabled .label {
+  cursor: not-allowed;
+}
+
+/* The box and indicator paint only system colors here, so opt out of adjustment
+   and keep the filled checked box. */
+@media (forced-colors: active) {
+  .control,
+  .indicator {
+    forced-color-adjust: none;
+  }
+
+  .control {
+    border-color: CanvasText;
+    background-color: Canvas;
+  }
+
+  .control:checked:not(:disabled) {
+    border-color: Highlight;
+    background-color: Highlight;
+  }
+
+  .control:disabled {
+    border-color: GrayText;
+    background-color: Canvas;
+  }
+
+  .indicator {
+    background: CanvasText;
+  }
+
+  .control:disabled + .indicator {
+    background: GrayText;
+  }
+
+  .control:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+@media (forced-colors: active) {
+  .control:checked:not(:disabled) + .indicator {
+    background: HighlightText;
+  }
+}

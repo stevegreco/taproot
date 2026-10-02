@@ -23,10 +23,10 @@ usage:
     - Select or clear a list of options at once, showing indeterminate when only some are selected.
   avoid:
     - situation: Choose exactly one option from a list.
-      instead: Radio group
+      instead: component.radio-group
       why: Checkboxes are independent. Nothing stops two being checked.
     - situation: Apply a setting as soon as it is toggled, with no submit.
-      instead: Switch
+      instead: component.switch
       why: A checkbox value takes effect when its form is submitted.
     - situation: Trigger an action by itself.
       instead: component.button

@@ -4,6 +4,11 @@ import type { DsCheckboxAttributes } from "./checkbox.js";
 import type { DsIconAttributes } from "./icon.js";
 import type { DsLinkAttributes } from "./link.js";
 import type { DsTextFieldAttributes } from "./text-field.js";
+import type { DsDialogAttributes } from "./dialog.js";
+import type { DsRadioGroupAttributes } from "./radio-group.js";
+import type { DsSelectAttributes } from "./select.js";
+import type { DsSwitchAttributes } from "./switch.js";
+import type { DsTextAreaAttributes } from "./text-area.js";
 
 export * from "./badge.js";
 export * from "./button.js";
@@ -11,6 +16,11 @@ export * from "./checkbox.js";
 export * from "./icon.js";
 export * from "./link.js";
 export * from "./text-field.js";
+export * from "./dialog.js";
+export * from "./radio-group.js";
+export * from "./select.js";
+export * from "./switch.js";
+export * from "./text-area.js";
 
 /**
  * The attributes each element accepts, keyed by default tag name. Map it onto a
@@ -23,4 +33,9 @@ export interface ElementAttributes {
   "ds-icon": DsIconAttributes;
   "ds-link": DsLinkAttributes;
   "ds-text-field": DsTextFieldAttributes;
+  "ds-dialog": DsDialogAttributes;
+  "ds-radio-group": DsRadioGroupAttributes;
+  "ds-select": DsSelectAttributes;
+  "ds-switch": DsSwitchAttributes;
+  "ds-text-area": DsTextAreaAttributes;
 }

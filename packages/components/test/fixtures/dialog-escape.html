@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dialog Escape regression</title>
+  </head>
+  <body>
+    <script type="module">
+      import { defineDialog } from "../../src/dialog.js";
+      defineDialog();
+      const dialog = document.createElement("ds-dialog");
+      dialog.label = "Unsaved changes";
+      dialog.open = true;
+      dialog.dismissible = window.name !== "blocked";
+      dialog.addEventListener("cancel", (event) => {
+        dialog.cancelCount = (dialog.cancelCount ?? 0) + 1;
+        event.preventDefault();
+      });
+      document.body.append(dialog);
+    </script>
+  </body>
+</html>

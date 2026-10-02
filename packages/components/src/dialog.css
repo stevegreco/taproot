@@ -1,0 +1,60 @@
+:host {
+  display: contents;
+}
+:host([hidden]) {
+  display: none;
+}
+dialog {
+  box-sizing: border-box;
+  inline-size: min(32rem, calc(100vw - 2rem));
+  max-block-size: calc(100dvh - 2rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--semantic-color-border-default);
+  border-radius: var(--semantic-radius-surface);
+  padding: var(--primitives-space-6);
+  color: var(--semantic-color-foreground-default);
+  background: var(--semantic-color-background-surface);
+  box-shadow: var(--semantic-elevation-lg);
+  font-family: var(--semantic-typography-body-default-font-family);
+  font-size: var(--semantic-typography-body-default-font-size);
+  line-height: var(--semantic-typography-body-default-line-height);
+}
+dialog[open] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitives-space-4);
+}
+dialog::backdrop {
+  background: color-mix(in srgb, var(--primitives-color-gray-950) 60%, transparent);
+}
+h2 {
+  margin: 0;
+  font: inherit;
+  font-weight: var(--primitives-weight-semibold);
+}
+h2:focus-visible {
+  outline: 2px solid var(--semantic-color-border-focus);
+  outline-offset: 3px;
+}
+p {
+  margin: 0;
+  color: var(--semantic-color-foreground-muted);
+}
+[part="actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: var(--primitives-space-2);
+}
+[hidden] {
+  display: none;
+}
+@media (forced-colors: active) {
+  dialog {
+    border-color: CanvasText;
+  }
+  h2:focus-visible {
+    outline-color: Highlight;
+  }
+}

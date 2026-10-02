@@ -13,6 +13,11 @@ const components = [
   ["ds-icon", "defineIcon"],
   ["ds-link", "defineLink"],
   ["ds-text-field", "defineTextField"],
+  ["ds-dialog", "defineDialog"],
+  ["ds-radio-group", "defineRadioGroup"],
+  ["ds-select", "defineSelect"],
+  ["ds-switch", "defineSwitch"],
+  ["ds-text-area", "defineTextArea"],
 ];
 
 test.each(components)("importing the package root registers <%s>", (tagName, defineExport) => {
