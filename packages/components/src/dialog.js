@@ -62,11 +62,7 @@ export class DsDialog extends ForwardsFocus(Base) {
     this.#description = root.querySelector("p");
     this.#dialog.addEventListener("cancel", (event) => {
       event.preventDefault();
-      if (!this.dismissible) return;
-      if (
-        this.dispatchEvent(new Event("cancel", { cancelable: true, bubbles: true, composed: true }))
-      )
-        this.close();
+      this.#requestCancel();
     });
     this.#dialog.addEventListener("close", () => {
       if (!this.#dialog.open && this.#wasOpen) {
@@ -110,8 +106,24 @@ export class DsDialog extends ForwardsFocus(Base) {
     }
   }
 
+  #requestCancel() {
+    if (!this.dismissible) return;
+    if (
+      this.dispatchEvent(new Event("cancel", { cancelable: true, bubbles: true, composed: true }))
+    )
+      this.close();
+  }
+
   #onKeydown = (event) => {
-    if (event.key !== "Tab" || !this.#dialog.open) return;
+    if (!this.#dialog.open) return;
+    if (event.key === "Escape") {
+      // Chromium can emit a noncancelable native cancel without recent user activation.
+      // Stop the keyboard default first, then apply our cancelable dismissal contract.
+      event.preventDefault();
+      this.#requestCancel();
+      return;
+    }
+    if (event.key !== "Tab") return;
     const items = tabbables(this.#dialog);
     const active = deepestFocus(this.ownerDocument);
     const index = items.indexOf(active);

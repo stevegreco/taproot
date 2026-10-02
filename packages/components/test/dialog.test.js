@@ -25,6 +25,29 @@ function render() {
   };
 }
 describe("DsDialog", () => {
+  test.each(["blocked", "prevented"])(
+    "[cancellation] %s dismissal survives repeated Escape without prior user activation",
+    async (mode) => {
+      // A fresh document avoids activation left behind by earlier browser tests.
+      const frame = document.createElement("iframe");
+      frame.name = mode;
+      frame.src = new URL("./fixtures/dialog-escape.html", import.meta.url).href;
+      document.body.append(frame);
+      await expect.poll(() => frame.contentDocument?.querySelector("ds-dialog")?.open).toBe(true);
+      const dialog = frame.contentDocument.querySelector("ds-dialog");
+      const inner = dialog.shadowRoot.querySelector("dialog");
+      expect(frame.contentWindow.navigator.userActivation.hasBeenActive).toBe(false);
+      expect(dialog.dismissible).toBe(mode !== "blocked");
+      for (let attempt = 0; attempt < 3; attempt++) {
+        await userEvent.keyboard("{Escape}");
+        // Native dismissal is asynchronous. Wait through a rendering frame before asserting.
+        await new Promise((resolve) => frame.contentWindow.requestAnimationFrame(resolve));
+        expect(inner.matches(":modal")).toBe(true);
+        expect(dialog.open).toBe(true);
+      }
+      expect(dialog.cancelCount ?? 0).toBe(mode === "blocked" ? 0 : 3);
+    },
+  );
   test("[accessible-modal] title and description name the modal surface", () => {
     const { dialog, inner, title } = render();
     dialog.showModal();

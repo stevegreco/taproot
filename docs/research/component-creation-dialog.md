@@ -37,3 +37,11 @@ parts in the shared host row. These are fixture differences rather than missing 
 The component uses native modal semantics defined in the
 [HTML Standard](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element).
 No framework-specific focus trap dependency is needed.
+
+PR review exposed an activation-dependent Chromium behavior missed by the initial cancellation
+test. The native cancel event can be noncancelable without recent user activation, and earlier
+tests can leave activation behind. The regression fixture now opens in a fresh document, checks
+that no activation has occurred, and presses Escape three times for both disabled dismissal and
+consumer-prevented cancellation. Escape is handled before its browser default; non-keyboard native
+cancel requests still use the same host cancellation path. The creation checklist should require
+fresh-document tests when browser behavior depends on user activation or other browsing state.
