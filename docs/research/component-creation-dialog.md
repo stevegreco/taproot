@@ -54,3 +54,12 @@ Moving to the bubble phase alone still failed the stopped-propagation test becau
 control does not cancel the browser default. The internal dialog therefore disables automatic
 dismissal with `closedby="none"`; the web binding documents this browser-support requirement.
 The spec now explicitly gives child interactions priority and limits dismissal to the active modal.
+
+Another review found that requiring the keyboard event path to include the dialog ignored Escape
+when focus fell back to the document body. The modal stack is now the ownership check; body-focus
+and non-focusable content-click regressions cover this boundary. Native close requests are enabled
+when dismissible, preserving the platform cancellation path instead of disabling it for every dialog.
+The earlier stopped-propagation guarantee is withdrawn: child controls must prevent the Escape
+default, which works with native dismissal too. Tests verify native requestClose cancellation and
+dynamic dismissal policy, but no Android hardware back-gesture run was performed. Checking a
+desktop workaround against platform cancel behavior should be part of overlay review.

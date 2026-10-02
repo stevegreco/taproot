@@ -62,23 +62,71 @@ describe("DsDialog", () => {
     await userEvent.keyboard("{Escape}");
     expect(first.open).toBe(false);
   });
-  test.each(["preventDefault", "stopPropagation"])(
-    "[cancellation] slotted controls can consume Escape with %s",
-    async (method) => {
-      const { dialog, buttons } = render();
-      let cancels = 0;
-      dialog.addEventListener("cancel", () => cancels++);
-      buttons[0].addEventListener("keydown", (event) => {
-        if (event.key === "Escape") event[method]();
-      });
-      dialog.showModal();
-      buttons[0].focus();
-      await userEvent.keyboard("{Escape}");
-      await new Promise((resolve) => requestAnimationFrame(resolve));
-      expect(dialog.open).toBe(true);
-      expect(cancels).toBe(0);
-    },
-  );
+  test("[cancellation] slotted controls consume Escape by preventing its default", async () => {
+    const { dialog, buttons } = render();
+    let cancels = 0;
+    dialog.addEventListener("cancel", () => cancels++);
+    buttons[0].addEventListener("keydown", (event) => {
+      if (event.key === "Escape") event.preventDefault();
+    });
+    dialog.showModal();
+    buttons[0].focus();
+    await userEvent.keyboard("{Escape}");
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    expect(dialog.open).toBe(true);
+    expect(cancels).toBe(0);
+  });
+  test("[cancellation] stopped propagation alone permits native dismissal", async () => {
+    const { dialog, buttons } = render();
+    let cancels = 0;
+    dialog.addEventListener("cancel", () => cancels++);
+    buttons[0].addEventListener("keydown", (event) => {
+      if (event.key === "Escape") event.stopPropagation();
+    });
+    dialog.showModal();
+    buttons[0].focus();
+    await userEvent.keyboard("{Escape}");
+    await expect.poll(() => dialog.open).toBe(false);
+    expect(cancels).toBe(1);
+  });
+  test("[cancellation] Escape still dismisses after clicking non-focusable content", async () => {
+    const { dialog } = render();
+    dialog.showModal();
+    await userEvent.click(dialog.querySelector("p"));
+    await userEvent.keyboard("{Escape}");
+    expect(dialog.open).toBe(false);
+  });
+  test("[cancellation] Escape still dismisses when focus has fallen back to body", async () => {
+    const { dialog, title } = render();
+    dialog.showModal();
+    title.blur();
+    expect(document.activeElement).toBe(document.body);
+    await userEvent.keyboard("{Escape}");
+    expect(dialog.open).toBe(false);
+  });
+  test("[cancellation] native close requests retain the host cancellation contract", () => {
+    const { dialog, inner } = render();
+    let cancels = 0;
+    const prevent = (event) => {
+      cancels++;
+      event.preventDefault();
+    };
+    dialog.showModal();
+    expect(inner.closedBy).toBe("closerequest");
+    dialog.addEventListener("cancel", prevent);
+    inner.requestClose();
+    expect(cancels).toBe(1);
+    expect(dialog.open).toBe(true);
+    dialog.dismissible = false;
+    expect(inner.closedBy).toBe("none");
+    inner.requestClose();
+    expect(cancels).toBe(1);
+    expect(dialog.open).toBe(true);
+    dialog.dismissible = true;
+    dialog.removeEventListener("cancel", prevent);
+    inner.requestClose();
+    expect(dialog.open).toBe(false);
+  });
   test("[cancellation] Escape during IME composition leaves the dialog open", () => {
     const { dialog, buttons } = render();
     dialog.showModal();
@@ -98,7 +146,7 @@ describe("DsDialog", () => {
     const { dialog, inner, title } = render();
     dialog.showModal();
     expect(inner.matches(":modal")).toBe(true);
-    expect(inner.closedBy).toBe("none");
+    expect(inner.closedBy).toBe("closerequest");
     expect(inner.getAttribute("aria-labelledby")).toBe(title.id);
     expect(title.textContent).toBe("Delete project");
     expect(inner.getAttribute("aria-describedby")).toBe("description");

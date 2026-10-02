@@ -63,8 +63,11 @@ The component uses native modal background blocking and a document scroll lock. 
 previous inline overflow value and priority when the final dialog lock closes. Keep dialogs at the
 application level and avoid placing them inside inert or hidden ancestors.
 
-The internal native dialog uses `closedby="none"` so keyboard dismissal belongs to the component,
-including when a child control stops propagation. Unconsumed Escape is handled in the bubble
-phase. Child controls can call `preventDefault()` or `stopPropagation()` to keep their Escape
-interaction local, and composing key events do not request dismissal. Browser support for native
-`closedby` is required for the stopped-propagation guarantee.
+The internal native dialog uses `closedby="closerequest"` when dismissible, preserving platform
+close requests such as the system back gesture. When dismissal is disabled it uses
+`closedby="none"`. Native cancel requests still pass through the host's cancelable `cancel` event.
+
+Unconsumed Escape is handled in the bubble phase for the active dialog, including when focus has
+fallen back to the document body. A child control must call `preventDefault()` to consume Escape
+without dismissing the dialog; `stopPropagation()` alone does not prevent a native close request.
+Composing key events do not request dismissal through the component keyboard handler.

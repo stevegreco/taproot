@@ -87,6 +87,7 @@ export class DsDialog extends ForwardsFocus(Base) {
   }
 
   #sync() {
+    this.#dialog.setAttribute("closedby", this.dismissible ? "closerequest" : "none");
     this.#title.textContent = this.label;
     this.#description.textContent = this.description;
     this.#description.hidden = !this.description;
@@ -120,13 +121,12 @@ export class DsDialog extends ForwardsFocus(Base) {
       !this.#dialog.open ||
       event.defaultPrevented ||
       event.isComposing ||
-      openDialogs.get(this.ownerDocument)?.at(-1) !== this ||
-      !event.composedPath().includes(this)
+      openDialogs.get(this.ownerDocument)?.at(-1) !== this
     )
       return;
     if (event.key === "Escape") {
-      // Own Escape dismissal after child controls have handled it. closedby="none"
-      // also prevents native dismissal when a child stops propagation or IME consumes Escape.
+      // Apply the host cancellation contract after child controls have handled Escape.
+      // Keep native close requests enabled for platform gestures such as system back.
       event.preventDefault();
       this.#requestCancel();
       return;
