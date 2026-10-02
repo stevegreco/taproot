@@ -11,6 +11,135 @@ import { userEvent } from "vitest/browser";
 
 const ELEMENTS = [
   {
+    id: "text-area",
+    tagName: "ds-text-area",
+    className: "DsTextArea",
+    defineExport: "defineTextArea",
+    events: ["change"],
+    focusPart: "control",
+    parts: ["field", "label", "control", "hint", "error"],
+    requiresDefaultSlot: false,
+    disabledAttribute: "disabled",
+    fieldsetDisables: true,
+    hasFormProperty: true,
+    activationKeys: [],
+    fixture: {},
+    textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+    enums: [],
+    properties: {
+      label: "sample label",
+      hint: "sample hint",
+      error: "sample error",
+      name: "notes",
+      value: "sample value",
+      placeholder: "sample placeholder",
+      autocomplete: "off",
+      rows: 6,
+      readonly: true,
+      disabled: true,
+      required: true,
+    },
+  },
+  {
+    id: "select",
+    tagName: "ds-select",
+    className: "DsSelect",
+    defineExport: "defineSelect",
+    events: ["change"],
+    focusPart: "control",
+    parts: ["field", "label", "control", "hint", "error"],
+    requiresDefaultSlot: false,
+    disabledAttribute: "disabled",
+    fieldsetDisables: true,
+    hasFormProperty: true,
+    activationKeys: [],
+    fixture: {},
+    fixtureContent: '<option value="one">One</option><option value="two">Two</option>',
+    textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+    enums: [],
+    properties: {
+      label: "sample label",
+      hint: "sample hint",
+      error: "sample error",
+      name: "choice",
+      value: "two",
+      disabled: true,
+      required: true,
+    },
+  },
+  {
+    id: "switch",
+    tagName: "ds-switch",
+    className: "DsSwitch",
+    defineExport: "defineSwitch",
+    events: ["change"],
+    focusPart: "control",
+    parts: ["field", "choice", "control", "indicator", "label", "hint", "error"],
+    requiresDefaultSlot: false,
+    disabledAttribute: "disabled",
+    fieldsetDisables: true,
+    hasFormProperty: true,
+    activationKeys: ["Space"],
+    fixture: {},
+    textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+    enums: [],
+    properties: {
+      label: "sample label",
+      hint: "sample hint",
+      error: "sample error",
+      checked: true,
+      name: "setting",
+      value: "enabled",
+      disabled: true,
+    },
+  },
+  {
+    id: "radio-group",
+    tagName: "ds-radio-group",
+    className: "DsRadioGroup",
+    defineExport: "defineRadioGroup",
+    events: ["change"],
+    focusPart: "control",
+    parts: ["field", "label", "options", "choice", "control", "indicator", "hint", "error"],
+    requiresDefaultSlot: false,
+    disabledAttribute: "disabled",
+    fieldsetDisables: true,
+    hasFormProperty: true,
+    activationKeys: ["Space"],
+    fixture: {},
+    fixtureContent: '<option value="one">One</option><option value="two">Two</option>',
+    textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+    enums: [],
+    properties: {
+      label: "sample label",
+      hint: "sample hint",
+      error: "sample error",
+      name: "choice",
+      value: "two",
+      disabled: true,
+      required: true,
+    },
+  },
+  {
+    // Modal focus containment and restoration need their own open/close fixtures.
+    id: "dialog",
+    tagName: "ds-dialog",
+    className: "DsDialog",
+    defineExport: "defineDialog",
+    events: [],
+    focusPart: null,
+    parts: ["dialog", "title", "description", "content", "actions"],
+    requiresDefaultSlot: true,
+    disabledAttribute: null,
+    fieldsetDisables: false,
+    hasFormProperty: false,
+    activationKeys: [],
+    fixture: {},
+    textAttributes: { label: "Sample label", description: "Sample description" },
+    enums: [],
+    properties: { label: "sample label", description: "sample description", dismissible: false },
+  },
+  {
     id: "badge",
     tagName: "ds-badge",
     className: "DsBadge",
@@ -209,7 +338,8 @@ function render(element, attributes = {}) {
   for (const [name, value] of Object.entries({ ...element.fixture, ...attributes })) {
     host.setAttribute(name, value);
   }
-  host.textContent = "Label";
+  if (element.fixtureContent) host.innerHTML = element.fixtureContent;
+  else host.textContent = "Label";
   document.body.append(host);
   return host;
 }
@@ -223,7 +353,14 @@ function focusTarget(element, host) {
  * actionability wait, so a disabled control can be tried.
  */
 async function trigger(event, target, options = {}) {
-  if (event === "click" || target.type === "checkbox") {
+  if (target.localName === "select") {
+    if (target.disabled) {
+      await userEvent.click(target, { force: true });
+      await userEvent.keyboard("{ArrowDown}");
+    } else await userEvent.selectOptions(target, "two");
+    return;
+  }
+  if (event === "click" || target.type === "checkbox" || target.type === "radio") {
     await userEvent.click(target, options);
     return;
   }
@@ -420,6 +557,7 @@ describe("host checks", () => {
       for (const [name, value] of Object.entries(element.fixture)) {
         host.setAttribute(name, value);
       }
+      if (element.fixtureContent) host.innerHTML = element.fixtureContent;
       Object.assign(host, element.properties);
       document.body.append(host);
 

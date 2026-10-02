@@ -21,10 +21,10 @@ usage:
     - Pair with Button when the value should be submitted.
   avoid:
     - situation: Collect multi-line text.
-      instead: Text area
+      instead: component.text-area
       why: Text field is a single line.
     - situation: Choose from a known set of options.
-      instead: Select
+      instead: component.select
       why: Text field does not present choices.
     - situation: Trigger an action by itself.
       instead: component.button

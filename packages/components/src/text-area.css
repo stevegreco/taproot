@@ -1,0 +1,129 @@
+/**
+ * <ds-text-area> styles.
+ *
+ * Built into dist/text-area.styles.js by build-styles.js — this file is the source.
+ * Visual values are published semantic and primitive tokens. There is no
+ * component-token namespace.
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitives-space-1);
+  width: 100%;
+}
+
+.label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--primitives-space-1);
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--semantic-typography-label-default-font-family);
+  font-size: var(--semantic-typography-label-default-font-size);
+  font-weight: var(--semantic-typography-label-default-font-weight);
+  line-height: var(--semantic-typography-label-default-line-height);
+  letter-spacing: var(--semantic-typography-label-default-letter-spacing);
+}
+
+.field.is-disabled .label,
+.field.is-disabled .hint {
+  color: var(--semantic-color-foreground-disabled);
+}
+
+.control {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--primitives-space-2) var(--primitives-space-3);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--semantic-color-border-default);
+  border-radius: var(--semantic-radius-control);
+  background-color: var(--semantic-color-background-surface);
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--semantic-typography-body-default-font-family);
+  font-size: var(--semantic-typography-body-default-font-size);
+  font-weight: var(--semantic-typography-body-default-font-weight);
+  line-height: var(--semantic-typography-body-default-line-height);
+  letter-spacing: var(--semantic-typography-body-default-letter-spacing);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.control::placeholder {
+  color: var(--semantic-color-foreground-muted);
+  opacity: 1;
+}
+
+.control:hover:not(:disabled):not([aria-invalid="true"]) {
+  border-color: var(--semantic-color-border-strong);
+}
+
+.control:focus-visible {
+  outline: 2px solid var(--semantic-color-border-focus);
+  outline-offset: 2px;
+}
+
+.control[aria-invalid="true"]:not(:disabled) {
+  border-color: var(--semantic-color-border-status-danger-default);
+}
+
+.control:disabled {
+  background-color: var(--semantic-color-background-disabled);
+  border-color: var(--semantic-color-border-disabled);
+  color: var(--semantic-color-foreground-disabled);
+  cursor: not-allowed;
+}
+
+.hint,
+.error {
+  margin: 0;
+  font-family: var(--semantic-typography-body-small-font-family);
+  font-size: var(--semantic-typography-body-small-font-size);
+  font-weight: var(--semantic-typography-body-small-font-weight);
+  line-height: var(--semantic-typography-body-small-line-height);
+  letter-spacing: var(--semantic-typography-body-small-letter-spacing);
+}
+
+.hint {
+  color: var(--semantic-color-foreground-muted);
+}
+
+.error {
+  color: var(--semantic-color-foreground-status-danger-default);
+}
+
+.control {
+  resize: vertical;
+  min-height: 3em;
+}
+@media (forced-colors: active) {
+  .control {
+    border-color: ButtonText;
+  }
+  .control:disabled {
+    color: GrayText;
+    border-color: GrayText;
+  }
+  .control:focus-visible {
+    outline-color: Highlight;
+  }
+}

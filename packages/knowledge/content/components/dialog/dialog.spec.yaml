@@ -1,0 +1,188 @@
+# yaml-language-server: $schema=../../../src/schema/knowledge-record.schema.json
+id: component.dialog
+type: component
+title: Dialog
+summary: Use Dialog for a focused task or confirmation that temporarily blocks the surrounding view.
+tags: [overlay, modal, focus]
+links:
+  composes: [component.button]
+  follows: [pattern.action-hierarchy, guideline.compose-or-propose]
+description: >-
+  Presents a named modal conversation above the current view. Focus stays inside until the dialog
+  closes, then returns to the person’s previous position in the workflow.
+usage:
+  do:
+    - Confirm a consequential action with explicit action and cancel choices.
+    - Complete a short task without leaving the current view.
+  avoid:
+    - situation: Show a passive status message that needs no response.
+      instead: Inline status message
+      why: Blocking the view interrupts the person unnecessarily.
+    - situation: Present a long workflow or primary page content.
+      instead: A dedicated view
+      why: Long tasks need room and a persistent location.
+anatomy:
+  backdrop:
+    role: container
+    description: Covers the surrounding view while the modal conversation is open.
+  dialog:
+    role: container
+    description: Bounded surface containing title, description, task content, and actions.
+  title:
+    role: label
+    description: Visible heading naming the task or decision.
+  description:
+    role: description
+    description: Optional short introduction, associated with the dialog.
+  content:
+    role: container
+    description: Consumer-provided task content.
+  actions:
+    role: container
+    description: Consumer-provided actions, including an explicit way to close.
+parameters:
+  open:
+    kind: boolean
+    default: false
+    description: Whether the modal dialog is shown.
+  label:
+    kind: string
+    description: Visible title and accessible name for the dialog.
+  description:
+    kind: string
+    description: Optional short accessible description of the conversation.
+  dismissible:
+    kind: boolean
+    default: true
+    description: Whether the standard cancel gesture can request dismissal.
+events:
+  cancel: A cancel gesture requests dismissal; the consumer may prevent it to protect unfinished work.
+  close: The dialog has closed, through an explicit action, dismissal, or programmatic change.
+states: [default, open, focus]
+preferences:
+  reducedMotion: [reduce]
+rules:
+  - id: visible-title
+    level: must
+    topic: content
+    statement: Supply a visible title that names the task or decision.
+  - id: explicit-exit
+    level: must
+    topic: behavior
+    statement: Provide an explicit cancel or close action, including when standard dismissal is disabled.
+  - id: modal-background
+    level: must
+    topic: behavior
+    statement: While open, prevent interaction with the surrounding view.
+  - id: initial-focus
+    level: must
+    topic: accessibility
+    statement: >-
+      Move focus inside on opening. Focus the title by default so opening cannot accidentally
+      activate a destructive choice. Consumers may designate a suitable control for initial focus.
+  - id: contain-focus
+    level: must
+    topic: accessibility
+    statement: Forward and reverse sequential focus navigation stay within the open dialog.
+  - id: restore-focus
+    level: must
+    topic: accessibility
+    statement: >-
+      On close, return focus to the element that had it before opening if that element still exists
+      and can receive focus. Otherwise the consumer chooses a logical next workflow position.
+  - id: cancellation
+    level: must
+    topic: behavior
+    statement: >-
+      A standard cancel gesture requests dismissal only when dismissible is true. Preventing the
+      cancel event leaves the dialog open. Clicking the backdrop never closes the dialog.
+  - id: close-notification
+    level: must
+    topic: behavior
+    statement: Report close once after each open dialog closes. Closing an already closed dialog does nothing.
+  - id: content-scroll
+    level: must
+    topic: behavior
+    statement: >-
+      Keep the dialog within the available viewport, allow overflowing dialog content to scroll,
+      and prevent scrolling the surrounding view while open.
+  - id: action-emphasis
+    level: should
+    topic: content
+    statement: Assign emphasis to actions by consequence and importance.
+    references: [pattern.action-hierarchy#assign-emphasis]
+  - id: accessible-modal
+    level: must
+    topic: accessibility
+    statement: Expose dialog role, modal state, title, and any supplied description to assistive technology.
+  - id: visible-focus
+    level: must
+    topic: accessibility
+    statement: Keyboard focus is visibly indicated, including when the title receives initial focus.
+  - id: forced-colors
+    level: must
+    topic: accessibility
+    statement: Dialog boundaries and focus remain visible under forced colors.
+accessibility:
+  role: Dialog
+  name: Required from its visible title.
+  keyboard:
+    Tab: Move to the next focusable item within the open dialog.
+    Shift+Tab: Move to the previous focusable item within the open dialog.
+    Escape: Request dismissal when dismissible; cancellation can be prevented.
+tokens:
+  backdrop:
+    base:
+      background: primitives.color.gray.950
+  dialog:
+    base:
+      background: semantic.color.background.surface
+      foreground: semantic.color.foreground.default
+      border: semantic.color.border.default
+      radius: semantic.radius.surface
+      shadow: semantic.elevation.lg
+      padding-horizontal: primitives.space.6
+      padding-vertical: primitives.space.6
+      gap: primitives.space.4
+  title:
+    base:
+      foreground: semantic.color.foreground.default
+      font-family: semantic.typography.body.default.fontFamily
+      font-size: semantic.typography.body.default.fontSize
+      font-weight: primitives.weight.semibold
+      line-height: semantic.typography.body.default.lineHeight
+    focus:
+      focus-ring: semantic.color.border.focus
+  description:
+    base:
+      foreground: semantic.color.foreground.muted
+      font-family: semantic.typography.body.default.fontFamily
+      font-size: semantic.typography.body.default.fontSize
+      line-height: semantic.typography.body.default.lineHeight
+  actions:
+    base:
+      gap: primitives.space.2
+rationale:
+  - decision: Modal only, one responsive size, no density variant, and no nested dialogs.
+    why: >-
+      This first contract serves short focused tasks. Dialog width is bounded by the viewport;
+      consumers needing long tasks use a dedicated view. Non-modal panels and nested conversations
+      introduce different focus and interaction requirements.
+  - decision: No disabled, selected, checked, invalid, loading, or icon-only state.
+    why: >-
+      These states belong to composed controls and actions. Dialog always has a visible title;
+      waiting for work must still provide a usable exit or explain how to cancel.
+  - decision: Actions and close controls are composed with Button.
+    why: Dialog owns modal behavior, while consumers own action labels and task outcomes.
+  - decision: No backdrop dismissal and no opening or closing animation.
+    why: >-
+      A stray pointer action should not discard a task. Instant transitions also satisfy reduced
+      motion preferences without a separate motion treatment.
+  - decision: Layout follows reading direction; no directional artwork.
+    why: Title, content, and actions follow the surrounding right-to-left or left-to-right flow.
+  - decision: Semantic surface roles with a primitive scrim and spacing.
+    why: >-
+      Existing semantic tokens cover surface, foreground, border, radius, and elevation. No
+      semantic overlay color exists, so a neutral primitive at sixty percent opacity supplies the backdrop.
+      Spacing primitives describe this surface’s padding and gaps. The semibold weight primitive
+      distinguishes the title while retaining body typography.

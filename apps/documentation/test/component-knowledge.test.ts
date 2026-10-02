@@ -335,9 +335,9 @@ test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
   );
   assert.equal(loadComponentSlice("badge").title, "Badge", "component.badge is available to docs");
   assert.throws(
-    () => loadComponentSlice("dialog"),
+    () => loadComponentSlice("nonexistent-component"),
     DocsKnowledgeError,
-    "a component without an implementation file has no page",
+    "an unknown component has no page",
   );
   assert.throws(
     () => componentKnowledgeMarkdown("button", "hierarchy"),
