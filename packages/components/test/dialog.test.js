@@ -48,10 +48,57 @@ describe("DsDialog", () => {
       expect(dialog.cancelCount ?? 0).toBe(mode === "blocked" ? 0 : 3);
     },
   );
+  test("[cancellation] Escape closes only the topmost modal", async () => {
+    const { dialog: first } = render();
+    first.showModal();
+    const second = document.createElement(tag);
+    second.label = "Confirm changes";
+    document.body.append(second);
+    second.showModal();
+    await userEvent.keyboard("{Escape}");
+    expect(second.open).toBe(false);
+    expect(first.open).toBe(true);
+    expect(first.shadowRoot.querySelector("dialog").matches(":modal")).toBe(true);
+    await userEvent.keyboard("{Escape}");
+    expect(first.open).toBe(false);
+  });
+  test.each(["preventDefault", "stopPropagation"])(
+    "[cancellation] slotted controls can consume Escape with %s",
+    async (method) => {
+      const { dialog, buttons } = render();
+      let cancels = 0;
+      dialog.addEventListener("cancel", () => cancels++);
+      buttons[0].addEventListener("keydown", (event) => {
+        if (event.key === "Escape") event[method]();
+      });
+      dialog.showModal();
+      buttons[0].focus();
+      await userEvent.keyboard("{Escape}");
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      expect(dialog.open).toBe(true);
+      expect(cancels).toBe(0);
+    },
+  );
+  test("[cancellation] Escape during IME composition leaves the dialog open", () => {
+    const { dialog, buttons } = render();
+    dialog.showModal();
+    buttons[0].focus();
+    const event = new KeyboardEvent("keydown", {
+      key: "Escape",
+      isComposing: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    buttons[0].dispatchEvent(event);
+    expect(dialog.open).toBe(true);
+    expect(event.defaultPrevented).toBe(false);
+  });
   test("[accessible-modal] title and description name the modal surface", () => {
     const { dialog, inner, title } = render();
     dialog.showModal();
     expect(inner.matches(":modal")).toBe(true);
+    expect(inner.closedBy).toBe("none");
     expect(inner.getAttribute("aria-labelledby")).toBe(title.id);
     expect(title.textContent).toBe("Delete project");
     expect(inner.getAttribute("aria-describedby")).toBe("description");

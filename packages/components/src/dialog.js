@@ -9,6 +9,7 @@ import {
 
 const styleSheet = lazyStyleSheet(styles);
 const scrollLocks = new WeakMap();
+const openDialogs = new WeakMap();
 
 function deepestFocus(document) {
   let active = document.activeElement;
@@ -51,7 +52,7 @@ export class DsDialog extends ForwardsFocus(Base) {
     super();
     const root = this.attachShadow({ mode: "open" });
     root.adoptedStyleSheets = [styleSheet()];
-    root.innerHTML = `<dialog part="dialog" aria-labelledby="title" aria-modal="true">
+    root.innerHTML = `<dialog part="dialog" closedby="none" aria-labelledby="title" aria-modal="true">
       <h2 id="title" part="title" tabindex="-1"></h2>
       <p id="description" part="description" hidden></p>
       <div part="content"><slot></slot></div>
@@ -97,7 +98,7 @@ export class DsDialog extends ForwardsFocus(Base) {
       this.#dialog.showModal();
       this.#wasOpen = true;
       this.#lockScroll();
-      this.ownerDocument.addEventListener("keydown", this.#onKeydown, true);
+      this.ownerDocument.addEventListener("keydown", this.#onKeydown);
       const initial = this.querySelector("[autofocus]");
       (initial ?? this.#title).focus({ preventScroll: true });
     } else if (this.#dialog.open) {
@@ -115,10 +116,17 @@ export class DsDialog extends ForwardsFocus(Base) {
   }
 
   #onKeydown = (event) => {
-    if (!this.#dialog.open) return;
+    if (
+      !this.#dialog.open ||
+      event.defaultPrevented ||
+      event.isComposing ||
+      openDialogs.get(this.ownerDocument)?.at(-1) !== this ||
+      !event.composedPath().includes(this)
+    )
+      return;
     if (event.key === "Escape") {
-      // Chromium can emit a noncancelable native cancel without recent user activation.
-      // Stop the keyboard default first, then apply our cancelable dismissal contract.
+      // Own Escape dismissal after child controls have handled it. closedby="none"
+      // also prevents native dismissal when a child stops propagation or IME consumes Escape.
       event.preventDefault();
       this.#requestCancel();
       return;
@@ -142,6 +150,9 @@ export class DsDialog extends ForwardsFocus(Base) {
 
   #lockScroll() {
     const document = this.ownerDocument;
+    const dialogs = openDialogs.get(document) ?? [];
+    dialogs.push(this);
+    openDialogs.set(document, dialogs);
     let lock = scrollLocks.get(document);
     if (!lock) {
       const style = document.documentElement.style;
@@ -160,7 +171,10 @@ export class DsDialog extends ForwardsFocus(Base) {
   #finishClose() {
     const document = this.#lockedDocument;
     if (document) {
-      document.removeEventListener("keydown", this.#onKeydown, true);
+      const dialogs = openDialogs.get(document);
+      dialogs.splice(dialogs.indexOf(this), 1);
+      if (!dialogs.length) openDialogs.delete(document);
+      document.removeEventListener("keydown", this.#onKeydown);
       const lock = scrollLocks.get(document);
       if (--lock.count === 0) {
         if (lock.overflow)

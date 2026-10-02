@@ -94,8 +94,10 @@ rules:
     level: must
     topic: behavior
     statement: >-
-      A standard cancel gesture requests dismissal only when dismissible is true. Preventing the
-      cancel event leaves the dialog open. Clicking the backdrop never closes the dialog.
+      An unhandled Escape requests dismissal only when dismissible is true. Preventing the cancel
+      event leaves the dialog open. Controls within the dialog may consume Escape for their own
+      interaction, and Escape during text composition does not request dismissal. Dismissal affects
+      only the active modal conversation. Clicking the backdrop never closes the dialog.
   - id: close-notification
     level: must
     topic: behavior

@@ -19,6 +19,8 @@ Three agents drafted contracts before implementation. The integrating agent revi
 
 - **Browser activation can leak between tests.** PR review found that Dialog’s initial Escape test passed after unrelated interactions gave Chromium permission to cancel its native event. A fresh-document regression now covers repeated Escape with no prior activation.
 
+- **Document keyboard handlers need ownership and composition tests.** Follow-up review caught lower dialogs handling the active modal’s Escape and capture listeners overriding child controls. Regressions cover modal stacking, child default prevention, stopped propagation, and IME composition. Stopped propagation also needs native automatic dismissal disabled; the web binding documents the resulting `closedby` requirement.
+
 ## Component notes
 
 Detailed observations live in [Radio group and Switch](component-creation-radio-switch.md), [Text area and Select](component-creation-textarea-select.md), and [Dialog](component-creation-dialog.md).
@@ -28,7 +30,7 @@ Detailed observations live in [Radio group and Switch](component-creation-radio-
 - All five creation-status checks report no required items missing. Optional preview prose and navigation ordering remain optional.
 - Knowledge validation passes for all 14 records. Token references were checked against the published token JSON; every reference resolves.
 - The full repository build passes, including documentation and Storybook.
-- The full test run passes: 214 Chromium component tests, 148 knowledge tests, 32 documentation tests, and 23 token tests. The documentation run exercises all 11 examples, including the five additions, and checks JSX types and API mappings.
+- The full test run passes: 218 Chromium component tests, 148 knowledge tests, 32 documentation tests, and 23 token tests. The documentation run exercises all 11 examples, including the five additions, and checks JSX types and API mappings.
 - An axe audit of all 27 new Storybook stories in light and dark themes reports zero WCAG A/AA violations across 54 scans. Default states and the open Dialog were also inspected visually. Browser behavior was verified in Chromium; this is not a Firefox or Safari compatibility audit.
 - Lint, formatting, and diff whitespace checks pass.
 

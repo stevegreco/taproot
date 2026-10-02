@@ -62,3 +62,9 @@ state on close when hiding should permanently dismiss the task.
 The component uses native modal background blocking and a document scroll lock. It restores the
 previous inline overflow value and priority when the final dialog lock closes. Keep dialogs at the
 application level and avoid placing them inside inert or hidden ancestors.
+
+The internal native dialog uses `closedby="none"` so keyboard dismissal belongs to the component,
+including when a child control stops propagation. Unconsumed Escape is handled in the bubble
+phase. Child controls can call `preventDefault()` or `stopPropagation()` to keep their Escape
+interaction local, and composing key events do not request dismissal. Browser support for native
+`closedby` is required for the stopped-propagation guarantee.

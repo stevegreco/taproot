@@ -45,3 +45,12 @@ that no activation has occurred, and presses Escape three times for both disable
 consumer-prevented cancellation. Escape is handled before its browser default; non-keyboard native
 cancel requests still use the same host cancellation path. The creation checklist should require
 fresh-document tests when browser behavior depends on user activation or other browsing state.
+
+A follow-up review exposed scope problems in document capture listeners: one Escape closed both
+stacked dialogs and intercepted child control and composition handling. Four regressions now cover
+the active modal, default-prevented keys, stopped propagation, and composing events. Handling runs
+in the bubble phase, checks the modal stack and event path, and ignores handled or composing keys.
+Moving to the bubble phase alone still failed the stopped-propagation test because propagation
+control does not cancel the browser default. The internal dialog therefore disables automatic
+dismissal with `closedby="none"`; the web binding documents this browser-support requirement.
+The spec now explicitly gives child interactions priority and limits dismissal to the active modal.
