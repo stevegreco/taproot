@@ -7,11 +7,11 @@ import { fileURLToPath } from "node:url";
 import { loadSpec } from "@stevegreco/design-system-spec";
 import {
   assembleSlices,
-  componentKnowledgeMarkdown,
+  componentSpecMarkdown,
   componentSlugs,
   DocsSpecError,
   loadComponentSlice,
-} from "../lib/component-knowledge";
+} from "../lib/component-spec";
 import {
   ImplementationError,
   loadImplementations,
@@ -29,7 +29,7 @@ function pageSource(slug: string): string {
   return source;
 }
 
-test("button slice variants and api come from the knowledge record and the implementation file", () => {
+test("button slice variants and api come from the spec record and the implementation file", () => {
   const slice = loadComponentSlice("button");
 
   assert.deepEqual(
@@ -112,14 +112,14 @@ test("button slice variants and api come from the knowledge record and the imple
   assert.ok(slice.together, "related pattern and example project into using-together");
   assert.equal(
     slice.together?.example?.src,
-    "/knowledge-assets/example.action-hierarchy.settings/action-hierarchy-settings.svg",
+    "/spec-assets/example.action-hierarchy.settings/action-hierarchy-settings.svg",
     "example image is a docs URL under the example id",
   );
   assert.ok(
     existsSync(
       join(
         docsRoot,
-        "public/knowledge-assets/example.action-hierarchy.settings/action-hierarchy-settings.svg",
+        "public/spec-assets/example.action-hierarchy.settings/action-hierarchy-settings.svg",
       ),
     ),
     "the example image is copied into public",
@@ -138,12 +138,12 @@ test("button slice variants and api come from the knowledge record and the imple
   );
 });
 
-test("button knowledge markdown keeps ghost and aria-label without reprinting the pattern", () => {
-  const markdown = componentKnowledgeMarkdown("button");
+test("button spec markdown keeps ghost and aria-label without reprinting the pattern", () => {
+  const markdown = componentSpecMarkdown("button");
 
   assert.match(markdown, /ghost/, "markdown lists the ghost variant");
   assert.match(markdown, /aria-label/, "markdown lists the aria-label attribute");
-  assert.match(markdown, /\/knowledge-assets\//, "example image is a docs URL");
+  assert.match(markdown, /\/spec-assets\//, "example image is a docs URL");
   assert.doesNotMatch(
     markdown,
     /\]\(assets\//,
@@ -182,16 +182,16 @@ test("badge variant examples use the implementation tag and status labels", () =
   );
 });
 
-test("the badge page renders variants, api, and accessibility from the knowledge base", async () => {
-  const knowledge = await loadSpec();
-  const record = knowledge.get("component.badge") as unknown as {
+test("the badge page renders variants, api, and accessibility from the spec", async () => {
+  const spec = await loadSpec();
+  const record = spec.get("component.badge") as unknown as {
     parameters: { variant: { values: Record<string, string> } };
     rules: { topic: string; statement: string }[];
   };
   const variantValues = record.parameters.variant.values;
   const slice = loadComponentSlice("badge");
   const danger = slice.variants.find((variant) => variant.name === "danger");
-  const markdown = componentKnowledgeMarkdown("badge");
+  const markdown = componentSpecMarkdown("badge");
   const source = pageSource("badge");
   const banner = source.match(/^---\n([\s\S]*?)\n---/);
 
@@ -244,7 +244,7 @@ test("the badge page renders variants, api, and accessibility from the knowledge
   assert.doesNotMatch(
     source,
     /<TypeTable/,
-    "API facts come from ComponentKnowledge, not a copied table",
+    "API facts come from ComponentSpec, not a copied table",
   );
 });
 
@@ -340,7 +340,7 @@ test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
     "an unknown component has no page",
   );
   assert.throws(
-    () => componentKnowledgeMarkdown("button", "hierarchy"),
+    () => componentSpecMarkdown("button", "hierarchy"),
     DocsSpecError,
     "unknown page sections fail instead of dumping related records",
   );
@@ -394,9 +394,9 @@ test("a page imports, registers, and shows usage from the binding", () => {
   assert.doesNotMatch(source, /^## Variants$/m, "no heading for a section without content");
 });
 
-test("a knowledge component gets a page only when it has an implementation file", async () => {
-  const knowledge = await loadSpec();
-  const components = knowledge
+test("a spec component gets a page only when it has an implementation file", async () => {
+  const spec = await loadSpec();
+  const components = spec
     .list({ type: "component" })
     .map((record) => record.id.slice("component.".length));
   const implemented = loadImplementations(join(docsRoot, "implementation/")).map((item) =>
@@ -412,22 +412,22 @@ test("an implementation file for a component that does not exist fails with its 
     "---\ncomponent: component.ghost\npackage: pkg\ntagName: ds-ghost\ndefineExport: defineGhost\napi:\n  - { name: x, kind: attribute, type: string, description: X. }\n---\n",
     "implementation/ghost.md",
   );
-  return loadSpec().then((knowledge) => {
+  return loadSpec().then((spec) => {
     assert.throws(
-      () => assembleSlices(knowledge, [ghost], mkdtempSync(join(tmpdir(), "assets-"))),
+      () => assembleSlices(spec, [ghost], mkdtempSync(join(tmpdir(), "assets-"))),
       /implementation\/ghost\.md: component "component\.ghost" is not a component record/,
     );
   });
 });
 
-test("an api table that skips a knowledge parameter or event fails the build", async () => {
-  const knowledge = await loadSpec();
+test("an api table that skips a spec parameter or event fails the build", async () => {
+  const spec = await loadSpec();
   const badge = parseImplementation(
     "---\ncomponent: component.badge\npackage: pkg\ntagName: ds-badge\ndefineExport: defineBadge\napi:\n  - { name: hidden, kind: attribute, type: boolean, description: Hides. }\n---\n",
     "implementation/badge.md",
   );
   assert.throws(
-    () => assembleSlices(knowledge, [badge], mkdtempSync(join(tmpdir(), "assets-"))),
+    () => assembleSlices(spec, [badge], mkdtempSync(join(tmpdir(), "assets-"))),
     /does not cover component\.badge parameter "variant"/,
   );
 });

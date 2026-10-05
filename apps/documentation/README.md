@@ -1,8 +1,8 @@
 # Design System Documentation
 
 The documentation site uses [Blume](https://blume.build), with Markdown and
-MDX content in `docs/`. Each component page combines a knowledge record
-(`packages/knowledge`) with an implementation file in `implementation/<slug>.md`
+MDX content in `docs/`. Each component page combines a spec record
+(`packages/spec`) with an implementation file in `implementation/<slug>.md`
 that holds the web-specific facts: tag name, usage markup, the API table's rows,
 and guidance.
 

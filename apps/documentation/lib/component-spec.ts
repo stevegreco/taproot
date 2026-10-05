@@ -1,14 +1,14 @@
 /**
  * The data behind a component page, assembled from two sources.
  *
- * - The knowledge library (`@stevegreco/design-system-spec`) supplies usage,
+ * - The spec library (`@stevegreco/design-system-spec`) supplies usage,
  *   rules, anatomy, parameters, states, accessibility, patterns, and examples.
  * - Docs-owned implementation files (`implementation/<slug>.md`) supply everything
  *   specific to the web component: package, tag name, usage markup, the API
  *   table's rows, and web guidance.
  *
- * A knowledge component with an implementation file gets a page. An
- * implementation file whose component is not in the knowledge base fails the build.
+ * A spec component with an implementation file gets a page. An
+ * implementation file whose component is not in the spec fails the build.
  */
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
@@ -28,7 +28,7 @@ export type { ApiMemberKind } from "./implementation";
 
 export type ComponentSlug = string;
 
-export type ComponentKnowledgeSection =
+export type ComponentSpecSection =
   | "intro"
   | "behavior"
   | "variants"
@@ -133,7 +133,7 @@ export interface ComponentSlice {
   readonly review: ReviewSection | undefined;
 }
 
-export type DocsKnowledgeCode =
+export type DocsSpecCode =
   | "invalid-slug"
   | "missing-component"
   | "invalid-implementation"
@@ -141,17 +141,17 @@ export type DocsKnowledgeCode =
   | "unknown-section";
 
 export class DocsSpecError extends Error {
-  readonly code: DocsKnowledgeCode;
+  readonly code: DocsSpecCode;
 
-  constructor(code: DocsKnowledgeCode, message: string) {
+  constructor(code: DocsSpecCode, message: string) {
     super(message);
     this.name = "DocsSpecError";
     this.code = code;
   }
 }
 
-/** The parts of the loaded knowledge base this module reads. */
-export interface KnowledgeSource {
+/** The parts of the loaded spec this module reads. */
+export interface SpecSource {
   readonly contentDir: string;
   get(id: string): unknown;
   section(target: string): { content: unknown } | undefined;
@@ -202,7 +202,7 @@ interface ExampleRecord extends RecordBase {
 }
 
 const SLUG = /^[a-z][a-z0-9-]*$/;
-const SECTIONS: readonly ComponentKnowledgeSection[] = [
+const SECTIONS: readonly ComponentSpecSection[] = [
   "intro",
   "behavior",
   "variants",
@@ -239,7 +239,7 @@ export function componentSlugs(): readonly ComponentSlug[] {
   return [...slices.keys()];
 }
 
-export function componentKnowledgeMarkdown(slug: string, section?: string): string {
+export function componentSpecMarkdown(slug: string, section?: string): string {
   const slice = loadComponentSlice(slug);
   if (section == null) {
     return SECTIONS.map((name) => renderSectionMarkdown(slice, name))
@@ -252,7 +252,7 @@ export function componentKnowledgeMarkdown(slug: string, section?: string): stri
   return renderSectionMarkdown(slice, section);
 }
 
-function isSection(value: string): value is ComponentKnowledgeSection {
+function isSection(value: string): value is ComponentSpecSection {
   return (SECTIONS as readonly string[]).includes(value);
 }
 
@@ -275,7 +275,7 @@ function apiDescription(row: ApiRow): string {
   return row.description;
 }
 
-function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledgeSection): string {
+function renderSectionMarkdown(slice: ComponentSlice, section: ComponentSpecSection): string {
   switch (section) {
     case "intro":
       return slice.introMarkdown;
@@ -351,15 +351,15 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
   }
 }
 
-// -- Reading the knowledge base ---------------------------------------------
+// -- Reading the spec ------------------------------------------------------
 
-function fail(code: DocsKnowledgeCode, message: string): never {
+function fail(code: DocsSpecCode, message: string): never {
   throw new DocsSpecError(code, message);
 }
 
-function recordOf<T extends RecordBase>(knowledge: KnowledgeSource, target: string): T | undefined {
+function recordOf<T extends RecordBase>(spec: SpecSource, target: string): T | undefined {
   const id = target.split("#")[0];
-  return knowledge.get(id) as T | undefined;
+  return spec.get(id) as T | undefined;
 }
 
 function slugOf(componentId: string): string {
@@ -392,13 +392,13 @@ function sentence(text: string): string {
 
 /** A usage `avoid` entry as one Markdown list item. */
 function formatAvoid(
-  knowledge: KnowledgeSource,
+  spec: SpecSource,
   pages: ReadonlySet<string>,
   item: { situation: string; instead?: string; why?: string },
 ): string {
   let line = `- ${item.situation}`;
   if (item.instead) {
-    const target = recordOf<RecordBase>(knowledge, item.instead);
+    const target = recordOf<RecordBase>(spec, item.instead);
     const href = target ? docsHref(target, pages) : undefined;
     const name = target ? target.title : item.instead;
     line += ` Use ${href ? `[${name}](${href})` : name} instead.`;
@@ -408,12 +408,12 @@ function formatAvoid(
 }
 
 /** A rule as a Markdown list item with indented detail lines. */
-function formatRule(knowledge: KnowledgeSource, pages: ReadonlySet<string>, rule: Rule): string[] {
+function formatRule(spec: SpecSource, pages: ReadonlySet<string>, rule: Rule): string[] {
   const lines = [`- **${rule.level}:** ${rule.statement}`];
   if (rule.applicability) lines.push(`  Applies when: ${rule.applicability}`);
   if (rule.rationale) lines.push(`  Why: ${rule.rationale}`);
   for (const reference of rule.references ?? []) {
-    const target = recordOf<RecordBase>(knowledge, reference);
+    const target = recordOf<RecordBase>(spec, reference);
     if (!target) continue;
     const href = docsHref(target, pages);
     lines.push(`  See ${href ? `[${referenceLabel(target)}](${href})` : referenceLabel(target)}.`);
@@ -574,7 +574,7 @@ function projectExample(
   return {
     title: record.title,
     summary: record.summary,
-    src: `/knowledge-assets/${record.id}/${file}`,
+    src: `/spec-assets/${record.id}/${file}`,
     alt: asset.alt,
     width: asset.width,
     height: asset.height,
@@ -586,16 +586,16 @@ function projectExample(
 }
 
 interface Context {
-  readonly knowledge: KnowledgeSource;
+  readonly spec: SpecSource;
   readonly pages: ReadonlySet<string>;
   readonly assetDir: string;
 }
 
 function projectComponent(context: Context, implementation: Implementation): ComponentSlice {
-  const { knowledge, pages, assetDir } = context;
-  const found = recordOf<ComponentRecord>(knowledge, implementation.component);
+  const { spec, pages, assetDir } = context;
+  const found = recordOf<ComponentRecord>(spec, implementation.component);
   const slug = implementationSlug(implementation);
-  // The knowledge CLI runs the same check, so the site and `get --impl` agree on what is valid.
+  // The spec CLI runs the same check, so the site and `get --impl` agree on what is valid.
   try {
     checkImplementation(implementation, found);
   } catch (error) {
@@ -606,24 +606,24 @@ function projectComponent(context: Context, implementation: Implementation): Com
   const api = implementation.api.map((row) => projectRow(record, row));
 
   // Patterns the component links to, by any link kind, and the examples of those or of the component.
-  const outgoing = knowledge.links(record.id);
+  const outgoing = spec.links(record.id);
   const patternIds = [
     ...new Set(
       outgoing.flatMap((link) =>
-        recordOf<RecordBase>(knowledge, link.to)?.type === "pattern" ? [link.to.split("#")[0]] : [],
+        recordOf<RecordBase>(spec, link.to)?.type === "pattern" ? [link.to.split("#")[0]] : [],
       ),
     ),
   ].sort();
-  const patterns = patternIds.map((id) => recordOf<RecordBase>(knowledge, id) as RecordBase);
+  const patterns = patternIds.map((id) => recordOf<RecordBase>(spec, id) as RecordBase);
   const exampleIds = [
     ...new Set(
       [record.id, ...patternIds].flatMap((id) =>
-        knowledge
+        spec
           .links(id)
           .filter(
             (link) =>
               (link.kind === "examples" || link.kind === "related") &&
-              recordOf<RecordBase>(knowledge, link.to)?.type === "example",
+              recordOf<RecordBase>(spec, link.to)?.type === "example",
           )
           .map((link) => link.to.split("#")[0]),
       ),
@@ -637,28 +637,28 @@ function projectComponent(context: Context, implementation: Implementation): Com
   }
   const example = exampleIds[0]
     ? projectExample(
-        recordOf<ExampleRecord>(knowledge, exampleIds[0]) as ExampleRecord,
+        recordOf<ExampleRecord>(spec, exampleIds[0]) as ExampleRecord,
         assetDir,
-        knowledge.contentDir,
+        spec.contentDir,
       )
     : undefined;
 
   // Each variant value names its guidance section in the spec (`parameters.variant.guidance`).
   const guidance = (variant: string): string => {
     const target = record.parameters?.variant?.guidance?.[variant];
-    const section = target ? knowledge.section(target) : undefined;
+    const section = target ? spec.section(target) : undefined;
     return typeof section?.content === "string" ? section.content : "";
   };
 
   const use = (record.usage?.do ?? []).map((situation) => `- ${situation}`);
-  const avoid = (record.usage?.avoid ?? []).map((item) => formatAvoid(knowledge, pages, item));
+  const avoid = (record.usage?.avoid ?? []).map((item) => formatAvoid(spec, pages, item));
   const introParts = [record.description];
   if (use.length > 0) introParts.push(`### When to use\n\n${use.join("\n")}`);
   if (avoid.length > 0) introParts.push(`### When to avoid\n\n${avoid.join("\n")}`);
 
   const contentLines = (record.rules ?? [])
     .filter((rule) => rule.topic === "content")
-    .flatMap((rule) => formatRule(knowledge, pages, rule));
+    .flatMap((rule) => formatRule(spec, pages, rule));
   const behaviorParts = [
     contentLines.length > 0 ? `### Write the content\n\n${contentLines.join("\n")}` : "",
     bodySections(implementation.body),
@@ -669,7 +669,7 @@ function projectComponent(context: Context, implementation: Implementation): Com
       ? undefined
       : {
           patterns: patterns.map((pattern) => {
-            const avoidSection = knowledge.section(`${pattern.id}#avoid`);
+            const avoidSection = spec.section(`${pattern.id}#avoid`);
             return {
               id: pattern.id,
               title: pattern.title,
@@ -717,12 +717,12 @@ function deepFreeze<T>(value: T): T {
  * image into `assetDir/<example id>/` so the page can serve it.
  */
 export function assembleSlices(
-  knowledge: KnowledgeSource,
+  spec: SpecSource,
   implementations: readonly Implementation[],
   assetDir: string,
 ): ReadonlyMap<string, ComponentSlice> {
   const pages = new Set(implementations.map(implementationSlug));
-  const context: Context = { knowledge, pages, assetDir };
+  const context: Context = { spec, pages, assetDir };
   const map = new Map<string, ComponentSlice>();
   for (const implementation of implementations) {
     const slice = deepFreeze(projectComponent(context, implementation));
@@ -745,8 +745,8 @@ function docsRoot(): string {
   return dir;
 }
 
-/** The knowledge package's content folder, resolved the same way in source and in the bundle. */
-function knowledgeContentDir(): string {
+/** The spec package's content folder, resolved the same way in source and in the bundle. */
+function specContentDir(): string {
   const manifest = fileURLToPath(
     import.meta.resolve("@stevegreco/design-system-spec/package.json"),
   );
@@ -756,7 +756,7 @@ function knowledgeContentDir(): string {
 const root = docsRoot();
 
 const slices: ReadonlyMap<string, ComponentSlice> = assembleSlices(
-  await loadSpec({ contentDir: knowledgeContentDir() }),
+  await loadSpec({ contentDir: specContentDir() }),
   loadImplementations(join(root, "implementation")),
-  join(root, "public", "knowledge-assets"),
+  join(root, "public", "spec-assets"),
 );

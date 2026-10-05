@@ -1,10 +1,10 @@
 ---
-import { loadComponentSlice, type ComponentKnowledgeSection } from "../lib/component-knowledge";
-import "./component-knowledge.css";
+import { loadComponentSlice, type ComponentSpecSection } from "../lib/component-spec";
+import "./component-spec.css";
 
 interface Props {
   component: string;
-  section?: ComponentKnowledgeSection;
+  section?: ComponentSpecSection;
 }
 
 const { component, section } = Astro.props;
@@ -54,38 +54,38 @@ const markdownToHtml = (markdown: string) => {
     .join("");
 };
 
-const show = (name: ComponentKnowledgeSection) => section == null || section === name;
+const show = (name: ComponentSpecSection) => section == null || section === name;
 ---
 
 {
   show("intro") && slice.introMarkdown ? (
-    <div class="component-knowledge component-knowledge--prose" set:html={markdownToHtml(slice.introMarkdown)} />
+    <div class="component-spec component-spec--prose" set:html={markdownToHtml(slice.introMarkdown)} />
   ) : null
 }
 
 {
   show("behavior") && slice.behaviorMarkdown ? (
-    <div class="component-knowledge component-knowledge--prose" set:html={markdownToHtml(slice.behaviorMarkdown)} />
+    <div class="component-spec component-spec--prose" set:html={markdownToHtml(slice.behaviorMarkdown)} />
   ) : null
 }
 
 {
   show("variants") && slice.variants.length > 0 ? (
-    <div class="component-knowledge component-knowledge__variants">
+    <div class="component-spec component-spec__variants">
       {
         slice.variants.map((variant) => (
-          <article class="component-knowledge__variant">
-            <div class="component-knowledge__specimen">
+          <article class="component-spec__variant">
+            <div class="component-spec__specimen">
               <Specimen variant={variant.name}>{variant.exampleLabel}</Specimen>
             </div>
-            <div class="component-knowledge__variant-copy">
-              <div class="component-knowledge__variant-heading">
+            <div class="component-spec__variant-copy">
+              <div class="component-spec__variant-heading">
                 <h3>{titleCase(variant.name)}</h3>
-                {variant.isDefault ? <span class="component-knowledge__default">Default</span> : null}
+                {variant.isDefault ? <span class="component-spec__default">Default</span> : null}
               </div>
               <p>{variant.description}</p>
               {variant.guidance ? (
-                <div class="component-knowledge__guidance" set:html={markdownToHtml(variant.guidance)} />
+                <div class="component-spec__guidance" set:html={markdownToHtml(variant.guidance)} />
               ) : null}
               <code>{variant.exampleHtml}</code>
             </div>
@@ -98,7 +98,7 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
 
 {
   show("together") && slice.together ? (
-    <div class="component-knowledge component-knowledge--together">
+    <div class="component-spec component-spec--together">
       {
         slice.together.patterns.map((pattern) => (
           <>
@@ -109,7 +109,7 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
       }
       {
         slice.together.example ? (
-          <figure class="component-knowledge__figure">
+          <figure class="component-spec__figure">
             <img
               src={slice.together.example.src}
               alt={slice.together.example.alt}
@@ -155,8 +155,8 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
 
 {
   show("api") ? (
-    <div class="component-knowledge">
-      <table class="component-knowledge__table">
+    <div class="component-spec">
+      <table class="component-spec__table">
         <thead>
           <tr>
             <th>Name</th>
@@ -171,14 +171,14 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
               <tr>
                 <td>
                   <code>{row.name}</code>
-                  {row.kind !== "attribute" ? <span class="component-knowledge__kind">{row.kind}</span> : null}
+                  {row.kind !== "attribute" ? <span class="component-spec__kind">{row.kind}</span> : null}
                 </td>
                 <td><code>{row.typeDisplay}</code></td>
                 <td>{row.defaultDisplay ? <code>{row.defaultDisplay}</code> : ""}</td>
                 <td>
                   {
                     row.values.length > 0 ? (
-                      <ul class="component-knowledge__values">
+                      <ul class="component-spec__values">
                         {row.values.map((value) => (
                           <li>
                             <code>{value.name}</code> {value.description}
@@ -201,7 +201,7 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
 
 {
   show("accessibility") ? (
-    <div class="component-knowledge component-knowledge--prose">
+    <div class="component-spec component-spec--prose">
       {
         slice.accessibility.requirements.length > 0 ? (
           <ul>
@@ -213,7 +213,7 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
       }
       {
         slice.accessibility.keyboard.length > 0 ? (
-          <table class="component-knowledge__table">
+          <table class="component-spec__table">
             <thead>
               <tr>
                 <th>Key</th>
@@ -237,7 +237,7 @@ const show = (name: ComponentKnowledgeSection) => section == null || section ===
 
 {
   show("review") && slice.review ? (
-    <details id="review-checklist" class="component-knowledge component-knowledge__review">
+    <details id="review-checklist" class="component-spec component-spec__review">
       <summary>{slice.review.title}</summary>
       <ul>
         {slice.review.checks.map((check) => (
