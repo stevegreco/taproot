@@ -4,12 +4,12 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "vitest";
 import { fileURLToPath } from "node:url";
-import { loadKnowledge } from "@stevegreco/design-system-knowledge";
+import { loadSpec } from "@stevegreco/design-system-spec";
 import {
   assembleSlices,
   componentKnowledgeMarkdown,
   componentSlugs,
-  DocsKnowledgeError,
+  DocsSpecError,
   loadComponentSlice,
 } from "../lib/component-knowledge";
 import {
@@ -183,7 +183,7 @@ test("badge variant examples use the implementation tag and status labels", () =
 });
 
 test("the badge page renders variants, api, and accessibility from the knowledge base", async () => {
-  const knowledge = await loadKnowledge();
+  const knowledge = await loadSpec();
   const record = knowledge.get("component.badge") as unknown as {
     parameters: { variant: { values: Record<string, string> } };
     rules: { topic: string; statement: string }[];
@@ -330,18 +330,18 @@ test("link slice ties placement variants and Button to the action hierarchy", ()
 test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
   assert.throws(
     () => loadComponentSlice("component.button"),
-    DocsKnowledgeError,
+    DocsSpecError,
     "component.button is a record id, not a page slug",
   );
   assert.equal(loadComponentSlice("badge").title, "Badge", "component.badge is available to docs");
   assert.throws(
     () => loadComponentSlice("nonexistent-component"),
-    DocsKnowledgeError,
+    DocsSpecError,
     "an unknown component has no page",
   );
   assert.throws(
     () => componentKnowledgeMarkdown("button", "hierarchy"),
-    DocsKnowledgeError,
+    DocsSpecError,
     "unknown page sections fail instead of dumping related records",
   );
 });
@@ -395,7 +395,7 @@ test("a page imports, registers, and shows usage from the binding", () => {
 });
 
 test("a knowledge component gets a page only when it has an implementation file", async () => {
-  const knowledge = await loadKnowledge();
+  const knowledge = await loadSpec();
   const components = knowledge
     .list({ type: "component" })
     .map((record) => record.id.slice("component.".length));
@@ -412,7 +412,7 @@ test("an implementation file for a component that does not exist fails with its 
     "---\ncomponent: component.ghost\npackage: pkg\ntagName: ds-ghost\ndefineExport: defineGhost\napi:\n  - { name: x, kind: attribute, type: string, description: X. }\n---\n",
     "implementation/ghost.md",
   );
-  return loadKnowledge().then((knowledge) => {
+  return loadSpec().then((knowledge) => {
     assert.throws(
       () => assembleSlices(knowledge, [ghost], mkdtempSync(join(tmpdir(), "assets-"))),
       /implementation\/ghost\.md: component "component\.ghost" is not a component record/,
@@ -421,7 +421,7 @@ test("an implementation file for a component that does not exist fails with its 
 });
 
 test("an api table that skips a knowledge parameter or event fails the build", async () => {
-  const knowledge = await loadKnowledge();
+  const knowledge = await loadSpec();
   const badge = parseImplementation(
     "---\ncomponent: component.badge\npackage: pkg\ntagName: ds-badge\ndefineExport: defineBadge\napi:\n  - { name: hidden, kind: attribute, type: boolean, description: Hides. }\n---\n",
     "implementation/badge.md",

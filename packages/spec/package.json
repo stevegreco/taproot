@@ -1,0 +1,47 @@
+{
+  "name": "@stevegreco/design-system-spec",
+  "version": "0.0.1",
+  "description": "Technology-neutral, validated specs for the Ember & Sage design system.",
+  "license": "ISC",
+  "author": "Steve Greco",
+  "bin": {
+    "ds-spec": "./bin/ds-spec.js",
+    "ds-spec-mcp": "./bin/ds-spec-mcp.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "content",
+    "SPEC.md",
+    "README.md"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./config": "./src/config.js",
+    "./tokens-dtcg": "./src/tokens-dtcg.js",
+    "./implementation": "./src/implementation.js",
+    "./schema/spec-record.json": "./src/schema/spec-record.schema.json",
+    "./SPEC.md": "./SPEC.md",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.1",
+    "ajv": "^8.20.0",
+    "mdast-util-from-markdown": "^2.0.3",
+    "yaml": "^2.8.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

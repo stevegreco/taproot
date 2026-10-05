@@ -2,14 +2,14 @@
   "name": "design-system",
   "private": true,
   "scripts": {
-    "knowledge": "node packages/knowledge/bin/knowledge.js",
     "build": "turbo run build",
     "clean": "turbo run clean",
     "test": "turbo run test",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
-    "lint:fix": "oxlint --fix ."
+    "lint:fix": "oxlint --fix .",
+    "spec": "node packages/spec/bin/ds-spec.js"
   },
   "devDependencies": {
     "oxfmt": "^0.62.0",

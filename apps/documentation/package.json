@@ -14,7 +14,7 @@
     "@shikijs/twoslash": "^4.3.1",
     "@stevegreco/design-system": "workspace:*",
     "@stevegreco/design-system-components": "workspace:*",
-    "@stevegreco/design-system-knowledge": "workspace:*",
+    "@stevegreco/design-system-spec": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.4",
     "blume": "^1.7.3",

@@ -1,0 +1,585 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:design-system-spec:record:1",
+  "title": "Design system spec record",
+  "description": "One record of a design system spec: a component contract (YAML), or the front matter of a pattern, guideline, or example (Markdown). See SPEC.md.",
+  "type": "object",
+  "required": ["id", "type", "title", "summary"],
+  "properties": {
+    "id": {
+      "description": "<type>.<name>. The type prefix must match `type`.",
+      "$ref": "#/$defs/recordId"
+    },
+    "type": {
+      "enum": ["component", "pattern", "guideline", "example"]
+    },
+    "title": {
+      "$ref": "#/$defs/text"
+    },
+    "summary": {
+      "description": "One sentence that says when to use this record's subject.",
+      "$ref": "#/$defs/text"
+    },
+    "tags": {
+      "description": "Free keywords for search.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/name"
+      }
+    },
+    "status": {
+      "description": "Defaults to stable.",
+      "enum": ["draft", "stable", "deprecated"]
+    },
+    "links": {
+      "$ref": "#/$defs/links"
+    },
+    "sources": {
+      "description": "Where this record came from. Provenance only.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "component"
+          }
+        },
+        "required": ["type"]
+      },
+      "then": {
+        "required": ["description", "usage", "anatomy"],
+        "properties": {
+          "description": {
+            "description": "What the component is, in one or two sentences.",
+            "$ref": "#/$defs/text"
+          },
+          "usage": {
+            "$ref": "#/$defs/usage"
+          },
+          "anatomy": {
+            "$ref": "#/$defs/anatomy"
+          },
+          "parameters": {
+            "$ref": "#/$defs/parameters"
+          },
+          "events": {
+            "$ref": "#/$defs/events"
+          },
+          "states": {
+            "$ref": "#/$defs/states"
+          },
+          "preferences": {
+            "$ref": "#/$defs/preferences"
+          },
+          "rules": {
+            "$ref": "#/$defs/rules"
+          },
+          "accessibility": {
+            "$ref": "#/$defs/accessibility"
+          },
+          "tokens": {
+            "$ref": "#/$defs/tokens"
+          },
+          "rationale": {
+            "$ref": "#/$defs/rationale"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "example"
+          }
+        },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "assets": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/asset"
+            }
+          },
+          "annotations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/annotation"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "description": "Lowercase words joined by hyphens.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "key": {
+      "description": "An adopter-chosen name for a part, parameter, value, state, or preference. Letters, digits, and hyphens; camelCase is allowed.",
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*$"
+    },
+    "recordId": {
+      "type": "string",
+      "pattern": "^(?:component|pattern|guideline|example)\\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*)*$"
+    },
+    "linkTarget": {
+      "description": "A record ID, optionally followed by # and a section address.",
+      "type": "string",
+      "pattern": "^(?:component|pattern|guideline|example)\\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*)*(?:#[A-Za-z0-9][A-Za-z0-9.-]*)?$"
+    },
+    "linkTargets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/linkTarget"
+      }
+    },
+    "links": {
+      "description": "Typed links to other records. Write each link once; the index adds the inverse.",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "composes": {
+          "description": "This component is built from the target component.",
+          "$ref": "#/$defs/linkTargets"
+        },
+        "follows": {
+          "description": "This record applies the target pattern or guideline.",
+          "$ref": "#/$defs/linkTargets"
+        },
+        "example-of": {
+          "description": "This example demonstrates the target.",
+          "$ref": "#/$defs/linkTargets"
+        },
+        "related": {
+          "description": "Worth reading together, with no stronger claim.",
+          "$ref": "#/$defs/linkTargets"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "do": {
+          "description": "Situations the component is for.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "avoid": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["situation"],
+            "properties": {
+              "situation": {
+                "$ref": "#/$defs/text"
+              },
+              "instead": {
+                "description": "What to use instead. A record ID also creates an `alternative` link; any other text is prose.",
+                "$ref": "#/$defs/text"
+              },
+              "why": {
+                "$ref": "#/$defs/text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "anatomy": {
+      "description": "Named parts, in reading order.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/key"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "description"],
+        "properties": {
+          "role": {
+            "enum": ["interactive-surface", "label", "description", "indicator", "container"]
+          },
+          "description": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "description": "The component's options, independent of any implementation.",
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/key"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/parameter"
+      }
+    },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": ["enum", "boolean", "string", "number"]
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "values": {
+          "description": "Enum values and what each one means.",
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/key"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "examples": {
+          "description": "Sample content for each enum value, such as a label.",
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/key"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "guidance": {
+          "description": "For each enum value, the pattern or guideline section that says when to use it. Creates a `follows` link from the value.",
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/key"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/linkTarget"
+          }
+        },
+        "default": {}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "enum"
+              }
+            }
+          },
+          "then": {
+            "required": ["values"],
+            "properties": {
+              "values": true,
+              "default": {
+                "type": "string"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "values": false,
+              "examples": false,
+              "guidance": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "boolean"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "string"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "number"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "events": {
+      "description": "What the component reports, by name, with a description.",
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/key"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "states": {
+      "description": "Interaction and data states. Order carries no meaning.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/key"
+      }
+    },
+    "preferences": {
+      "description": "User preferences the component responds to, such as reduced motion, with their values.",
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/key"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "$ref": "#/$defs/key"
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rule"
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "level", "topic", "statement"],
+      "properties": {
+        "id": {
+          "description": "Stable within the record. Address: <record id>#<rule id>.",
+          "$ref": "#/$defs/name"
+        },
+        "level": {
+          "description": "RFC 2119 meaning.",
+          "enum": ["must", "should", "may"]
+        },
+        "topic": {
+          "enum": ["content", "behavior", "accessibility"]
+        },
+        "statement": {
+          "$ref": "#/$defs/text"
+        },
+        "applicability": {
+          "description": "When the rule applies, if not always.",
+          "$ref": "#/$defs/text"
+        },
+        "rationale": {
+          "$ref": "#/$defs/text"
+        },
+        "references": {
+          "description": "Records or sections this rule cites.",
+          "$ref": "#/$defs/linkTargets"
+        },
+        "examples": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "do": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              }
+            },
+            "avoid": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "description": "The semantic role, in plain words.",
+          "$ref": "#/$defs/text"
+        },
+        "name": {
+          "description": "Where the accessible name comes from.",
+          "$ref": "#/$defs/text"
+        },
+        "keyboard": {
+          "description": "Key or key combination, and what it does.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "tokens": {
+      "description": "Anatomy part -> condition -> property -> token reference. Reference data; no resolution rules.",
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/key"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "minProperties": 1,
+        "propertyNames": {
+          "description": "`base`, `<parameter>.<value>`, `<state>`, `<preference>.<value>`, or several joined with ` + `.",
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)?(?: \\+ [A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)?)*$"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "#/$defs/name"
+          },
+          "additionalProperties": {
+            "description": "An opaque token reference, or a keyword such as transparent or none.",
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "rationale": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["decision", "why"],
+        "properties": {
+          "decision": {
+            "$ref": "#/$defs/text"
+          },
+          "why": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "mediaType", "width", "height", "alt"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/name"
+        },
+        "path": {
+          "description": "Relative to the record file.",
+          "type": "string",
+          "minLength": 1
+        },
+        "mediaType": {
+          "type": "string",
+          "pattern": "^[a-z]+/[a-zA-Z0-9.+-]+$"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "alt": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "description"],
+      "properties": {
+        "id": {
+          "description": "Address: <record id>#<annotation id>.",
+          "$ref": "#/$defs/name"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "references": {
+          "$ref": "#/$defs/linkTargets"
+        }
+      }
+    }
+  }
+}

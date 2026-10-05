@@ -1,7 +1,7 @@
 /**
  * The data behind a component page, assembled from two sources.
  *
- * - The knowledge library (`@stevegreco/design-system-knowledge`) supplies usage,
+ * - The knowledge library (`@stevegreco/design-system-spec`) supplies usage,
  *   rules, anatomy, parameters, states, accessibility, patterns, and examples.
  * - Docs-owned implementation files (`implementation/<slug>.md`) supply everything
  *   specific to the web component: package, tag name, usage markup, the API
@@ -13,7 +13,7 @@
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadKnowledge } from "@stevegreco/design-system-knowledge";
+import { loadSpec } from "@stevegreco/design-system-spec";
 import {
   checkImplementation,
   ImplementationError,
@@ -140,12 +140,12 @@ export type DocsKnowledgeCode =
   | "unexpected-slice"
   | "unknown-section";
 
-export class DocsKnowledgeError extends Error {
+export class DocsSpecError extends Error {
   readonly code: DocsKnowledgeCode;
 
   constructor(code: DocsKnowledgeCode, message: string) {
     super(message);
-    this.name = "DocsKnowledgeError";
+    this.name = "DocsSpecError";
     this.code = code;
   }
 }
@@ -215,7 +215,7 @@ const TOPIC_ORDER = ["content", "behavior", "accessibility"] as const;
 
 function assertSlug(slug: string): asserts slug is ComponentSlug {
   if (!SLUG.test(slug)) {
-    throw new DocsKnowledgeError(
+    throw new DocsSpecError(
       "invalid-slug",
       `"${slug}" is not a component page slug. Use "button", not "component.button".`,
     );
@@ -226,7 +226,7 @@ export function loadComponentSlice(slug: string): ComponentSlice {
   assertSlug(slug);
   const slice = slices.get(slug);
   if (!slice) {
-    throw new DocsKnowledgeError(
+    throw new DocsSpecError(
       "missing-component",
       `No component page for "${slug}". It needs the record component.${slug} and an implementation/${slug}.md file.`,
     );
@@ -247,10 +247,7 @@ export function componentKnowledgeMarkdown(slug: string, section?: string): stri
       .join("\n\n");
   }
   if (!isSection(section)) {
-    throw new DocsKnowledgeError(
-      "unknown-section",
-      `"${section}" is not a component page section.`,
-    );
+    throw new DocsSpecError("unknown-section", `"${section}" is not a component page section.`);
   }
   return renderSectionMarkdown(slice, section);
 }
@@ -357,7 +354,7 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentKnowledg
 // -- Reading the knowledge base ---------------------------------------------
 
 function fail(code: DocsKnowledgeCode, message: string): never {
-  throw new DocsKnowledgeError(code, message);
+  throw new DocsSpecError(code, message);
 }
 
 function recordOf<T extends RecordBase>(knowledge: KnowledgeSource, target: string): T | undefined {
@@ -751,7 +748,7 @@ function docsRoot(): string {
 /** The knowledge package's content folder, resolved the same way in source and in the bundle. */
 function knowledgeContentDir(): string {
   const manifest = fileURLToPath(
-    import.meta.resolve("@stevegreco/design-system-knowledge/package.json"),
+    import.meta.resolve("@stevegreco/design-system-spec/package.json"),
   );
   return join(dirname(manifest), "content");
 }
@@ -759,7 +756,7 @@ function knowledgeContentDir(): string {
 const root = docsRoot();
 
 const slices: ReadonlyMap<string, ComponentSlice> = assembleSlices(
-  await loadKnowledge({ contentDir: knowledgeContentDir() }),
+  await loadSpec({ contentDir: knowledgeContentDir() }),
   loadImplementations(join(root, "implementation")),
   join(root, "public", "knowledge-assets"),
 );
