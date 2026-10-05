@@ -1,6 +1,6 @@
 # Design system spec narration
 
-Mark performs the complete script in one Eleven v4 request, so the delivery carries across scenes.
+Archer performs the complete script in one Eleven v4 request, so the delivery carries across scenes.
 Playback splits the take only between sections, halfway through each natural pause, and adds that
 section's `hold` of silence so the picture has time to land. The take is never cut mid-sentence.
 

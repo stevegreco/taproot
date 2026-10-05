@@ -29,7 +29,7 @@ asks first and cites the rule behind each choice.
 The layout uses a shared grid, restrained transitions, and a live before/after button example.
 
 Scene timing is derived from the continuous voiceover in `src/timeline.ts`. The voiceover uses
-Eleven v4 with Mark and descriptive delivery tags. `src/narration.ts` holds the spoken script;
+Eleven v4 with Archer and descriptive delivery tags. `src/narration.ts` holds the spoken script;
 `narration.md` explains the delivery and regeneration workflow. Generate the audio with
 `ELEVENLABS_KEY` in the package's `.env`, then render:
 

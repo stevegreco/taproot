@@ -2,75 +2,75 @@
   "events": {
     "figma": 4.25,
     "code": 5.85,
-    "head": 8.81,
-    "parts": 23.25,
-    "options": 24.09,
-    "states": 24.93,
-    "tokens": 25.73,
-    "rules": 26.73,
-    "patterns": 30.65,
-    "guidelines": 31.57,
-    "examples": 32.17,
-    "levels": 38.73,
-    "cite": 41.57,
-    "checked": 43.93,
-    "search": 52.09,
-    "read": 53.45,
-    "emphasis": 57.53,
-    "label": 59.93,
-    "placement": 61.85,
-    "verified": 64.25,
-    "design": 66.33,
-    "libraries": 67.37,
-    "docs": 70.17,
-    "agents": 70.57
+    "head": 8.77,
+    "parts": 23.37,
+    "options": 24.21,
+    "states": 25.103,
+    "tokens": 25.983,
+    "rules": 26.97,
+    "patterns": 31.09,
+    "guidelines": 31.93,
+    "examples": 32.85,
+    "levels": 39.21,
+    "cite": 42.21,
+    "checked": 44.89,
+    "search": 52.65,
+    "read": 54.13,
+    "emphasis": 58.65,
+    "label": 60.73,
+    "placement": 62.65,
+    "verified": 65.13,
+    "design": 67.463,
+    "libraries": 68.25,
+    "docs": 70.93,
+    "agents": 71.29
   },
   "audioStart": 0.25,
-  "audioEnd": 76.81,
+  "audioEnd": 77.61,
   "sections": {
     "01-opening": {
       "start": 0.45,
       "end": 3.05
     },
     "02-scattered": {
-      "start": 3.61,
-      "end": 9.45
+      "start": 3.57,
+      "end": 9.37
     },
     "03-mistake": {
-      "start": 9.93,
-      "end": 17.29
+      "start": 10.117,
+      "end": 17.13
     },
     "04-spec": {
-      "start": 17.85,
-      "end": 27.45
+      "start": 17.77,
+      "end": 27.61
     },
     "05-links": {
-      "start": 27.89,
-      "end": 35.61
+      "start": 28.05,
+      "end": 35.93
     },
     "06-rules": {
-      "start": 36.09,
-      "end": 42.01
+      "start": 36.53,
+      "end": 42.81
     },
     "07-validate": {
-      "start": 42.53,
-      "end": 47.85
+      "start": 43.33,
+      "end": 48.73
     },
     "08-agent": {
-      "start": 48.41,
-      "end": 65.85
+      "start": 49.29,
+      "end": 66.65
     },
     "09-shared": {
-      "start": 66.33,
-      "end": 73.13
+      "start": 67.463,
+      "end": 74.01
     },
     "10-close": {
-      "start": 73.69,
-      "end": 76.57
+      "start": 74.77,
+      "end": 77.37
     }
   },
-  "fingerprint": "6bc637bfad8bfa7e3df6cb43b3820857b7b8e4175f8c1657024a1ab3f88bbd34",
+  "fingerprint": "eb3d91e4e2a2dd0eb9dd709f1a570ecf172a3659f65fb6746610cd5c29001ae0",
   "model": "eleven_v4",
-  "voice": "UgBBYS2sOqTuMpoF3BR0",
+  "voice": "Fahco4VZzobUeiPqni1S",
   "seed": 42
 }
