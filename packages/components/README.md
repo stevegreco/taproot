@@ -48,7 +48,7 @@ root for the barrel.
 ## Components
 
 Each component implements the technology-neutral contract in
-`packages/knowledge/content/components/<name>/<name>.spec.yaml`. The docs site
+`packages/spec/content/components/<name>/<name>.spec.yaml`. The docs site
 renders it at `/components/<name>`, with the live example from
 `apps/documentation/examples/<name>.tsx`.
 

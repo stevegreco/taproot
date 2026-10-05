@@ -25,7 +25,7 @@ const pascal = slug
   .split("-")
   .map((word) => word[0].toUpperCase() + word.slice(1))
   .join("");
-const specPath = `packages/knowledge/content/components/${slug}/${slug}.spec.yaml`;
+const specPath = `packages/spec/content/components/${slug}/${slug}.spec.yaml`;
 const read = (file) => {
   const full = path.join(root, file);
   return existsSync(full) ? readFileSync(full, "utf8") : null;
@@ -88,8 +88,8 @@ row(
 
 const specSource = read(specPath);
 if (specSource) {
-  const requireFromKnowledge = createRequire(path.join(root, "packages/knowledge/package.json"));
-  const { parse } = requireFromKnowledge("yaml");
+  const requireFromSpec = createRequire(path.join(root, "packages/spec/package.json"));
+  const { parse } = requireFromSpec("yaml");
   checklist(parse(specSource));
 }
 

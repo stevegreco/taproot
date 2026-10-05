@@ -95,6 +95,6 @@ Grouped by the file you are in.
 
 ## Commands
 
-- `pnpm knowledge validate` reports each spec mistake once, with file and line.
+- `pnpm spec validate` reports each spec mistake once, with file and line.
 - Several filters can run in one turbo command; each package builds once before its tests.
 - The docs tests build the docs site first, so they take longer than the others.

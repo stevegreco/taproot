@@ -26,7 +26,7 @@ only where a published component contract adds a useful customization boundary.
 - Use a primitive only when the semantic layer has no matching contract.
 - Component tokens must alias current primitive or semantic tokens; do not place independent values or stale paths in the component tier.
 - Component aliases are theme-independent; semantic tokens own theme selection and resolution.
-- Do not invent a component namespace for a component that does not publish one. A component has a component namespace only when `packages/tokens/src/tokens/components/<name>.tokens.json` exists and its knowledge record's `tokens` map references `component.<name>.*` tokens; every other component consumes semantic tokens directly.
+- Do not invent a component namespace for a component that does not publish one. A component has a component namespace only when `packages/tokens/src/tokens/components/<name>.tokens.json` exists and its spec record's `tokens` map references `component.<name>.*` tokens; every other component consumes semantic tokens directly.
 - Do not choose a token merely because its current resolved value looks right.
 
 ## Token Selection Workflow

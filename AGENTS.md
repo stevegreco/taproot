@@ -1,36 +1,37 @@
 # Agent guidance
 
-## Design system knowledge
+## Design system spec
 
-`packages/knowledge` is the source of truth for what each component is and how to use it. It is a
-technology-neutral contract: design and engineering agree on it before anyone builds. The format
-is defined in [`packages/knowledge/SPEC.md`](packages/knowledge/SPEC.md) and the reasoning is in
+`packages/spec` is the design system spec: the source of truth for what each component is and how
+to use it. It is a technology-neutral contract: design and engineering agree on it before anyone builds. The format
+is defined in [`packages/spec/SPEC.md`](packages/spec/SPEC.md) and the reasoning is in
 ADRs 0001 through 0003 in `docs/adr/` and
-[RFC 0002](docs/rfcs/0002-knowledge-layer-architecture.md).
+[RFC 0002](docs/rfcs/0002-knowledge-layer-architecture.md) (written when the spec was called the
+knowledge layer).
 
 **Query it** rather than reading files. From the repository root:
 
 ```bash
-pnpm knowledge search "destructive action"
-pnpm knowledge get component.button
-pnpm knowledge get component.button --impl web
-pnpm knowledge get pattern.action-hierarchy#assign-emphasis
-pnpm knowledge links component.button
-pnpm knowledge rules --level must --topic accessibility
-pnpm knowledge tokens component.button --condition "variant.primary + hover" --resolve
+pnpm spec search "destructive action"
+pnpm spec get component.button
+pnpm spec get component.button --impl web
+pnpm spec get pattern.action-hierarchy#assign-emphasis
+pnpm spec links component.button
+pnpm spec rules --level must --topic accessibility
+pnpm spec tokens component.button --condition "variant.primary + hover" --resolve
 ```
 
-Ids or plain names work (`pnpm knowledge get button`), a one-word search tolerates typos, the start
+Ids or plain names work (`pnpm spec get button`), a one-word search tolerates typos, the start
 of a name matches, and each search result names the command that reads it. Before writing markup,
 use `--impl web` for the package, element name, and the attribute that implements each parameter.
 Attribute names do not always follow parameter names (Button's `action` is the `type` attribute).
-Add `--json` for JSON. `pnpm knowledge list` lists every record. The same operations are available
-as tools, and each record as a `knowledge://<id>` resource, from the `design-system-knowledge` MCP
+Add `--json` for JSON. `pnpm spec list` lists every record. The same operations are available
+as tools, and each record as a `spec://<id>` resource, from the `design-system-spec` MCP
 server registered in `.mcp.json`.
 
-**Edit it** in `packages/knowledge/content/`. Components are `components/<name>/<name>.spec.yaml`.
+**Edit it** in `packages/spec/content/`. Components are `components/<name>/<name>.spec.yaml`.
 Patterns, guidelines, and examples are Markdown with front matter. There is no build step. Validate
-with `pnpm knowledge validate` or `pnpm --filter @stevegreco/design-system-knowledge test`.
+with `pnpm spec validate` or `pnpm --filter @stevegreco/design-system-spec test`.
 
 **What not to put in a spec.** No element, attribute, slot, framework, or CSS names, and no code.
 A spec says what a component is, not how any technology builds it. Token references are opaque
@@ -41,21 +42,21 @@ consistent in review.
 
 - The web components are hand-written in `packages/components`, with tests in
   `packages/components/test`.
-- The docs site builds a component page from the knowledge record plus
+- The docs site builds a component page from the spec record plus
   `apps/documentation/implementation/<name>.md` (package, tag name, usage, API table mapping web
   attributes, properties, and events to spec parameters and events, and web-specific guidance).
-  `knowledge.config.json` points the CLI at the same folder, so `get --impl web` serves it.
+  `spec.config.json` points the CLI at the same folder, so `get --impl web` serves it.
   Examples are in `apps/documentation/examples/`.
 - Storybook in `apps/storybook` has a story file per component in `stories/`. It is a workbench
   for exploring states and themes, not a source of usage guidance. Run it with
   `pnpm exec turbo run dev --filter=storybook` (port 6006).
 
-Before adding a component or variant, read `pnpm knowledge get guideline.compose-or-propose`, then
+Before adding a component or variant, read `pnpm spec get guideline.compose-or-propose`, then
 use the `create-component` skill in `.agents/skills/create-component/`. Record each option the
 component does not ship in the spec's `rationale`.
 
 Token decisions live in `packages/tokens/docs/adr/`. Do not place design system facts only in a
-documentation page or an agent skill. Those consume the knowledge records.
+documentation page or an agent skill. Those consume the spec.
 
 ## Build and test
 
@@ -73,7 +74,7 @@ From the repository root:
 
 ```bash
 pnpm exec turbo run build --filter=documentation
-pnpm exec turbo run test --filter=@stevegreco/design-system-knowledge
+pnpm exec turbo run test --filter=@stevegreco/design-system-spec
 pnpm exec turbo run dev --filter=documentation
 ```
 

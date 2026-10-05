@@ -1,6 +1,6 @@
 ---
 name: create-component
-description: Add a new web component to the Ember & Sage design system (a technology-neutral spec in packages/knowledge, the hand-written runtime and tests in packages/components, and the docs implementation file, example, and Verify steps in apps/documentation). Use when asked to build, add, or scaffold a component such as Icon, Checkbox, Field, Radio, or Switch, when finishing a partly built component, or when reviewing a component PR for completeness.
+description: Add a new web component to the Ember & Sage design system (a technology-neutral spec in packages/spec, the hand-written runtime and tests in packages/components, and the docs implementation file, example, and Verify steps in apps/documentation). Use when asked to build, add, or scaffold a component such as Icon, Checkbox, Field, Radio, or Switch, when finishing a partly built component, or when reviewing a component PR for completeness.
 ---
 
 # Create a component
@@ -24,7 +24,7 @@ fails.
 ### 1. Confirm the need
 
 ```bash
-pnpm knowledge get guideline.compose-or-propose
+pnpm spec get guideline.compose-or-propose
 ```
 
 Compose existing components where you can. Propose a new one only when the guideline says so.
@@ -53,9 +53,9 @@ no destination is text"), no visited styling, and placement as a variant rather 
 
 ### 3. Write the spec
 
-`packages/knowledge/content/components/<name>/<name>.spec.yaml`, copied from Checkbox so it keeps
+`packages/spec/content/components/<name>/<name>.spec.yaml`, copied from Checkbox so it keeps
 the `# yaml-language-server: $schema=...` header, which gives completion and inline errors. The
-format is in `packages/knowledge/SPEC.md`.
+format is in `packages/spec/SPEC.md`.
 
 - Technology-neutral. No element, attribute, slot, framework, or CSS names, and no code.
 - `id`, `title`, `summary`, `description`, `usage` (with `avoid` entries whose `instead` is a
@@ -65,7 +65,7 @@ format is in `packages/knowledge/SPEC.md`.
   `variant.primary + hover`) and each condition to properties and token references.
 - Link the component to the patterns and guidelines that apply.
 
-Check: `pnpm knowledge validate`.
+Check: `pnpm spec validate`.
 
 ### 4. Write the runtime
 
