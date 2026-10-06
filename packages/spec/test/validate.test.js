@@ -144,6 +144,20 @@ const cases = [
     path: "",
     message: "Map keys must be unique",
   },
+  {
+    name: "annotation-duplicate",
+    file: "demo.md",
+    line: 17,
+    path: "/annotations/1/id",
+    message: "annotation id `box` is already used by /annotations/0",
+  },
+  {
+    name: "annotation-heading",
+    file: "demo.md",
+    line: 17,
+    path: "/annotations/1/id",
+    message: 'annotation id `why-it-works` is also the address of the heading "Why it works"',
+  },
   { name: "yaml-syntax", file: "thing.md", line: 3, path: "", message: "Flow sequence" },
 ];
 

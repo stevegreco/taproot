@@ -104,20 +104,37 @@ function parameterValue(parameter, option, meaning) {
 
 function addHeadingSections(body, add) {
   const headings = fromMarkdown(body).children.filter((node) => node.type === "heading");
-  const used = new Map();
+  const slugs = headingSlugger();
   headings.forEach((heading, index) => {
     const title = plainText(heading).trim();
     const base = slugify(title);
     if (!base) return;
-    const count = used.get(base) ?? 0;
-    used.set(base, count + 1);
-    const slug = count === 0 ? base : `${base}-${count}`;
+    const slug = slugs(base);
     const next = headings.slice(index + 1).find((later) => later.depth <= heading.depth);
     const content = body
       .slice(heading.position.end.offset, next ? next.position.start.offset : body.length)
       .trim();
     add(slug, { title, content, kind: "heading", depth: heading.depth });
   });
+}
+
+/**
+ * Give each heading a slug no other heading in the record has, the way GitHub does: a repeated
+ * slug gets `-1`, `-2`, and so on, skipping any suffix an earlier heading already took. Headings
+ * `Foo`, `Foo`, and `Foo-1` are `foo`, `foo-1`, and `foo-1-1`.
+ */
+function headingSlugger() {
+  const taken = new Map();
+  return (base) => {
+    let slug = base;
+    while (taken.has(slug)) {
+      const count = taken.get(base) + 1;
+      taken.set(base, count);
+      slug = `${base}-${count}`;
+    }
+    taken.set(slug, 0);
+    return slug;
+  };
 }
 
 function plainText(node) {

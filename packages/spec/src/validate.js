@@ -74,7 +74,10 @@ export async function checkSources(sources) {
       checkParameters(record.data, report_);
       checkTokens(record.data, report_);
     }
-    if (record.data.type === "example") await checkAssets(record, report_);
+    if (record.data.type === "example") {
+      checkAnnotations(record, report_);
+      await checkAssets(record, report_);
+    }
   }
 
   issues.sort(compareIssues);
@@ -347,7 +350,33 @@ function conditionProblem(term, data, states) {
   return `\`${name}\` is not a declared parameter or preference`;
 }
 
-// --- Example assets ---
+// --- Examples ---
+
+/**
+ * An annotation's id is its section address, so it must not repeat another annotation's id or a
+ * heading's slug. Either collision would hide one of them from retrieval.
+ */
+function checkAnnotations(record, report) {
+  const first = new Map();
+  for (const [index, annotation] of (record.data.annotations ?? []).entries()) {
+    const pointer = `/annotations/${index}/id`;
+    if (first.has(annotation.id)) {
+      report({
+        path: pointer,
+        message: `annotation id \`${annotation.id}\` is already used by /annotations/${first.get(annotation.id)}`,
+      });
+      continue;
+    }
+    first.set(annotation.id, index);
+    const entry = record.sections.get(annotation.id);
+    if (entry?.kind === "heading") {
+      report({
+        path: pointer,
+        message: `annotation id \`${annotation.id}\` is also the address of the heading "${entry.title}"`,
+      });
+    }
+  }
+}
 
 async function checkAssets(record, report) {
   const directory = path.dirname(record.source.absolute);

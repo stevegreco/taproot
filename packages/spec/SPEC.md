@@ -259,11 +259,15 @@ A link target is a record ID, optionally followed by `#` and a section:
 
 - In a Markdown record, a section is a heading's slug: the heading text in lowercase, with
   punctuation removed and spaces replaced by hyphens. `## Assign emphasis` is `assign-emphasis`.
+  Every heading has its own slug. A slug an earlier heading already has gets `-1`, `-2`, and so on,
+  skipping any an earlier heading took, so headings `Foo`, `Foo`, and `Foo-1` are `foo`, `foo-1`,
+  and `foo-1-1`.
 - In a component record, a section is a rule ID, a top-level field (`usage`, `anatomy`,
   `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, or `events`,
   such as `parameters.variant` or `parameters.variant.danger`.
   A parameter value's section holds its meaning with the example and guidance paired with it.
-- In an example record, a section is also an annotation ID.
+- In an example record, a section is also an annotation ID. It must not repeat another annotation
+  ID or a heading's slug.
 
 ## Cross-record checks
 
@@ -272,6 +276,7 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Every ID is unique, and each ID's prefix equals its `type`.
 - Every link target, `instead` record ID, and reference resolves to a record, and its section, if
   any, exists.
+- Annotation IDs are unique within an example, and none is also a heading's slug.
 - Rule IDs are unique within a record, and do not collide with a top-level field name.
 - An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`.
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum

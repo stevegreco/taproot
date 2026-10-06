@@ -93,6 +93,19 @@ describe("section", () => {
     expect(valid.section("component.thing#anatomy.control").title).toBe("control");
   });
 
+  it("gives every heading its own address, even when a slug repeats", () => {
+    const sections = buildSections(
+      { type: "pattern" },
+      "## Foo\n\nA.\n\n## Foo\n\nB.\n\n## Foo-1\n\nC.\n\n## Foo\n\nD.",
+    );
+    expect([...sections].map(([address, entry]) => [address, entry.content])).toEqual([
+      ["foo", "A."],
+      ["foo-1", "B."],
+      ["foo-1-1", "C."],
+      ["foo-2", "D."],
+    ]);
+  });
+
   it("returns a parameter value with only its meaning when nothing is paired with it", () => {
     const sections = buildSections(
       { type: "component", parameters: { tone: { kind: "enum", values: { calm: "Quiet." } } } },
