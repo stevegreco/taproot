@@ -49,6 +49,9 @@ spec.get("component.button"); // the whole record, frozen
 
 spec.section("pattern.action-hierarchy#assign-emphasis"); // heading, rule, field, or annotation
 spec.section("component.button#label-describes-result");
+spec.section("component.button#parameters.variant.danger");
+// An enum value's content is { meaning, example?, guidance? }: its meaning, with the example and
+// guidance section the parameter pairs with it.
 
 spec.search("destructive action", { type: "pattern", tags: ["action"], limit: 5 });
 // [{ id, type, title, summary, tags, status, score, matches }], best first. Hits scoring below a

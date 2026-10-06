@@ -37,6 +37,9 @@ Breaking. The package is now a library over the authored files, and the record f
 - `rules`, in the CLI and MCP server, prints the `applicability` of a conditional rule under it, and
   ends with a line naming the `get <address>` call that reads a rule's rationale, references, and
   examples.
+- `section()` of an enum parameter value, such as `component.button#parameters.variant.danger`,
+  returns `{ meaning, example?, guidance? }` instead of the meaning string, and `get` renders the
+  example and guidance with it.
 - Removed the `build`, `prepack`, and `clean` scripts, and the dependencies `@stevegreco/design-system`,
   `js-yaml`, `parse5`, and `unist-util-visit`.
 

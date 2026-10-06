@@ -79,6 +79,15 @@ describe("render", () => {
     expect(valid.render("example.guide.demo#box")).toContain("## The box\n\nIt is a box.");
   });
 
+  it("renders a parameter value with its paired example and guidance", () => {
+    expect(valid.render("component.thing#parameters.tone.calm")).toBe(
+      "## calm\n\nQuiet.\n\nExample: Hush\n",
+    );
+    expect(valid.render("component.thing#parameters.tone.loud")).toBe(
+      "## loud\n\nNoisy.\n\nGuidance: [Guide](pattern.guide#second-step)\n",
+    );
+  });
+
   it("is deterministic across renders and loads", async () => {
     const again = await loadSpec({ contentDir: fixture("valid") });
     expect(valid.render("component.other")).toBe(valid.render("component.other"));

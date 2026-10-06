@@ -84,6 +84,14 @@ describe("ds-spec CLI, real content", () => {
     );
   });
 
+  it("gets a parameter value with its example and guidance", () => {
+    const r = cli(["get", "component.button#parameters.variant.danger"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("Destructive or difficult-to-reverse action.");
+    expect(r.out).toContain("Example: Delete project");
+    expect(r.out).toContain("Guidance: [Action hierarchy](pattern.action-hierarchy#danger)");
+  });
+
   it("resolves tokens for light and dark", () => {
     const r = cli([
       "tokens",

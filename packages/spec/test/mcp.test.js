@@ -115,6 +115,12 @@ describe("spec MCP server", () => {
       arguments: { id: "component.checkbox#form-value" },
     });
     expect(text(conditional)).toContain("  - Applies when: Hosts that implement form association.");
+    const value = await client.callTool({
+      name: "get",
+      arguments: { target: "component.button#parameters.variant.danger" },
+    });
+    expect(text(value)).toContain("Example: Delete project");
+    expect(text(value)).toContain("Guidance: [Action hierarchy](pattern.action-hierarchy#danger)");
     const links = await client.callTool({ name: "links", arguments: { id: "component.link" } });
     expect(text(links)).toContain("## alternative");
     const validated = await client.callTool({ name: "validate", arguments: {} });

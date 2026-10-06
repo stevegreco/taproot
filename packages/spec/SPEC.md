@@ -262,6 +262,7 @@ A link target is a record ID, optionally followed by `#` and a section:
 - In a component record, a section is a rule ID, a top-level field (`usage`, `anatomy`,
   `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, or `events`,
   such as `parameters.variant` or `parameters.variant.danger`.
+  A parameter value's section holds its meaning with the example and guidance paired with it.
 - In an example record, a section is also an annotation ID.
 
 ## Cross-record checks

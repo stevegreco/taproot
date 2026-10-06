@@ -102,6 +102,15 @@ function referenceText(state, target) {
 function renderSection(state, record, name, entry) {
   if (entry.kind === "heading") return [`${"#".repeat(entry.depth)} ${entry.title}`, entry.content];
   if (entry.kind === "rule") return [ruleLine(entry.content)];
+  if (entry.kind === "value") {
+    const { meaning, example, guidance } = entry.content;
+    return [
+      `## ${entry.title}`,
+      meaning,
+      example && `Example: ${example}`,
+      guidance && `Guidance: ${referenceText(state, guidance)}`,
+    ];
+  }
   if (entry.kind === "annotation") {
     const { description, references = [] } = entry.content;
     return [
