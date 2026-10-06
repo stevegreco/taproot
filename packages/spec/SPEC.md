@@ -235,11 +235,13 @@ kind:
 | `alternative` | derived             | Use the target instead in a named situation          | `alternative-to` |
 | `composes`    | component           | This component is built from the target component    | `used-in`        |
 | `follows`     | any record          | This record applies the target pattern or guideline  | `followed-by`    |
-| `example-of`  | example             | This example demonstrates the target                 | `examples`       |
+| `example-of`  | example             | This example demonstrates the target component, pattern, or guideline | `examples` |
 | `related`     | any record          | Worth reading together, with no stronger claim       | `related`        |
 
 Write each link once, on one side. Tools add the inverse, so a component lists its examples
-without naming them.
+without naming them. A `composes` link goes from a component to a component, a `follows` link
+points at a pattern or a guideline, and an `example-of` link goes from an example to a component,
+pattern, or guideline. `related` links any two records.
 
 Some links come from fields rather than from `links`:
 
@@ -276,6 +278,8 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Every ID is unique, and each ID's prefix equals its `type`.
 - Every link target, `instead` record ID, and reference resolves to a record, and its section, if
   any, exists.
+- Each `links` kind is written on a record type it describes and points at a record type it allows:
+  see [Links](#links). An enum parameter's `guidance` points at a pattern or a guideline.
 - Annotation IDs are unique within an example, and none is also a heading's slug.
 - Rule IDs are unique within a record, and do not collide with a top-level field name.
 - An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`.

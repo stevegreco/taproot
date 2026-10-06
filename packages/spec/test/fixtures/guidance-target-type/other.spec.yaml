@@ -1,0 +1,12 @@
+id: component.other
+type: component
+title: Other
+summary: Use Other for testing.
+description: Another test component.
+usage:
+  do:
+    - Test other things.
+anatomy:
+  control:
+    role: interactive-surface
+    description: The control.
