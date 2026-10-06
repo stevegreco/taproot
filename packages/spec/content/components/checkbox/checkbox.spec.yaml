@@ -238,6 +238,29 @@ tokens:
       border: semantic.color.border.disabled
     invalid:
       border: semantic.color.border.status.danger.default
+    checked + hover:
+      background: semantic.color.background.action.primary.default
+      border: semantic.color.border.action.primary.default
+    indeterminate + hover:
+      background: semantic.color.background.action.primary.default
+      border: semantic.color.border.action.primary.default
+    invalid + hover:
+      border: semantic.color.border.status.danger.default
+    checked + invalid:
+      background: semantic.color.background.action.primary.default
+      border: semantic.color.border.status.danger.default
+    indeterminate + invalid:
+      background: semantic.color.background.action.primary.default
+      border: semantic.color.border.status.danger.default
+    checked + disabled:
+      background: semantic.color.background.disabled
+      border: semantic.color.border.disabled
+    indeterminate + disabled:
+      background: semantic.color.background.disabled
+      border: semantic.color.border.disabled
+    invalid + disabled:
+      background: semantic.color.background.disabled
+      border: semantic.color.border.disabled
   indicator:
     base:
       foreground: semantic.color.foreground.on.action.primary
@@ -279,16 +302,23 @@ rationale:
       primitives.radius.xs. No component-token namespace.
   - decision: Checked and indeterminate are states driven by their parameters.
     why: >-
-      They change the same box fill, and indeterminate wins over checked. As states, their order
-      says so. As two boolean axes they would assign the fill in overlapping rules.
+      They paint the box the same way and differ only in the indicator. When both are set, the box
+      is indeterminate: it shows the dash, not the check mark, until activation clears
+      indeterminate.
   - decision: A checked or indeterminate box does not change on hover.
     why: >-
-      Checked and indeterminate come before hover, so their border wins, and the indicator already
-      confirms the state. Hover strengthens the unchecked border only.
-  - decision: Disabled overrides checked and indeterminate fills, not the indicator.
+      The filled box and its indicator already confirm the state. Hover strengthens the border of
+      an unchecked, valid box only. The checked + hover and indeterminate + hover conditions keep
+      the checked colors.
+  - decision: An invalid box keeps its danger border on hover and when checked.
     why: >-
-      Disabled comes first and sets every box channel, so a disabled box uses disabled colors in
-      every state. The indicator shape still shows whether it is checked.
+      The danger border is the visual link to the error message, so hover does not replace it. A
+      checked or indeterminate invalid box keeps the primary fill with a danger border, so it shows
+      both its value and its error.
+  - decision: Disabled replaces checked, indeterminate, and invalid colors, but not the indicator.
+    why: >-
+      A disabled box uses disabled fill and border in every combination, and the indicator uses the
+      disabled foreground. The indicator shape still shows whether it is checked or indeterminate.
   - decision: Label, hint, and error belong to the checkbox.
     why: >-
       Same decision as Text field. A separate field shell does not exist yet. Association stays on
