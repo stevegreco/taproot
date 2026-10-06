@@ -25,7 +25,7 @@ usage:
 anatomy:
   control:
     role: interactive-surface
-    description: Native link that owns the destination and focus.
+    description: Owns the destination and focus.
   content:
     role: label
     description: Link text with an optional decorative icon.
@@ -71,12 +71,12 @@ rules:
     statement: Apply the action hierarchy pattern to choose between Link and Button.
     references:
       - pattern.action-hierarchy#choose-button-or-link
-  - id: native-navigation
+  - id: platform-navigation
     level: must
     topic: behavior
     statement: >-
-      Activation navigates like a native link, including opening in a new tab or window from browser
-      controls.
+      Activation navigates the way the platform's own links do, including every way the platform
+      offers to open a destination elsewhere, such as a new tab or window.
   - id: inline-underline
     level: must
     topic: behavior
@@ -147,5 +147,5 @@ rationale:
       when it shows.
   - decision: Link has no visited or disabled styling.
     why: >-
-      Browsers limit visited styling to color and no semantic visited role exists. A link with no
+      Platforms often limit visited styling to color, and no semantic visited role exists. A link with no
       destination is text.

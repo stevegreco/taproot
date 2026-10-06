@@ -19,7 +19,7 @@ usage:
       why: Badge is not interactive and does not communicate an available action.
     - situation: Navigate to another location.
       instead: component.link
-      why: Links provide native navigation semantics.
+      why: A link carries a destination that people can open, copy, or share.
     - situation: Announce a live status change by itself.
       instead: a live region in the surrounding page
       why: Badge sets no live-region role.

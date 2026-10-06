@@ -141,8 +141,8 @@ rules:
   - id: form-value
     level: should
     topic: behavior
-    statement: The value participates in form submit and reset when the host supports form association.
-    applicability: Hosts that implement form association.
+    statement: The value submits with its form under the name, and reset restores the initial value.
+    applicability: The field belongs to a form.
   - id: a11y-visible-label
     level: must
     topic: accessibility

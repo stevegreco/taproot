@@ -127,7 +127,7 @@ rules:
     level: should
     topic: behavior
     statement: The selected available choice submits under the name, and reset restores the initial selection. Disabled choices and groups submit nothing.
-    applicability: Hosts that implement form association.
+    applicability: The field belongs to a form.
   - id: a11y-visible-label
     level: must
     topic: accessibility

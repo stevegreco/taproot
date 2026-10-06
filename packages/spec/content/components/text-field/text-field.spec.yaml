@@ -72,13 +72,13 @@ parameters:
     description: Form field name. The value is submitted under this name.
   value:
     kind: string
-    description: Current value. The attribute sets the initial value.
+    description: Current value. The value given at creation is the initial value that reset restores.
   placeholder:
     kind: string
     description: Example text shown when the value is empty. Not a replacement for the label.
   autocomplete:
     kind: string
-    description: Hint for the browser autofill, such as email.
+    description: Guidance for automatic filling from previously supplied information, such as email.
   disabled:
     kind: boolean
     default: false
@@ -135,8 +135,8 @@ rules:
   - id: form-value
     level: should
     topic: behavior
-    statement: The value participates in form submit and reset when the host supports form association.
-    applicability: Hosts that implement form association.
+    statement: The value submits with its form under the name, and reset restores the initial value.
+    applicability: The field belongs to a form.
   - id: a11y-visible-label
     level: must
     topic: accessibility

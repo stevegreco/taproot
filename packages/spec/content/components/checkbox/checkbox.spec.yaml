@@ -40,7 +40,7 @@ anatomy:
     description: Box and label side by side. The whole row is the click target.
   control:
     role: interactive-surface
-    description: The box. A native checkbox that owns checked state and focus.
+    description: The box. Owns checked state and focus.
   indicator:
     role: indicator
     description: >-
@@ -70,7 +70,7 @@ parameters:
   checked:
     kind: boolean
     default: false
-    description: Whether the option is on. The attribute sets the initial state; form reset restores it.
+    description: Whether the option is on. The value given at creation is the initial state that reset restores.
   indeterminate:
     kind: boolean
     default: false
@@ -82,7 +82,7 @@ parameters:
     description: Form field name. The value is submitted under this name when checked.
   value:
     kind: string
-    description: Value submitted when checked. Defaults to "on", as for a native checkbox.
+    description: Value submitted when checked. Defaults to "on".
   disabled:
     kind: boolean
     default: false
@@ -141,9 +141,7 @@ rules:
   - id: indeterminate-clears-on-activate
     level: must
     topic: behavior
-    statement: >-
-      Activating an indeterminate checkbox clears indeterminate and toggles checked, as a native
-      checkbox does.
+    statement: Activating an indeterminate checkbox clears indeterminate and toggles checked.
   - id: indeterminate-not-a-value
     level: must
     topic: behavior
@@ -170,7 +168,7 @@ rules:
     statement: >-
       When checked, the value submits under the name. Unchecked submits nothing. Reset restores the
       initial checked state and clears indeterminate.
-    applicability: Hosts that implement form association.
+    applicability: The checkbox belongs to a form.
   - id: a11y-visible-label
     level: must
     topic: accessibility
@@ -329,17 +327,18 @@ rationale:
       geometry, not a token channel. The label row is the click target, so compact layouts change
       spacing around the checkbox, not the checkbox. Activation commits on release, so there is no
       separate pressed styling.
-  - decision: No icon-only or unlabeled checkbox.
+  - decision: No icon-only, unlabeled, or visually hidden label.
     why: >-
-      The visible label is the accessible name and part of the click target. A checkbox in a table
-      row still gets a label; hiding it visually is the consumer's choice.
+      The visible label is the accessible name and part of the click target, so every checkbox
+      shows it, including one in a table row. Selecting rows with a checkbox whose label is not
+      shown needs a row-selection pattern, which does not exist yet.
   - decision: No loading state, nothing mirrors under right-to-left, and no animation.
     why: >-
       Toggling is local until submit, so there is no work to wait on; settings that save immediately
       belong to Switch. The check mark and dash are not directional, and box and label order follows
       the inline direction. State changes swap colors and the indicator instantly, so there is
-      nothing to reduce under prefers-reduced-motion.
+      nothing to reduce under a reduced-motion preference.
   - decision: Checkbox groups are not part of this component.
     why: >-
-      Group a list with a native fieldset and legend. A group-level label and error belong to a
-      field shell.
+      Group a list under a visible group label that names the set. A group-level label and error
+      belong to a field shell.

@@ -102,7 +102,7 @@ describe("DsLink", () => {
     await userEvent.unhover(anchor);
   });
 
-  test("[native-navigation] activating the anchor navigates natively", () => {
+  test("[platform-navigation] activating the anchor navigates natively", () => {
     const link = render(`<${tagName} href="#ds-link-target">Jump</${tagName}>`);
     let clicks = 0;
     link.addEventListener("click", () => {
