@@ -10,7 +10,7 @@ export function Mistake() {
     <Chapter
       number="02"
       name="The gap"
-      title="A plausible answer can still be wrong."
+      title="A good guess can still be wrong."
       align="start"
     >
       <div
@@ -46,7 +46,7 @@ export function Mistake() {
               color: color.rustDeep,
             }}
           >
-            It looks right. It misses the point.
+            It looks right. But it isn’t.
           </div>
         </div>
         <ProjectCard style={{ opacity: ease(frame, 30) }} />

@@ -1,75 +1,83 @@
 {
   "events": {
-    "figma": 4.25,
-    "code": 5.85,
-    "head": 8.77,
-    "parts": 23.37,
-    "options": 24.21,
-    "states": 25.103,
-    "tokens": 25.983,
-    "rules": 26.97,
-    "patterns": 31.09,
-    "guidelines": 31.93,
-    "examples": 32.85,
-    "levels": 39.21,
-    "cite": 42.21,
-    "checked": 44.89,
-    "search": 52.65,
-    "read": 54.13,
-    "emphasis": 58.65,
-    "label": 60.73,
-    "placement": 62.65,
-    "verified": 65.13,
-    "design": 67.463,
-    "libraries": 68.25,
-    "docs": 70.93,
-    "agents": 71.29
+    "figma": 7.65,
+    "code": 9.85,
+    "head": 13.37,
+    "parts": 32.97,
+    "options": 33.89,
+    "states": 35.13,
+    "tokens": 37.29,
+    "rules": 39.61,
+    "patterns": 44.65,
+    "guidelines": 46.01,
+    "examples": 47.73,
+    "levels": 53.45,
+    "cite": 57.65,
+    "checked": 59.93,
+    "search": 70.29,
+    "read": 71.77,
+    "emphasis": 74.57,
+    "label": 78.33,
+    "placement": 81.45,
+    "verified": 84.65,
+    "scan": 90.49,
+    "must": 94.53,
+    "should": 96.17,
+    "which": 97.85,
+    "design": 102.13,
+    "libraries": 103.13,
+    "docs": 104.37,
+    "agents": 104.65
   },
   "audioStart": 0.25,
-  "audioEnd": 77.61,
+  "audioEnd": 115.05,
   "sections": {
     "01-opening": {
-      "start": 0.45,
-      "end": 3.05
+      "start": 0.33,
+      "end": 4.89
     },
     "02-scattered": {
-      "start": 3.57,
-      "end": 9.37
+      "start": 5.45,
+      "end": 14.01
     },
     "03-mistake": {
-      "start": 10.117,
-      "end": 17.13
+      "start": 14.57,
+      "end": 23.29
     },
     "04-spec": {
-      "start": 17.77,
-      "end": 27.61
+      "start": 23.93,
+      "end": 41.05
     },
     "05-links": {
-      "start": 28.05,
-      "end": 35.93
+      "start": 41.77,
+      "end": 50.73
     },
     "06-rules": {
-      "start": 36.53,
-      "end": 42.81
+      "start": 51.45,
+      "end": 58.81
     },
     "07-validate": {
-      "start": 43.33,
-      "end": 48.73
+      "start": 59.33,
+      "end": 63.53
     },
     "08-agent": {
-      "start": 49.29,
-      "end": 66.65
+      "start": 64.21000000000001,
+      "end": 86.17
     },
-    "09-shared": {
-      "start": 67.463,
-      "end": 74.01
+    "09-audit": {
+      "start": 86.81,
+      "end": 101.29
     },
-    "10-close": {
-      "start": 74.77,
-      "end": 77.37
+    "10-shared": {
+      "start": 102.13,
+      "end": 109.69
+    },
+    "11-close": {
+      "start": 110.33,
+      "end": 114.81
     }
   },
-  "fingerprint": "eb3d91e4e2a2dd0eb9dd709f1a570ecf172a3659f65fb6746610cd5c29001ae0",
+  "fingerprint": "e94d01ca06d5fb3fb7f5be1ad5e8d9e2f8f39dbd12a6464063c1aa5f523555b7",
   "model": "eleven_v4",
   "voice": "Fahco4VZzobUeiPqni1S",
   "seed": 42

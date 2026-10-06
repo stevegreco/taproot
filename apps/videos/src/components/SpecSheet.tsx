@@ -97,7 +97,7 @@ export function SpecSheet({ cues }: { cues: Record<string, number> }) {
             opacity: ease(frame, starts[0] - 24),
           }}
         >
-          Contract · no implementation code
+          Plain language · no code
         </div>
       </div>
       {sections.map(({ key, label, body }, i) => {

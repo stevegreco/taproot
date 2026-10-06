@@ -21,9 +21,9 @@ export function Close() {
             maxWidth: 1400,
           }}
         >
-          Give agents the rules
+          Write the reasons down once.
           <br />
-          behind the components.
+          Everyone can follow them.
         </div>
         <div
           style={{

@@ -3,6 +3,7 @@ import { linearTiming, TransitionSeries } from "@remotion/transitions";
 import { AbsoluteFill, staticFile, useVideoConfig } from "remotion";
 import { dip } from "./components/dip";
 import { AgentReady } from "./scenes/AgentReady";
+import { Audit } from "./scenes/Audit";
 import { Checks } from "./scenes/Checks";
 import { Close } from "./scenes/Close";
 import { Contract } from "./scenes/Contract";
@@ -19,7 +20,7 @@ export { TOTAL_DURATION } from "./timeline";
 
 // The architecture shift, in under a minute and a half: many sources of truth, an agent that
 // guesses, the rules written down once as a spec, the same request answered by an agent that cites
-// each rule, and every other output reading from that spec.
+// each rule, the same rules reviewing an existing screen, and every other output reading from that spec.
 // One scene per narration section. Durations come from the voiceover in timeline.ts, so they stay
 // in sync when the take is regenerated; each scene is also registered on its own in Root.tsx.
 export function SpecExplainer() {
@@ -95,6 +96,14 @@ export function SpecExplainer() {
           premountFor={fps}
         >
           <AgentReady />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Audit"
+          durationInFrames={SCENES.audit.duration}
+          premountFor={fps}
+        >
+          <Audit />
         </TransitionSeries.Sequence>
         {change()}
         <TransitionSeries.Sequence

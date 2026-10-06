@@ -4,22 +4,25 @@ Archer performs the complete script in one Eleven v4 request, so the delivery ca
 Playback splits the take only between sections, halfway through each natural pause, and adds that
 section's `hold` of silence so the picture has time to land. The take is never cut mid-sentence.
 
-Eleven v4 has no SSML breaks. Tone comes from audio tags (`[warm]`, `[thoughtful]`, `[curious]`,
-`[confident]`, and an inline `[sighs]`), and pacing from ellipses and short sentences: "The parts.
-The options. The states." Tags in the script are directions, not speech; cue matching skips them.
+Eleven v4 has no SSML breaks. One `[warm]` tag on the opening line sets the tone for the whole take;
+the other sections carry no tags, so the voice keeps one consistent mood instead of switching
+between scenes. Pacing comes from ellipses and short sentences. The script is written for viewers
+new to design systems: plain words, no internal names, and spoken to the viewer. Tags are
+directions, not speech; cue matching skips them.
 
 | Section | Take time | Hold | Script |
 | --- | --- | --- | --- |
-| 01-opening | 0.45s | 0.4s | [warm] AI is changing who reads your design system. |
-| 02-scattered | 3.61s | 0.6s | The visuals are in Figma... the behavior's in code... and the reasons behind it? Those are in someone's head. |
-| 03-mistake | 9.93s | 1.0s | [thoughtful] People fill in those gaps without thinking. An agent can't. It builds something that looks right... [sighs] but misses the point. |
-| 04-spec | 17.85s | 0.6s | [confident] That's where a component spec comes in. It's a contract, written once, with no code in it. The parts. The options. The states. The tokens. And the rules. |
-| 05-links | 27.89s | 0.6s | And it doesn't stand alone. Each component links to the patterns, guidelines, and examples around it... so the reasons travel with the rules. |
-| 06-rules | 36.09s | 0.5s | Every rule gets an address, and a level, like must or should. So an agent can look it up... and cite it. |
-| 07-validate | 42.53s | 0.6s | It's all checked, too. Every link, every reference... so the spec stays true as it grows. |
-| 08-agent | 48.41s | 1.2s | [curious] So what happens when you ask an agent to add a delete action? It searches the spec, and reads Button and the action hierarchy pattern. Then it decides. Danger, because it's destructive. A label that names the result. A place apart from routine actions. [confident] Every choice cites a rule. |
-| 09-shared | 66.33s | 0.6s | [warm] Design tools and component libraries build from the same spec. Docs and agents read it, through a CLI and MCP. |
-| 10-close | 73.69s | 0s | So... give agents the rules behind the components. |
+| 01-opening | 0.33s | 0.4s | [warm] Your design system has a new kind of reader... and it isn't a person. |
+| 02-scattered | 5.45s | 0.6s | Today, how a button looks lives in Figma. How it works lives in code. And why it works that way? That's usually in someone's head. |
+| 03-mistake | 14.57s | 1s | A new teammate would just ask around. An AI assistant can't. So it guesses... and you get something that looks right, but isn't. |
+| 04-spec | 23.93s | 0.6s | A spec fixes that. Think of it as the instructions that come with every component, written in plain language instead of code. It spells out what a component is made of, what it can do, every state it can be in, the exact colors and sizes it uses... and the rules for using it well. |
+| 05-links | 41.77s | 0.6s | Each component also points to the bigger picture: the patterns it follows, the guidelines behind it, and real examples. So the why never gets lost. |
+| 06-rules | 51.45s | 0.5s | Every rule is labeled, too. Must, or should. So an assistant can find the exact rule... and tell you which one it followed. |
+| 07-validate | 59.33s | 0.6s | And it's all checked automatically, so nothing goes stale as the system grows. |
+| 08-agent | 64.21s | 1.2s | So let's watch it work. You ask an assistant to add a delete button. Instead of guessing, it looks things up first, and reads the rules for buttons. It marks the button as dangerous, because deleting can't be undone. It says Delete project, not just Remove. And it keeps it apart from the everyday buttons. Every choice is backed by a rule you can check. |
+| 09-audit | 86.81s | 0.8s | It works on what you already have, too. Point an assistant at an existing screen, and it checks it against the same rules. It flags what breaks a must, notes what misses a should... and tells you exactly which rule, so a review isn't a matter of opinion. |
+| 10-shared | 102.13s | 0.6s | Design tools, component libraries, docs, and AI assistants all work from the same source... so everyone builds the same thing. |
+| 11-close | 110.33s | 0s | Write the reasons down once. Then everyone, and everything, can follow them. |
 
 ## Regeneration
 

@@ -4,93 +4,101 @@ export const MODEL_ID = "eleven_v4";
 export const NARRATION_SEED = 42;
 export const AUDIO_START = 0.25;
 
-// Eleven v4 has no SSML breaks. Delivery comes from audio tags, ellipses, and short sentences.
-// `delivery` opens a section with a tag; inline tags such as [sighs] sit inside `text`.
+// Eleven v4 has no SSML breaks. Delivery comes from one tag that sets the tone for the whole take,
+// ellipses, and short sentences. Keep a single `delivery` on the opening line: a tag on every section
+// makes the voice change mood between scenes and sound performed.
 // `hold` is silence, in seconds, added after a section so the picture can land. The take itself
 // is never cut mid-sentence; playback is split only between sections.
+// Write for someone new to design systems: plain words, no internal names, and talk to the viewer.
 export const narration = [
   {
     id: "01-opening",
     delivery: "warm",
-    text: "AI is changing who reads your design system.",
+    text: "Your design system has a new kind of reader... and it isn't a person.",
     hold: 0.4,
   },
   {
     id: "02-scattered",
-    text: "The visuals are in Figma... the behavior's in code... and the reasons behind it? Those are in someone's head.",
+    text: "Today, how a button looks lives in Figma. How it works lives in code. And why it works that way? That's usually in someone's head.",
     hold: 0.6,
   },
   {
     id: "03-mistake",
-    delivery: "thoughtful",
-    text: "People fill in those gaps without thinking. An agent can't. It builds something that looks right... [sighs] but misses the point.",
+    text: "A new teammate would just ask around. An AI assistant can't. So it guesses... and you get something that looks right, but isn't.",
     hold: 1.0,
   },
   {
     id: "04-spec",
-    delivery: "confident",
-    text: "That's where a component spec comes in. It's a contract, written once, with no code in it. The parts. The options. The states. The tokens. And the rules.",
+    text: "A spec fixes that. Think of it as the instructions that come with every component, written in plain language instead of code. It spells out what a component is made of, what it can do, every state it can be in, the exact colors and sizes it uses... and the rules for using it well.",
     hold: 0.6,
   },
   {
     id: "05-links",
-    text: "And it doesn't stand alone. Each component links to the patterns, guidelines, and examples around it... so the reasons travel with the rules.",
+    text: "Each component also points to the bigger picture: the patterns it follows, the guidelines behind it, and real examples. So the why never gets lost.",
     hold: 0.6,
   },
   {
     id: "06-rules",
-    text: "Every rule gets an address, and a level, like must or should. So an agent can look it up... and cite it.",
+    text: "Every rule is labeled, too. Must, or should. So an assistant can find the exact rule... and tell you which one it followed.",
     hold: 0.5,
   },
   {
     id: "07-validate",
-    text: "It's all checked, too. Every link, every reference... so the spec stays true as it grows.",
+    text: "And it's all checked automatically, so nothing goes stale as the system grows.",
     hold: 0.6,
   },
   {
     id: "08-agent",
-    delivery: "curious",
-    text: "So what happens when you ask an agent to add a delete action? It searches the spec, and reads Button and the action hierarchy pattern. Then it decides. Danger, because it's destructive. A label that names the result. A place apart from routine actions. [confident] Every choice cites a rule.",
+    text: "So let's watch it work. You ask an assistant to add a delete button. Instead of guessing, it looks things up first, and reads the rules for buttons. It marks the button as dangerous, because deleting can't be undone. It says Delete project, not just Remove. And it keeps it apart from the everyday buttons. Every choice is backed by a rule you can check.",
     hold: 1.2,
   },
   {
-    id: "09-shared",
-    delivery: "warm",
-    text: "Design tools and component libraries build from the same spec. Docs and agents read it, through a CLI and MCP.",
+    id: "09-audit",
+    text: "It works on what you already have, too. Point an assistant at an existing screen, and it checks it against the same rules. It flags what breaks a must, notes what misses a should... and tells you exactly which rule, so a review isn't a matter of opinion.",
+    hold: 0.8,
+  },
+  {
+    id: "10-shared",
+    text: "Design tools, component libraries, docs, and AI assistants all work from the same source... so everyone builds the same thing.",
     hold: 0.6,
   },
   {
-    id: "10-close",
-    text: "So... give agents the rules behind the components.",
+    id: "11-close",
+    text: "Write the reasons down once. Then everyone, and everything, can follow them.",
     hold: 0,
   },
 ] as const;
 
 // Phrases that move the picture: scattered sources, spec sections, links, the agent's steps and
-// decisions, and the rules reaching each output.
+// decisions, and the rules reaching each output. Each phrase matches its first occurrence in the
+// take, so keep it unique.
 export const narrationCues = {
   figma: "in Figma",
   code: "in code",
   head: "someone's head",
-  parts: "The parts",
-  options: "The options",
-  states: "The states",
-  tokens: "The tokens",
-  rules: "And the rules",
-  patterns: "the patterns",
-  guidelines: "guidelines",
-  examples: "examples around it",
-  levels: "must or should",
-  cite: "and cite it",
-  checked: "Every link, every reference",
-  search: "It searches the spec",
-  read: "reads Button",
-  emphasis: "Danger, because",
-  label: "A label that names",
-  placement: "A place apart",
-  verified: "Every choice cites a rule",
+  parts: "is made of",
+  options: "what it can do",
+  states: "every state",
+  tokens: "colors and sizes",
+  rules: "the rules for using",
+  patterns: "the patterns it follows",
+  guidelines: "the guidelines behind",
+  examples: "real examples",
+  levels: "Must, or should",
+  cite: "tell you which",
+  checked: "checked automatically",
+  search: "looks things up",
+  read: "reads the rules",
+  emphasis: "as dangerous",
+  label: "Delete project",
+  placement: "apart from",
+  verified: "backed by a rule",
+  scan: "existing screen",
+  must: "breaks a must",
+  should: "misses a should",
+  which: "exactly which rule",
   design: "Design tools",
   libraries: "component libraries",
-  docs: "Docs and agents",
-  agents: "agents read it",
+  docs: "docs, and",
+  agents: "and AI assistants",
 } as const;

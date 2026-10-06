@@ -24,17 +24,17 @@ const calls = [
 // Each decision and the rule addresses it cites.
 const decisions = [
   {
-    title: "Danger, because it is destructive",
+    title: "Marked dangerous: it can’t be undone",
     cites: ["MUST component.button#danger-for-destructive"],
     cue: AGENT_CUES.emphasis,
   },
   {
-    title: "A label that names the result",
+    title: "Says what happens: “Delete project”",
     cites: ["MUST component.button#label-describes-result"],
     cue: AGENT_CUES.label,
   },
   {
-    title: "A place apart from routine actions",
+    title: "Kept apart from everyday actions",
     cites: [
       "SHOULD component.button#follow-action-hierarchy",
       "→ pattern.action-hierarchy#separate-unrelated-decisions",
@@ -58,7 +58,7 @@ export function AgentReady() {
   const lift = ease(frame, 18, 24);
   const log = ease(frame, AGENT_CUES.search - 12, 10);
   return (
-    <Chapter number="07" name="Agent ready" title="The agent asks first." align="start">
+    <Chapter number="07" name="In action" title="It looks things up first." align="start">
       <div
         style={{
           display: "grid",
@@ -101,7 +101,7 @@ export function AgentReady() {
               fontWeight: 600,
             }}
           >
-            ✓ Every choice cites a rule.
+            ✓ Every choice is backed by a rule.
           </div>
         </div>
         <ProjectCard

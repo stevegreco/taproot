@@ -64,6 +64,7 @@ export const SCENES = {
   rules: scene("06-rules"),
   checks: scene("07-validate"),
   agent: scene("08-agent"),
-  reach: scene("09-shared"),
-  close: scene("10-close"),
+  audit: scene("09-audit"),
+  reach: scene("10-shared"),
+  close: scene("11-close"),
 };

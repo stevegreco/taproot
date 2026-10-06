@@ -3,6 +3,7 @@ import "@stevegreco/design-system-components";
 import { Composition, Folder } from "remotion";
 import { ComponentShowcase } from "./ComponentShowcase";
 import { AgentReady } from "./scenes/AgentReady";
+import { Audit } from "./scenes/Audit";
 import { Checks } from "./scenes/Checks";
 import { Close } from "./scenes/Close";
 import { Contract } from "./scenes/Contract";
@@ -88,6 +89,14 @@ export const RemotionRoot = () => (
         id="AgentReady"
         component={AgentReady}
         durationInFrames={SCENES.agent.duration}
+        fps={FPS}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="Audit"
+        component={Audit}
+        durationInFrames={SCENES.audit.duration}
         fps={FPS}
         width={1920}
         height={1080}

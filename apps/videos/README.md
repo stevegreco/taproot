@@ -23,17 +23,18 @@ render a composition to `out/`:
 pnpm --dir apps/videos render ComponentShowcase out/component-showcase.mp4
 ```
 
-`SpecExplainer` is an 86-second explainer of the design system spec as a general idea. Eight
+`SpecExplainer` is a two-minute explainer of the design system spec as a general idea. Nine
 chapters move from scattered sources to a written contract, linked records, rules with addresses
 and levels, and validation, then show an agent that asks first and cites the rule behind each
-choice, and finally every output reading from the same spec.
+choice, then the same rules reviewing an existing screen, and finally every output reading from
+the same spec.
 The layout uses a shared grid, restrained transitions, and a live before/after button example.
 
 Each narration section has its own scene in `src/scenes/`, played in order by a `TransitionSeries`
 in `src/SpecExplainer.tsx`. Every scene is also registered on its own in Studio's
 `SpecExplainer-Scenes` folder, so a chapter can be previewed and adjusted alone.
 Scene timing is derived from the continuous voiceover in `src/timeline.ts`. The voiceover uses
-Eleven v4 with Archer and descriptive delivery tags. `src/narration.ts` holds the spoken script;
+Eleven v4 with Archer and a single tone tag, in plain language for viewers new to the idea. `src/narration.ts` holds the spoken script;
 `narration.md` explains the delivery and regeneration workflow. Generate the audio with
 `ELEVENLABS_KEY` in the package's `.env`, then render:
 
