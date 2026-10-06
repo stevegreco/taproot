@@ -34,6 +34,6 @@ maps every cue to video time, slices the audio, and derives all scene boundaries
 checks, the agent's calls and decisions, and the rules reaching each output follow their phrases.
 `node --test apps/videos/scripts/narration-timing.test.mjs` validates cue extraction.
 
-Render with `pnpm --dir apps/videos render KnowledgeLayer out/knowledge-layer.mp4`.
+Render with `pnpm --dir apps/videos render SpecExplainer out/spec-explainer.mp4`.
 
 Delivery guidance: https://elevenlabs.io/docs/overview/capabilities/text-to-speech/best-practices#prompting-eleven-v4

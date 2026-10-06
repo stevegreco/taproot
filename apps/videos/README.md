@@ -23,9 +23,10 @@ render a composition to `out/`:
 pnpm --dir apps/videos render ComponentShowcase out/component-showcase.mp4
 ```
 
-`KnowledgeLayer` is a roughly 42-second explainer of the design system spec as a general idea. Five
-chapters move from scattered sources to rules with addresses and levels, then show an agent that
-asks first and cites the rule behind each choice.
+`SpecExplainer` is an 85-second explainer of the design system spec as a general idea. Eight
+chapters move from scattered sources to a written contract, linked records, rules with addresses
+and levels, and validation, then show an agent that asks first and cites the rule behind each
+choice, and finally every output reading from the same spec.
 The layout uses a shared grid, restrained transitions, and a live before/after button example.
 
 Scene timing is derived from the continuous voiceover in `src/timeline.ts`. The voiceover uses
@@ -38,7 +39,7 @@ pnpm --dir apps/videos narrate
 ```
 
 ```bash
-pnpm --dir apps/videos render KnowledgeLayer out/knowledge-layer.mp4
+pnpm --dir apps/videos render SpecExplainer out/spec-explainer.mp4
 ```
 
 Add a composition by writing a component in `src/` and registering it with `<Composition>` in

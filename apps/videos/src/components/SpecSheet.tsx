@@ -12,7 +12,7 @@ const ease = (frame: number, start: number, length = 14) =>
 const mono = { fontFamily: fonts.mono, fontSize: 25, color: color.paper };
 const dim = { color: "rgba(226,216,198,.55)" };
 
-/** Values abridged from packages/knowledge/content/components/button/button.spec.yaml. */
+/** Values abridged from packages/spec/content/components/button/button.spec.yaml. */
 const sections: { key: string; label: string; body: ReactNode }[] = [
   {
     key: "parts",

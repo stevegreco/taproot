@@ -60,7 +60,7 @@ export function Reach() {
   const frame = useCurrentFrame();
   return (
     <Scene>
-      <Heading eyebrow="08 / The design system spec" title="One source for every output." />
+      <Heading eyebrow="08 / One source" title="One source for every output." />
       <div style={{ position: "relative", marginTop: 64, height: 560 }}>
         <svg width="1680" height="560" style={{ position: "absolute", inset: 0 }}>
           {outputs.map(([title, , cue], i) => (

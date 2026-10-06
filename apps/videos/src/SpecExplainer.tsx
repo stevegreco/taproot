@@ -28,7 +28,7 @@ const scenes = [
 
 export { TOTAL_DURATION } from "./timeline";
 
-export function KnowledgeLayer() {
+export function SpecExplainer() {
   let from = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: color.paper }}>

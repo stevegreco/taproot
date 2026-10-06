@@ -35,12 +35,14 @@ function Chapter({
   from,
   to,
   number,
+  name,
   title,
   children,
 }: {
   from: number;
   to: number;
   number: string;
+  name: string;
   title: string;
   children: ReactNode;
 }) {
@@ -65,7 +67,7 @@ function Chapter({
           textTransform: "uppercase",
         }}
       >
-        {number} / The design system spec
+        {number} / {name}
       </div>
       <div style={{ fontFamily: fonts.display, fontSize: 66, lineHeight: 1.15, marginTop: 16 }}>
         {title}
@@ -99,7 +101,13 @@ export function Shift() {
   const levels = progress(frame, SHIFT_CUES.levels - 4, 12);
   return (
     <Scene>
-      <Chapter from={0} to={PHASE.agent} number="01" title="The answers are scattered.">
+      <Chapter
+        from={0}
+        to={PHASE.agent}
+        number="01"
+        name="Scattered"
+        title="The answers are scattered."
+      >
         <SourceWeb
           cues={{ figma: SHIFT_CUES.figma, code: SHIFT_CUES.code, head: SHIFT_CUES.head }}
         />
@@ -108,6 +116,7 @@ export function Shift() {
         from={PHASE.agent - 6}
         to={PHASE.spec}
         number="02"
+        name="The gap"
         title="A plausible answer can still be wrong."
       >
         <div
@@ -151,13 +160,20 @@ export function Shift() {
           <ProjectCard style={{ opacity: progress(frame, PHASE.agent + 30) }} />
         </div>
       </Chapter>
-      <Chapter from={PHASE.spec - 6} to={PHASE.links} number="03" title="Write the contract once.">
+      <Chapter
+        from={PHASE.spec - 6}
+        to={PHASE.links}
+        number="03"
+        name="The contract"
+        title="Write the contract once."
+      >
         <SpecSheet cues={SHIFT_CUES} />
       </Chapter>
       <Chapter
         from={PHASE.links - 6}
         to={PHASE.rules}
         number="04"
+        name="Links"
         title="The reasons travel with the rules."
       >
         <LinkGraph cues={{ ...SHIFT_CUES, start: PHASE.links + 10 }} />
@@ -166,6 +182,7 @@ export function Shift() {
         from={PHASE.rules - 6}
         to={PHASE.validate}
         number="05"
+        name="Addresses"
         title="Give every rule an address."
       >
         <div
@@ -245,6 +262,7 @@ export function Shift() {
         from={PHASE.validate - 6}
         to={PHASE.end}
         number="06"
+        name="Checks"
         title="Checked, so it stays true."
       >
         <Validation frame={frame} />
@@ -276,7 +294,7 @@ function Validation({ frame }: { frame: number }) {
       }}
     >
       <div style={{ color: color.line, opacity: progress(frame, PHASE.validate + 10, 12) }}>
-        $ knowledge validate
+        $ ds-spec validate
       </div>
       {checks.map((check, i) => {
         const p = progress(frame, start - 6 + i * 12, 12);
@@ -295,7 +313,7 @@ function Validation({ frame }: { frame: number }) {
           opacity: progress(frame, start + 48, 12),
         }}
       >
-        OK: 9 records, no issues.
+        OK: 14 records, no issues.
       </div>
     </Card>
   );

@@ -2,14 +2,14 @@ import "@stevegreco/design-system/css";
 import "@stevegreco/design-system-components";
 import { Composition } from "remotion";
 import { ComponentShowcase } from "./ComponentShowcase";
-import { KnowledgeLayer, TOTAL_DURATION } from "./KnowledgeLayer";
+import { SpecExplainer, TOTAL_DURATION } from "./SpecExplainer";
 import { FPS } from "./theme";
 
 export const RemotionRoot = () => (
   <>
     <Composition
-      id="KnowledgeLayer"
-      component={KnowledgeLayer}
+      id="SpecExplainer"
+      component={SpecExplainer}
       durationInFrames={TOTAL_DURATION}
       fps={FPS}
       width={1920}
