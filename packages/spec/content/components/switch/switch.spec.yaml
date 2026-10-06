@@ -38,7 +38,11 @@ parameters:
       default: false,
       description: Prevents interaction and removes the setting from keyboard navigation.,
     }
-  name: { kind: string, description: Optional field name for hosts that support form association. }
+  name:
+    {
+      kind: string,
+      description: Optional form field name. The value is recorded under this name when on.,
+    }
   value: { kind: string, description: Value recorded when on. Defaults to on. }
 events:
   input: The user changed the setting.
@@ -85,13 +89,13 @@ rules:
       id: error-blocks-submit,
       level: must,
       topic: behavior,
-      statement: A nonempty error blocks submission on hosts with form association.,
+      statement: A nonempty error blocks the switch's form from submitting.,
     }
   - {
       id: optional-form-value,
       level: should,
       topic: behavior,
-      statement: Hosts with form association record the value only when on and enabled. Reset restores the initial state.,
+      statement: A form records the value only when the switch is on and enabled. Reset restores the initial state.,
     }
   - {
       id: state-not-color-alone,

@@ -19,7 +19,7 @@ usage:
   avoid:
     - situation: Navigate to another location.
       instead: component.link
-      why: Links provide native navigation semantics.
+      why: A link carries a destination that people can open, copy, or share.
     - situation: Display status or metadata.
       instead: component.badge
       why: Button communicates an available action.
@@ -118,11 +118,11 @@ rules:
     statement: >-
       In a form, set action to submit or reset when the button should submit or reset. The default
       activate does neither.
-  - id: form-association
+  - id: form-submit-reset
     level: should
     topic: behavior
-    statement: Submit and reset participate in a form when the host supports form association.
-    applicability: Hosts that implement form association.
+    statement: Submit submits the button's form, and reset restores that form's initial values.
+    applicability: The button belongs to a form.
   - id: a11y-visible-focus
     level: must
     topic: accessibility

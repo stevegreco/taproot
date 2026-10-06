@@ -114,7 +114,7 @@ describe("spec MCP server", () => {
       name: "rules",
       arguments: { id: "component.checkbox#form-value" },
     });
-    expect(text(conditional)).toContain("  - Applies when: Hosts that implement form association.");
+    expect(text(conditional)).toContain("  - Applies when: The checkbox belongs to a form.");
     const value = await client.callTool({
       name: "get",
       arguments: { target: "component.button#parameters.variant.danger" },

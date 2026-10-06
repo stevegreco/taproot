@@ -26,3 +26,21 @@ api:
   - { name: input, kind: event, event: input }
   - { name: change, kind: event, event: change }
 ---
+
+## Forms
+
+The `checked` attribute sets the initial state. Setting the `checked` property changes the current
+state, and form reset restores the attribute's state. Without `value`, a checked checkbox submits
+`on`, as a native checkbox does.
+
+## Groups
+
+Group related checkboxes in a native `fieldset` with a `legend` that names the set:
+
+```html
+<fieldset>
+  <legend>Notifications</legend>
+  <ds-checkbox label="Product updates" name="notify" value="updates"></ds-checkbox>
+  <ds-checkbox label="Security alerts" name="notify" value="security"></ds-checkbox>
+</fieldset>
+```

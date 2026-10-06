@@ -42,3 +42,6 @@ Pair it with Button to submit:
 A non-empty `error` marks the field invalid, associates that message with the control, and blocks
 submit until the message is cleared. Clear `error` when the person edits the value. Use `hint` for
 guidance that is not an error.
+
+The `value` attribute sets the initial value, which form reset restores. `autocomplete` takes the
+HTML autofill tokens, such as `email` or `current-password`, so the browser can offer saved values.

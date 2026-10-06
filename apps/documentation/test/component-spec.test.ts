@@ -49,7 +49,7 @@ test("button slice variants and api come from the spec record and the implementa
   );
   assert.match(
     slice.introMarkdown,
-    /Use \[Link\]\(\/components\/link\) instead\. Links provide native navigation semantics\./,
+    /Use \[Link\]\(\/components\/link\) instead\. A link carries a destination that people can open, copy, or share\./,
     "intro links the alternative component's page and keeps the reason",
   );
   assert.match(
@@ -173,10 +173,10 @@ test("the review checklist keeps a conditional rule conditional", () => {
 
   assert.ok(check, "the checklist includes form-value");
   assert.equal(check.level, "should");
-  assert.equal(check.applicability, "Hosts that implement form association.");
+  assert.equal(check.applicability, "The checkbox belongs to a form.");
   assert.match(
     componentSpecMarkdown("checkbox", "review"),
-    /Reset restores the initial checked state and clears indeterminate\. Applies when: Hosts that implement form association\./,
+    /Reset restores the initial checked state and clears indeterminate\. Applies when: The checkbox belongs to a form\./,
     "the checklist line names the condition",
   );
 });

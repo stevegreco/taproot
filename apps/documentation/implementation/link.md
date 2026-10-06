@@ -11,3 +11,9 @@ api:
   - { name: variant, kind: attribute, parameter: variant }
   - { name: click, kind: event, event: activate }
 ---
+
+## Navigation
+
+`ds-link` renders a native anchor, so activation, middle-click, modifier-click, and the browser's
+context menu open the destination as any link does. The browser limits `:visited` styling to color,
+so Link publishes no visited style.
