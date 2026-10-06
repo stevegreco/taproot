@@ -186,7 +186,12 @@ export async function run(argv, io = {}) {
       case "links":
         return print(ops.links(spec, { ...args, id: first }));
       case "rules":
-        return print(ops.rules(spec, args));
+        return print(
+          ops.rules(spec, args, {
+            detailHint: (address) =>
+              `Rationale, references, and examples are left out. Run \`ds-spec get <address>\`, such as \`ds-spec get ${address}\`, to read a rule in full.`,
+          }),
+        );
       case "tokens":
         return print(ops.tokens(spec, { ...args, id: first }));
     }

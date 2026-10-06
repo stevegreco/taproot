@@ -110,6 +110,11 @@ describe("spec MCP server", () => {
     expect(text(plain)).not.toContain("| light");
     const rules = await client.callTool({ name: "rules", arguments: { level: "must" } });
     expect(text(rules)).toMatch(/\*\*MUST\*\* component\./);
+    const conditional = await client.callTool({
+      name: "rules",
+      arguments: { id: "component.checkbox#form-value" },
+    });
+    expect(text(conditional)).toContain("  - Applies when: Hosts that implement form association.");
     const links = await client.callTool({ name: "links", arguments: { id: "component.link" } });
     expect(text(links)).toContain("## alternative");
     const validated = await client.callTool({ name: "validate", arguments: {} });

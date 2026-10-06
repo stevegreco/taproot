@@ -165,7 +165,11 @@ export async function createSpecServer(options = {}) {
       level: z.enum(["must", "should", "may"]).optional(),
       query: z.string().optional().describe("Text to look for in rule statements."),
     },
-    (args) => ops.rules(spec, args),
+    (args) =>
+      ops.rules(spec, args, {
+        detailHint: (address) =>
+          `Rationale, references, and examples are left out. Call \`get\` with a rule address, such as ${address}, to read it in full.`,
+      }),
   );
   tool(
     "tokens",

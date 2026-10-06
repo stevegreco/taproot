@@ -1,5 +1,5 @@
 ---
-import { loadComponentSlice, type ComponentSpecSection } from "../lib/component-spec";
+import { checkText, loadComponentSlice, type ComponentSpecSection } from "../lib/component-spec";
 import "./component-spec.css";
 
 interface Props {
@@ -241,7 +241,7 @@ const show = (name: ComponentSpecSection) => section == null || section === name
       <summary>{slice.review.title}</summary>
       <ul>
         {slice.review.checks.map((check) => (
-          <li>{check.requirement}</li>
+          <li>{checkText(check)}</li>
         ))}
       </ul>
     </details>

@@ -167,6 +167,20 @@ test("button spec markdown keeps ghost and aria-label without reprinting the pat
   assert.doesNotMatch(markdown, /^must /m, "review markdown does not lead with severity codes");
 });
 
+test("the review checklist keeps a conditional rule conditional", () => {
+  const slice = loadComponentSlice("checkbox");
+  const check = slice.review?.checks.find((item) => item.id === "form-value");
+
+  assert.ok(check, "the checklist includes form-value");
+  assert.equal(check.level, "should");
+  assert.equal(check.applicability, "Hosts that implement form association.");
+  assert.match(
+    componentSpecMarkdown("checkbox", "review"),
+    /Reset restores the initial checked state and clears indeterminate\. Applies when: Hosts that implement form association\./,
+    "the checklist line names the condition",
+  );
+});
+
 test("badge variant examples use the implementation tag and status labels", () => {
   const slice = loadComponentSlice("badge");
   const danger = slice.variants.find((variant) => variant.name === "danger");
