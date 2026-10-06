@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { loadSpec } from "../src/index.js";
 import { buildLinks } from "../src/links.js";
+import { buildSections } from "../src/sections.js";
 import { editDistance } from "../src/util.js";
 import { fixture } from "./helpers.js";
 
@@ -81,8 +82,36 @@ describe("section", () => {
   it("returns rules, fields, and dotted paths from a component", () => {
     expect(valid.section("component.thing#stay-visible").content).toMatchObject({ level: "must" });
     expect(valid.section("component.thing#usage").content.do).toEqual(["Test things."]);
-    expect(valid.section("component.thing#parameters.tone.loud").content).toBe("Noisy.");
+    expect(valid.section("component.thing#parameters.tone.loud").content).toEqual({
+      meaning: "Noisy.",
+      guidance: "pattern.guide#second-step",
+    });
+    expect(valid.section("component.thing#parameters.tone.calm").content).toEqual({
+      meaning: "Quiet.",
+      example: "Hush",
+    });
     expect(valid.section("component.thing#anatomy.control").title).toBe("control");
+  });
+
+  it("gives every heading its own address, even when a slug repeats", () => {
+    const sections = buildSections(
+      { type: "pattern" },
+      "## Foo\n\nA.\n\n## Foo\n\nB.\n\n## Foo-1\n\nC.\n\n## Foo\n\nD.",
+    );
+    expect([...sections].map(([address, entry]) => [address, entry.content])).toEqual([
+      ["foo", "A."],
+      ["foo-1", "B."],
+      ["foo-1-1", "C."],
+      ["foo-2", "D."],
+    ]);
+  });
+
+  it("returns a parameter value with only its meaning when nothing is paired with it", () => {
+    const sections = buildSections(
+      { type: "component", parameters: { tone: { kind: "enum", values: { calm: "Quiet." } } } },
+      undefined,
+    );
+    expect(sections.get("parameters.tone.calm").content).toEqual({ meaning: "Quiet." });
   });
 
   it("returns annotations from an example", () => {

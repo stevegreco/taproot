@@ -235,11 +235,13 @@ kind:
 | `alternative` | derived             | Use the target instead in a named situation          | `alternative-to` |
 | `composes`    | component           | This component is built from the target component    | `used-in`        |
 | `follows`     | any record          | This record applies the target pattern or guideline  | `followed-by`    |
-| `example-of`  | example             | This example demonstrates the target                 | `examples`       |
+| `example-of`  | example             | This example demonstrates the target component, pattern, or guideline | `examples` |
 | `related`     | any record          | Worth reading together, with no stronger claim       | `related`        |
 
 Write each link once, on one side. Tools add the inverse, so a component lists its examples
-without naming them.
+without naming them. A `composes` link goes from a component to a component, a `follows` link
+points at a pattern or a guideline, and an `example-of` link goes from an example to a component,
+pattern, or guideline. `related` links any two records.
 
 Some links come from fields rather than from `links`:
 
@@ -259,10 +261,15 @@ A link target is a record ID, optionally followed by `#` and a section:
 
 - In a Markdown record, a section is a heading's slug: the heading text in lowercase, with
   punctuation removed and spaces replaced by hyphens. `## Assign emphasis` is `assign-emphasis`.
+  Every heading has its own slug. A slug an earlier heading already has gets `-1`, `-2`, and so on,
+  skipping any an earlier heading took, so headings `Foo`, `Foo`, and `Foo-1` are `foo`, `foo-1`,
+  and `foo-1-1`.
 - In a component record, a section is a rule ID, a top-level field (`usage`, `anatomy`,
   `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, or `events`,
   such as `parameters.variant` or `parameters.variant.danger`.
-- In an example record, a section is also an annotation ID.
+  A parameter value's section holds its meaning with the example and guidance paired with it.
+- In an example record, a section is also an annotation ID. It must not repeat another annotation
+  ID or a heading's slug.
 
 ## Cross-record checks
 
@@ -271,6 +278,9 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Every ID is unique, and each ID's prefix equals its `type`.
 - Every link target, `instead` record ID, and reference resolves to a record, and its section, if
   any, exists.
+- Each `links` kind is written on a record type it describes and points at a record type it allows:
+  see [Links](#links). An enum parameter's `guidance` points at a pattern or a guideline.
+- Annotation IDs are unique within an example, and none is also a heading's slug.
 - Rule IDs are unique within a record, and do not collide with a top-level field name.
 - An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`.
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum

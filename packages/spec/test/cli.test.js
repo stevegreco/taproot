@@ -73,6 +73,25 @@ describe("ds-spec CLI, real content", () => {
     expect(r.out).not.toContain("**SHOULD**");
   });
 
+  it("keeps a conditional rule's condition, and says how to read a rule in full", () => {
+    const r = cli(["rules", "--id", "component.checkbox#form-value"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("- **SHOULD** component.checkbox#form-value: ");
+    expect(r.out).toContain("\n  - Applies when: Hosts that implement form association.");
+    const all = cli(["rules", "--id", "checkbox"]);
+    expect(all.out).toMatch(
+      /Run `ds-spec get <address>`, such as `ds-spec get component\.checkbox#[\w-]+`/,
+    );
+  });
+
+  it("gets a parameter value with its example and guidance", () => {
+    const r = cli(["get", "component.button#parameters.variant.danger"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("Destructive or difficult-to-reverse action.");
+    expect(r.out).toContain("Example: Delete project");
+    expect(r.out).toContain("Guidance: [Action hierarchy](pattern.action-hierarchy#danger)");
+  });
+
   it("resolves tokens for light and dark", () => {
     const r = cli([
       "tokens",

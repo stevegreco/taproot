@@ -105,6 +105,8 @@ export interface ReviewCheck {
   readonly id: string;
   readonly level: CheckLevel;
   readonly requirement: string;
+  /** When the rule applies, if not always. */
+  readonly applicability?: string;
 }
 
 export interface ReviewSection {
@@ -346,7 +348,7 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentSpecSect
       if (!slice.review) return "";
       return [
         `### ${slice.review.title}`,
-        slice.review.checks.map((check) => `- ${check.requirement}`).join("\n"),
+        slice.review.checks.map((check) => `- ${checkText(check)}`).join("\n"),
       ].join("\n\n");
   }
 }
@@ -545,7 +547,7 @@ function projectAccessibility(record: ComponentRecord): AccessibilitySection {
     })),
     requirements: (record.rules ?? [])
       .filter((rule) => rule.topic === "accessibility")
-      .map((rule) => rule.statement),
+      .map((rule) => checkText({ requirement: rule.statement, applicability: rule.applicability })),
   };
 }
 
@@ -555,9 +557,21 @@ function projectReview(record: ComponentRecord): ReviewSection | undefined {
   const checks = TOPIC_ORDER.flatMap((topic) =>
     rules
       .filter((rule) => rule.topic === topic)
-      .map((rule) => ({ id: rule.id, level: rule.level, requirement: rule.statement })),
+      .map((rule) => ({
+        id: rule.id,
+        level: rule.level,
+        requirement: rule.statement,
+        ...(rule.applicability ? { applicability: rule.applicability } : {}),
+      })),
   );
   return checks.length > 0 ? { title: "Review checklist", checks } : undefined;
+}
+
+/** A requirement with the condition it applies under, so a conditional rule never reads as unconditional. */
+export function checkText(check: Pick<ReviewCheck, "requirement" | "applicability">): string {
+  return check.applicability
+    ? `${check.requirement} Applies when: ${check.applicability}`
+    : check.requirement;
 }
 
 function projectExample(

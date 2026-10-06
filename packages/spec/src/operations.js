@@ -266,7 +266,14 @@ export function links(spec, { id: typed, kind, direction } = {}) {
   return { text: lines.join("\n").trimEnd(), data, ok: true };
 }
 
-export function rules(spec, { id: typed, topic, level, query } = {}) {
+/**
+ * Each rule as its level, address, statement, and the condition it applies under, if any, so a
+ * conditional rule never reads as unconditional.
+ *
+ * @param {{ detailHint?: (address: string) => string }} [options] The line that tells the caller
+ *   how to read a rule's rationale, references, and examples, which the list leaves out.
+ */
+export function rules(spec, { id: typed, topic, level, query } = {}, options = {}) {
   let id;
   if (typed) {
     const target = resolveTarget(spec, typed);
@@ -274,10 +281,14 @@ export function rules(spec, { id: typed, topic, level, query } = {}) {
     id = target.section === undefined ? target.id : `${target.id}#${target.section}`;
   }
   const data = spec.rules({ id, topic, level, query });
-  const text = data.length
-    ? data.map((r) => `- **${r.level.toUpperCase()}** ${r.address}: ${r.statement}`).join("\n")
-    : "No rules match.";
-  return { text, data, ok: true };
+  if (data.length === 0) return { text: "No rules match.", data, ok: true };
+  const lines = data.map((r) => {
+    const line = `- **${r.level.toUpperCase()}** ${r.address}: ${r.statement}`;
+    return r.applicability ? `${line}\n  - Applies when: ${r.applicability}` : line;
+  });
+  const detailed = data.find((r) => r.rationale || r.references || r.examples);
+  const hint = detailed && options.detailHint?.(detailed.address);
+  return { text: lines.join("\n") + (hint ? `\n\n${hint}` : ""), data, ok: true };
 }
 
 /**

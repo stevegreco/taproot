@@ -7,9 +7,19 @@ import { isObject } from "./util.js";
  *
  * @typedef {object} SectionEntry
  * @property {string} title Heading text, rule id, field name, or annotation label.
- * @property {unknown} content Markdown for headings; the rule, field value, or annotation otherwise.
- * @property {"heading" | "rule" | "field" | "annotation"} kind
+ * @property {unknown} content Markdown for headings; a {@link ParameterValue} for an enum value;
+ *   the rule, field value, or annotation otherwise.
+ * @property {"heading" | "rule" | "field" | "value" | "annotation"} kind
  * @property {number} [depth] Heading level, for headings.
+ */
+
+/**
+ * One value of an enum parameter, with the example and guidance the record pairs with it.
+ *
+ * @typedef {object} ParameterValue
+ * @property {string} meaning What the value means.
+ * @property {string} [example] Sample content, such as a label, from the parameter's `examples`.
+ * @property {string} [guidance] The section that says when to choose the value, from `guidance`.
  */
 
 /** GitHub-style heading slug: lowercase, punctuation removed, spaces to hyphens. */
@@ -65,7 +75,11 @@ function addComponentSections(data, add) {
       for (const [name, parameter] of Object.entries(value)) {
         add(`parameters.${name}`, { title: name, content: parameter, kind: "field" });
         for (const [option, meaning] of Object.entries(parameter?.values ?? {})) {
-          add(`parameters.${name}.${option}`, { title: option, content: meaning, kind: "field" });
+          add(`parameters.${name}.${option}`, {
+            title: option,
+            content: parameterValue(parameter, option, meaning),
+            kind: "value",
+          });
         }
       }
     }
@@ -77,22 +91,50 @@ function addComponentSections(data, add) {
   }
 }
 
+/** @returns {ParameterValue} */
+function parameterValue(parameter, option, meaning) {
+  const example = parameter.examples?.[option];
+  const guidance = parameter.guidance?.[option];
+  return {
+    meaning,
+    ...(example === undefined ? {} : { example }),
+    ...(guidance === undefined ? {} : { guidance }),
+  };
+}
+
 function addHeadingSections(body, add) {
   const headings = fromMarkdown(body).children.filter((node) => node.type === "heading");
-  const used = new Map();
+  const slugs = headingSlugger();
   headings.forEach((heading, index) => {
     const title = plainText(heading).trim();
     const base = slugify(title);
     if (!base) return;
-    const count = used.get(base) ?? 0;
-    used.set(base, count + 1);
-    const slug = count === 0 ? base : `${base}-${count}`;
+    const slug = slugs(base);
     const next = headings.slice(index + 1).find((later) => later.depth <= heading.depth);
     const content = body
       .slice(heading.position.end.offset, next ? next.position.start.offset : body.length)
       .trim();
     add(slug, { title, content, kind: "heading", depth: heading.depth });
   });
+}
+
+/**
+ * Give each heading a slug no other heading in the record has, the way GitHub does: a repeated
+ * slug gets `-1`, `-2`, and so on, skipping any suffix an earlier heading already took. Headings
+ * `Foo`, `Foo`, and `Foo-1` are `foo`, `foo-1`, and `foo-1-1`.
+ */
+function headingSlugger() {
+  const taken = new Map();
+  return (base) => {
+    let slug = base;
+    while (taken.has(slug)) {
+      const count = taken.get(base) + 1;
+      taken.set(base, count);
+      slug = `${base}-${count}`;
+    }
+    taken.set(slug, 0);
+    return slug;
+  };
 }
 
 function plainText(node) {

@@ -34,6 +34,18 @@ Breaking. The package is now a library over the authored files, and the record f
 - `get` of a whole component record, in the CLI and MCP server, leaves out the token table and ends
   with a line giving the binding count and the `tokens` call. `get <id>#tokens`, `tokens`, JSON
   output, and `knowledge://` resources are unchanged. `Knowledge.render` takes `{ omit }`.
+- `rules`, in the CLI and MCP server, prints the `applicability` of a conditional rule under it, and
+  ends with a line naming the `get <address>` call that reads a rule's rationale, references, and
+  examples.
+- `section()` of an enum parameter value, such as `component.button#parameters.variant.danger`,
+  returns `{ meaning, example?, guidance? }` instead of the meaning string, and `get` renders the
+  example and guidance with it.
+- Validation is stricter: `composes` must go from a component to a component, `follows` and
+  parameter `guidance` must point at a pattern or a guideline, and `example-of` must go from an
+  example to a component, pattern, or guideline. An annotation ID must not repeat another
+  annotation ID or a heading's slug. Every heading now gets an address: a slug an earlier heading
+  took gets the next free suffix, where before a third heading could lose its address. Format
+  version 1 is unreleased, so it stays at 1.
 - Removed the `build`, `prepack`, and `clean` scripts, and the dependencies `@stevegreco/design-system`,
   `js-yaml`, `parse5`, and `unist-util-visit`.
 

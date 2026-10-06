@@ -74,7 +74,10 @@ export async function checkSources(sources) {
       checkParameters(record.data, report_);
       checkTokens(record.data, report_);
     }
-    if (record.data.type === "example") await checkAssets(record, report_);
+    if (record.data.type === "example") {
+      checkAnnotations(record, report_);
+      await checkAssets(record, report_);
+    }
   }
 
   issues.sort(compareIssues);
@@ -198,9 +201,45 @@ function checkId(source, record, byId, report) {
 
 // --- Links, references, and sections ---
 
+/**
+ * The record types each authored link kind is written on and points at, from the meanings in
+ * SPEC.md. A kind missing here, such as `related`, takes any type at either end.
+ */
+const LINK_TYPES = {
+  composes: { from: ["component"], to: ["component"] },
+  follows: { to: ["pattern", "guideline"] },
+  "example-of": { from: ["example"], to: ["component", "pattern", "guideline"] },
+};
+const GUIDANCE_TYPES = ["pattern", "guideline"];
+
+const article = (type) => (/^[aeiou]/.test(type) ? "an" : "a");
+const typeList = (types) =>
+  types.length === 1
+    ? `${article(types[0])} ${types[0]}`
+    : `${types
+        .slice(0, -1)
+        .map((type) => `${article(type)} ${type}`)
+        .join(", ")} or ${article(types.at(-1))} ${types.at(-1)}`;
+
+/** A link kind written on a record type it does not describe, such as `composes` on a pattern. */
+function checkLinkSources(data, report) {
+  for (const kind of Object.keys(data.links ?? {})) {
+    const from = LINK_TYPES[kind]?.from;
+    if (from && !from.includes(data.type)) {
+      report({
+        path: `/links/${kind}`,
+        message: `${article(data.type)} ${data.type} cannot declare \`${kind}\` links; only ${typeList(from)} can`,
+      });
+    }
+  }
+}
+
+/** @returns {Generator<[pointer: string, target: string, types?: string[], what?: string]>} */
 function* targets(data) {
   for (const [kind, list] of Object.entries(data.links ?? {})) {
-    for (const [index, target] of list.entries()) yield [`/links/${kind}/${index}`, target];
+    for (const [index, target] of list.entries()) {
+      yield [`/links/${kind}/${index}`, target, LINK_TYPES[kind]?.to, `a \`${kind}\` link`];
+    }
   }
   for (const [index, item] of (data.usage?.avoid ?? []).entries()) {
     if (typeof item.instead === "string" && RECORD_ID.test(item.instead)) {
@@ -214,7 +253,12 @@ function* targets(data) {
   }
   for (const [name, parameter] of Object.entries(data.parameters ?? {})) {
     for (const [value, target] of Object.entries(parameter.guidance ?? {})) {
-      yield [`/parameters/${pointerSegment(name)}/guidance/${pointerSegment(value)}`, target];
+      yield [
+        `/parameters/${pointerSegment(name)}/guidance/${pointerSegment(value)}`,
+        target,
+        GUIDANCE_TYPES,
+        "parameter guidance",
+      ];
     }
   }
   for (const [index, annotation] of (data.annotations ?? []).entries()) {
@@ -225,11 +269,13 @@ function* targets(data) {
 }
 
 /**
- * Resolve each link target against the records that passed their schema. A target that exists but
- * is invalid is reported here too, because its sections are unknown.
+ * Resolve each link target against the records that passed their schema, and check that it is a
+ * type the link can point at. A target that exists but is invalid is reported here too, because its
+ * sections are unknown.
  */
 function checkReferences(record, byId, validById, report) {
-  for (const [pointer, target] of targets(record.data)) {
+  checkLinkSources(record.data, report);
+  for (const [pointer, target, types, what] of targets(record.data)) {
     const id = recordIdOf(target);
     const found = validById.get(id);
     if (!found) {
@@ -238,6 +284,13 @@ function checkReferences(record, byId, validById, report) {
         message: byId.has(id)
           ? `\`${target}\` points at ${id}, which is not a valid record`
           : `\`${target}\` does not match any record`,
+      });
+      continue;
+    }
+    if (types && !types.includes(found.data.type)) {
+      report({
+        path: pointer,
+        message: `${what} must point at ${typeList(types)}, and ${id} is ${article(found.data.type)} ${found.data.type}`,
       });
       continue;
     }
@@ -347,7 +400,33 @@ function conditionProblem(term, data, states) {
   return `\`${name}\` is not a declared parameter or preference`;
 }
 
-// --- Example assets ---
+// --- Examples ---
+
+/**
+ * An annotation's id is its section address, so it must not repeat another annotation's id or a
+ * heading's slug. Either collision would hide one of them from retrieval.
+ */
+function checkAnnotations(record, report) {
+  const first = new Map();
+  for (const [index, annotation] of (record.data.annotations ?? []).entries()) {
+    const pointer = `/annotations/${index}/id`;
+    if (first.has(annotation.id)) {
+      report({
+        path: pointer,
+        message: `annotation id \`${annotation.id}\` is already used by /annotations/${first.get(annotation.id)}`,
+      });
+      continue;
+    }
+    first.set(annotation.id, index);
+    const entry = record.sections.get(annotation.id);
+    if (entry?.kind === "heading") {
+      report({
+        path: pointer,
+        message: `annotation id \`${annotation.id}\` is also the address of the heading "${entry.title}"`,
+      });
+    }
+  }
+}
 
 async function checkAssets(record, report) {
   const directory = path.dirname(record.source.absolute);

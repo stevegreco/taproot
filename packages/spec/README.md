@@ -49,6 +49,9 @@ spec.get("component.button"); // the whole record, frozen
 
 spec.section("pattern.action-hierarchy#assign-emphasis"); // heading, rule, field, or annotation
 spec.section("component.button#label-describes-result");
+spec.section("component.button#parameters.variant.danger");
+// An enum value's content is { meaning, example?, guidance? }: its meaning, with the example and
+// guidance section the parameter pairs with it.
 
 spec.search("destructive action", { type: "pattern", tags: ["action"], limit: 5 });
 // [{ id, type, title, summary, tags, status, score, matches }], best first. Hits scoring below a
@@ -127,6 +130,10 @@ ds-spec help [command]
 Global flags: `--content <dir>`, `--config <path>`, `--json`. Output is Markdown, or the library's
 return values as JSON. Exit codes: 0 ok, 1 validation issues or an unknown id or section, 2 usage
 error. In this repo, run it as `pnpm spec ...`.
+
+`rules` prints each rule's level, address, and statement, and the condition it applies under, if
+any, so a conditional rule never reads as unconditional. A closing line says how to read a rule's
+rationale, references, and examples with `get <address>`.
 
 A whole component record leaves out its token table, which is most of its length; a closing line
 gives the count and the command. Read the table with `get <id>#tokens` or filter it with `tokens`.

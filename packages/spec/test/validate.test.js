@@ -144,6 +144,48 @@ const cases = [
     path: "",
     message: "Map keys must be unique",
   },
+  {
+    name: "link-composes-pattern",
+    file: "thing.spec.yaml",
+    line: 7,
+    path: "/links/composes/0",
+    message: "a `composes` link must point at a component, and pattern.guide is a pattern",
+  },
+  {
+    name: "link-follows-component",
+    file: "thing.spec.yaml",
+    line: 7,
+    path: "/links/follows/0",
+    message: "must point at a pattern or a guideline, and component.other is a component",
+  },
+  {
+    name: "link-source-type",
+    file: "thing.spec.yaml",
+    line: 6,
+    path: "/links/example-of",
+    message: "a component cannot declare `example-of` links; only an example can",
+  },
+  {
+    name: "guidance-target-type",
+    file: "thing.spec.yaml",
+    line: 19,
+    path: "/parameters/tone/guidance/calm",
+    message: "parameter guidance must point at a pattern or a guideline",
+  },
+  {
+    name: "annotation-duplicate",
+    file: "demo.md",
+    line: 17,
+    path: "/annotations/1/id",
+    message: "annotation id `box` is already used by /annotations/0",
+  },
+  {
+    name: "annotation-heading",
+    file: "demo.md",
+    line: 17,
+    path: "/annotations/1/id",
+    message: 'annotation id `why-it-works` is also the address of the heading "Why it works"',
+  },
   { name: "yaml-syntax", file: "thing.md", line: 3, path: "", message: "Flow sequence" },
 ];
 
