@@ -1,0 +1,125 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.badge
+type: component
+title: Badge
+summary: Use Badge for status or metadata. It is not a control.
+tags:
+  - status
+  - metadata
+sources:
+  - title: Token tier consumption (tokens ADR 0003)
+    url: packages/tokens/docs/adr/0003-token-tier-consumption.md
+description: Labels status or metadata. Not a control.
+usage:
+  do:
+    - Display status, category, or supporting metadata.
+  avoid:
+    - situation: Trigger an action in the current view.
+      instead: component.button
+      why: Badge is not interactive and does not communicate an available action.
+    - situation: Navigate to another location.
+      instead: component.link
+      why: Links provide native navigation semantics.
+    - situation: Announce a live status change by itself.
+      instead: a live region in the surrounding page
+      why: Badge sets no live-region role.
+anatomy:
+  surface:
+    role: indicator
+    description: Non-interactive label surface.
+  content:
+    role: label
+    description: Short status or metadata text, with an optional leading icon.
+parameters:
+  variant:
+    kind: enum
+    values:
+      default: Neutral metadata or categorization.
+      accent: Brand emphasis without implying status.
+      success: Successful or active state.
+      danger: Failed or blocked status, not a destructive action.
+      warning: Condition that needs attention.
+      info: Informational state or feature label.
+    examples:
+      default: Default
+      accent: Accent
+      success: Active
+      danger: Failed
+      warning: Pending
+      info: Beta
+    default: default
+states:
+  - default
+rules:
+  - id: keep-label-short
+    level: should
+    topic: content
+    statement: Keep the label short.
+  - id: non-interactive
+    level: must
+    topic: behavior
+    statement: Badge is not focusable and does not activate.
+  - id: a11y-text-communicates-state
+    level: must
+    topic: accessibility
+    statement: The text communicates the state. Meaning does not depend on color alone.
+  - id: a11y-not-a-control
+    level: must
+    topic: accessibility
+    statement: Badge is not used as a control.
+  - id: a11y-no-live-region
+    level: must
+    topic: accessibility
+    statement: Badge does not set a live-region role.
+  - id: a11y-surrounding-ui-announces
+    level: must
+    topic: accessibility
+    statement: Changing status that must be announced is the surrounding UI's job.
+accessibility:
+  role: Non-interactive text
+  name: Visible text is the accessible name.
+tokens:
+  surface:
+    base:
+      padding-vertical: primitives.space.1
+      padding-horizontal: primitives.space.2
+      gap: primitives.space.1
+      radius: semantic.radius.pill
+      font-family: semantic.typography.label.small.fontFamily
+      font-size: semantic.typography.label.small.fontSize
+      font-weight: semantic.typography.label.small.fontWeight
+      line-height: semantic.typography.label.small.lineHeight
+      letter-spacing: semantic.typography.label.small.letterSpacing
+    variant.default:
+      background: semantic.color.background.muted
+      foreground: semantic.color.foreground.muted
+      border: semantic.color.border.subtle
+    variant.accent:
+      background: semantic.color.background.brand.muted
+      foreground: semantic.color.foreground.brand.default
+      border: semantic.color.border.brand.muted
+    variant.success:
+      background: semantic.color.background.status.success.default
+      foreground: semantic.color.foreground.status.success.default
+      border: semantic.color.border.status.success.default
+    variant.danger:
+      background: semantic.color.background.status.danger.default
+      foreground: semantic.color.foreground.status.danger.default
+      border: semantic.color.border.status.danger.default
+    variant.warning:
+      background: semantic.color.background.status.warning.default
+      foreground: semantic.color.foreground.status.warning.default
+      border: semantic.color.border.status.warning.default
+    variant.info:
+      background: semantic.color.background.status.info.default
+      foreground: semantic.color.foreground.status.info.default
+      border: semantic.color.border.status.info.default
+rationale:
+  - decision: Badge consumes semantic tokens directly.
+    why: ADR 0003. No component-token namespace.
+  - decision: The gap between a leading icon and the label uses a spacing primitive.
+    why: >-
+      ADR 0003 allows a primitive when no semantic role exists, as for padding. Badge is denser than
+      Button, so it uses the smaller step.
+  - decision: Badge is non-interactive and sets no live-region role.
+    why: Status that must be announced belongs to the surrounding UI.

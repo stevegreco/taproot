@@ -1,12 +1,12 @@
 import { defineConfig, type ComponentMarkdown } from "blume";
-import type { ComponentKnowledgeSection } from "./lib/component-knowledge";
+import type { ComponentSpecSection } from "./lib/component-spec";
 import type { SemanticReferenceKind } from "./lib/semantic-reference";
 import { assertWorkspaceBuilds } from "./lib/workspace-builds";
 
 assertWorkspaceBuilds();
 
 const { palettes } = await import("./lib/color-palettes");
-const { componentKnowledgeMarkdown } = await import("./lib/component-knowledge");
+const { componentSpecMarkdown } = await import("./lib/component-spec");
 const { componentPagesSource, PROSE_FOLDER } = await import("./lib/component-pages");
 const { semanticReferenceMarkdown } = await import("./lib/semantic-reference");
 
@@ -35,12 +35,12 @@ const semanticTokenReferenceMarkdown: ComponentMarkdown = ({ props }) => {
   return semanticReferenceMarkdown(kind as SemanticReferenceKind);
 };
 
-const componentKnowledge: ComponentMarkdown = ({ props }) => {
+const componentSpec: ComponentMarkdown = ({ props }) => {
   const component = props.component;
   if (typeof component !== "string") return null;
   const section = props.section;
   if (section != null && typeof section !== "string") return null;
-  return componentKnowledgeMarkdown(component, section as ComponentKnowledgeSection | undefined);
+  return componentSpecMarkdown(component, section as ComponentSpecSection | undefined);
 };
 
 export default defineConfig({
@@ -61,7 +61,7 @@ export default defineConfig({
     markdownComponents: {
       ColorFieldGuide: colorFieldGuideMarkdown,
       SemanticTokenReference: semanticTokenReferenceMarkdown,
-      ComponentKnowledge: componentKnowledge,
+      ComponentSpec: componentSpec,
     },
   },
   theme: {

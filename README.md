@@ -2,13 +2,13 @@
 
 Design tokens for the Ember & Sage design system — distributed as CSS custom properties and JSON. Built with [Style Dictionary](https://styledictionary.com).
 
-This repository also holds the component knowledge (a technology-neutral contract for each
-component, with patterns and guidelines) in [`packages/knowledge`](packages/knowledge/README.md),
+This repository also holds the design system spec (a technology-neutral contract for each
+component, with patterns and guidelines) in [`packages/spec`](packages/spec/README.md),
 the web components in [`packages/components`](packages/components/README.md), and the
 documentation site in `apps/documentation`.
 
-Query the knowledge from the repository root with `pnpm knowledge search <query>` or
-`pnpm knowledge get <id>`. An MCP server for the same content is
+Query the spec from the repository root with `pnpm spec search <query>` or
+`pnpm spec get <id>`. An MCP server for the same content is
 registered in `.mcp.json`.
 
 ## Install

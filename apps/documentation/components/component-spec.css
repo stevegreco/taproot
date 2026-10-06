@@ -1,0 +1,135 @@
+.component-spec {
+  margin-block: 0.75rem 1.5rem;
+}
+
+.component-spec--prose p,
+.component-spec--together p {
+  margin: 0 0 0.85rem;
+}
+
+.component-spec ul {
+  margin: 0 0 1rem;
+  padding-inline-start: 1.2rem;
+}
+
+.component-spec li + li {
+  margin-block-start: 0.35rem;
+}
+
+.component-spec h3 {
+  margin: 1.25rem 0 0.5rem;
+}
+
+.component-spec__variants {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.component-spec__variant {
+  display: grid;
+  grid-template-columns: minmax(9rem, 12rem) minmax(0, 1fr);
+  gap: 1rem 1.25rem;
+  align-items: start;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+  background: var(--semantic-color-background-surface);
+}
+
+.component-spec__specimen {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+.component-spec__variant-heading {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 0 0 0.35rem;
+}
+
+.component-spec__variant-copy h3 {
+  margin: 0;
+}
+
+.component-spec__default {
+  color: var(--semantic-color-foreground-muted);
+  font-family: var(--semantic-typography-label-small-font-family);
+  font-size: var(--semantic-typography-label-small-font-size);
+  font-weight: var(--semantic-typography-label-small-font-weight);
+}
+
+.component-spec__variant-copy p {
+  margin: 0 0 0.5rem;
+}
+
+.component-spec__guidance,
+.component-spec__guidance p {
+  margin: 0 0 0.5rem;
+  color: var(--semantic-color-foreground-muted);
+}
+
+.component-spec__variant-copy code {
+  display: block;
+  font-size: var(--semantic-typography-code-small-font-size);
+  overflow-wrap: anywhere;
+}
+
+.component-spec__figure {
+  margin: 0 0 1rem;
+}
+
+.component-spec__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--semantic-radius-surface);
+}
+
+.component-spec__figure figcaption {
+  margin-block-start: 0.5rem;
+  color: var(--semantic-color-foreground-muted);
+  font-size: var(--semantic-typography-body-small-font-size);
+}
+
+.component-spec__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.component-spec__table th,
+.component-spec__table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--semantic-color-border-subtle);
+  text-align: start;
+  vertical-align: top;
+}
+
+.component-spec__kind {
+  display: block;
+  margin-block-start: 0.2rem;
+  color: var(--semantic-color-foreground-muted);
+  font-size: var(--semantic-typography-label-small-font-size);
+}
+
+.component-spec__values {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+
+.component-spec__review summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.component-spec__review ul {
+  margin-block-start: 0.75rem;
+}
+
+@media (max-width: 40rem) {
+  .component-spec__variant {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

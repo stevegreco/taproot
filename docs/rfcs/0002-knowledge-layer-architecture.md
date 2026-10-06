@@ -6,6 +6,8 @@
 [ADR 0002](../adr/0002-record-format.md), [ADR 0003](../adr/0003-knowledge-delivery.md)
 **Supersedes:** the earlier ADRs 0001 through 0007, removed in the same change (available in git
 history)
+**Renamed:** 2026-10-05, the knowledge layer is now the design system spec: `packages/spec`,
+`@stevegreco/design-system-spec`, and the `ds-spec` CLI. The text below keeps the original names.
 
 ## Summary
 

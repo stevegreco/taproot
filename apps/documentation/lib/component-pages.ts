@@ -1,12 +1,12 @@
 /**
- * `/components/<slug>` pages, rendered from the knowledge base and the docs
+ * `/components/<slug>` pages, rendered from the spec and the docs
  * implementation files.
  *
- * Every knowledge component with an `implementation/<slug>.md` file gets a page:
+ * Every spec component with an `implementation/<slug>.md` file gets a page:
  * title and description from the record, the import snippet from the
  * implementation's package and registration export, the usage snippet from its
  * `usage`, the live example from `examples/<slug>.tsx`, and the
- * `<ComponentKnowledge>` sections that have content.
+ * `<ComponentSpec>` sections that have content.
  *
  * `docs/components/<slug>.mdx` is optional prose, shown as the preview
  * introduction. The filesystem source excludes those files so they only render
@@ -15,7 +15,7 @@
 import { existsSync, readFileSync, readdirSync, watch } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { ContentSource, SourceEntry } from "blume/sources/types.ts";
-import { componentSlugs, loadComponentSlice, type ComponentSlice } from "./component-knowledge";
+import { componentSlugs, loadComponentSlice, type ComponentSlice } from "./component-spec";
 
 /** Folder under the content root that holds optional prose, one file per slug. */
 export const PROSE_FOLDER = "components";
@@ -46,8 +46,8 @@ function yamlValue(value: string): string {
   return /^[\s\-?]|[:#[\]{}&*!|>'"%@`]|\s$/.test(value) ? JSON.stringify(value) : value;
 }
 
-function knowledge(slug: string, section: string): string {
-  return `<ComponentKnowledge component="${slug}" section="${section}" />`;
+function specSection(slug: string, section: string): string {
+  return `<ComponentSpec component="${slug}" section="${section}" />`;
 }
 
 /** The MDX body of one component page. */
@@ -56,7 +56,7 @@ export function componentPageBody(
   options: { prose?: string; hasExample: boolean },
 ): string {
   const { slug } = slice;
-  const parts = ['<Badge variant="accent">Web component</Badge>', knowledge(slug, "intro")];
+  const parts = ['<Badge variant="accent">Web component</Badge>', specSection(slug, "intro")];
 
   if (options.prose || options.hasExample) {
     parts.push("## Preview");
@@ -75,13 +75,13 @@ export function componentPageBody(
 
   if (slice.usageHtml || slice.behaviorMarkdown) parts.push("## Usage");
   if (slice.usageHtml) parts.push(codeBlock("html", slice.usageHtml));
-  if (slice.behaviorMarkdown) parts.push(knowledge(slug, "behavior"));
+  if (slice.behaviorMarkdown) parts.push(specSection(slug, "behavior"));
 
-  if (slice.variants.length > 0) parts.push("## Variants", knowledge(slug, "variants"));
-  if (slice.together) parts.push("## Using together", knowledge(slug, "together"));
-  parts.push("## API", knowledge(slug, "api"));
-  parts.push("## Accessibility", knowledge(slug, "accessibility"));
-  if (slice.review) parts.push(knowledge(slug, "review"));
+  if (slice.variants.length > 0) parts.push("## Variants", specSection(slug, "variants"));
+  if (slice.together) parts.push("## Using together", specSection(slug, "together"));
+  parts.push("## API", specSection(slug, "api"));
+  parts.push("## Accessibility", specSection(slug, "accessibility"));
+  if (slice.review) parts.push(specSection(slug, "review"));
 
   return `${parts.join("\n\n")}\n`;
 }
@@ -112,7 +112,7 @@ export function componentPageEntries(): SourceEntry[] {
   const orphans = [...prose.keys()].filter((slug) => !slugs.includes(slug));
   if (orphans.length > 0) {
     throw new Error(
-      `docs/${PROSE_FOLDER}/ has prose for ${orphans.join(", ")}, but there is no implementation/<slug>.md file for it. Component pages render from implementation files and their knowledge records; that folder holds only optional preview prose.`,
+      `docs/${PROSE_FOLDER}/ has prose for ${orphans.join(", ")}, but there is no implementation/<slug>.md file for it. Component pages render from implementation files and their spec records; that folder holds only optional preview prose.`,
     );
   }
   return slugs.map((slug) => pageEntry(slug, prose.get(slug)));

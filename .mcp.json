@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "design-system-knowledge": {
+    "design-system-spec": {
       "command": "node",
-      "args": ["packages/knowledge/bin/knowledge-mcp.js"]
+      "args": ["packages/spec/bin/ds-spec-mcp.js"]
     }
   }
 }
