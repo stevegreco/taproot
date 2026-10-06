@@ -1,7 +1,7 @@
 import { useCurrentFrame } from "remotion";
 import { Chapter } from "../components/Chapter";
 import { Panel } from "../components/Panel";
-import { Badge, ProjectCard } from "../components/ProjectCard";
+import { Badge, CARD_DROP, CARD_WIDTH, ProjectCard } from "../components/ProjectCard";
 import { ease } from "../components/motion";
 import { color, fonts } from "../theme";
 import { SCENES } from "../timeline";
@@ -26,17 +26,16 @@ export function Rules() {
   const rule = (i: number) => ease(frame, 24 + i * 36);
   const levels = ease(frame, cues.levels - 4, 12);
   return (
-    <Chapter number="05" name="Addresses" title="Give every rule an address.">
+    <Chapter number="05" name="Addresses" title="Give every rule an address." align="start">
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1.15fr",
-          gap: 64,
-          marginTop: 80,
-          alignItems: "center",
+          gridTemplateColumns: `1fr ${CARD_WIDTH}px`,
+          gap: 80,
+          alignItems: "start",
+          marginTop: CARD_DROP,
         }}
       >
-        <ProjectCard marks={[rule(0), rule(1), rule(2)]} />
         <Panel style={{ padding: "38px 44px" }}>
           <div
             style={{
@@ -79,7 +78,7 @@ export function Rules() {
                 <div
                   style={{
                     fontFamily: fonts.mono,
-                    fontSize: 22,
+                    fontSize: 24,
                     color: color.line,
                     marginTop: 6,
                   }}
@@ -91,6 +90,7 @@ export function Rules() {
             </div>
           ))}
         </Panel>
+        <ProjectCard marks={[rule(0), rule(1), rule(2)]} />
       </div>
     </Chapter>
   );

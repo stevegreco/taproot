@@ -34,7 +34,7 @@ export const AUDIO_SEGMENTS = ids.map((id, i) => {
 /** Frames two neighboring scenes overlap: the old one fades out, then the new one fades in. */
 export const TRANSITION = 16;
 /** Silence after the last word, so the closing line can sit on screen. */
-const TAIL = 0.8;
+const TAIL = 2.5;
 export const TOTAL_DURATION = sec(toVideo(timing.audioEnd) + TAIL);
 
 /**

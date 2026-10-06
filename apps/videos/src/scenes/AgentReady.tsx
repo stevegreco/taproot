@@ -1,8 +1,7 @@
 import { interpolate, useCurrentFrame } from "remotion";
-import { Heading } from "../components/Heading";
-import { Scene } from "../components/Scene";
-import { ProjectCard } from "../components/ProjectCard";
-import { rise, useEnter } from "../components/motion";
+import { Chapter } from "../components/Chapter";
+import { Badge, CARD_DROP, CARD_WIDTH, ProjectCard } from "../components/ProjectCard";
+import { ease, rise, useEnter } from "../components/motion";
 import { color, fonts } from "../theme";
 import { SCENES } from "../timeline";
 
@@ -52,46 +51,51 @@ export function AgentReady() {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
+  // Each broken rule from the Addresses chapter turns sage as the agent's decision fixes it.
+  const fixed = decisions.map(({ cue }) => ease(frame, cue - 2, 14)) as [number, number, number];
   const verified = useEnter(AGENT_CUES.verified);
   const request = useEnter(8);
+  const lift = ease(frame, 18, 24);
+  const log = ease(frame, AGENT_CUES.search - 12, 10);
   return (
-    <Scene>
-      <Heading eyebrow="07 / Agent ready" title="The agent asks first." />
-      <div style={{ ...rise(request, 12), fontSize: 32, color: color.muted, marginTop: 22 }}>
-        Same request:{" "}
-        <span style={{ fontFamily: fonts.display }}>“Add an action to delete this project.”</span>
-      </div>
+    <Chapter number="07" name="Agent ready" title="The agent asks first." align="start">
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 0.95fr",
+          gridTemplateColumns: `1fr ${CARD_WIDTH}px`,
           gap: 80,
-          marginTop: 48,
           alignItems: "start",
         }}
       >
         <div>
+          <div style={{ ...rise(request, 12), fontSize: 30, color: color.muted, marginBottom: 22 }}>
+            Same request:{" "}
+            <span style={{ fontFamily: fonts.display }}>
+              “Add an action to delete this project.”
+            </span>
+          </div>
           <div
             style={{
+              opacity: log,
               background: color.ink,
               borderRadius: 14,
-              padding: "22px 28px",
+              padding: "20px 28px",
               fontFamily: fonts.mono,
-              fontSize: 21,
-              lineHeight: 1.5,
+              fontSize: 24,
+              lineHeight: 1.45,
             }}
           >
             {calls.map((call, i) => (
               <Call key={call.call} {...call} first={i === 0} />
             ))}
           </div>
-          {decisions.map((decision) => (
-            <Decision key={decision.title} {...decision} />
+          {decisions.map((decision, i) => (
+            <Decision key={decision.title} n={i + 1} {...decision} />
           ))}
           <div
             style={{
               ...rise(verified),
-              marginTop: 26,
+              marginTop: 20,
               fontSize: 28,
               color: color.sage,
               fontWeight: 600,
@@ -100,9 +104,16 @@ export function AgentReady() {
             ✓ Every choice cites a rule.
           </div>
         </div>
-        <ProjectCard emphasis={emphasis} label={label} placement={placement} />
+        <ProjectCard
+          emphasis={emphasis}
+          label={label}
+          placement={placement}
+          marks={[1, 1, 1]}
+          fixed={fixed}
+          style={{ translate: `0 ${(1 - lift) * CARD_DROP}px` }}
+        />
       </div>
-    </Scene>
+    </Chapter>
   );
 }
 
@@ -129,15 +140,34 @@ function Call({
   );
 }
 
-function Decision({ title, cites, cue }: { title: string; cites: string[]; cue: number }) {
+/** A decision, numbered to match the mark it fixes on the card. */
+function Decision({
+  n,
+  title,
+  cites,
+  cue,
+}: {
+  n: number;
+  title: string;
+  cites: string[];
+  cue: number;
+}) {
   const p = useEnter(cue - 8);
   return (
-    <div style={{ ...rise(p, 12), padding: "20px 0", borderBottom: `1px solid ${color.line}` }}>
+    <div
+      style={{
+        ...rise(p, 12),
+        position: "relative",
+        padding: "16px 0 16px 58px",
+        borderBottom: `1px solid ${color.line}`,
+      }}
+    >
+      <Badge n={n} p={1} tone={color.sage} style={{ left: 0, top: 16 }} />
       <div style={{ fontSize: 30, fontWeight: 600 }}>{title}</div>
       {cites.map((cite) => (
         <div
           key={cite}
-          style={{ fontFamily: fonts.mono, fontSize: 19, color: color.sage, marginTop: 8 }}
+          style={{ fontFamily: fonts.mono, fontSize: 21, color: color.sage, marginTop: 6 }}
         >
           {cite}
         </div>

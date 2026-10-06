@@ -9,7 +9,7 @@ const ease = (frame: number, start: number, length = 14) =>
     easing: Easing.out(Easing.cubic),
   });
 
-const mono = { fontFamily: fonts.mono, fontSize: 25, color: color.paper };
+const mono = { fontFamily: fonts.mono, fontSize: 27, color: color.paper };
 const dim = { color: "rgba(226,216,198,.55)" };
 
 /** Values abridged from packages/spec/content/components/button/button.spec.yaml. */
@@ -77,7 +77,6 @@ export function SpecSheet({ cues }: { cues: Record<string, number> }) {
   return (
     <div
       style={{
-        marginTop: 56,
         background: color.ink,
         borderRadius: 18,
         padding: "34px 48px 26px",
@@ -114,7 +113,7 @@ export function SpecSheet({ cues }: { cues: Record<string, number> }) {
               gridTemplateColumns: "200px 1fr",
               alignItems: "baseline",
               gap: 24,
-              padding: "20px 24px",
+              padding: "26px 24px",
               margin: "0 -24px",
               borderTop: "1px solid rgba(255,253,248,.12)",
               borderRadius: 10,

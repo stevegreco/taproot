@@ -55,7 +55,7 @@ function link(a: Id, b: Id, bend: number) {
 export function SourceWeb({ cues }: { cues: Partial<Record<Id, number>> }) {
   const frame = useCurrentFrame();
   return (
-    <div style={{ position: "relative", width: 1680, height: 620, marginTop: 56 }}>
+    <div style={{ position: "relative", width: 1680, height: 620 }}>
       <svg
         width="1680"
         height="620"

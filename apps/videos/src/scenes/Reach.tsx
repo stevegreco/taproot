@@ -1,7 +1,6 @@
 import { Easing, interpolate, useCurrentFrame } from "remotion";
-import { Heading } from "../components/Heading";
+import { Chapter } from "../components/Chapter";
 import { Badge } from "../components/ProjectCard";
-import { Scene } from "../components/Scene";
 import { color, fonts } from "../theme";
 import { SCENES } from "../timeline";
 
@@ -61,9 +60,8 @@ const card = {
 export function Reach() {
   const frame = useCurrentFrame();
   return (
-    <Scene>
-      <Heading eyebrow="08 / One source" title="One source for every output." />
-      <div style={{ position: "relative", marginTop: 64, height: 560 }}>
+    <Chapter number="08" name="One source" title="One source for every output.">
+      <div style={{ position: "relative", height: 560 }}>
         <svg width="1680" height="560" style={{ position: "absolute", inset: 0 }}>
           {outputs.map(([title, , cue], i) => (
             <path
@@ -115,7 +113,7 @@ export function Reach() {
                 <Badge n={r + 1} p={1} tone={color.sage} />
               </div>
               <div style={{ fontSize: 23, fontWeight: 700, color: color.emberSoft }}>{level}</div>
-              <div style={{ fontFamily: fonts.mono, fontSize: 22, color: color.line }}>#{id}</div>
+              <div style={{ fontFamily: fonts.mono, fontSize: 24, color: color.line }}>#{id}</div>
             </div>
           ))}
         </div>
@@ -169,6 +167,6 @@ export function Reach() {
           );
         })}
       </div>
-    </Scene>
+    </Chapter>
   );
 }

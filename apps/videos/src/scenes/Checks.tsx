@@ -19,13 +19,13 @@ export function Checks() {
   const frame = useCurrentFrame();
   return (
     <Chapter number="06" name="Checks" title="Checked, so it stays true.">
-      <Panel style={{ marginTop: 80, padding: "40px 48px", fontFamily: fonts.mono, fontSize: 27 }}>
+      <Panel style={{ padding: "52px 60px", fontFamily: fonts.mono, fontSize: 33 }}>
         <div style={{ color: color.line, opacity: ease(frame, 10, 12) }}>$ ds-spec validate</div>
         {checks.map((check, i) => (
           <div
             key={check}
             style={{
-              marginTop: 20,
+              marginTop: 28,
               opacity: ease(frame, cues.checked - 6 + i * 12, 12),
               display: "flex",
               gap: 18,
@@ -37,7 +37,7 @@ export function Checks() {
         ))}
         <div
           style={{
-            marginTop: 30,
+            marginTop: 40,
             color: color.sageSoft,
             fontWeight: 600,
             opacity: ease(frame, cues.checked + 48, 12),

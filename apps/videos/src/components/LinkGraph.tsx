@@ -78,7 +78,7 @@ export function LinkGraph({ cues }: { cues: Record<string, number> }) {
   const frame = useCurrentFrame();
   const spec = ease(frame, cues.start - 6, 14);
   return (
-    <div style={{ position: "relative", width: 1680, height: 620, marginTop: 40 }}>
+    <div style={{ position: "relative", width: 1680, height: 620 }}>
       <svg width="1680" height="620" style={{ position: "absolute", inset: 0 }}>
         {fields.map(({ field, target, cue, y }, i) => {
           const ty = mid(target) + (i === 0 ? -18 : i === 1 ? 18 : 0);
@@ -148,11 +148,11 @@ export function LinkGraph({ cues }: { cues: Record<string, number> }) {
             }}
           >
             <div
-              style={{ fontSize: 20, fontWeight: 700, letterSpacing: 1.5, color: color.emberSoft }}
+              style={{ fontSize: 22, fontWeight: 700, letterSpacing: 1.5, color: color.emberSoft }}
             >
               {field}
             </div>
-            <div style={{ fontFamily: fonts.mono, fontSize: 22, marginTop: 10 }}>{value}</div>
+            <div style={{ fontFamily: fonts.mono, fontSize: 23, marginTop: 10 }}>{value}</div>
           </div>
         );
       })}
@@ -190,7 +190,7 @@ export function LinkGraph({ cues }: { cues: Record<string, number> }) {
               {type}
             </div>
             <div style={{ fontFamily: fonts.display, fontSize: 32, marginTop: 4 }}>{title}</div>
-            <div style={{ fontFamily: fonts.mono, fontSize: 19, color: color.muted, marginTop: 4 }}>
+            <div style={{ fontFamily: fonts.mono, fontSize: 22, color: color.muted, marginTop: 4 }}>
               {note}
             </div>
           </div>
