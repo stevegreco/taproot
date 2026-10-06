@@ -4,7 +4,9 @@ import { Scene } from "../components/Scene";
 import { ProjectCard } from "../components/ProjectCard";
 import { rise, useEnter } from "../components/motion";
 import { color, fonts } from "../theme";
-import { AGENT_CUES } from "../timeline";
+import { SCENES } from "../timeline";
+
+const AGENT_CUES = SCENES.agent.cues;
 
 // The MCP tool calls the agent makes, as the server names them.
 const calls = [

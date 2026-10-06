@@ -115,7 +115,7 @@ export function Badge({
         alignItems: "center",
         justifyContent: "center",
         opacity: p,
-        transform: `scale(${0.6 + 0.4 * p})`,
+        scale: `${0.6 + 0.4 * p}`,
         ...style,
       }}
     >

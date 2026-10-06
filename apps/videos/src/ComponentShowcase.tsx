@@ -22,7 +22,7 @@ const FadeUp = ({ children, style }: { children: React.ReactNode; style?: CSSPro
       style={{
         ...style,
         opacity: progress,
-        transform: `translateY(${interpolate(progress, [0, 1], [40, 0])}px)`,
+        translate: `0 ${interpolate(progress, [0, 1], [40, 0])}px`,
       }}
     >
       {children}

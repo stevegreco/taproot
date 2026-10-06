@@ -29,6 +29,9 @@ and levels, and validation, then show an agent that asks first and cites the rul
 choice, and finally every output reading from the same spec.
 The layout uses a shared grid, restrained transitions, and a live before/after button example.
 
+Each narration section has its own scene in `src/scenes/`, played in order by a `TransitionSeries`
+in `src/SpecExplainer.tsx`. Every scene is also registered on its own in Studio's
+`SpecExplainer-Scenes` folder, so a chapter can be previewed and adjusted alone.
 Scene timing is derived from the continuous voiceover in `src/timeline.ts`. The voiceover uses
 Eleven v4 with Archer and descriptive delivery tags. `src/narration.ts` holds the spoken script;
 `narration.md` explains the delivery and regeneration workflow. Generate the audio with

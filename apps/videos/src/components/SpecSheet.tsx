@@ -139,7 +139,7 @@ export function SpecSheet({ cues }: { cues: Record<string, number> }) {
                 ...mono,
                 lineHeight: 1.55,
                 opacity: shown,
-                transform: `translateX(${(1 - shown) * 12}px)`,
+                translate: `${(1 - shown) * 12}px 0`,
               }}
             >
               {body}

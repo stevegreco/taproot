@@ -27,31 +27,43 @@ export const AUDIO_SEGMENTS = ids.map((id, i) => {
     id,
     at: sec(from + delays[i]),
     trimBefore: sec(from - AUDIO_START),
-    trimAfter: sec(to - AUDIO_START),
+    durationInFrames: sec(to - AUDIO_START) - sec(from - AUDIO_START),
   };
 });
 
-// Bring each picture in just before its sentence.
-const pictureStart = (id: Section) => sec(toVideo(timing.sections[id].start)) - 5;
-export const SHIFT_START = pictureStart("02-scattered");
-export const AGENT_START = pictureStart("08-agent");
-export const REACH_START = pictureStart("09-shared");
-export const CLOSE_START = pictureStart("10-close");
-export const TOTAL_DURATION = sec(toVideo(timing.audioEnd) + 0.8);
-export const PHASE = {
-  agent: pictureStart("03-mistake") - SHIFT_START,
-  spec: pictureStart("04-spec") - SHIFT_START,
-  links: pictureStart("05-links") - SHIFT_START,
-  rules: pictureStart("06-rules") - SHIFT_START,
-  validate: pictureStart("07-validate") - SHIFT_START,
-  end: AGENT_START - SHIFT_START,
-};
+/** Frames two neighboring scenes overlap: the old one fades out, then the new one fades in. */
+export const TRANSITION = 16;
+/** Silence after the last word, so the closing line can sit on screen. */
+const TAIL = 0.8;
+export const TOTAL_DURATION = sec(toVideo(timing.audioEnd) + TAIL);
 
-/** Frame of each spoken cue, relative to the start of the scene it plays in. */
-const cuesFrom = (start: number) =>
-  Object.fromEntries(
-    Object.entries(timing.events).map(([name, time]) => [name, sec(toVideo(time)) - start]),
+/**
+ * One scene per narration section. Each picture arrives just before its sentence; the first starts
+ * the video. A scene's duration includes the transition into the next one, so with the overlap of
+ * a `TransitionSeries`, every scene's frame 0 still lands on its `from`.
+ */
+const starts = ids.map((id, i) => (i === 0 ? 0 : sec(toVideo(timing.sections[id].start)) - 5));
+
+function scene(id: Section) {
+  const i = ids.indexOf(id);
+  const from = starts[i];
+  const end = i === ids.length - 1 ? TOTAL_DURATION : starts[i + 1] + TRANSITION;
+  // Frame of each spoken cue, relative to the start of this scene.
+  const cues = Object.fromEntries(
+    Object.entries(timing.events).map(([name, time]) => [name, sec(toVideo(time)) - from]),
   ) as Record<Cue, number>;
-export const SHIFT_CUES = cuesFrom(SHIFT_START);
-export const AGENT_CUES = cuesFrom(AGENT_START);
-export const REACH_CUES = cuesFrom(REACH_START);
+  return { from, duration: end - from, cues };
+}
+
+export const SCENES = {
+  hook: scene("01-opening"),
+  scattered: scene("02-scattered"),
+  mistake: scene("03-mistake"),
+  contract: scene("04-spec"),
+  links: scene("05-links"),
+  rules: scene("06-rules"),
+  checks: scene("07-validate"),
+  agent: scene("08-agent"),
+  reach: scene("09-shared"),
+  close: scene("10-close"),
+};

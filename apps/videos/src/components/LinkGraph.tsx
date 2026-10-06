@@ -175,7 +175,7 @@ export function LinkGraph({ cues }: { cues: Record<string, number> }) {
               borderRadius: 16,
               boxShadow: "0 8px 24px rgba(34,26,19,0.04)",
               opacity: p,
-              transform: `translateX(${(1 - p) * 16}px)`,
+              translate: `${(1 - p) * 16}px 0`,
             }}
           >
             <div

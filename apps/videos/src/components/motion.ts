@@ -1,6 +1,6 @@
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 
-const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
 /** 0 → 1 spring that starts at `delay` frames. */
 export function useEnter(delay = 0, damping = 26) {
@@ -9,16 +9,18 @@ export function useEnter(delay = 0, damping = 26) {
   return spring({ frame: frame - delay, fps, config: { damping, mass: 0.8 } });
 }
 
-/** Linear 0 → 1 between two frames. */
-export function useProgress(from: number, to: number) {
-  const frame = useCurrentFrame();
-  return interpolate(frame, [from, to], [0, 1], clamp);
+/** Eased 0 → 1 over `length` frames from `start`. */
+export function ease(frame: number, start: number, length = 20) {
+  return interpolate(frame, [start, start + length], [0, 1], {
+    ...clamp,
+    easing: Easing.out(Easing.cubic),
+  });
 }
 
 export function rise(p: number, distance = 18) {
-  return { opacity: p, transform: `translateY(${(1 - p) * distance}px)` };
+  return { opacity: p, translate: `0 ${(1 - p) * distance}px` };
 }
 
 export function pop(p: number) {
-  return { opacity: p, transform: `scale(${0.98 + 0.02 * p})` };
+  return { opacity: p, scale: `${0.98 + 0.02 * p}` };
 }

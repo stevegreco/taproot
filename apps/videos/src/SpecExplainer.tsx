@@ -1,54 +1,128 @@
-import { AbsoluteFill, Html5Audio, Sequence, staticFile } from "remotion";
-import {
-  AGENT_START,
-  AUDIO_SEGMENTS,
-  CLOSE_START,
-  REACH_START,
-  SHIFT_START,
-  TOTAL_DURATION,
-} from "./timeline";
+import { Audio } from "@remotion/media";
+import { linearTiming, TransitionSeries } from "@remotion/transitions";
+import { AbsoluteFill, staticFile, useVideoConfig } from "remotion";
+import { dip } from "./components/dip";
 import { AgentReady } from "./scenes/AgentReady";
+import { Checks } from "./scenes/Checks";
 import { Close } from "./scenes/Close";
+import { Contract } from "./scenes/Contract";
 import { Hook } from "./scenes/Hook";
+import { Links } from "./scenes/Links";
+import { Mistake } from "./scenes/Mistake";
 import { Reach } from "./scenes/Reach";
-import { Shift } from "./scenes/Shift";
+import { Rules } from "./scenes/Rules";
+import { Scattered } from "./scenes/Scattered";
 import { color } from "./theme";
-
-// The architecture shift, in under a minute: many sources of truth, an agent that guesses, the
-// rules written down once as a spec, the same request answered by an agent that cites each rule,
-// and every other output reading from that spec.
-// Chapters share a fixed grid and use restrained fades to keep attention on the explanation.
-const scenes = [
-  { name: "Hook", Component: Hook, duration: SHIFT_START },
-  { name: "Shift", Component: Shift, duration: AGENT_START - SHIFT_START },
-  { name: "AgentReady", Component: AgentReady, duration: REACH_START - AGENT_START },
-  { name: "Reach", Component: Reach, duration: CLOSE_START - REACH_START },
-  { name: "Close", Component: Close, duration: TOTAL_DURATION - CLOSE_START },
-];
+import { AUDIO_SEGMENTS, SCENES, TRANSITION } from "./timeline";
 
 export { TOTAL_DURATION } from "./timeline";
 
+// The architecture shift, in under a minute and a half: many sources of truth, an agent that
+// guesses, the rules written down once as a spec, the same request answered by an agent that cites
+// each rule, and every other output reading from that spec.
+// One scene per narration section. Durations come from the voiceover in timeline.ts, so they stay
+// in sync when the take is regenerated; each scene is also registered on its own in Root.tsx.
 export function SpecExplainer() {
-  let from = 0;
+  const { fps } = useVideoConfig();
+  const change = () => (
+    <TransitionSeries.Transition
+      presentation={dip()}
+      timing={linearTiming({ durationInFrames: TRANSITION })}
+    />
+  );
   return (
     <AbsoluteFill style={{ backgroundColor: color.paper }}>
-      {scenes.map(({ name, Component, duration }) => {
-        const start = from;
-        from += duration;
-        return (
-          <Sequence key={name} name={name} from={start} durationInFrames={duration}>
-            <Component />
-          </Sequence>
-        );
-      })}
-      {AUDIO_SEGMENTS.map(({ id, at, trimBefore, trimAfter }) => (
-        <Sequence key={id} name={`Narration ${id}`} from={at} layout="none">
-          <Html5Audio
-            src={staticFile("narration/continuous.mp3")}
-            trimBefore={trimBefore}
-            trimAfter={trimAfter}
-          />
-        </Sequence>
+      <TransitionSeries>
+        <TransitionSeries.Sequence
+          name="Hook"
+          durationInFrames={SCENES.hook.duration}
+          premountFor={fps}
+        >
+          <Hook />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Scattered"
+          durationInFrames={SCENES.scattered.duration}
+          premountFor={fps}
+        >
+          <Scattered />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Mistake"
+          durationInFrames={SCENES.mistake.duration}
+          premountFor={fps}
+        >
+          <Mistake />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Contract"
+          durationInFrames={SCENES.contract.duration}
+          premountFor={fps}
+        >
+          <Contract />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Links"
+          durationInFrames={SCENES.links.duration}
+          premountFor={fps}
+        >
+          <Links />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Rules"
+          durationInFrames={SCENES.rules.duration}
+          premountFor={fps}
+        >
+          <Rules />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Checks"
+          durationInFrames={SCENES.checks.duration}
+          premountFor={fps}
+        >
+          <Checks />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="AgentReady"
+          durationInFrames={SCENES.agent.duration}
+          premountFor={fps}
+        >
+          <AgentReady />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Reach"
+          durationInFrames={SCENES.reach.duration}
+          premountFor={fps}
+        >
+          <Reach />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Close"
+          durationInFrames={SCENES.close.duration}
+          premountFor={fps}
+        >
+          <Close />
+        </TransitionSeries.Sequence>
+      </TransitionSeries>
+      {AUDIO_SEGMENTS.map(({ id, at, trimBefore, durationInFrames }) => (
+        <Audio
+          key={id}
+          name={`Narration ${id}`}
+          src={staticFile("narration/continuous.mp3")}
+          from={at}
+          trimBefore={trimBefore}
+          durationInFrames={durationInFrames}
+          premountFor={fps}
+        />
       ))}
     </AbsoluteFill>
   );

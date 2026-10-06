@@ -3,7 +3,9 @@ import { Heading } from "../components/Heading";
 import { Badge } from "../components/ProjectCard";
 import { Scene } from "../components/Scene";
 import { color, fonts } from "../theme";
-import { REACH_CUES } from "../timeline";
+import { SCENES } from "../timeline";
+
+const REACH_CUES = SCENES.reach.cues;
 
 const rules = [
   ["MUST", "danger-for-destructive"],

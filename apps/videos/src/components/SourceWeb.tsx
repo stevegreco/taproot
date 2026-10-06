@@ -96,7 +96,8 @@ export function SourceWeb({ cues }: { cues: Partial<Record<Id, number>> }) {
               borderColor: lift > 0.5 ? tone : color.line,
               boxShadow: `0 ${8 + lift * 10}px ${24 + lift * 16}px rgba(34,26,19,${0.035 + lift * 0.06})`,
               opacity: enter,
-              transform: `translateY(${(1 - enter) * 14}px) scale(${1 + lift * 0.05})`,
+              translate: `0 ${(1 - enter) * 14}px`,
+              scale: `${1 + lift * 0.05}`,
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
