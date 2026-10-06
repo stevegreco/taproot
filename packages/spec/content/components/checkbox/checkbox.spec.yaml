@@ -327,10 +327,11 @@ rationale:
       geometry, not a token channel. The label row is the click target, so compact layouts change
       spacing around the checkbox, not the checkbox. Activation commits on release, so there is no
       separate pressed styling.
-  - decision: No icon-only or unlabeled checkbox.
+  - decision: No icon-only, unlabeled, or visually hidden label.
     why: >-
-      The visible label is the accessible name and part of the click target. A checkbox in a table
-      row still gets a label; hiding it visually is the consumer's choice.
+      The visible label is the accessible name and part of the click target, so every checkbox
+      shows it, including one in a table row. Selecting rows with a checkbox whose label is not
+      shown needs a row-selection pattern, which does not exist yet.
   - decision: No loading state, nothing mirrors under right-to-left, and no animation.
     why: >-
       Toggling is local until submit, so there is no work to wait on; settings that save immediately

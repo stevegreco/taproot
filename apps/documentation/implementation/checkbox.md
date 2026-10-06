@@ -44,3 +44,5 @@ Group related checkboxes in a native `fieldset` with a `legend` that names the s
   <ds-checkbox label="Security alerts" name="notify" value="security"></ds-checkbox>
 </fieldset>
 ```
+
+Every checkbox shows its `label`, including one in a table row. Do not hide the label with CSS.
