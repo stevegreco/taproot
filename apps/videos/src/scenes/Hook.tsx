@@ -1,15 +1,15 @@
 import { AbsoluteFill } from "remotion";
+import { Byline } from "../components/Byline";
 import { Scene } from "../components/Scene";
-import { rise, useEnter } from "../components/motion";
 import { color, fonts } from "../theme";
 
+// The opening title card is complete on frame 0, so the video's first frame (and any player's
+// preview before playback) shows the title and byline instead of a blank page.
 export function Hook() {
-  const mark = useEnter(0);
-  const title = useEnter(10);
   return (
     <Scene>
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-        <div style={{ ...rise(mark), display: "flex", gap: 14, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <div style={{ width: 16, height: 16, borderRadius: 999, background: color.ember }} />
           <div style={{ width: 16, height: 16, borderRadius: 999, background: color.sage }} />
           <div
@@ -26,7 +26,6 @@ export function Hook() {
         </div>
         <div
           style={{
-            ...rise(title),
             fontFamily: fonts.display,
             fontSize: 90,
             fontWeight: 500,
@@ -37,6 +36,7 @@ export function Hook() {
         >
           Your design system has a new kind of reader.
         </div>
+        <Byline style={{ marginTop: 48 }} />
       </AbsoluteFill>
     </Scene>
   );

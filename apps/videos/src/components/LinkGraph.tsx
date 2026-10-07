@@ -152,7 +152,12 @@ export function LinkGraph({ cues }: { cues: Record<string, number> }) {
             >
               {field}
             </div>
-            <div style={{ fontFamily: fonts.mono, fontSize: 23, marginTop: 10 }}>{value}</div>
+            {/* One line: the longest address only fits the field at this size. */}
+            <div
+              style={{ fontFamily: fonts.mono, fontSize: 21, marginTop: 10, whiteSpace: "nowrap" }}
+            >
+              {value}
+            </div>
           </div>
         );
       })}

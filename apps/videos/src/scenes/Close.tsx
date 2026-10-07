@@ -1,4 +1,5 @@
 import { AbsoluteFill } from "remotion";
+import { Byline } from "../components/Byline";
 import { Scene } from "../components/Scene";
 import { rise, useEnter } from "../components/motion";
 import { color, fonts } from "../theme";
@@ -38,6 +39,7 @@ export function Close() {
         >
           The design system spec
         </div>
+        <Byline style={{ ...rise(signature), marginTop: 18 }} />
       </AbsoluteFill>
     </Scene>
   );

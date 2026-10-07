@@ -24,7 +24,7 @@ export const narration = [
   },
   {
     id: "03-mistake",
-    text: "A new teammate would just ask around. An AI assistant can't. So it guesses... and you get something that looks right, but isn't.",
+    text: "A new teammate would just ask around. An AI agent can't. So it guesses... and you get something that looks right, but isn't.",
     hold: 1.0,
   },
   {
@@ -39,7 +39,7 @@ export const narration = [
   },
   {
     id: "06-rules",
-    text: "Every rule is labeled, too. Must, or should. So an assistant can find the exact rule... and tell you which one it followed.",
+    text: "Every rule is labeled, too. Must, or should. So an agent can find the exact rule... and tell you which one it followed.",
     hold: 0.5,
   },
   {
@@ -49,17 +49,17 @@ export const narration = [
   },
   {
     id: "08-agent",
-    text: "So let's watch it work. You ask an assistant to add a delete button. Instead of guessing, it looks things up first, and reads the rules for buttons. It marks the button as dangerous, because deleting can't be undone. It says Delete project, not just Remove. And it keeps it apart from the everyday buttons. Every choice is backed by a rule you can check.",
+    text: "So let's watch it work. You ask an agent to add a delete button. Instead of guessing, it looks things up first, and reads the rules for buttons. It marks the button as dangerous, because deleting can't be undone. It says Delete project, not just Remove. And it keeps it apart from the everyday buttons. Every choice is backed by a rule you can check.",
     hold: 1.2,
   },
   {
     id: "09-audit",
-    text: "It works on what you already have, too. Point an assistant at an existing screen, and it checks it against the same rules. It flags what breaks a must, notes what misses a should... and tells you exactly which rule, so a review isn't a matter of opinion.",
+    text: "It works on what you already have, too. Point an agent at an existing screen, and it checks it against the same rules. It flags what breaks a must, notes what misses a should... and tells you exactly which rule, so a review isn't a matter of opinion.",
     hold: 0.8,
   },
   {
     id: "10-shared",
-    text: "Design tools, component libraries, docs, and AI assistants all work from the same source... so everyone builds the same thing.",
+    text: "Design tools, component libraries, docs, and AI agents all work from the same source... so everyone builds the same thing.",
     hold: 0.6,
   },
   {
@@ -100,5 +100,5 @@ export const narrationCues = {
   design: "Design tools",
   libraries: "component libraries",
   docs: "docs, and",
-  agents: "and AI assistants",
+  agents: "and AI agents",
 } as const;
