@@ -31,22 +31,17 @@ Compose existing components where you can. Propose a new one only when the guide
 
 ### 2. Decide what it ships
 
-Decide each item on purpose. Each ends up as a parameter, state, token condition, or rule in the
-spec, or as a `rationale` entry saying why the component does not have it. One entry can cover
-several items. Ask the user only about decisions that change public API.
+Decide each item on purpose. The list, with the question each one answers, is in
+`scripts/status.mjs`; run it to see them:
 
-| Item | Question to answer |
-| --- | --- |
-| Disabled | Can it be unavailable? Is it focusable, and is the reason shown? |
-| Visited, selected, or checked | Does it have a persistent on/off or visited state? |
-| Loading | Can it wait on work? Does it block activation while it does? |
-| Invalid | Can its value be wrong? What message says so? |
-| Sizes | More than one size, or a placement variant? |
-| Density | Does it change in compact layouts, or does the layout handle that? |
-| Icon-only | Can it render without text? Where does its accessible name come from? |
-| Right-to-left | Does anything mirror when the direction is right-to-left? |
-| Reduced motion | Does it animate? What happens when the user prefers reduced motion? |
-| High contrast and forced colors | Does every state stay visible without color alone? |
+```bash
+node .agents/skills/create-component/scripts/status.mjs <name>
+```
+
+Each item ends up as a parameter, state, token condition, or rule in the spec, or as a
+`rationale` entry saying why the component does not have it. Give that entry `covers` with the
+item names it settles, such as `covers: [loading, invalid]`, so the status script doesn't rely on
+keywords. One entry can cover several items. Ask the user only about decisions that change public API.
 
 Link is the reference for a small component. Its rationale records no disabled state ("a link with
 no destination is text"), no visited styling, and placement as a variant rather than a size.
@@ -82,8 +77,14 @@ By hand, in `packages/components`:
 - `test/<name>.test.js`: this component's behavior only.
 - A row in the table in `test/host-checks.test.js`. The shared checks cover alias registration,
   `hidden`, parts, the required slot, focus forwarding, visible focus, events while disabled,
-  keyboard activation, `form`, enum properties, and properties set before registration.
-- A row in `test/package-root.test.js`.
+  keyboard activation, `form`, enum properties, and properties set before registration. The test
+  fails if a component in `src/` has no row.
+- Start each test name with the IDs of the spec rules it proves, such as
+  `"[square-box] scales slotted artwork to fill the square"`. The status script lists MUST rules
+  with no tagged test.
+
+`test/package-root.test.js` and `packages/spec/test/content.test.js` find components and records
+on disk, so they need no edits.
 
 Nothing checks the implementation against the spec. When you change one, read the other.
 
@@ -113,9 +114,10 @@ violations in both themes: `pnpm exec turbo run dev --filter=storybook`.
 node .agents/skills/create-component/scripts/status.mjs <name>
 ```
 
-It exits 1 when a file or entry is missing and shows where each item in step 2 is decided. A
-`warn` row means no keyword match: read the spec and either add the decision or confirm an
-existing entry covers it.
+This script is the definition of done. It exits 1 when a required file or entry is missing, and
+shows where each item in step 2 is decided and which MUST rules have no tagged test. A `warn` row
+does not fail: for a checklist item, add the decision or a `rationale` entry with `covers`; for a
+rule, add a test or say in the pull request why it has none.
 
 Then run the repo gates from the root: `pnpm build`, `pnpm test`, `pnpm lint`,
 `pnpm format:check`.
@@ -125,4 +127,5 @@ Then run the repo gates from the root: `pnpm build`, `pnpm test`, `pnpm lint`,
 Base on `main` and never stack. The description lists:
 
 - Each item from step 2 that is not in the spec, with its `rationale` decision.
+- Each MUST rule the status script lists without a test, and why.
 - Check results, including what the example's Verify steps prove.

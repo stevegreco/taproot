@@ -138,6 +138,7 @@ rationale:
       The system sizes and colors a graphic. Choosing an icon set is the adopter's decision, and a
       curated set can come later without changing this contract.
   - decision: Fixed sizes use spacing primitives.
+    covers: [sizes]
     why: >-
       ADR 0003 allows a primitive when no semantic role exists. No semantic size role exists yet,
       and adding one is a token architecture change, not part of adding a component.
@@ -146,14 +147,23 @@ rationale:
       Inside a Button, Badge, or Link label, the icon matches the label's type scale in every size
       and variant without a setting.
   - decision: The graphic takes the current text color, with no color parameter.
+    covers: [forced-colors]
     why: >-
       Color comes from the component or text around the icon, so it follows hover, disabled, and
       status variants, and forced-colors mode, with no extra tokens.
   - decision: Icon has no interaction, disabled, loading, invalid, or selected states.
+    covers: [disabled, selected, loading, invalid]
     why: It is not a control. The component around it owns those states.
   - decision: Icon has no density setting and no motion.
+    covers: [density, reduced-motion]
     why: The size parameter covers density, and a static graphic has nothing to reduce.
   - decision: Icon does not mirror in right-to-left layouts.
+    covers: [right-to-left]
     why: >-
       Only directional symbols, such as arrows, should mirror, and only the adopter knows which
       artwork is directional. They supply mirrored artwork where needed.
+  - decision: Icon always renders without text. Its accessible name comes from the label parameter.
+    covers: [icon-only]
+    why: >-
+      Text beside an icon belongs to the surrounding content, not to Icon. A meaningful icon takes a
+      label, and a decorative one has no name (see decorative-by-default and label-when-meaningful).

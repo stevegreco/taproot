@@ -56,8 +56,8 @@ Grouped by the file you are in.
 
 ## Component tests
 
-- Add the component's row to the table in `test/host-checks.test.js` and to `test/package-root.test.js`.
-  Both tables are hard-coded, so a forgotten row means the component is not tested there.
+- Add the component's row to the table in `test/host-checks.test.js`. A test fails when a
+  component in `src/` has no row. `test/package-root.test.js` finds components itself.
 - Do not repeat the shared host checks in `<name>.test.js`.
 - Token values: never set `--semantic-*` inline. The setup file loads the real `tokens.css`.
   Compare with `resolvedValue(property, "var(--token)")` from `test/helpers/tokens.js`.
@@ -82,8 +82,7 @@ Grouped by the file you are in.
 - The runner waits for hydration before your steps. Do not add sleeps.
 - Mark stable handles in the example with `data-<name>-*` attributes and query those, not text
   positions or classes.
-- `docs/components/<name>.mdx` holds preview prose only. Nav order is `docs/components/meta.ts`,
-  and is optional.
+- `docs/components/<name>.mdx` holds preview prose only.
 
 ## Types
 
