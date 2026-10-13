@@ -3,7 +3,8 @@
 // Reads resolved values from dist/tokens/semantic.*.json because source files
 // contain unresolved aliases. Run it after the token build.
 //
-// Report-only by default — see scripts/audit.js for how that is applied.
+// Failures, including pairs whose tokens are missing, fail `pnpm build`; see
+// scripts/audit.js for the --report-only escape hatch.
 
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
