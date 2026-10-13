@@ -183,8 +183,9 @@ names when switching between light and dark.
 ```
 
 ```js
-document.documentElement.setAttribute("data-theme", "dark");
-document.documentElement.removeAttribute("data-theme"); // Light theme
+document.documentElement.setAttribute("data-theme", "dark"); // Dark theme
+document.documentElement.setAttribute("data-theme", "light"); // Light theme
+document.documentElement.removeAttribute("data-theme"); // Follow the system setting
 ```
 
 Typography and shape mappings are theme-independent. For an intentionally always-dark region,
