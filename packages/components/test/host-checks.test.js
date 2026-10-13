@@ -4,7 +4,8 @@
  * slot, focus forwarding, visible keyboard focus, events reaching the host and
  * not firing while disabled, keyboard activation, the `form` property, enum
  * properties, and properties set before registration. A component's own test
- * file covers only its behavior. Add a row when adding a component.
+ * file covers only its behavior. Add a row when adding a component; a test
+ * fails when a component in src/ has no row.
  */
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
 import { userEvent } from "vitest/browser";
@@ -369,6 +370,12 @@ async function trigger(event, target, options = {}) {
 }
 
 describe("host checks", () => {
+  test("has a row for every component in src/", () => {
+    const files = Object.keys(import.meta.glob(["../src/*.js", "!../src/index.js"]));
+    const ids = files.map((file) => file.slice("../src/".length, -".js".length));
+    expect(elements.map((element) => element.id).sort()).toEqual(ids.sort());
+  });
+
   test.each(rows(elements))(
     "<%s> can be registered under more than one tag name",
     (_tagName, element) => {

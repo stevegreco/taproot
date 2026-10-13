@@ -140,7 +140,7 @@ rationale:
 | `rules`         | no       | Requirements, each with a stable `id`, a `level`, and a `topic`.                        |
 | `accessibility` | no       | The role, where the accessible name comes from, and keyboard interaction.               |
 | `tokens`        | no       | Which design tokens paint each part. See [Tokens](#tokens).                             |
-| `rationale`     | no       | Decisions and why they were made.                                                       |
+| `rationale`     | no       | Decisions and why they were made. `covers` optionally names the checklist items a decision settles, such as `loading`. |
 
 Anatomy roles are `interactive-surface`, `label`, `description`, `indicator`, and `container`.
 
