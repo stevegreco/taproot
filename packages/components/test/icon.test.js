@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
-import { cdp } from "vitest/browser";
 
 import { defineIcon } from "../src/icon.js";
+import { exposedNodes } from "./helpers/accessibility.js";
 import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-icon";
@@ -18,30 +18,6 @@ afterEach(() => {
 function render(markup) {
   document.body.innerHTML = markup;
   return document.body.firstElementChild;
-}
-
-/**
- * The browser's accessibility tree, filtered to nodes with a role. Roles and
- * names set through ElementInternals only show up here, not in the DOM.
- */
-async function exposedNodes() {
-  await cdp().send("Accessibility.enable");
-  // Tests run in an iframe; read every frame, or a hidden node passes vacuously.
-  const { frameTree } = await cdp().send("Page.getFrameTree");
-  const frameIds = [];
-  const collect = (tree) => {
-    frameIds.push(tree.frame.id);
-    tree.childFrames?.forEach(collect);
-  };
-  collect(frameTree);
-  const trees = await Promise.all(
-    frameIds.map((frameId) => cdp().send("Accessibility.getFullAXTree", { frameId })),
-  );
-  const nodes = trees.flatMap((tree) => tree.nodes);
-  expect(nodes.some((node) => node.role?.value === "paragraph" || node.name?.value)).toBe(true);
-  return nodes
-    .filter((node) => !node.ignored)
-    .map((node) => ({ role: node.role?.value, name: node.name?.value ?? "" }));
 }
 
 describe("DsIcon", () => {

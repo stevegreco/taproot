@@ -1,9 +1,9 @@
 /**
  * Verify steps for icon.tsx. Icon sets its role and name through
  * ElementInternals, which only the browser's accessibility tree reports, so the
- * labeled-icon step reads it over CDP.
+ * labeled-icon step reads it with `exposedNodes`.
  */
-export default async function verify({ page, step, eventually }) {
+export default async function verify({ page, step, eventually, exposedNodes }) {
   const example = page.locator("[data-icon-example]");
   const color = (locator) => locator.evaluate((element) => getComputedStyle(element).color);
   const side = (locator) =>
@@ -21,14 +21,8 @@ export default async function verify({ page, step, eventually }) {
   });
 
   await step("the labeled icon is announced as an image named Warning", async () => {
-    const cdp = await page.context().newCDPSession(page);
-    await cdp.send("Accessibility.enable");
-    const named = async () => {
-      const { nodes } = await cdp.send("Accessibility.getFullAXTree");
-      return nodes.some(
-        (node) => !node.ignored && node.role?.value === "image" && node.name?.value === "Warning",
-      );
-    };
+    const named = async () =>
+      (await exposedNodes()).some((node) => node.role === "image" && node.name === "Warning");
     await eventually(named, true, "image named Warning in the accessibility tree");
   });
 

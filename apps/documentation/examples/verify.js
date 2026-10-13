@@ -9,6 +9,8 @@
  */
 import { readdir } from "node:fs/promises";
 
+import { exposedNodes } from "./accessibility.js";
+
 const EXAMPLES_DIR = new URL("./", import.meta.url);
 
 /** Every example slug: the basename of each `examples/*.tsx`. */
@@ -67,7 +69,7 @@ export async function verifyExample(page, baseUrl, slug) {
   });
 
   const { default: verify } = await import(new URL(`./${slug}.verify.js`, EXAMPLES_DIR).href);
-  await verify({ page, step, eventually });
+  await verify({ page, step, eventually, exposedNodes: () => exposedNodes(page) });
 }
 
 /**
