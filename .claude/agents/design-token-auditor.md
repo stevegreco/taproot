@@ -21,7 +21,11 @@ All token systems you review MUST be evaluated against a **three-tier architectu
 2. **Alias (Semantic) Tokens** — Purpose-driven references to global tokens (e.g., `color.brand.primary: {color.blue.500}`, `color.feedback.error: {color.red.600}`). These convey intent and meaning.
 3. **Component (Specific) Tokens** — Scoped to individual components, referencing alias tokens (e.g., `button.primary.background: {color.brand.primary}`, `button.primary.text: {color.text.on-primary}`). These enable component-level customization.
 
-Tokens that skip tiers (e.g., a component token referencing a global token directly) should be flagged as an architectural violation.
+Judge tier use against this system's ADRs (`packages/tokens/docs/adr/`), not a strict chain:
+
+- **The component tier is optional** (ADR 0003). Components consume semantic tokens directly by default. Do not flag a component for lacking component tokens.
+- **A primitive reference is allowed when no semantic role exists** (ADR 0003), such as spacing, duration, or easing scale choices. Do not flag it. Button's padding, duration, and easing aliases in `packages/tokens/src/tokens/components/button.tokens.json` are this case.
+- **Flag a primitive reference only when a semantic token already expresses the same intent**, for example a component color aliasing `primitives.color.*` when a `semantic.color.*` role covers it. Name the semantic token it should use.
 
 ## Audit Procedure
 
@@ -35,7 +39,7 @@ When reviewing design tokens, follow this exact process:
 
 ### Step 2: Structural Validation
 
-- Verify three-tier separation exists and is properly organized
+- Verify primitives and semantics are separated, and that each alias references only what the tier rules above allow
 - Check that references/aliases resolve correctly (no broken references)
 - Validate naming conventions for consistency (kebab-case, dot notation, camelCase — flag inconsistencies)
 - Check for orphaned tokens (defined but never referenced)
