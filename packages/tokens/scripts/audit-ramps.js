@@ -1,8 +1,8 @@
-// Ramp integrity — ADR-0002 §3.
+// Ramp integrity — ADR 0002, "Numbered ramps preserve palette integrity".
 //
 // A numbered stop promises: same hue family, one step of lightness. This
 // asserts the three bounds that promise reduces to, and it is what keeps a
-// surface fill from being given a ramp position it hasn't earned (TOK-04).
+// one-off surface fill from being given a ramp position it hasn't earned.
 
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
@@ -50,9 +50,8 @@ function hsl(hex) {
   return { h, s: (d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1))) * 100 };
 }
 
-// A ramp is a color group whose keys are all numeric. That excludes the
-// surface group, which is keyed by hue name — surfaces are not ramps and are
-// deliberately not subject to these bounds.
+// A ramp is a color group of more than two stops whose keys are all numeric.
+// Single values (white, black) and two-stop groups (grayAlpha) are not ramps.
 function ramps() {
   const colors = JSON.parse(readFileSync(join(ROOT, "dist/tokens/primitives.json"), "utf-8"))
     .primitives.color;
@@ -69,7 +68,7 @@ function ramps() {
 
 export function run() {
   const failures = [];
-  console.log("\nRamp integrity — ADR-0002 §3");
+  console.log("\nRamp integrity — ADR 0002");
   console.log(`  ${"─".repeat(60)}`);
 
   const found = ramps();

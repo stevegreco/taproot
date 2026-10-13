@@ -1,9 +1,9 @@
 // Structural parity between the light and dark semantic themes.
 //
-// Enforces the machine-checkable half of ADR-0002. Contrast says whether a
-// single pair is legible; parity says whether the two themes are the same
-// system. TOK-01 passed every contrast check it was subject to and was still
-// wrong, because nothing compared the themes to each other.
+// Enforces the machine-checkable half of ADR 0002 (theming policy). Contrast
+// says whether a single pair is legible; parity says whether the two themes are
+// the same system. A theme can pass every contrast pair and still be wrong if
+// nothing compares it to the other theme.
 
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
@@ -17,9 +17,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // (robRoy.400 -> 300 is 7 points) and well above float noise.
 const STATIC_L = 5;
 
-// Tokens that are the same in both themes on purpose. Each needs a reason —
-// an empty exemption list is the goal, and every entry here is a claim that
-// the token is theme-independent, not merely that it hasn't been fixed yet.
+// Tokens that are the same in both themes on purpose, as documented in ADR
+// 0002. Each entry is a claim that the token is theme-independent, not merely
+// that it hasn't been fixed yet; add one only alongside the ADR.
 const MIRROR_EXEMPT = new Map([
   [
     "color.foreground.disabled",
@@ -48,10 +48,10 @@ function checkKeys(light, dark, fail) {
   }
 }
 
-// --- 2. Mirrored ramps (ADR-0002 §1) -----------------------------------------
+// --- 2. Mirrored ramps (ADR 0002, "Theme selection belongs in the semantic tier")
 //
 // Every color token must respond to the theme. Comparing the token against
-// itself across themes is the only formulation that catches TOK-01: measured
+// itself across themes is the only formulation that catches a static token: measured
 // against the page instead, status.danger.default looks correct in both
 // themes, because it is darker than the light page and lighter than the dark
 // page — while never actually moving. The page moved past it.
@@ -85,7 +85,7 @@ function checkMirroring(light, dark, fail) {
   }
 }
 
-// --- 3. Interaction-state direction (ADR-0002 §2) ----------------------------
+// --- 3. Interaction-state direction (ADR 0002, "Interaction states move away from the page background")
 //
 // Light themes step toward the darker end of the ramp on hover and pressed;
 // dark themes step toward the lighter end. Pressed is further along than hover
@@ -124,7 +124,7 @@ function checkDirection(theme, name, fail) {
         fail(
           `${group}.${state} — steps the wrong way in ${name}\n` +
             `      default ${states.default} L* ${base.toFixed(0)} → ${state} ${states[state]} L* ${lstar(states[state]).toFixed(0)}\n` +
-            `      ADR-0002 §2: ${name} themes step ${word}`,
+            `      ADR 0002: ${name} themes step ${word}`,
         );
       }
     }
