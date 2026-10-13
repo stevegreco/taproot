@@ -179,7 +179,7 @@ function report(theme, results) {
   }
 
   for (const r of missing) {
-    console.log(`  · ${r.label} — not defined in ${theme} (${r.fgPath} or ${r.bgPath})`);
+    console.log(`  ✘ ${r.label} — not defined in ${theme} (${r.fgPath} or ${r.bgPath})`);
   }
 
   for (const r of exempt) {
@@ -188,7 +188,9 @@ function report(theme, results) {
     );
   }
 
-  return failures.length;
+  // A missing token drops its check, so it counts as a failure: renaming or
+  // deleting a pair token in both themes would otherwise pass parity and here.
+  return failures.length + missing.length;
 }
 
 export function run() {
