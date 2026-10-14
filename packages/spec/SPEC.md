@@ -38,12 +38,20 @@ identity is its `id`, not its path.
 | `title`   | yes      | Display name.                                                                    |
 | `summary` | yes      | One sentence that says when to use the subject. Lists and search results show it. |
 | `tags`    | no       | Lowercase, hyphenated keywords for search.                                       |
-| `status`  | no       | `draft`, `stable`, or `deprecated`. Defaults to `stable`.                        |
+| `status`  | no       | `draft`, `stable`, or `deprecated`. Defaults to `stable`. See [Status](#status). |
 | `links`   | no       | Typed links to other records. See [Links](#links).                               |
 | `sources` | no       | Provenance: `{ title, url }` pairs naming where the record came from.            |
 
 A name is lowercase letters and digits in words joined by hyphens. A name inside an ID may have
 more than one dotted segment, such as `example.action-hierarchy.settings`.
+
+### Status
+
+A component starts as a `draft`: a record with only the required fields (`id`, `type`, `title`,
+`summary`, `description`, `usage`, and `anatomy`) that says what the component is for, so it can be
+reviewed before anyone builds it. A draft has no implementation, and `get` says so. The docs tests
+fail if a draft has an implementation file, or if a component that is not a draft has none, so
+removing `status: draft` is part of the change that ships the first implementation.
 
 ## Component records
 

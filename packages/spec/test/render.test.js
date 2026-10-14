@@ -1,3 +1,6 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { loadSpec, renderRecord } from "../src/index.js";
 import { fixture } from "./helpers.js";
@@ -24,6 +27,33 @@ describe("render", () => {
     expect(lines).toContain("- `calm`: Quiet. Example: Hush");
     expect(lines).toContain("## Rules");
     expect(lines.indexOf("### Content")).toBeLessThan(lines.indexOf("### Behavior"));
+  });
+
+  it("says when a record is a draft, and says nothing for a stable one", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "spec-draft-"));
+    mkdirSync(path.join(dir, "components", "sketch"), { recursive: true });
+    writeFileSync(
+      path.join(dir, "components", "sketch", "sketch.spec.yaml"),
+      [
+        "id: component.sketch",
+        "type: component",
+        "title: Sketch",
+        "summary: Use Sketch for testing drafts.",
+        "status: draft",
+        "description: A component that is not built yet.",
+        "usage:",
+        "  do:",
+        "    - Test drafts.",
+        "anatomy:",
+        "  surface:",
+        "    role: container",
+        "    description: The surface.",
+        "",
+      ].join("\n"),
+    );
+    const drafts = await loadSpec({ contentDir: dir });
+    expect(drafts.render("component.sketch")).toContain("**Status: draft.**");
+    expect(valid.render("component.thing")).not.toContain("**Status:");
   });
 
   it("references alternatives by id and leaves prose as text", () => {
