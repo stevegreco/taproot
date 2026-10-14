@@ -51,9 +51,17 @@ consistent in review.
   for exploring states and themes, not a source of usage guidance. Run it with
   `pnpm exec turbo run dev --filter=storybook` (port 6006).
 
-Before adding a component or variant, read `pnpm spec get guideline.compose-or-propose`, then
-use the `create-component` skill in `.agents/skills/create-component/`. Record each option the
-component does not ship in the spec's `rationale`.
+Before adding a component or variant, read `pnpm spec get guideline.compose-or-propose`. A new
+component is built in three phases, each its own pull request and its own skill in
+`.agents/skills/`:
+
+1. `spec-component`: a minimal spec with `status: draft`, reviewed before anything is built.
+2. `implement-component`: completes the spec (record each option the component does not ship in
+   its `rationale`), builds the web component and its tests, maps the web API, adds stories, and
+   removes `status: draft`.
+3. `document-component`: the docs example and its Verify steps.
+
+`pnpm component:status <name> [--phase spec|implementation|docs]` checks each phase.
 
 Token decisions live in `packages/tokens/docs/adr/`. Do not place design system facts only in a
 documentation page or an agent skill. Those consume the spec.

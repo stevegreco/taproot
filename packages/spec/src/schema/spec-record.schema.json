@@ -529,7 +529,7 @@
             "$ref": "#/$defs/text"
           },
           "covers": {
-            "description": "Component checklist items this decision settles, such as `disabled` or `icon-only`. The create-component skill's status script lists the names.",
+            "description": "Component checklist items this decision settles, such as `disabled` or `icon-only`. `pnpm component:status <name> --phase implementation` lists the names.",
             "type": "array",
             "minItems": 1,
             "uniqueItems": true,
