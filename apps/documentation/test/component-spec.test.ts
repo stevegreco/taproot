@@ -524,7 +524,7 @@ test("known issues show in the intro, after the description, linked when tracked
   );
   assert.match(
     slice?.introMarkdown ?? "",
-    /\n\n### Known issues\n\n- Its text falls below 4\.5:1 on one surface\. \[Tracking issue\]\(https:\/\/github\.com\/stevegreco\/design-system\/issues\/1\)\.\n- It wraps early in narrow tables\.\n\n### When to use/,
+    /\n\n### Known issues\n\n- Its text falls below 4\.5:1 on one surface\. \(\[tracking issue\]\(https:\/\/github\.com\/stevegreco\/design-system\/issues\/1\)\)\n- It wraps early in narrow tables\.\n\n### When to use/,
   );
   assert.doesNotMatch(loadComponentSlice("badge").introMarkdown, /Known issues/);
 });

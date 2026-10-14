@@ -7,12 +7,16 @@
  * Writes a draft record with a `TODO:` placeholder for each field a draft needs.
  * `pnpm spec validate` reports each placeholder until it is replaced. It never overwrites.
  */
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
 const usage = "Usage: pnpm component:new <name> --phase spec   (for example: tooltip)";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const schema = JSON.parse(
+  readFileSync(path.join(root, "packages/spec/src/schema/spec-record.schema.json"), "utf8"),
+);
 
 const { values, positionals } = parseArgs({
   options: { phase: { type: "string" } },
@@ -22,13 +26,26 @@ const [name] = positionals;
 if (
   positionals.length !== 1 ||
   values.phase !== "spec" ||
-  !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(name)
+  !new RegExp(schema.$defs.name.pattern).test(name)
 ) {
   console.error(usage);
   process.exit(2);
 }
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+// A record's identity is its id, not its path, so look for the id in every spec file.
+const contentDir = path.join(root, "packages/spec/content");
+const idLine = new RegExp(`^id:\\s*["']?component\\.${name}["']?\\s*$`, "m");
+const existing = readdirSync(contentDir, { recursive: true }).find(
+  (entry) =>
+    entry.endsWith(".spec.yaml") && idLine.test(readFileSync(path.join(contentDir, entry), "utf8")),
+);
+if (existing) {
+  console.error(
+    `component.${name} already exists in packages/spec/content/${existing}. Edit it instead.`,
+  );
+  process.exit(1);
+}
+
 const relative = `packages/spec/content/components/${name}/${name}.spec.yaml`;
 const file = path.join(root, relative);
 if (existsSync(file)) {

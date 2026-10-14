@@ -12,4 +12,4 @@ anatomy:
     description: The control.
 known-issues:
   - statement: It has a bug.
-    issue: issue 12
+    issue: https://example.com/issues/(12)

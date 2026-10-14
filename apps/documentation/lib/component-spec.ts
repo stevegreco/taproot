@@ -187,11 +187,11 @@ interface RecordBase {
   summary: string;
   status: RecordStatus;
   file: string;
+  "known-issues"?: { statement: string; issue?: string }[];
 }
 
 interface ComponentRecord extends RecordBase {
   description: string;
-  "known-issues"?: { statement: string; issue?: string }[];
   usage?: { avoid?: { situation: string; instead?: string; why?: string }[] };
   parameters?: Record<string, Parameter>;
   events?: Record<string, string>;
@@ -668,7 +668,7 @@ function projectComponent(context: Context, implementation: Implementation): Com
   const use = (record.usage?.do ?? []).map((situation) => `- ${situation}`);
   const avoid = (record.usage?.avoid ?? []).map((item) => formatAvoid(spec, pages, item));
   const knownIssues = (record["known-issues"] ?? []).map(
-    (entry) => `- ${entry.statement}${entry.issue ? ` [Tracking issue](${entry.issue}).` : ""}`,
+    (entry) => `- ${entry.statement}${entry.issue ? ` ([tracking issue](${entry.issue}))` : ""}`,
   );
   const introParts = [record.description];
   if (knownIssues.length > 0) introParts.push(`### Known issues\n\n${knownIssues.join("\n")}`);

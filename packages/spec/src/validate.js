@@ -305,7 +305,7 @@ function checkReferences(record, byId, validById, report) {
 // --- Placeholders ---
 
 /** A `TODO:` value left from a scaffolded draft. Each one is reported until it is replaced. */
-const PLACEHOLDER = /^TODO\b/;
+const PLACEHOLDER = /^\s*TODO\b/i;
 
 function checkPlaceholders(value, pointer, report) {
   if (typeof value === "string") {

@@ -7,7 +7,7 @@ description: A test component.
 usage:
   do:
     - Test things.
-    - "TODO: A concrete situation it is for."
+    - "  todo: A concrete situation it is for."
 anatomy:
   control:
     role: interactive-surface

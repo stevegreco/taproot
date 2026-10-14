@@ -210,9 +210,9 @@
           "$ref": "#/$defs/text"
         },
         "issue": {
-          "description": "URL of the issue that tracks the fix, when there is one.",
+          "description": "URL of the issue that tracks the fix, when there is one. No spaces, parentheses, or angle brackets, so it stays a working Markdown link.",
           "type": "string",
-          "pattern": "^https?://\\S+$"
+          "pattern": "^https?://[^\\s()<>]+$"
         }
       }
     },

@@ -99,7 +99,14 @@ const { values, positionals } = parseArgs({
 });
 const slug = positionals[0];
 const phase = values.phase;
-if (!slug || !/^[a-z][a-z0-9-]*$/.test(slug) || (phase && !PHASES.includes(phase))) {
+const schema = JSON.parse(
+  readFileSync(path.join(root, "packages/spec/src/schema/spec-record.schema.json"), "utf8"),
+);
+if (
+  !slug ||
+  !new RegExp(schema.$defs.name.pattern).test(slug) ||
+  (phase && !PHASES.includes(phase))
+) {
   console.error(
     `Usage: pnpm component:status <name> [--phase ${PHASES.join("|")}]   (for example: checkbox)`,
   );
