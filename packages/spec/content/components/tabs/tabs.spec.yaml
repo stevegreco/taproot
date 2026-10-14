@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.tabs
+type: component
+title: Tabs
+summary: Use Tabs to switch between a few related views of the same subject, one view visible at a time.
+status: draft
+tags:
+  - navigation
+  - disclosure
+links:
+  follows:
+    - guideline.compose-or-propose
+  related:
+    - component.radio-group
+    - component.link
+description: >-
+  A row of labeled tabs above a single panel. Choosing a tab shows its panel in place and hides the
+  others, without leaving the page. One tab is always selected.
+usage:
+  do:
+    - Split a settings page into a few peer sections, such as Profile, Notifications, and Billing.
+    - Show different views of the same item, such as an order's Details, Shipments, and History.
+  avoid:
+    - situation: Move between separate pages, where each choice changes the address.
+      instead: component.link
+      why: Navigation between pages belongs to links, so the address, history, and back button work.
+    - situation: Choose a value that is saved or submitted with a form.
+      instead: component.radio-group
+      why: Tabs change what is shown, not what is stored. A radio group records the choice.
+    - situation: Walk through steps that must be completed in order.
+      instead: A step-by-step flow with previous and next actions
+      why: Tabs imply the sections are peers that can be visited in any order.
+    - situation: Content people need to compare side by side or read straight through.
+      instead: Headings in one scrolling page
+      why: Tabs hide every panel but one, so comparison means switching back and forth.
+    - situation: Show or hide one section on its own, independent of the others.
+      instead: A disclosure that expands in place
+      why: Tabs always show exactly one panel. Independent sections need their own toggle.
+anatomy:
+  tab-list:
+    role: container
+    description: The row of tabs, labeled as a set.
+  tab:
+    role: interactive-surface
+    description: One labeled tab that selects its panel.
+  selected-indicator:
+    role: indicator
+    description: Mark on the selected tab that shows which panel is visible.
+  panel:
+    role: container
+    description: The content of the selected tab, shown below the tab list.
