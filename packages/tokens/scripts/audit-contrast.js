@@ -111,6 +111,13 @@ const PAIRS = [
       NON_TEXT,
       `${s} border on quiet status surface`,
     ],
+    // Controls inside a status message, such as Alert's dismiss control.
+    [
+      "color.border.focus",
+      `color.background.status.${s}.default`,
+      NON_TEXT,
+      `focus border on quiet ${s} status`,
+    ],
   ]),
 
   // Disabled — reported, never blocking

@@ -1,3 +1,4 @@
+import type { DsAlertAttributes } from "./alert.js";
 import type { DsBadgeAttributes } from "./badge.js";
 import type { DsButtonAttributes } from "./button.js";
 import type { DsCheckboxAttributes } from "./checkbox.js";
@@ -10,6 +11,7 @@ import type { DsSelectAttributes } from "./select.js";
 import type { DsSwitchAttributes } from "./switch.js";
 import type { DsTextAreaAttributes } from "./text-area.js";
 
+export * from "./alert.js";
 export * from "./badge.js";
 export * from "./button.js";
 export * from "./checkbox.js";
@@ -27,6 +29,7 @@ export * from "./text-area.js";
  * framework's intrinsic elements to type templates, such as JSX.
  */
 export interface ElementAttributes {
+  "ds-alert": DsAlertAttributes;
   "ds-badge": DsBadgeAttributes;
   "ds-button": DsButtonAttributes;
   "ds-checkbox": DsCheckboxAttributes;
