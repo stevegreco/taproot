@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 /**
- * The definition of done for a component: the spec, the hand-written runtime,
- * its tests, and the docs pieces, plus the "decide what it ships" checklist
- * and which MUST rules have tests. This script is the only complete list;
- * SKILL.md describes the steps.
+ * The definition of done for a component, by phase. Each phase is its own
+ * skill and its own pull request, in order:
  *
- *   node .agents/skills/create-component/scripts/status.mjs <name>
+ *   spec            a draft spec record (spec-component)
+ *   implementation  runtime, tests, web API file, and stories (implement-component)
+ *   docs            the docs example and its Verify steps (document-component)
  *
- * Exits 1 when a required file or entry is missing, or when a rationale entry
- * names an unknown checklist item. `warn` rows do not fail.
+ *   pnpm component:status <name> [--phase spec|implementation|docs]
+ *
+ * With no phase, every phase is checked. This script is the only complete
+ * list; each SKILL.md describes the steps. Exits 1 when a required file or
+ * entry is missing, or when a rationale entry names an unknown checklist item.
+ * `warn` rows do not fail.
  *
  * Lists that tests derive from the filesystem (content.test.js,
  * package-root.test.js) need no entry and are not checked here.
@@ -17,6 +21,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
 
 /**
  * The "decide what it ships" checklist. A spec settles an item with a
@@ -86,12 +91,21 @@ const CHECKLIST = [
   },
 ];
 
-const root = fileURLToPath(new URL("../../../../", import.meta.url));
-const slug = process.argv[2];
-if (!slug || !/^[a-z][a-z0-9-]*$/.test(slug)) {
-  console.error("Usage: status.mjs <name>   (for example: checkbox)");
+const PHASES = ["spec", "implementation", "docs"];
+const root = fileURLToPath(new URL("../", import.meta.url));
+const { values, positionals } = parseArgs({
+  allowPositionals: true,
+  options: { phase: { type: "string" } },
+});
+const slug = positionals[0];
+const phase = values.phase;
+if (!slug || !/^[a-z][a-z0-9-]*$/.test(slug) || (phase && !PHASES.includes(phase))) {
+  console.error(
+    `Usage: pnpm component:status <name> [--phase ${PHASES.join("|")}]   (for example: checkbox)`,
+  );
   process.exit(2);
 }
+const inPhase = (name) => !phase || phase === name;
 
 const pascal = slug
   .split("-")
@@ -111,54 +125,82 @@ const row = (ok, label, detail = "") => {
   console.log(`  ${mark}  ${label}${detail ? `  (${detail})` : ""}`);
 };
 
-console.log(`\nFiles for component.${slug}`);
-const files = [
-  specPath,
-  `packages/components/src/${slug}.js`,
-  `packages/components/src/${slug}.css`,
-  `packages/components/src/${slug}.d.ts`,
-  testPath,
-  `apps/documentation/implementation/${slug}.md`,
-  `apps/documentation/examples/${slug}.tsx`,
-  `apps/documentation/examples/${slug}.verify.js`,
-  `apps/storybook/stories/${slug}.stories.js`,
-];
-for (const file of files) row(existsSync(path.join(root, file)), file);
-
-console.log("\nHand-written entries");
 const has = (file, pattern) => pattern.test(read(file) ?? "");
-row(
-  has("packages/components/src/index.js", new RegExp(`^define${pascal}\\(\\);$`, "m")),
-  `src/index.js exports and calls define${pascal}`,
-);
-row(
-  has("packages/components/src/index.d.ts", new RegExp(`\\./${slug}\\.js`)),
-  "src/index.d.ts re-exports the types and adds the JSX attributes",
-);
-row(
-  has("packages/components/test/host-checks.test.js", new RegExp(`id: "${slug}"`)),
-  "test/host-checks.test.js table row",
-);
-const exampleSource = read(`apps/documentation/examples/${slug}.tsx`);
-if (exampleSource) {
-  row(
-    exampleSource.includes(`\`${slug}.verify.js\``),
-    `examples/${slug}.tsx Verify header names ${slug}.verify.js`,
-  );
-}
-const prose = existsSync(path.join(root, `apps/documentation/docs/components/${slug}.mdx`));
-row(prose ? true : "warn", `docs/components/${slug}.mdx preview prose`, prose ? "" : "optional");
-
 const specSource = read(specPath);
+let spec;
 if (specSource) {
   const requireFromSpec = createRequire(path.join(root, "packages/spec/package.json"));
-  const { parse } = requireFromSpec("yaml");
-  const spec = parse(specSource);
-  checklist(spec);
-  ruleCoverage(spec, read(testPath) ?? "");
-} else {
-  console.log("\nDecide-what-it-ships items (no spec yet)");
-  for (const item of CHECKLIST) console.log(`  todo  ${item.label}: ${item.question}`);
+  spec = requireFromSpec("yaml").parse(specSource);
+}
+
+if (inPhase("spec")) {
+  console.log(`\nSpec phase: component.${slug}`);
+  row(Boolean(specSource), specPath);
+  const built = existsSync(path.join(root, `apps/documentation/implementation/${slug}.md`));
+  if (spec && !built) {
+    row(
+      spec.status === "draft",
+      "status: draft",
+      spec.status === "draft"
+        ? "remove it in the pull request that ships the implementation"
+        : "a spec with no implementation is a draft",
+    );
+  }
+  console.log("  note  run `pnpm spec validate` for the schema and links");
+}
+
+if (inPhase("implementation")) {
+  console.log(`\nImplementation phase: component.${slug}`);
+  for (const file of [
+    `packages/components/src/${slug}.js`,
+    `packages/components/src/${slug}.css`,
+    `packages/components/src/${slug}.d.ts`,
+    testPath,
+    `apps/documentation/implementation/${slug}.md`,
+    `apps/storybook/stories/${slug}.stories.js`,
+  ]) {
+    row(existsSync(path.join(root, file)), file);
+  }
+  row(
+    has("packages/components/src/index.js", new RegExp(`^define${pascal}\\(\\);$`, "m")),
+    `src/index.js exports and calls define${pascal}`,
+  );
+  row(
+    has("packages/components/src/index.d.ts", new RegExp(`\\./${slug}\\.js`)),
+    "src/index.d.ts re-exports the types and adds the JSX attributes",
+  );
+  row(
+    has("packages/components/test/host-checks.test.js", new RegExp(`id: "${slug}"`)),
+    "test/host-checks.test.js table row",
+  );
+  if (spec) {
+    const draft = spec.status === "draft";
+    row(!draft, "spec has no status: draft", draft ? "remove it now that it is built" : "");
+    checklist(spec);
+    ruleCoverage(spec, read(testPath) ?? "");
+  } else {
+    console.log("\n  Decide-what-it-ships items (no spec yet)");
+    for (const item of CHECKLIST) console.log(`  todo  ${item.label}: ${item.question}`);
+  }
+}
+
+if (inPhase("docs")) {
+  console.log(`\nDocs phase: component.${slug}`);
+  for (const file of [
+    `apps/documentation/examples/${slug}.tsx`,
+    `apps/documentation/examples/${slug}.verify.js`,
+  ]) {
+    row(existsSync(path.join(root, file)), file);
+  }
+  const exampleSource = read(`apps/documentation/examples/${slug}.tsx`);
+  if (exampleSource) {
+    row(
+      exampleSource.includes(`\`${slug}.verify.js\``),
+      `examples/${slug}.tsx Verify header names ${slug}.verify.js`,
+    );
+  }
+  const prose = existsSync(path.join(root, `apps/documentation/docs/components/${slug}.mdx`));
+  row(prose ? true : "warn", `docs/components/${slug}.mdx preview prose`, prose ? "" : "optional");
 }
 
 console.log(missing ? `\n${missing} required item(s) missing.` : "\nNo required items missing.");
@@ -176,7 +218,7 @@ function checklist(spec) {
   const rules = (spec.rules ?? []).map((rule) => `${rule.id} ${rule.statement}`);
   const rationaleText = rationale.map((entry) => `${entry.decision} ${entry.why}`);
 
-  console.log("\nDecide-what-it-ships items (covers marker, else keyword scan)");
+  console.log("\n  Decide-what-it-ships items (covers marker, else keyword scan)");
   for (const item of CHECKLIST) {
     const marked = rationale.find((entry) => entry.covers?.includes(item.id));
     if (marked) {
@@ -217,7 +259,7 @@ function ruleCoverage(spec, testSource) {
   );
   const untested = must.filter((rule) => !tagged.has(rule.id));
 
-  console.log(`\nMUST rules (except content) with a test tagged [rule-id] in ${testPath}`);
+  console.log(`\n  MUST rules (except content) with a test tagged [rule-id] in ${testPath}`);
   if (untested.length === 0) {
     row(true, `all ${must.length} MUST rule(s)`);
     return;

@@ -9,7 +9,8 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
-    "spec": "node packages/spec/bin/ds-spec.js"
+    "spec": "node packages/spec/bin/ds-spec.js",
+    "component:status": "node scripts/component-status.mjs"
   },
   "devDependencies": {
     "oxfmt": "^0.62.0",
