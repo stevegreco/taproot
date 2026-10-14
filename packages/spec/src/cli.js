@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { parseArgs } from "node:util";
 import { SpecError } from "./index.js";
 import { loadFromConfig, resolveConfig } from "./config.js";
@@ -7,9 +8,10 @@ const str = { type: "string" };
 
 const COMMANDS = {
   validate: {
-    usage: "ds-spec validate",
-    summary: "Check every record; list issues.",
-    options: {},
+    usage: "ds-spec validate [--issues]",
+    summary:
+      "Check every record; list issues. --issues also warns about known issues whose tracking issue is closed (uses the network).",
+    options: { issues: { type: "boolean" } },
   },
   list: {
     usage: "ds-spec list [--type <t>] [--tag <tag>] [--status <s>]",
@@ -73,6 +75,22 @@ function helpText(command) {
   ].join("\n");
 }
 
+/** A token for GitHub lookups: the environment's, or the GitHub CLI's when it is signed in. */
+function githubToken() {
+  const fromEnv = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  if (fromEnv) return fromEnv;
+  try {
+    return (
+      execFileSync("gh", ["auth", "token"], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim() || undefined
+    );
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Run the CLI. Returns the exit code.
  *
@@ -131,7 +149,8 @@ export async function run(argv, io = {}) {
   try {
     if (command === "validate") {
       const { contentDir } = resolveConfig(loadOptions);
-      return print(await ops.validate({ contentDir }));
+      const token = values.issues ? githubToken() : undefined;
+      return print(await ops.validate({ contentDir, checkIssues: values.issues, token }));
     }
 
     // An id can be a name with spaces, such as `get text field`, so its words are joined.

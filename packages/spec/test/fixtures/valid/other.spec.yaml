@@ -16,3 +16,8 @@ anatomy:
   control:
     role: interactive-surface
     description: The control.
+known-issues:
+  - statement: Its focus ring is too faint on the dark surface.
+    issue: https://github.com/acme/design-system/issues/12
+  - statement: It flickers in one old browser.
+    issue: https://tracker.example.com/browse/DS-7

@@ -497,3 +497,31 @@ test("every implementation file's api rows resolve against its record", () => {
     );
   }
 });
+
+test("open known issues show in the intro, after the description", async () => {
+  const spec = await loadSpec();
+  const entry = {
+    statement: "Its text falls below 4.5:1 on one surface.",
+    issue: "https://github.com/stevegreco/design-system/issues/1",
+  };
+  const withIssue = {
+    contentDir: spec.contentDir,
+    get: (id: string) =>
+      id === "component.badge"
+        ? { ...(spec.get(id) as object), "known-issues": [entry] }
+        : spec.get(id),
+    section: (target: string) => spec.section(target),
+    links: (id: string) => spec.links(id),
+  };
+  const badge = loadImplementations(join(docsRoot, "implementation/")).filter(
+    (item) => item.component === "component.badge",
+  );
+  const slice = assembleSlices(withIssue, badge, mkdtempSync(join(tmpdir(), "assets-"))).get(
+    "badge",
+  );
+  assert.match(
+    slice?.introMarkdown ?? "",
+    /\n\n### Known issues\n\n- Its text falls below 4\.5:1 on one surface\. \[Tracking issue\]\(https:\/\/github\.com\/stevegreco\/design-system\/issues\/1\)\.\n\n### When to use/,
+  );
+  assert.doesNotMatch(loadComponentSlice("badge").introMarkdown, /Known issues/);
+});
