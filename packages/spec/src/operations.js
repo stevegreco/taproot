@@ -5,7 +5,6 @@ import {
   loadImplementations,
   renderImplementation,
 } from "./implementation.js";
-import { issueStates } from "./known-issues.js";
 import { editDistance, typoAllowance } from "./util.js";
 
 /**
@@ -335,36 +334,9 @@ export function tokens(spec, { id: typed, part, condition, property, resolve } =
 }
 
 /** @param {import("./index.js").LoadOptions} options */
-/**
- * @param {{ contentDir: string, checkIssues?: boolean, fetch?: typeof globalThis.fetch, token?: string }} options
- *   With `checkIssues`, also look up each known issue's tracking issue and warn about the closed
- *   ones and the ones it could not check. Warnings do not fail validation.
- */
 export async function validate(options) {
-  const { issues, recordCount, knownIssues } = await validateSpec(options);
-  const result = formatIssues(issues, recordCount);
-  if (!options.checkIssues) return result;
-
-  const states = await issueStates(knownIssues, options);
-  const where = (entry) => `${entry.file}${entry.line ? `:${entry.line}` : ""} ${entry.path}`;
-  const warnings = states.flatMap((entry) => {
-    if (entry.state === "closed") {
-      return [
-        `${where(entry)} warning: ${entry.issue} is closed; remove the entry or reopen the issue`,
-      ];
-    }
-    if (entry.state === "unknown") {
-      return [`${where(entry)} warning: could not check ${entry.issue}: ${entry.reason}`];
-    }
-    return [];
-  });
-  const closed = states.filter((entry) => entry.state === "closed").length;
-  const count = `Known issues: ${states.length} checked, ${closed} closed.`;
-  return {
-    ...result,
-    text: [result.text, ...warnings, count].join("\n"),
-    data: { ...result.data, knownIssues: states },
-  };
+  const { issues, recordCount } = await validateSpec(options);
+  return formatIssues(issues, recordCount);
 }
 
 /** @param {import("./validate.js").Issue[]} issues */

@@ -498,7 +498,7 @@ test("every implementation file's api rows resolve against its record", () => {
   }
 });
 
-test("open known issues show in the intro, after the description", async () => {
+test("known issues show in the intro, after the description, linked when tracked", async () => {
   const spec = await loadSpec();
   const entry = {
     statement: "Its text falls below 4.5:1 on one surface.",
@@ -508,7 +508,10 @@ test("open known issues show in the intro, after the description", async () => {
     contentDir: spec.contentDir,
     get: (id: string) =>
       id === "component.badge"
-        ? { ...(spec.get(id) as object), "known-issues": [entry] }
+        ? {
+            ...(spec.get(id) as object),
+            "known-issues": [entry, { statement: "It wraps early in narrow tables." }],
+          }
         : spec.get(id),
     section: (target: string) => spec.section(target),
     links: (id: string) => spec.links(id),
@@ -521,7 +524,7 @@ test("open known issues show in the intro, after the description", async () => {
   );
   assert.match(
     slice?.introMarkdown ?? "",
-    /\n\n### Known issues\n\n- Its text falls below 4\.5:1 on one surface\. \[Tracking issue\]\(https:\/\/github\.com\/stevegreco\/design-system\/issues\/1\)\.\n\n### When to use/,
+    /\n\n### Known issues\n\n- Its text falls below 4\.5:1 on one surface\. \[Tracking issue\]\(https:\/\/github\.com\/stevegreco\/design-system\/issues\/1\)\.\n- It wraps early in narrow tables\.\n\n### When to use/,
   );
   assert.doesNotMatch(loadComponentSlice("badge").introMarkdown, /Known issues/);
 });

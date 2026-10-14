@@ -1,6 +1,5 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { collectKnownIssues } from "./known-issues.js";
 import { createSpec } from "./spec.js";
 import { readSourceFiles } from "./load.js";
 import { schema } from "./schema/info.js";
@@ -61,14 +60,13 @@ export async function loadSpec(options = {}) {
 
 /**
  * Do the same work as `loadSpec`, and return the issues instead of throwing.
- * `knownIssues` lists the `known-issues` entries of the records that passed their schema.
  *
  * @param {LoadOptions} [options]
- * @returns {Promise<{ issues: Issue[], recordCount: number, knownIssues: import("./known-issues.js").KnownIssue[] }>}
+ * @returns {Promise<{ issues: Issue[], recordCount: number }>}
  */
 export async function validateSpec(options = {}) {
-  const { issues, sources, records } = await check(options);
-  return { issues, recordCount: sources.length, knownIssues: collectKnownIssues(records) };
+  const { issues, sources } = await check(options);
+  return { issues, recordCount: sources.length };
 }
 
 /**

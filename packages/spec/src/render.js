@@ -72,8 +72,8 @@ function renderRecord(state, record, omit) {
 /** Open problems go near the top, so a reader meets them before building on the record. */
 function renderKnownIssues(knownIssues = []) {
   if (knownIssues.length === 0) return "";
-  const items = knownIssues.map(
-    ({ statement, issue }) => `${statement} ([${issueLabel(issue)}](${issue}))`,
+  const items = knownIssues.map(({ statement, issue }) =>
+    issue ? `${statement} ([${issueLabel(issue)}](${issue}))` : statement,
   );
   return `## Known issues\n\n${bullets(items)}`;
 }

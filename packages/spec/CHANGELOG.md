@@ -48,9 +48,8 @@ Breaking. The package is now a library over the authored files, and the record f
   version 1 is unreleased, so it stays at 1.
 - Removed the `build`, `prepack`, and `clean` scripts, and the dependencies `@stevegreco/design-system`,
   `js-yaml`, `parse5`, and `unist-util-visit`.
-- New optional `known-issues` field on every record: open problems, each a `statement` and the URL
-  of the `issue` that tracks it. `get` shows them under the summary, `validateSpec` returns them as
-  `knownIssues`, and `ds-spec validate --issues` warns about entries whose GitHub issue is closed.
+- New optional `known-issues` field on every record: open problems, each a `statement` and an
+  optional `issue` URL that tracks the fix. `get` shows them under the summary.
 - Validation reports any text value that starts with `TODO`, the placeholder in the draft that the
   repository's `pnpm component:new <name> --phase spec` writes.
 

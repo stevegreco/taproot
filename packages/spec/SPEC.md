@@ -41,7 +41,7 @@ identity is its `id`, not its path.
 | `status`  | no       | `draft`, `stable`, or `deprecated`. Defaults to `stable`. See [Status](#status). |
 | `links`   | no       | Typed links to other records. See [Links](#links).                               |
 | `sources` | no       | Provenance: `{ title, url }` pairs naming where the record came from.            |
-| `known-issues` | no  | Open problems, each a `{ statement, issue }` pair. See [Known issues](#known-issues). |
+| `known-issues` | no  | Open problems: a `statement`, and an optional `issue` URL. See [Known issues](#known-issues). |
 
 A name is lowercase letters and digits in words joined by hyphens. A name inside an ID may have
 more than one dotted segment, such as `example.action-hierarchy.settings`.
@@ -57,9 +57,9 @@ removing `status: draft` is part of the change that ships the first implementati
 ### Known issues
 
 `rationale` is permanent: it says why a decision was made. A problem waiting on a fix is not a
-decision, so it goes in `known-issues` instead, as a short `statement` and the URL of the `issue`
-that tracks it. `get` and the docs page show each entry under the summary, so readers meet it
-before building on the record.
+decision, so it goes in `known-issues` instead, as a short `statement`. Add the URL of the `issue`
+that tracks the fix when there is one. `get` and the docs page show each entry under the summary,
+so readers meet it before building on the record.
 
 ```yaml
 known-issues:
@@ -67,9 +67,7 @@ known-issues:
     issue: https://github.com/stevegreco/design-system/issues/183
 ```
 
-Remove the entry in the change that closes the issue. `ds-spec validate --issues` looks up each
-GitHub issue and warns about the closed ones, without failing; it needs the network, so plain
-`validate` does not do it.
+Remove the entry in the change that fixes the problem.
 
 ## Component records
 
