@@ -44,6 +44,9 @@ Grouped by the file you are in.
   `customElements.define`.
 - Never set attributes in the constructor. Attribute changes during an upgrade do not reach
   `attributeChangedCallback`.
+- Set the host's own role, accessible name, and hidden state through `ElementInternals`
+  (`this.#internals.role`, `ariaLabel`, `ariaHidden`), not `role` or `aria-*` attributes. That
+  keeps the consumer's attributes theirs and works in the constructor. Icon is the reference.
 - Every property with a setter is replayed on upgrade. A setter with side effects (Checkbox's
   `checked` marks the box dirty) must still behave when called from `connectedCallback`.
 - Form controls follow Text field and Checkbox: `static formAssociated = true`, `attachInternals`,
@@ -61,6 +64,14 @@ Grouped by the file you are in.
 - Do not repeat the shared host checks in `<name>.test.js`.
 - Token values: never set `--semantic-*` inline. The setup file loads the real `tokens.css`.
   Compare with `resolvedValue(property, "var(--token)")` from `test/helpers/tokens.js`.
+- Role and name set through `ElementInternals` are invisible to the DOM, and to Vitest and
+  Playwright role locators. Read them with `exposedNodes()` from `test/helpers/accessibility.js`,
+  which returns `{ role, name }` for each node in the browser's accessibility tree. Do not call
+  `Accessibility.getFullAXTree` yourself: tests run in an iframe, the call reads the top frame by
+  default, and an "is hidden" assertion then passes against a tree that never had the component.
+  The helper throws instead.
+- A hidden-element test passes when nothing renders. Pair it with a positive test that reads the
+  same tree, and see each one fail at least once.
 - No test compares the implementation to the spec. Review them together.
 
 ## Docs implementation file
@@ -75,11 +86,15 @@ Grouped by the file you are in.
 - The example header is exactly:
   `/**\n * Verify: run the steps in \`<name>.verify.js\`. The docs tests run them against the built site.\n */`
   The docs test fails without it.
-- `<name>.verify.js` is plain JS: `export default async function verify({ page, step, eventually })`.
+- `<name>.verify.js` is plain JS:
+  `export default async function verify({ page, step, eventually, exposedNodes })`.
   Name each step for what it proves. Use `eventually(read, expected, what)` for anything React
   updates after an action.
 - Playwright CSS locators pierce open shadow roots: `form.locator("ds-checkbox input")`.
 - The runner waits for hydration before your steps. Do not add sleeps.
+- For roles and names set through `ElementInternals`, take `exposedNodes` from the verify
+  arguments and poll it with `eventually`. It reads the right frame and throws if the example is
+  not in the tree. Do not open your own CDP session.
 - Mark stable handles in the example with `data-<name>-*` attributes and query those, not text
   positions or classes.
 - `docs/components/<name>.mdx` holds preview prose only.

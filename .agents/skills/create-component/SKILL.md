@@ -62,7 +62,22 @@ format is in `packages/spec/SPEC.md`.
 
 Check: `pnpm spec validate`.
 
-### 4. Write the runtime
+### 4. Write the failing tests
+
+Before any runtime code, list the spec's MUST rules and write one test per rule in
+`packages/components/test/<name>.test.js`:
+
+```bash
+pnpm spec rules --id component.<name> --level must
+```
+
+Start each test name with the IDs of the rules it proves, such as
+`"[square-box] scales slotted artwork to fill the square"`. Run them and watch every one fail.
+A test that passes before the runtime exists proves nothing. That is how Icon's first "is hidden"
+test passed while reading the wrong frame. For role, name, or hidden state, use `exposedNodes()`
+from `test/helpers/accessibility.js` (see the gotchas).
+
+### 5. Write the runtime
 
 By hand, in `packages/components`:
 
@@ -72,16 +87,15 @@ By hand, in `packages/components`:
 - Entries in `src/index.js` (import, export, and call the define helper) and `src/index.d.ts`
   (import, re-export, and the JSX attributes map).
 
-### 5. Test it
+### 6. Finish the tests
 
-- `test/<name>.test.js`: this component's behavior only.
+- `test/<name>.test.js`: this component's behavior only. Add tests for SHOULD rules and anything
+  else the runtime does. Every test from step 4 now passes.
 - A row in the table in `test/host-checks.test.js`. The shared checks cover alias registration,
   `hidden`, parts, the required slot, focus forwarding, visible focus, events while disabled,
   keyboard activation, `form`, enum properties, and properties set before registration. The test
   fails if a component in `src/` has no row.
-- Start each test name with the IDs of the spec rules it proves, such as
-  `"[square-box] scales slotted artwork to fill the square"`. The status script lists MUST rules
-  with no tagged test.
+- The status script lists MUST rules with no tagged test.
 
 `test/package-root.test.js` and `packages/spec/test/content.test.js` find components and records
 on disk, so they need no edits.
@@ -90,7 +104,7 @@ Nothing checks the implementation against the spec. When you change one, read th
 
 Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 
-### 6. Document and verify
+### 7. Document and verify
 
 In `apps/documentation`:
 
@@ -108,7 +122,7 @@ In `apps/storybook`, add `stories/<name>.stories.js`: a control for every attrib
 per notable state. Copy `stories/checkbox.stories.js`. Check that the Accessibility panel reports no
 violations in both themes: `pnpm exec turbo run dev --filter=storybook`.
 
-### 7. Confirm completeness
+### 8. Confirm completeness
 
 ```bash
 node .agents/skills/create-component/scripts/status.mjs <name>
