@@ -1,6 +1,7 @@
 # Gotchas
 
-Grouped by the file you are in.
+Grouped by the file you are in. The docs example and Verify steps have their own skill,
+document-component.
 
 ## Contents
 
@@ -8,7 +9,6 @@ Grouped by the file you are in.
 - Runtime
 - Component tests
 - Docs implementation file
-- Docs example and Verify steps
 - Types
 - Commands
 
@@ -81,34 +81,13 @@ Grouped by the file you are in.
 - Keep the body to web-specific guidance. Rules, anatomy, and tokens come from the spec.
 - Copy `implementation/button.md` or `text-field.md`.
 
-## Docs example and Verify steps
-
-- The example header is exactly:
-  `/**\n * Verify: run the steps in \`<name>.verify.js\`. The docs tests run them against the built site.\n */`
-  The docs test fails without it.
-- `<name>.verify.js` is plain JS:
-  `export default async function verify({ page, step, eventually, exposedNodes })`.
-  Name each step for what it proves. Use `eventually(read, expected, what)` for anything React
-  updates after an action.
-- Playwright CSS locators pierce open shadow roots: `form.locator("ds-checkbox input")`.
-- The runner waits for hydration before your steps. Do not add sleeps.
-- For roles and names set through `ElementInternals`, take `exposedNodes` from the verify
-  arguments and poll it with `eventually`. It reads the right frame and throws if the example is
-  not in the tree. Do not open your own CDP session.
-- Mark stable handles in the example with `data-<name>-*` attributes and query those, not text
-  positions or classes.
-- `docs/components/<name>.mdx` holds preview prose only.
-
 ## Types
 
 - `src/<name>.d.ts` and the `src/index.d.ts` entries are hand-written. Declare a property per
   public property, an attribute per public attribute, an enum alias for enum properties, and the
   `HTMLElementTagNameMap` entry.
-- `examples/custom-elements.d.ts` maps element attributes onto JSX once. Check whether the new
-  component needs an entry there.
 
 ## Commands
 
 - `pnpm spec validate` reports each spec mistake once, with file and line.
 - Several filters can run in one turbo command; each package builds once before its tests.
-- The docs tests build the docs site first, so they take longer than the others.

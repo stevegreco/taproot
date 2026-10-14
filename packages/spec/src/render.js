@@ -3,6 +3,13 @@ import { links, tokens } from "./query.js";
 import { byCodeUnit, recordIdOf } from "./util.js";
 
 const TOPICS = ["content", "behavior", "accessibility"];
+/** Shown under the summary for records that are not stable. */
+const STATUS_NOTES = {
+  draft:
+    "**Status: draft.** Still being specified. A draft component has no implementation yet, so do not build with it.",
+  deprecated: "**Status: deprecated.** Do not use it in new work.",
+};
+
 const FIELD_ORDER = [
   "usage",
   "anatomy",
@@ -41,7 +48,7 @@ const join = (blocks) => `${blocks.filter(Boolean).join("\n\n")}\n`;
 // --- Records ---
 
 function renderRecord(state, record, omit) {
-  const blocks = [`# ${record.title}`, record.summary];
+  const blocks = [`# ${record.title}`, record.summary, STATUS_NOTES[record.status]];
   if (record.type === "component") {
     blocks.push(record.description);
     for (const field of FIELD_ORDER) {

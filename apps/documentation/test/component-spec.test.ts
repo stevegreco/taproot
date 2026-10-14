@@ -376,7 +376,7 @@ test("the button page frontmatter matches the slice title and summary", () => {
   assert.match(source, /section="review"/, "review stays available without a TOC heading");
 });
 
-test("every component record has a page, and every prose file has a record", () => {
+test("every implemented component has a page, and every prose file has one", () => {
   const prose = readdirSync(join(docsRoot, "docs/components"))
     .filter((file) => file.endsWith(".mdx"))
     .map((file) => file.slice(0, -".mdx".length));
@@ -408,16 +408,31 @@ test("a page imports, registers, and shows usage from the binding", () => {
   assert.doesNotMatch(source, /^## Variants$/m, "no heading for a section without content");
 });
 
-test("a spec component gets a page only when it has an implementation file", async () => {
+test("a built component has an implementation file, and a draft component has none", async () => {
   const spec = await loadSpec();
-  const components = spec
-    .list({ type: "component" })
+  const components = spec.list({ type: "component" });
+  const drafts = components
+    .filter((record) => record.status === "draft")
+    .map((record) => record.id.slice("component.".length));
+  const built = components
+    .filter((record) => record.status !== "draft")
     .map((record) => record.id.slice("component.".length));
   const implemented = loadImplementations(join(docsRoot, "implementation/")).map((item) =>
     item.component.slice("component.".length),
   );
 
-  for (const slug of implemented) assert.ok(components.includes(slug), `component.${slug} exists`);
+  for (const slug of built) {
+    assert.ok(
+      implemented.includes(slug),
+      `component.${slug} is not a draft, so it needs implementation/${slug}.md`,
+    );
+  }
+  for (const slug of drafts) {
+    assert.ok(
+      !implemented.includes(slug),
+      `component.${slug} has implementation/${slug}.md, so remove status: draft from its spec`,
+    );
+  }
   assert.deepEqual([...componentSlugs()].sort(), [...implemented].sort());
 });
 
