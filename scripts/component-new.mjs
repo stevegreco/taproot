@@ -1,43 +1,30 @@
 #!/usr/bin/env node
 /**
- * Scaffold a component phase's files.
+ * Scaffold a draft spec for the spec phase.
  *
  *   pnpm component:new <name> --phase spec
  *
- * The spec phase writes a draft record with `TODO:` placeholders for the fields the schema
- * requires. `pnpm spec validate` reports each placeholder until it is replaced. It never
- * overwrites: if the record exists, it stops.
+ * Writes a draft record with a `TODO:` placeholder for each field a draft needs.
+ * `pnpm spec validate` reports each placeholder until it is replaced. It never overwrites.
  */
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
-import { draftComponent } from "../packages/spec/src/draft.js";
 
-const SCAFFOLDED = ["spec"];
-const usage = `Usage: pnpm component:new <name> --phase ${SCAFFOLDED.join("|")}   (for example: tooltip)`;
+const usage = "Usage: pnpm component:new <name> --phase spec   (for example: tooltip)";
 
 const { values, positionals } = parseArgs({
   options: { phase: { type: "string" } },
   allowPositionals: true,
 });
 const [name] = positionals;
-if (!name || positionals.length > 1 || !values.phase) {
+if (
+  positionals.length !== 1 ||
+  values.phase !== "spec" ||
+  !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(name)
+) {
   console.error(usage);
-  process.exit(2);
-}
-if (!SCAFFOLDED.includes(values.phase)) {
-  console.error(`Only --phase ${SCAFFOLDED.join(", ")} is scaffolded so far.\n${usage}`);
-  process.exit(2);
-}
-
-let source;
-try {
-  source = draftComponent(name, {
-    header: "# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json",
-  });
-} catch (error) {
-  console.error(`${error.message}\n${usage}`);
   process.exit(2);
 }
 
@@ -49,10 +36,32 @@ if (existsSync(file)) {
   process.exit(1);
 }
 
-mkdirSync(path.dirname(file), { recursive: true });
-writeFileSync(file, source);
-console.log(`Wrote ${relative}
+// `radio-group` → `Radio group`, the way component titles are written.
+const title = name[0].toUpperCase() + name.slice(1).replaceAll("-", " ");
 
-Next:
-  1. Replace every TODO: placeholder. \`pnpm spec validate\` lists the ones left.
-  2. pnpm component:status ${name} --phase spec`);
+mkdirSync(path.dirname(file), { recursive: true });
+writeFileSync(
+  file,
+  `# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.${name}
+type: component
+title: ${title}
+summary: "TODO: Use ${title} to … (one sentence that says when to use it)"
+status: draft
+description: "TODO: What it shows or does, in a sentence or two."
+usage:
+  do:
+    - "TODO: A concrete situation it is for."
+  avoid:
+    - situation: "TODO: A situation ${title} looks right for but isn't."
+      instead: "TODO: A record ID, such as component.button, or plain text when none exists."
+      why: "TODO: Why the other choice fits better."
+anatomy:
+  container:
+    role: container
+    description: "TODO: What this part is. Name each part in reading order."
+`,
+);
+console.log(
+  `Wrote ${relative}. Replace every TODO: placeholder; \`pnpm spec validate\` lists the ones left.`,
+);

@@ -73,15 +73,9 @@ function renderRecord(state, record, omit) {
 function renderKnownIssues(knownIssues = []) {
   if (knownIssues.length === 0) return "";
   const items = knownIssues.map(({ statement, issue }) =>
-    issue ? `${statement} ([${issueLabel(issue)}](${issue}))` : statement,
+    issue ? `${statement} ([tracking issue](${issue}))` : statement,
   );
   return `## Known issues\n\n${bullets(items)}`;
-}
-
-/** `#183` for an issue or pull request URL that ends in its number, otherwise a generic label. */
-function issueLabel(url) {
-  const number = url.match(/\/(?:issues|pull)\/(\d+)\/?$/)?.[1];
-  return number ? `#${number}` : "tracking issue";
 }
 
 function renderLinks(state, id) {

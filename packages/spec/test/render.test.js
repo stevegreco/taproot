@@ -62,7 +62,7 @@ describe("render", () => {
     expect(heading).toBeGreaterThan(lines.indexOf("Use Other for testing."));
     expect(heading).toBeLessThan(lines.indexOf("A test component."));
     expect(lines).toContain(
-      "- Its focus ring is too faint on the dark surface. ([#12](https://github.com/acme/design-system/issues/12))",
+      "- Its focus ring is too faint on the dark surface. ([tracking issue](https://github.com/acme/design-system/issues/12))",
     );
     expect(lines).toContain("- It flickers in one old browser.");
     expect(valid.render("component.thing")).not.toContain("## Known issues");

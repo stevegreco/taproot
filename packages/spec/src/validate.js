@@ -1,6 +1,5 @@
 import { stat } from "node:fs/promises";
 import path from "node:path";
-import { PLACEHOLDER } from "./draft.js";
 import { createSpecAjv } from "./schema/ajv.js";
 import { COMMON_FIELDS, RECORD_ID, schema, typeFields } from "./schema/info.js";
 import { buildSections } from "./sections.js";
@@ -306,6 +305,8 @@ function checkReferences(record, byId, validById, report) {
 // --- Placeholders ---
 
 /** A `TODO:` value left from a scaffolded draft. Each one is reported until it is replaced. */
+const PLACEHOLDER = /^TODO\b/;
+
 function checkPlaceholders(value, pointer, report) {
   if (typeof value === "string") {
     if (PLACEHOLDER.test(value)) {
