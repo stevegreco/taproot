@@ -1,0 +1,126 @@
+/**
+ * <ds-alert> styles.
+ *
+ * Built into dist/alert.styles.js by build-styles.js — this file is the source.
+ */
+
+:host {
+  --_background: var(--semantic-color-background-status-info-default);
+  --_border: var(--semantic-color-border-status-info-default);
+  --_icon: var(--semantic-color-foreground-status-info-default);
+
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([variant="success"]) {
+  --_background: var(--semantic-color-background-status-success-default);
+  --_border: var(--semantic-color-border-status-success-default);
+  --_icon: var(--semantic-color-foreground-status-success-default);
+}
+
+:host([variant="warning"]) {
+  --_background: var(--semantic-color-background-status-warning-default);
+  --_border: var(--semantic-color-border-status-warning-default);
+  --_icon: var(--semantic-color-foreground-status-warning-default);
+}
+
+:host([variant="danger"]) {
+  --_background: var(--semantic-color-background-status-danger-default);
+  --_border: var(--semantic-color-border-status-danger-default);
+  --_icon: var(--semantic-color-foreground-status-danger-default);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.surface {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--primitives-space-3);
+  box-sizing: border-box;
+  padding: var(--primitives-space-3) var(--primitives-space-4);
+  border: 1px solid var(--_border);
+  border-radius: var(--semantic-radius-surface);
+  background-color: var(--_background);
+  color: var(--semantic-color-foreground-default);
+  font-family: var(--semantic-typography-body-default-font-family);
+  font-size: var(--semantic-typography-body-default-font-size);
+  line-height: var(--semantic-typography-body-default-line-height);
+}
+
+/* The icon sits on the first line of text, whatever the line height. */
+.icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 1lh;
+  color: var(--_icon);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--primitives-space-3);
+  min-width: 0;
+}
+
+.title {
+  color: var(--semantic-color-foreground-default);
+  font-weight: var(--primitives-weight-semibold);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--primitives-space-2);
+}
+
+/* Pulled into the padding so the graphic lines up with the first line of text. */
+.dismiss {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin: calc(-1 * var(--primitives-space-1));
+  padding: var(--primitives-space-1);
+  border: 0;
+  border-radius: var(--semantic-radius-control);
+  background-color: transparent;
+  color: var(--semantic-color-foreground-default);
+  font: inherit;
+  cursor: pointer;
+}
+
+.dismiss svg {
+  width: 1lh;
+  height: 1lh;
+}
+
+.dismiss:hover {
+  background-color: var(--semantic-color-background-action-tertiary-hover);
+}
+
+.dismiss:active {
+  background-color: var(--semantic-color-background-action-tertiary-pressed);
+}
+
+.dismiss:focus-visible {
+  outline: 2px solid var(--semantic-color-border-focus);
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  .surface {
+    border-color: CanvasText;
+  }
+
+  .dismiss:focus-visible {
+    outline-color: Highlight;
+  }
+}

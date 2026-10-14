@@ -6,6 +6,7 @@
  * exported `define*` helpers to register under a custom tag name.
  */
 
+import { defineAlert } from "./alert.js";
 import { defineBadge } from "./badge.js";
 import { defineButton } from "./button.js";
 import { defineCheckbox } from "./checkbox.js";
@@ -18,6 +19,7 @@ import { defineSelect } from "./select.js";
 import { defineSwitch } from "./switch.js";
 import { defineTextArea } from "./text-area.js";
 
+export { DsAlert, defineAlert } from "./alert.js";
 export { DsBadge, defineBadge } from "./badge.js";
 export { DsButton, defineButton } from "./button.js";
 export { DsCheckbox, defineCheckbox } from "./checkbox.js";
@@ -30,6 +32,7 @@ export { DsSelect, defineSelect } from "./select.js";
 export { DsSwitch, defineSwitch } from "./switch.js";
 export { DsTextArea, defineTextArea } from "./text-area.js";
 
+defineAlert();
 defineBadge();
 defineButton();
 defineCheckbox();

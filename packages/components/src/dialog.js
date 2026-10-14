@@ -6,38 +6,11 @@ import {
   focusTarget,
   lazyStyleSheet,
 } from "./internal/element.js";
+import { deepestFocus, tabbables } from "./internal/focus.js";
 
 const styleSheet = lazyStyleSheet(styles);
 const scrollLocks = new WeakMap();
 const openDialogs = new WeakMap();
-
-function deepestFocus(document) {
-  let active = document.activeElement;
-  while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
-  return active;
-}
-
-function tabbables(root) {
-  const controls = [];
-  function visit(element) {
-    if (element instanceof HTMLSlotElement) {
-      for (const child of element.assignedElements({ flatten: true })) visit(child);
-      return;
-    }
-    if (
-      element.tabIndex >= 0 &&
-      !element.matches(":disabled") &&
-      !element.closest("[inert]") &&
-      element.getClientRects().length
-    ) {
-      controls.push(element);
-    }
-    const children = element.shadowRoot?.children ?? element.children;
-    for (const child of children) visit(child);
-  }
-  for (const child of root.children) visit(child);
-  return controls.sort((a, b) => (a.tabIndex || Infinity) - (b.tabIndex || Infinity));
-}
 
 export class DsDialog extends ForwardsFocus(Base) {
   static observedAttributes = ["open", "label", "description", "dismissible", "hidden"];
