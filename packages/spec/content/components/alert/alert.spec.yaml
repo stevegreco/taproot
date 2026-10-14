@@ -1,0 +1,335 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.alert
+type: component
+title: Alert
+summary: Use Alert for a short status message in the flow of the page, announced only when you ask.
+tags:
+  - status
+  - feedback
+  - live-region
+links:
+  composes:
+    - component.icon
+    - component.button
+  follows:
+    - pattern.action-hierarchy
+    - guideline.compose-or-propose
+  related:
+    - component.badge
+sources:
+  - title: Token tier consumption (tokens ADR 0003)
+    url: packages/tokens/docs/adr/0003-token-tier-consumption.md
+description: >-
+  Shows a short status message, with an optional title, icon, actions, and dismiss control, in the
+  flow of the surrounding content. It is announced to assistive technology only when its announce
+  parameter asks for it.
+usage:
+  do:
+    - Report the outcome of something the person just did, such as a saved form or a failed upload.
+    - Warn about a condition that affects the current view, such as an expiring session.
+    - Explain why part of the view is unavailable, with an action that resolves it.
+  avoid:
+    - situation: Label a status or category on an item in a list or table.
+      instead: component.badge
+      why: Badge is a compact label on an item. Alert is a message in the flow of the page.
+    - situation: Ask for a decision before the person can continue.
+      instead: component.dialog
+      why: Alert does not block the view or hold focus. Dialog does.
+    - situation: Report a problem with one field's value.
+      instead: The field's own error message
+      why: Field errors belong next to the field, associated with it.
+    - situation: Show a message that disappears on its own after a few seconds.
+      instead: A persistent Alert the person dismisses
+      why: A timed message can vanish before someone has read it.
+anatomy:
+  surface:
+    role: container
+    description: Bounded message surface whose color and border follow the variant.
+  icon:
+    role: indicator
+    description: Optional supplied graphic that reinforces the variant.
+  title:
+    role: label
+    description: Optional short title that names the status.
+  message:
+    role: description
+    description: The status message itself.
+  actions:
+    role: container
+    description: Optional supplied actions that respond to the message.
+  dismiss:
+    role: interactive-surface
+    description: Optional control that dismisses the alert.
+parameters:
+  variant:
+    kind: enum
+    values:
+      info: Neutral information or a change that needs no action.
+      success: Something completed as intended.
+      warning: A condition that needs attention but does not block the person.
+      danger: Something failed or is blocked.
+    examples:
+      info: A new version is available.
+      success: Your changes were saved.
+      warning: Your session expires in 5 minutes.
+      danger: The upload failed. Check your connection and try again.
+    default: info
+  label:
+    kind: string
+    description: Optional visible title, read before the message.
+  announce:
+    kind: enum
+    values:
+      "off": Shown without being announced. For messages present when the view loads.
+      polite: Announced when the person is not busy, without interrupting current speech.
+      urgent: Announced immediately, interrupting current speech.
+    examples:
+      "off": A new version is available.
+      polite: Your changes were saved.
+      urgent: Your session expires in 1 minute.
+    default: "off"
+  dismissible:
+    kind: boolean
+    default: false
+    description: Whether the alert shows a control that dismisses it.
+  dismissLabel:
+    kind: string
+    default: Dismiss
+    description: Accessible name of the dismiss control. Translate it with the rest of the interface.
+events:
+  dismiss: The dismiss control was activated. Preventing the event keeps the alert shown.
+states:
+  - default
+  - hover
+  - focus
+  - pressed
+rules:
+  - id: text-states-status
+    level: must
+    topic: accessibility
+    statement: >-
+      The title or message states the status in words. Meaning never depends on the variant color or
+      the icon alone.
+    examples:
+      do:
+        - "Upload failed: the file is larger than 10 MB."
+      avoid:
+        - A red alert that only says the file name
+  - id: announce-on-request
+    level: must
+    topic: accessibility
+    statement: >-
+      With announce off, appearing or changing does not announce the alert. With polite or urgent,
+      the title and message are announced, with the matching urgency, when the alert appears and
+      when that text changes. Actions and the dismiss control are not part of the announcement.
+  - id: announce-independent-of-variant
+    level: must
+    topic: behavior
+    statement: The variant never changes whether or how urgently the alert is announced.
+  - id: urgent-sparingly
+    level: should
+    topic: content
+    statement: >-
+      Use urgent only for time-sensitive information the person must act on now. Most outcomes are
+      polite.
+    examples:
+      do:
+        - "Urgent: Your session expires in 1 minute."
+        - "Polite: Your changes were saved."
+      avoid:
+        - "Urgent: A new version is available."
+  - id: off-when-present-on-load
+    level: should
+    topic: content
+    statement: >-
+      Leave announce off for an alert that is part of the view when it loads. People find it while
+      reading, and announcing it competes with the page itself.
+  - id: no-focus-on-appear
+    level: must
+    topic: behavior
+    statement: Appearing or announcing never moves focus.
+  - id: dismiss-reports
+    level: must
+    topic: behavior
+    statement: >-
+      Activating the dismiss control reports dismiss. Unless the event is prevented, the alert then
+      hides. Escape does not dismiss an alert.
+  - id: focus-after-dismiss
+    level: must
+    topic: accessibility
+    statement: >-
+      When the alert hides while it contains focus, focus moves to the next focusable item after
+      the alert, or the previous one when nothing follows. A consumer handling dismiss may move
+      focus elsewhere first.
+  - id: dismiss-accessible-name
+    level: must
+    topic: accessibility
+    statement: The dismiss control has an accessible name, from the dismiss label parameter.
+  - id: dismiss-only-when-safe
+    level: should
+    topic: content
+    statement: >-
+      Do not make an alert dismissible while its condition still needs action. Dismissing a blocking
+      error hides the reason something cannot continue.
+  - id: keep-message-short
+    level: should
+    topic: content
+    statement: Keep the message to one or two sentences that say what happened and what to do next.
+  - id: actions-follow-hierarchy
+    level: should
+    topic: content
+    statement: >-
+      Offer at most two actions, and assign their emphasis by importance. Routine actions use low
+      emphasis so they do not compete with the page's primary action.
+    references:
+      - pattern.action-hierarchy#assign-emphasis
+  - id: icon-decorative-when-stated
+    level: should
+    topic: accessibility
+    statement: Leave the icon unlabeled when the text already states the status.
+    references:
+      - component.icon#no-label-when-repeated
+  - id: visible-focus
+    level: must
+    topic: accessibility
+    statement: Keyboard focus on the dismiss control is visibly indicated on every variant.
+  - id: forced-colors
+    level: must
+    topic: accessibility
+    statement: >-
+      Under forced colors, the alert boundary and the dismiss control's focus stay visible, and
+      no meaning is lost with the variant colors.
+accessibility:
+  role: >-
+    The title and message are an alert when announce is urgent and a status when polite. With
+    announce off they have no role and read in place. Actions and the dismiss control sit outside
+    the announced content.
+  name: >-
+    None. The title and message are announced as content. The dismiss control is named by the
+    dismiss label.
+  keyboard:
+    Tab: Move to the alert's actions and dismiss control in reading order. The alert itself is not focusable.
+    Enter: Activate the focused dismiss control.
+    Space: Activate the focused dismiss control.
+tokens:
+  surface:
+    base:
+      foreground: semantic.color.foreground.default
+      radius: semantic.radius.surface
+      padding-horizontal: primitives.space.4
+      padding-vertical: primitives.space.3
+      gap: primitives.space.3
+      font-family: semantic.typography.body.default.fontFamily
+      font-size: semantic.typography.body.default.fontSize
+      line-height: semantic.typography.body.default.lineHeight
+    variant.info:
+      background: semantic.color.background.status.info.default
+      border: semantic.color.border.status.info.default
+    variant.success:
+      background: semantic.color.background.status.success.default
+      border: semantic.color.border.status.success.default
+    variant.warning:
+      background: semantic.color.background.status.warning.default
+      border: semantic.color.border.status.warning.default
+    variant.danger:
+      background: semantic.color.background.status.danger.default
+      border: semantic.color.border.status.danger.default
+  icon:
+    variant.info:
+      foreground: semantic.color.foreground.status.info.default
+    variant.success:
+      foreground: semantic.color.foreground.status.success.default
+    variant.warning:
+      foreground: semantic.color.foreground.status.warning.default
+    variant.danger:
+      foreground: semantic.color.foreground.status.danger.default
+  title:
+    base:
+      foreground: semantic.color.foreground.default
+      font-weight: primitives.weight.semibold
+  actions:
+    base:
+      gap: primitives.space.2
+  dismiss:
+    base:
+      foreground: semantic.color.foreground.default
+      background: transparent
+      radius: semantic.radius.control
+      padding-horizontal: primitives.space.1
+      padding-vertical: primitives.space.1
+    hover:
+      background: semantic.color.background.action.tertiary.hover
+    pressed:
+      background: semantic.color.background.action.tertiary.pressed
+    focus:
+      focus-ring: semantic.color.border.focus
+rationale:
+  - decision: Announcement is its own parameter, off by default, and independent of the variant.
+    why: >-
+      A danger alert present when a view loads should be found by reading, not announced, while a
+      routine success message after an action should be announced politely. Tying urgency to color
+      would get both wrong. Off by default means nothing is announced unless the consumer asks.
+  - decision: Dismissal hides the alert itself, after a cancelable dismiss event.
+    why: >-
+      Every consumer would otherwise write the same hide step. The cancelable event lets a consumer
+      keep the alert, remove it, or move focus first. Hiding without a fallback for focus would leave
+      keyboard users at the top of the page, so the alert moves focus to its neighbor.
+  - decision: Alert never hides on its own after a delay.
+    why: >-
+      A timed message can disappear before someone with a screen magnifier, a screen reader, or a
+      slow reading pace finds it (WCAG 2.2.1). Transient notifications that stack over the view are
+      a separate overlay component, not a mode of this one.
+  - decision: Alert supplies no icon, and the title is not a heading.
+    why: >-
+      Icon supplies no artwork, so the adopter chooses the symbol for each variant and composes Icon.
+      The right heading level depends on the surrounding page, so a consumer who needs a heading
+      puts it in the message.
+  - decision: Alert has no neutral or accent variant.
+    why: >-
+      Every alert reports a status. Info is the neutral case. Brand emphasis without a status is
+      product layout built from tokens, per the compose-or-propose guideline.
+  - decision: Alert consumes semantic status tokens directly, with spacing and weight primitives.
+    why: >-
+      ADR 0003. The quiet status surfaces are audited for body text, status content, and borders in
+      both themes, and the focus border is audited against each of them. No semantic spacing role
+      exists, so spacing primitives set padding and gaps. The semibold weight primitive distinguishes
+      the title, as in Dialog. The dismiss control borrows the tertiary action hover and pressed
+      fills because it is a low-emphasis action.
+  - decision: A Link action in an info alert is a known contrast gap, left to a token decision.
+    why: >-
+      Brand text is audited against the page, not the status surfaces. On the light info surface it
+      measures 4.32:1, below the 4.5:1 text minimum; every other variant and theme passes. Alert
+      does not restyle a composed Link (compose-or-propose), so the fix belongs in the tokens. Until
+      then, use a Button for actions in an info alert.
+  - decision: Alert has no disabled, selected, loading, or invalid state.
+    covers: [disabled, selected, loading, invalid]
+    why: >-
+      Alert is a message, not a control. Its danger variant reports an error but is not itself
+      invalid. Composed actions own their own disabled and busy states, and a message about pending
+      work is written as text.
+  - decision: One size, with no density setting.
+    covers: [sizes, density]
+    why: >-
+      The message wraps to the width of its container, and the layout decides that width. A smaller
+      inline status belongs to Badge.
+  - decision: Alert always has text. The dismiss control is the only icon-only part.
+    covers: [icon-only]
+    why: >-
+      An alert without words would carry meaning by color and symbol alone (text-states-status). The
+      dismiss control shows only a graphic, so its accessible name comes from the dismiss label
+      parameter (dismiss-accessible-name).
+  - decision: Layout follows the reading direction. Nothing mirrors.
+    covers: [right-to-left]
+    why: >-
+      The icon leads and the dismiss control trails in the reading direction. The dismiss graphic is
+      symmetric. Directional artwork in a supplied icon is the adopter's choice, as with Icon.
+  - decision: Alert does not animate when it appears or hides.
+    covers: [reduced-motion]
+    why: >-
+      Instant changes satisfy a reduced motion preference without a separate treatment, and an
+      entrance animation would delay reading a message that may also be announced.
+  - decision: Forced colors keep the boundary and focus through system colors.
+    covers: [forced-colors]
+    why: >-
+      The variant fills disappear under forced colors, so the border takes the system text color and
+      focus the system highlight. The words carry the status (text-states-status).

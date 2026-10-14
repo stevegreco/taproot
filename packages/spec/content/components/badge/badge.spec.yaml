@@ -21,8 +21,11 @@ usage:
       instead: component.link
       why: A link carries a destination that people can open, copy, or share.
     - situation: Announce a live status change by itself.
-      instead: a live region in the surrounding page
-      why: Badge sets no live-region role.
+      instead: component.alert
+      why: Badge sets no live-region role. Alert announces its message when asked to.
+    - situation: Explain a status in a sentence or offer an action that resolves it.
+      instead: component.alert
+      why: Badge is a short label. Alert holds a message and actions.
 anatomy:
   surface:
     role: indicator

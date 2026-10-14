@@ -16,7 +16,7 @@ usage:
     - Complete a short task without leaving the current view.
   avoid:
     - situation: Show a passive status message that needs no response.
-      instead: Inline status message
+      instead: component.alert
       why: Blocking the view interrupts the person unnecessarily.
     - situation: Present a long workflow or primary page content.
       instead: A dedicated view
