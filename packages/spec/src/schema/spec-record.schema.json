@@ -35,6 +35,14 @@
     "links": {
       "$ref": "#/$defs/links"
     },
+    "known-issues": {
+      "description": "Open problems with the record's subject. Remove an entry in the change that fixes it.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/knownIssue"
+      }
+    },
     "sources": {
       "description": "Where this record came from. Provenance only.",
       "type": "array",
@@ -189,6 +197,22 @@
         "url": {
           "type": "string",
           "minLength": 1
+        }
+      }
+    },
+    "knownIssue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement"],
+      "properties": {
+        "statement": {
+          "description": "The problem, in a sentence, as a reader of the record meets it.",
+          "$ref": "#/$defs/text"
+        },
+        "issue": {
+          "description": "URL of the issue that tracks the fix, when there is one. No spaces, parentheses, or angle brackets, so it stays a working Markdown link.",
+          "type": "string",
+          "pattern": "^https?://[^\\s()<>]+$"
         }
       }
     },

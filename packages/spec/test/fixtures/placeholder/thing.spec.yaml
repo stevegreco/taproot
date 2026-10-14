@@ -1,0 +1,14 @@
+id: component.thing
+type: component
+title: Thing
+summary: Use Thing for testing.
+status: draft
+description: A test component.
+usage:
+  do:
+    - Test things.
+    - "  todo: A concrete situation it is for."
+anatomy:
+  control:
+    role: interactive-surface
+    description: The control.

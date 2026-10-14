@@ -41,6 +41,7 @@ identity is its `id`, not its path.
 | `status`  | no       | `draft`, `stable`, or `deprecated`. Defaults to `stable`. See [Status](#status). |
 | `links`   | no       | Typed links to other records. See [Links](#links).                               |
 | `sources` | no       | Provenance: `{ title, url }` pairs naming where the record came from.            |
+| `known-issues` | no  | Open problems: a `statement`, and an optional `issue` URL. See [Known issues](#known-issues). |
 
 A name is lowercase letters and digits in words joined by hyphens. A name inside an ID may have
 more than one dotted segment, such as `example.action-hierarchy.settings`.
@@ -52,6 +53,21 @@ A component starts as a `draft`: a record with only the required fields (`id`, `
 reviewed before anyone builds it. A draft has no implementation, and `get` says so. The docs tests
 fail if a draft has an implementation file, or if a component that is not a draft has none, so
 removing `status: draft` is part of the change that ships the first implementation.
+
+### Known issues
+
+`rationale` is permanent: it says why a decision was made. A problem waiting on a fix is not a
+decision, so it goes in `known-issues` instead, as a short `statement`. Add the URL of the `issue`
+that tracks the fix when there is one. `get` and the docs page show each entry under the summary,
+so readers meet it before building on the record.
+
+```yaml
+known-issues:
+  - statement: Link text measures 4.32:1 on the light info surface, below the 4.5:1 minimum.
+    issue: https://github.com/stevegreco/design-system/issues/183
+```
+
+Remove the entry in the change that fixes the problem.
 
 ## Component records
 
@@ -294,6 +310,8 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum
   value or boolean (`true` or `false`) of a declared parameter, or a declared preference value.
 - An example's asset files exist.
+- No text value starts with `TODO`. Scaffolded drafts use `TODO:` for text the author has not
+  written yet.
 
 ## Versioning
 

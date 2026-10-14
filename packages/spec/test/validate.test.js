@@ -186,6 +186,20 @@ const cases = [
     path: "/annotations/1/id",
     message: 'annotation id `why-it-works` is also the address of the heading "Why it works"',
   },
+  {
+    name: "known-issue-url",
+    file: "thing.spec.yaml",
+    line: 15,
+    path: "/known-issues/0/issue",
+    message: "`issue` must match",
+  },
+  {
+    name: "placeholder",
+    file: "thing.spec.yaml",
+    line: 10,
+    path: "/usage/do/1",
+    message: "is a `TODO:` placeholder; replace it",
+  },
   { name: "yaml-syntax", file: "thing.md", line: 3, path: "", message: "Flow sequence" },
 ];
 

@@ -61,6 +61,7 @@ component is built in three phases, each its own pull request and its own skill 
    removes `status: draft`.
 3. `document-component`: the docs example and its Verify steps.
 
+`pnpm component:new <name> --phase spec` scaffolds the draft spec, and
 `pnpm component:status <name> [--phase spec|implementation|docs]` checks each phase.
 
 Token decisions live in `packages/tokens/docs/adr/`. Do not place design system facts only in a

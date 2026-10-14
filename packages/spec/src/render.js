@@ -48,7 +48,12 @@ const join = (blocks) => `${blocks.filter(Boolean).join("\n\n")}\n`;
 // --- Records ---
 
 function renderRecord(state, record, omit) {
-  const blocks = [`# ${record.title}`, record.summary, STATUS_NOTES[record.status]];
+  const blocks = [
+    `# ${record.title}`,
+    record.summary,
+    STATUS_NOTES[record.status],
+    renderKnownIssues(record["known-issues"]),
+  ];
   if (record.type === "component") {
     blocks.push(record.description);
     for (const field of FIELD_ORDER) {
@@ -62,6 +67,15 @@ function renderRecord(state, record, omit) {
   if (record.type === "example") blocks.push(renderAnnotations(state, record));
   blocks.push(renderLinks(state, record.id));
   return blocks;
+}
+
+/** Open problems go near the top, so a reader meets them before building on the record. */
+function renderKnownIssues(knownIssues = []) {
+  if (knownIssues.length === 0) return "";
+  const items = knownIssues.map(({ statement, issue }) =>
+    issue ? `${statement} ([tracking issue](${issue}))` : statement,
+  );
+  return `## Known issues\n\n${bullets(items)}`;
 }
 
 function renderLinks(state, id) {

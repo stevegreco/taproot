@@ -56,6 +56,18 @@ describe("render", () => {
     expect(valid.render("component.thing")).not.toContain("**Status:");
   });
 
+  it("lists known issues under the summary, linking the ones that have a tracking issue", () => {
+    const lines = valid.render("component.other").split("\n");
+    const heading = lines.indexOf("## Known issues");
+    expect(heading).toBeGreaterThan(lines.indexOf("Use Other for testing."));
+    expect(heading).toBeLessThan(lines.indexOf("A test component."));
+    expect(lines).toContain(
+      "- Its focus ring is too faint on the dark surface. ([tracking issue](https://github.com/acme/design-system/issues/12))",
+    );
+    expect(lines).toContain("- It flickers in one old browser.");
+    expect(valid.render("component.thing")).not.toContain("## Known issues");
+  });
+
   it("references alternatives by id and leaves prose as text", () => {
     const text = valid.render("component.other");
     expect(text).toContain(
