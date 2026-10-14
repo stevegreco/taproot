@@ -193,6 +193,13 @@ const cases = [
     path: "/known-issues/0/issue",
     message: "`issue` must match",
   },
+  {
+    name: "placeholder",
+    file: "thing.spec.yaml",
+    line: 10,
+    path: "/usage/do/1",
+    message: "is a `TODO:` placeholder; replace it",
+  },
   { name: "yaml-syntax", file: "thing.md", line: 3, path: "", message: "Flow sequence" },
 ];
 

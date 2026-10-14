@@ -312,6 +312,8 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum
   value or boolean (`true` or `false`) of a declared parameter, or a declared preference value.
 - An example's asset files exist.
+- No text value starts with `TODO`. Scaffolded drafts use `TODO:` for text the author has not
+  written yet.
 
 ## Versioning
 

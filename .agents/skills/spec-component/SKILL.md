@@ -27,9 +27,14 @@ record already covers the need, stop and say which one.
 
 ## 2. Write the draft
 
-`packages/spec/content/components/<name>/<name>.spec.yaml`. Keep the
-`# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json` header, which gives
-completion and inline errors. The format is in `packages/spec/SPEC.md`.
+```bash
+pnpm component:new <name> --phase spec
+```
+
+This writes `packages/spec/content/components/<name>/<name>.spec.yaml` with the schema header,
+`status: draft`, and a `TODO:` placeholder for each field a draft needs. It refuses to overwrite a
+record that exists. Replace every placeholder; `pnpm spec validate` reports each one left. The
+format is in `packages/spec/SPEC.md`. A filled-in draft looks like this:
 
 ```yaml
 # yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
@@ -53,6 +58,9 @@ anatomy:
     description: What this part is.
 ```
 
+The scaffold names one part, `container`. Rename it and add a part for each named piece, in
+reading order.
+
 - `status: draft` is required. The docs tests fail when a spec that is not a draft has no
   implementation file.
 - Technology-neutral. No element, attribute, slot, framework, or CSS names, and no code. If you want
@@ -74,9 +82,10 @@ pnpm spec get component.<name>
 pnpm component:status <name> --phase spec
 ```
 
-`get` shows the draft status note. `validate` reports each mistake once, with file and line. A link
-or `instead` that names a record must resolve, and a section target (a heading slug, rule ID, or
-field path such as `parameters.variant.danger`) must exist.
+`get` shows the draft status note. `validate` and `component:status` report any `TODO:` left.
+`validate` reports each mistake once, with file and line. A link or `instead` that names a record
+must resolve, and a section target (a heading slug, rule ID, or field path such as
+`parameters.variant.danger`) must exist.
 
 ## Pull request
 

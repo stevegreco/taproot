@@ -51,6 +51,8 @@ Breaking. The package is now a library over the authored files, and the record f
 - New optional `known-issues` field on every record: open problems, each a `statement` and the URL
   of the `issue` that tracks it. `get` shows them under the summary, `validateSpec` returns them as
   `knownIssues`, and `ds-spec validate --issues` warns about entries whose GitHub issue is closed.
+- Validation reports any text value that starts with `TODO`, the placeholder in the draft that the
+  repository's `pnpm component:new <name> --phase spec` writes.
 
 ## 0.0.1
 

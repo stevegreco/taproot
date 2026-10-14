@@ -146,6 +146,14 @@ if (inPhase("spec")) {
         : "a spec with no implementation is a draft",
     );
   }
+  if (specSource) {
+    const placeholders = specSource.match(/^\s*(?:-\s+)?(?:[\w-]+:\s+)?"?TODO\b/gm)?.length ?? 0;
+    row(
+      placeholders === 0,
+      "no TODO: placeholders",
+      placeholders ? `${placeholders} left; \`pnpm spec validate\` lists them` : "",
+    );
+  }
   console.log("  note  run `pnpm spec validate` for the schema and links");
 }
 

@@ -1,5 +1,6 @@
 import { stat } from "node:fs/promises";
 import path from "node:path";
+import { PLACEHOLDER } from "./draft.js";
 import { createSpecAjv } from "./schema/ajv.js";
 import { COMMON_FIELDS, RECORD_ID, schema, typeFields } from "./schema/info.js";
 import { buildSections } from "./sections.js";
@@ -69,6 +70,7 @@ export async function checkSources(sources) {
   for (const record of records) {
     const report_ = (raw) => report(record.source, raw);
     checkReferences(record, byId, validById, report_);
+    checkPlaceholders(record.data, "", report_);
     if (record.data.type === "component") {
       checkRules(record.data, report_);
       checkParameters(record.data, report_);
@@ -297,6 +299,26 @@ function checkReferences(record, byId, validById, report) {
     const section = target.slice(id.length + 1);
     if (target.includes("#") && !found.sections.has(section)) {
       report({ path: pointer, message: `${id} has no section \`${section}\`` });
+    }
+  }
+}
+
+// --- Placeholders ---
+
+/** A `TODO:` value left from a scaffolded draft. Each one is reported until it is replaced. */
+function checkPlaceholders(value, pointer, report) {
+  if (typeof value === "string") {
+    if (PLACEHOLDER.test(value)) {
+      report({ path: pointer, message: "is a `TODO:` placeholder; replace it" });
+    }
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const [index, item] of value.entries())
+      checkPlaceholders(item, `${pointer}/${index}`, report);
+  } else if (value && typeof value === "object") {
+    for (const [key, item] of Object.entries(value)) {
+      checkPlaceholders(item, `${pointer}/${pointerSegment(key)}`, report);
     }
   }
 }
