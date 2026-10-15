@@ -3,7 +3,6 @@ id: component.tabs
 type: component
 title: Tabs
 summary: Use Tabs to switch between a few related views of the same subject, one view visible at a time.
-status: draft
 tags:
   - navigation
   - disclosure
@@ -48,4 +47,179 @@ anatomy:
     description: Mark on the selected tab that shows which panel is visible.
   panel:
     role: container
-    description: The content of the selected tab, shown below the tab list.
+    description: >-
+      The content of the selected section, shown below the tab list. Each section supplies its
+      tab's label and a unique value.
+parameters:
+  label:
+    kind: string
+    description: >-
+      Accessible name for the set of tabs. It is not shown; a visible heading above the tabs
+      usually says the same thing.
+  value:
+    kind: string
+    description: >-
+      The value of the selected section. Empty or unmatched selects the first section.
+events:
+  change: The selected tab changed from user interaction.
+states:
+  - default
+  - hover
+  - focus
+  - selected
+rules:
+  - id: one-selected
+    level: must
+    topic: behavior
+    statement: >-
+      Exactly one tab is selected, and only its panel is shown or exposed to assistive technology.
+      When the value matches no section, the first section is selected.
+  - id: selection-reports-change
+    level: must
+    topic: behavior
+    statement: >-
+      Selecting a different tab by pointer or keyboard reports change. Setting the value
+      programmatically, or choosing the tab that is already selected, reports nothing.
+  - id: keyboard-tabs
+    level: must
+    topic: accessibility
+    statement: >-
+      Tab enters the tab list at the selected tab and leaves it for the panel. The arrow keys along
+      the row move focus and selection to the next or previous tab in reading direction, wrapping at
+      either end. Home and End move to the first and last tab.
+  - id: panel-reachable
+    level: must
+    topic: accessibility
+    statement: >-
+      The panel is the next keyboard stop after the tab list, so its content can be reached and
+      read even when it holds nothing focusable.
+  - id: accessible-tabs
+    level: must
+    topic: accessibility
+    statement: >-
+      The tab list is named by the label parameter. Each tab exposes its label and whether it is
+      selected, and the panel is named by the selected tab.
+  - id: visible-selection
+    level: must
+    topic: accessibility
+    statement: >-
+      The selected tab is marked by an indicator, not by color alone, and the indicator and
+      keyboard focus stay visible under forced colors.
+  - id: labels-short-and-unique
+    level: must
+    topic: content
+    statement: Each tab has a short label that differs from the others. The set has a label.
+    examples:
+      do:
+        - "Profile, Notifications, Billing"
+      avoid:
+        - "Profile settings, Notification settings, Billing settings"
+  - id: few-tabs
+    level: should
+    topic: content
+    statement: >-
+      Keep to a handful of tabs that fit in one row at common widths. A row that overflows scrolls
+      sideways, and tabs off screen are easy to miss.
+accessibility:
+  role: A tab list of tabs, and one tab panel for the selected tab.
+  name: >-
+    The tab list from the label parameter. Each tab from its section's label. The panel from the
+    selected tab.
+  keyboard:
+    Tab: Enter the tab list at the selected tab, then move to the panel.
+    Arrow keys: Move focus and selection to the next or previous tab in reading direction, with wrapping.
+    Home: Move focus and selection to the first tab.
+    End: Move focus and selection to the last tab.
+tokens:
+  tab-list:
+    base:
+      border: semantic.color.border.subtle
+      gap: primitives.space.1
+  tab:
+    base:
+      foreground: semantic.color.foreground.muted
+      radius: semantic.radius.control
+      padding-horizontal: primitives.space.3
+      padding-vertical: primitives.space.2
+      font-family: semantic.typography.label.default.fontFamily
+      font-size: semantic.typography.label.default.fontSize
+      font-weight: semantic.typography.label.default.fontWeight
+      line-height: semantic.typography.label.default.lineHeight
+      letter-spacing: semantic.typography.label.default.letterSpacing
+    hover:
+      foreground: semantic.color.foreground.default
+      background: semantic.color.background.action.tertiary.hover
+    focus:
+      focus-ring: semantic.color.border.focus
+    selected:
+      foreground: semantic.color.foreground.default
+  selected-indicator:
+    selected:
+      background: semantic.color.background.action.primary.default
+  panel:
+    base:
+      padding-vertical: primitives.space.4
+    focus:
+      focus-ring: semantic.color.border.focus
+rationale:
+  - decision: Arrowing to a tab selects it and shows its panel.
+    why: >-
+      Panels are already on the page, so showing one costs nothing, and selection that follows
+      focus saves a keystroke. Manual activation suits panels that load slowly, which Tabs does not
+      support. There is no parameter for it.
+  - decision: Tabs sit in one horizontal row. There is no vertical orientation.
+    covers: [sizes]
+    why: >-
+      A row above the panel is the common case. A vertical list beside the panel is closer to
+      navigation and can be added as a parameter when a product needs it. There is one size, set
+      by the label typography.
+  - decision: Sections are ordered content, not a parameter.
+    why: >-
+      Each section carries a label, a value, and rich content. The parameter schema describes scalar
+      values only, as with Radio group's options.
+  - decision: Tabs have no disabled state.
+    covers: [disabled]
+    why: >-
+      A disabled tab shows a section that cannot be opened and hides why. Leave out a section that
+      does not apply, or show it and explain inside its panel what is needed.
+  - decision: Selection is a state, and it never syncs with the address.
+    covers: [selected]
+    why: >-
+      Selected is the one persistent state. When a choice should change the address, it is
+      navigation and belongs to links (see the avoid entries). A product can still read and set
+      the value itself.
+  - decision: Tabs have no loading or invalid state.
+    covers: [loading, invalid]
+    why: >-
+      Tabs show content the page already has and store nothing, so there is nothing to wait on or
+      validate. A panel that loads its own content shows its own progress.
+  - decision: One density. A long row scrolls sideways.
+    covers: [density]
+    why: >-
+      Tab padding keeps a comfortable target. Too many tabs to fit is a content problem (few-tabs),
+      so scrolling is the fallback, not a compact mode.
+  - decision: Every tab has a text label.
+    covers: [icon-only]
+    why: >-
+      Tab labels come from the section's label, which is text. An icon without words would need a
+      separate accessible name and is hard to scan in a row.
+  - decision: Tab order and arrow keys follow the reading direction.
+    covers: [right-to-left]
+    why: >-
+      In a right-to-left layout the first tab sits at the right and the left arrow moves to the next
+      tab. Nothing is mirrored artwork.
+  - decision: Selection changes instantly. Nothing animates.
+    covers: [reduced-motion]
+    why: >-
+      An instant change needs no reduced motion treatment, and a sliding indicator would delay
+      reading the new panel.
+  - decision: Forced colors keep the indicator and focus through system colors.
+    covers: [forced-colors]
+    why: >-
+      The indicator takes the system highlight and focus rings keep their outline, so selection
+      and focus never depend on the theme colors (visible-selection).
+  - decision: Tabs consume semantic colors and typography, with spacing primitives.
+    why: >-
+      ADR 0003. The selected indicator borrows the primary action fill as the strongest accent the
+      system has, and hover borrows the tertiary action hover because a tab is a low-emphasis
+      control. No semantic spacing role exists, so spacing primitives set padding and gaps.

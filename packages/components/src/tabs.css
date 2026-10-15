@@ -1,0 +1,96 @@
+:host {
+  display: block;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* A row that does not fit scrolls sideways rather than wrapping. */
+.tab-list {
+  display: flex;
+  gap: var(--primitives-space-1);
+  overflow-x: auto;
+  border-block-end: 1px solid var(--semantic-color-border-subtle);
+  scrollbar-width: thin;
+}
+
+.tab {
+  position: relative;
+  flex: none;
+  margin: 0;
+  padding: var(--primitives-space-2) var(--primitives-space-3);
+  border: 0;
+  border-radius: var(--semantic-radius-control);
+  background: transparent;
+  color: var(--semantic-color-foreground-muted);
+  font-family: var(--semantic-typography-label-default-font-family);
+  font-size: var(--semantic-typography-label-default-font-size);
+  font-weight: var(--semantic-typography-label-default-font-weight);
+  line-height: var(--semantic-typography-label-default-line-height);
+  letter-spacing: var(--semantic-typography-label-default-letter-spacing);
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+}
+
+.tab:hover {
+  color: var(--semantic-color-foreground-default);
+  background: var(--semantic-color-background-action-tertiary-hover);
+}
+
+.tab[aria-selected="true"] {
+  color: var(--semantic-color-foreground-default);
+}
+
+/* Inset, so the scrolling tab list does not clip it. */
+.tab:focus-visible {
+  outline: 2px solid var(--semantic-color-border-focus);
+  outline-offset: -2px;
+}
+
+.indicator {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  display: none;
+  height: 2px;
+  background: var(--semantic-color-background-action-primary-default);
+}
+
+.tab[aria-selected="true"] .indicator {
+  display: block;
+}
+
+.panel {
+  padding-block: var(--primitives-space-4);
+  outline: none;
+}
+
+.panel:focus-visible {
+  outline: 2px solid var(--semantic-color-border-focus);
+  outline-offset: 2px;
+}
+
+::slotted(*) {
+  display: block;
+}
+
+/* The indicator paints a system color here, so it stays visible without the theme. */
+@media (forced-colors: active) {
+  .indicator {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+
+  .tab:focus-visible,
+  .panel:focus-visible {
+    outline-color: Highlight;
+  }
+}
