@@ -206,6 +206,22 @@ describe("DsTabs", () => {
     expect(shown(host)).toEqual(["History"]);
   });
 
+  test("keeps the tabs when content inside a panel changes", async () => {
+    const host = render();
+    const before = tabs(host);
+    host.querySelector("ds-tab-panel p").append(document.createElement("span"));
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(tabs(host).every((tab, index) => tab === before[index])).toBe(true);
+  });
+
+  test("[one-selected] selects the chosen tab when two panels share a value", async () => {
+    document.body.innerHTML = `<${tag} label="Order"><ds-tab-panel label="Same">A</ds-tab-panel><ds-tab-panel label="Same">B</ds-tab-panel></${tag}>`;
+    const host = document.querySelector(tag);
+    await userEvent.click(tabs(host)[1]);
+    expect(tabs(host).map((tab) => tab.getAttribute("aria-selected"))).toEqual(["false", "true"]);
+    expect(host.querySelectorAll("ds-tab-panel")[1].getClientRects().length).toBeGreaterThan(0);
+  });
+
   test("keeps focus on the tab list when the selected tab is relabeled", async () => {
     const host = render();
     host.focus();

@@ -40,6 +40,8 @@ export class DsTabs extends ForwardsFocus(Base) {
   #panel;
   #slot;
   #observer;
+  /** The section last chosen, so a tab whose value repeats an earlier one can still be selected. */
+  #chosen;
 
   constructor() {
     super();
@@ -57,12 +59,10 @@ export class DsTabs extends ForwardsFocus(Base) {
     });
     this.#tabList.addEventListener("keydown", (event) => this.#onKeydown(event));
     this.#observer = new MutationObserver((records) => {
-      if (
-        records.some(
-          (record) => record.type === "childList" || record.target.parentElement === this,
-        )
-      )
-        this.#render();
+      // Sections added, removed, or relabeled; changes inside a section's content are not ours.
+      const ours = (record) =>
+        record.type === "childList" ? record.target === this : record.target.parentElement === this;
+      if (records.some(ours)) this.#render();
     });
   }
 
@@ -117,6 +117,7 @@ export class DsTabs extends ForwardsFocus(Base) {
   #selected() {
     const panels = this.#panels();
     const value = this.getAttribute("value");
+    if (panels.includes(this.#chosen) && this.#chosen.value === value) return this.#chosen;
     return panels.find((panel) => panel.value === value) ?? panels[0];
   }
   #render() {
@@ -157,7 +158,11 @@ export class DsTabs extends ForwardsFocus(Base) {
     const panel = this.#panels()[index];
     if (!panel) return;
     const changed = panel !== this.#selected();
-    if (changed) this.setAttribute("value", panel.value);
+    if (changed) {
+      this.#chosen = panel;
+      this.setAttribute("value", panel.value);
+      this.#sync();
+    }
     this.#tabs()[index].focus();
     if (changed) this.dispatchEvent(new Event("change", { bubbles: true }));
   }

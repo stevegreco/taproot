@@ -12,6 +12,7 @@ usage: |
 api:
   - { name: label, kind: attribute, parameter: label }
   - { name: value, kind: attribute, parameter: value }
+  - { name: value, kind: property, parameter: value }
   - { name: change, kind: event, event: change }
 ---
 
