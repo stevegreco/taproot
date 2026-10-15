@@ -17,6 +17,7 @@ import { defineDialog } from "./dialog.js";
 import { defineRadioGroup } from "./radio-group.js";
 import { defineSelect } from "./select.js";
 import { defineSwitch } from "./switch.js";
+import { defineTabs } from "./tabs.js";
 import { defineTextArea } from "./text-area.js";
 
 export { DsAlert, defineAlert } from "./alert.js";
@@ -30,6 +31,7 @@ export { DsDialog, defineDialog } from "./dialog.js";
 export { DsRadioGroup, defineRadioGroup } from "./radio-group.js";
 export { DsSelect, defineSelect } from "./select.js";
 export { DsSwitch, defineSwitch } from "./switch.js";
+export { DsTabPanel, DsTabs, defineTabs } from "./tabs.js";
 export { DsTextArea, defineTextArea } from "./text-area.js";
 
 defineAlert();
@@ -44,4 +46,5 @@ defineDialog();
 defineRadioGroup();
 defineSelect();
 defineSwitch();
+defineTabs();
 defineTextArea();

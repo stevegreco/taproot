@@ -9,6 +9,7 @@ import type { DsDialogAttributes } from "./dialog.js";
 import type { DsRadioGroupAttributes } from "./radio-group.js";
 import type { DsSelectAttributes } from "./select.js";
 import type { DsSwitchAttributes } from "./switch.js";
+import type { DsTabPanelAttributes, DsTabsAttributes } from "./tabs.js";
 import type { DsTextAreaAttributes } from "./text-area.js";
 
 export * from "./alert.js";
@@ -22,6 +23,7 @@ export * from "./dialog.js";
 export * from "./radio-group.js";
 export * from "./select.js";
 export * from "./switch.js";
+export * from "./tabs.js";
 export * from "./text-area.js";
 
 /**
@@ -40,5 +42,7 @@ export interface ElementAttributes {
   "ds-radio-group": DsRadioGroupAttributes;
   "ds-select": DsSelectAttributes;
   "ds-switch": DsSwitchAttributes;
+  "ds-tabs": DsTabsAttributes;
+  "ds-tab-panel": DsTabPanelAttributes;
   "ds-text-area": DsTextAreaAttributes;
 }
