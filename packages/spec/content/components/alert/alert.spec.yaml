@@ -19,6 +19,11 @@ links:
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
+known-issues:
+  - statement: >-
+      Link text measures 4.32:1 on the light info surface, below the 4.5:1 minimum. Use a Button
+      for actions in an info alert until the token fix lands.
+    issue: https://github.com/stevegreco/design-system/issues/183
 description: >-
   Shows a short status message, with an optional title, icon, actions, and dismiss control, in the
   flow of the surrounding content. It is announced to assistive technology only when its announce
@@ -295,12 +300,6 @@ rationale:
       exists, so spacing primitives set padding and gaps. The semibold weight primitive distinguishes
       the title, as in Dialog. The dismiss control borrows the tertiary action hover and pressed
       fills because it is a low-emphasis action.
-  - decision: A Link action in an info alert is a known contrast gap, left to a token decision.
-    why: >-
-      Brand text is audited against the page, not the status surfaces. On the light info surface it
-      measures 4.32:1, below the 4.5:1 text minimum; every other variant and theme passes. Alert
-      does not restyle a composed Link (compose-or-propose), so the fix belongs in the tokens. Until
-      then, use a Button for actions in an info alert.
   - decision: Alert has no disabled, selected, loading, or invalid state.
     covers: [disabled, selected, loading, invalid]
     why: >-
