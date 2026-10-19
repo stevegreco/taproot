@@ -24,7 +24,9 @@
         },
         "950": {
           "5": { "$value": "rgba(23, 23, 23, 0.05)", "$type": "color" },
-          "9": { "$value": "rgba(23, 23, 23, 0.09)", "$type": "color" }
+          "9": { "$value": "rgba(23, 23, 23, 0.09)", "$type": "color" },
+          "60": { "$value": "rgba(23, 23, 23, 0.60)", "$type": "color" },
+          "75": { "$value": "rgba(23, 23, 23, 0.75)", "$type": "color" }
         }
       },
       "robRoy": {

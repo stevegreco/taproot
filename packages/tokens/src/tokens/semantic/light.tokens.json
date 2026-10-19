@@ -27,6 +27,11 @@
           "$type": "color",
           "$description": "Unavailable control or action fill"
         },
+        "overlay": {
+          "$value": "{primitives.color.grayAlpha.950.60}",
+          "$type": "color",
+          "$description": "Scrim that dims the page behind modal content"
+        },
         "brand": {
           "default": { "$value": "{primitives.color.robRoy.700}", "$type": "color" },
           "muted": { "$value": "{primitives.color.robRoy.100}", "$type": "color" }
@@ -55,7 +60,7 @@
         "status": {
           "success": { "default": { "$value": "{primitives.color.moss.100}", "$type": "color" } },
           "warning": { "default": { "$value": "{primitives.color.amber.100}", "$type": "color" } },
-          "info": { "default": { "$value": "{primitives.color.sky.100}", "$type": "color" } },
+          "info": { "default": { "$value": "{primitives.color.sky.50}", "$type": "color" } },
           "danger": { "default": { "$value": "{primitives.color.rust.100}", "$type": "color" } }
         }
       },

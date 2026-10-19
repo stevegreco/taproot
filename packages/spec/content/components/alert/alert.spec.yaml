@@ -291,16 +291,11 @@ rationale:
   - decision: Alert consumes semantic status tokens directly, with spacing and weight primitives.
     why: >-
       ADR 0003. The quiet status surfaces are audited for body text, status content, and borders in
-      both themes, and the focus border is audited against each of them. No semantic spacing role
+      both themes, and the focus border and brand text (for a composed Link) are audited against
+      each of them. No semantic spacing role
       exists, so spacing primitives set padding and gaps. The semibold weight primitive distinguishes
       the title, as in Dialog. The dismiss control borrows the tertiary action hover and pressed
       fills because it is a low-emphasis action.
-  - decision: A Link action in an info alert is a known contrast gap, left to a token decision.
-    why: >-
-      Brand text is audited against the page, not the status surfaces. On the light info surface it
-      measures 4.32:1, below the 4.5:1 text minimum; every other variant and theme passes. Alert
-      does not restyle a composed Link (compose-or-propose), so the fix belongs in the tokens. Until
-      then, use a Button for actions in an info alert.
   - decision: Alert has no disabled, selected, loading, or invalid state.
     covers: [disabled, selected, loading, invalid]
     why: >-
