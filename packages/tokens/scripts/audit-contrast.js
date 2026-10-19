@@ -30,6 +30,8 @@ const PAIRS = [
   ["color.foreground.default", "color.background.muted", TEXT, "body text on muted"],
   ["color.foreground.muted", "color.background.default", TEXT, "muted text on page"],
   ["color.foreground.muted", "color.background.surface", TEXT, "muted text on surface"],
+  ["color.foreground.muted", "color.background.sunken", TEXT, "muted text on sunken"],
+  ["color.foreground.muted", "color.background.muted", TEXT, "muted text on muted"],
 
   // Explicit solid-fill pairings
   ["color.foreground.on.brand.default", "color.background.brand.default", TEXT, "content on brand"],
@@ -54,12 +56,20 @@ const PAIRS = [
 
   // Brand content on a foundation background
   ["color.foreground.brand.default", "color.background.default", TEXT, "brand content on page"],
+  [
+    "color.foreground.brand.default",
+    "color.background.brand.muted",
+    TEXT,
+    "brand content on muted brand",
+  ],
 
   // Functional UI boundaries
   ["color.border.default", "color.background.default", NON_TEXT, "border vs page"],
   ["color.border.default", "color.background.surface", NON_TEXT, "border vs surface"],
   ["color.border.strong", "color.background.default", NON_TEXT, "strong border vs page"],
   ["color.border.focus", "color.background.default", NON_TEXT, "focus border vs page"],
+  ["color.border.focus", "color.background.surface", NON_TEXT, "focus border vs surface"],
+  ["color.border.focus", "color.background.sunken", NON_TEXT, "focus border vs sunken"],
   ...["default", "hover", "pressed"].flatMap((state) => [
     [
       `color.border.action.primary.${state}`,
