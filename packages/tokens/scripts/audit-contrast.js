@@ -111,6 +111,13 @@ const PAIRS = [
       NON_TEXT,
       `${s} border on quiet status surface`,
     ],
+    // A Link composed inside a status message, such as an Alert action.
+    [
+      "color.foreground.brand.default",
+      `color.background.status.${s}.default`,
+      TEXT,
+      `brand content on quiet ${s} status`,
+    ],
     // Controls inside a status message, such as Alert's dismiss control.
     [
       "color.border.focus",

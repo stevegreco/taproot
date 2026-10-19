@@ -55,7 +55,7 @@
         "status": {
           "success": { "default": { "$value": "{primitives.color.moss.100}", "$type": "color" } },
           "warning": { "default": { "$value": "{primitives.color.amber.100}", "$type": "color" } },
-          "info": { "default": { "$value": "{primitives.color.sky.100}", "$type": "color" } },
+          "info": { "default": { "$value": "{primitives.color.sky.50}", "$type": "color" } },
           "danger": { "default": { "$value": "{primitives.color.rust.100}", "$type": "color" } }
         }
       },

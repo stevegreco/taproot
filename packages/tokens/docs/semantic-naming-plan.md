@@ -121,7 +121,9 @@ background is literally transparent.
 | `semantic.color.background.status.danger.default`  | Negative condition or error-outcome fill | `semantic.color.status.danger.background`  |
 
 Only the default quiet fill is accepted. Lighter and stronger status-background variants remain
-deferred until a shipped consumer needs them. The light theme uses each hue's `100` stop. The dark
+deferred until a shipped consumer needs them. The light theme uses each hue's `100` stop, except
+info, which uses `sky.50`: brand text (`robRoy.700`) measures 4.32:1 on `sky.100`, below the text
+minimum, and 4.92:1 on `sky.50`. The dark
 theme uses `moss.900`, `amber.900`, `sky.800`, and `rust.800` respectively; semantic mappings choose
 perceptually appropriate stops rather than forcing matching step numbers across palettes.
 
