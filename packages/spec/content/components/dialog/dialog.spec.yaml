@@ -135,7 +135,7 @@ accessibility:
 tokens:
   backdrop:
     base:
-      background: primitives.color.gray.950
+      background: semantic.color.background.overlay
   dialog:
     base:
       background: semantic.color.background.surface
@@ -182,9 +182,9 @@ rationale:
       motion preferences without a separate motion treatment.
   - decision: Layout follows reading direction; no directional artwork.
     why: Title, content, and actions follow the surrounding right-to-left or left-to-right flow.
-  - decision: Semantic surface roles with a primitive scrim and spacing.
+  - decision: Semantic surface and overlay roles, with spacing primitives.
     why: >-
-      Existing semantic tokens cover surface, foreground, border, radius, and elevation. No
-      semantic overlay color exists, so a neutral primitive at sixty percent opacity supplies the backdrop.
+      Semantic tokens cover surface, foreground, border, radius, elevation, and the backdrop. The
+      overlay role is darker in the dark theme, where the same scrim as in light dims the page less.
       Spacing primitives describe this surface’s padding and gaps. The semibold weight primitive
       distinguishes the title while retaining body typography.

@@ -49,6 +49,7 @@ Background tokens are used only for fills. The working vocabulary currently cont
 | `semantic.color.background.sunken`   | Wells, inset regions, and grouped control beds   | Unchanged                            |
 | `semantic.color.background.muted`    | Quiet supporting regions and low-emphasis fills  | Unchanged                            |
 | `semantic.color.background.disabled` | Unavailable control or action fill               | `semantic.color.disabled.background` |
+| `semantic.color.background.overlay`  | Scrim that dims the page behind modal content    | New role                             |
 
 In the light theme, `background.surface` uses `gray.25` to provide a near-white neutral containing layer
 against the warm `background.default`. It does not imply elevation.
@@ -56,6 +57,9 @@ against the warm `background.default`. It does not imply elevation.
 `background.disabled` uses the neutral gray scale so it does not inherit the warm cast of `clay` or
 the green cast of `blueSmoke`. It maps to `gray.100` in the light theme and `gray.900` in the dark
 theme.
+
+`background.overlay` is translucent `gray.950`: 60% in the light theme and 75% in the dark theme. The
+dark page is already close to `gray.950`, so the same opacity would dim it less.
 
 ### Brand
 

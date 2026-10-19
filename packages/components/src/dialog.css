@@ -26,7 +26,7 @@ dialog[open] {
   gap: var(--primitives-space-4);
 }
 dialog::backdrop {
-  background: color-mix(in srgb, var(--primitives-color-gray-950) 60%, transparent);
+  background: var(--semantic-color-background-overlay);
 }
 h2 {
   margin: 0;

@@ -20,7 +20,6 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import StyleDictionary from "style-dictionary";
 import { THEMES, semanticConfig, semanticDescriptionSources } from "../style-dictionary.config.js";
-import { flatten } from "../src/flatten.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -145,13 +144,17 @@ test("leaf descriptions are comments on the light custom property", async () => 
     });
     await sd.buildAllPlatforms();
     const css = await readFile(join(dir, "semantic.light.css"), "utf8");
-    const values = new Map(
-      flatten(read("dist/tokens/semantic.light.json")).map((token) => [token.path, token.value]),
-    );
+    // Match the declaration by name and comment. Its value is CSS output, which
+    // can differ in form from the JSON value (rgba() versus 8-digit hex).
+    const declarations = css.split("\n").map((line) => line.trim());
 
     for (const [path, { description }] of forTheme("light").tokens) {
-      const line = `${cssVariable(path)}: ${values.get(path)}; /** ${description} */`;
-      assert.ok(css.includes(line), `${path} is missing \`${line}\``);
+      const name = `${cssVariable(path)}:`;
+      const comment = `; /** ${description} */`;
+      assert.ok(
+        declarations.some((line) => line.startsWith(name) && line.endsWith(comment)),
+        `${path} is missing \`${name} …${comment}\``,
+      );
     }
   } finally {
     await rm(dir, { recursive: true, force: true });

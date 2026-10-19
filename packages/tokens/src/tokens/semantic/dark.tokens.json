@@ -27,6 +27,11 @@
           "$type": "color",
           "$description": "Unavailable control or action fill"
         },
+        "overlay": {
+          "$value": "{primitives.color.grayAlpha.950.75}",
+          "$type": "color",
+          "$description": "Scrim that dims the page behind modal content"
+        },
         "brand": {
           "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
           "muted": { "$value": "{primitives.color.robRoy.950}", "$type": "color" }
