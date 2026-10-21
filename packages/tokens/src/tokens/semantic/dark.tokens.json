@@ -149,12 +149,36 @@
       }
     },
     "elevation": {
-      "xs": { "$value": "{primitives.shadowInk.xs}", "$type": "shadow" },
-      "sm": { "$value": "{primitives.shadowInk.sm}", "$type": "shadow" },
-      "md": { "$value": "{primitives.shadowInk.md}", "$type": "shadow" },
-      "lg": { "$value": "{primitives.shadowInk.lg}", "$type": "shadow" },
-      "xl": { "$value": "{primitives.shadowInk.xl}", "$type": "shadow" },
-      "inset": { "$value": "{primitives.shadowInk.inset}", "$type": "shadow" }
+      "xs": {
+        "$value": "{primitives.shadowInk.xs}",
+        "$type": "shadow",
+        "$description": "Subtle lift for resting controls and small raised details"
+      },
+      "sm": {
+        "$value": "{primitives.shadowInk.sm}",
+        "$type": "shadow",
+        "$description": "Cards and raised surfaces at rest"
+      },
+      "md": {
+        "$value": "{primitives.shadowInk.md}",
+        "$type": "shadow",
+        "$description": "Popovers, menus, and raised surfaces on hover"
+      },
+      "lg": {
+        "$value": "{primitives.shadowInk.lg}",
+        "$type": "shadow",
+        "$description": "Dialogs and other modal surfaces"
+      },
+      "xl": {
+        "$value": "{primitives.shadowInk.xl}",
+        "$type": "shadow",
+        "$description": "Highest overlays that must stand apart from all other content"
+      },
+      "inset": {
+        "$value": "{primitives.shadowInk.inset}",
+        "$type": "shadow",
+        "$description": "Wells, tracks, and recessed regions"
+      }
     }
   }
 }

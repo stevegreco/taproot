@@ -1,9 +1,21 @@
 {
   "semantic": {
     "radius": {
-      "control": { "$value": "{primitives.radius.md}", "$type": "dimension" },
-      "surface": { "$value": "{primitives.radius.lg}", "$type": "dimension" },
-      "pill": { "$value": "{primitives.radius.full}", "$type": "dimension" }
+      "control": {
+        "$value": "{primitives.radius.md}",
+        "$type": "dimension",
+        "$description": "Buttons, inputs, tabs, and other interactive controls"
+      },
+      "surface": {
+        "$value": "{primitives.radius.lg}",
+        "$type": "dimension",
+        "$description": "Cards, panels, dialogs, and containing surfaces"
+      },
+      "pill": {
+        "$value": "{primitives.radius.full}",
+        "$type": "dimension",
+        "$description": "Fully rounded badges, switches, and selection indicators"
+      }
     }
   }
 }
