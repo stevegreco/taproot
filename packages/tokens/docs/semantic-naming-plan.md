@@ -385,18 +385,19 @@ requiring consumers to depend on a primitive path.
 
 ### Published vocabulary
 
-| Semantic recipe                  | Purpose                                                   | Family    | Size   | Weight    | Line height | Tracking |
-| -------------------------------- | --------------------------------------------------------- | --------- | ------ | --------- | ----------- | -------- |
-| `semantic.typography.heading.lg` | Primary page and major region headings                    | `display` | `2xl`  | `medium`  | `tight`     | `tight`  |
-| `semantic.typography.heading.md` | Standard section and card headings                        | `display` | `xl`   | `medium`  | `snug`      | `snug`   |
-| `semantic.typography.heading.sm` | Compact headings within dense surfaces                    | `display` | `lg`   | `medium`  | `snug`      | `snug`   |
-| `semantic.typography.body.md`    | Default interface copy and prose                          | `sans`    | `base` | `regular` | `normal`    | `normal` |
-| `semantic.typography.body.sm`    | Supporting copy, descriptions, and compact interface text | `sans`    | `sm`   | `regular` | `normal`    | `normal` |
-| `semantic.typography.label.md`   | Control labels, buttons, tabs, and prominent metadata     | `sans`    | `sm`   | `medium`  | `snug`      | `normal` |
-| `semantic.typography.label.sm`   | Badges, compact metadata, and space-constrained labels    | `sans`    | `xs`   | `medium`  | `snug`      | `normal` |
-| `semantic.typography.eyebrow`    | Short contextual text that introduces a following heading | `sans`    | `xs`   | `medium`  | `snug`      | `caps`   |
-| `semantic.typography.code.md`    | Code blocks and technical values                          | `mono`    | `sm`   | `regular` | `normal`    | `normal` |
-| `semantic.typography.code.sm`    | Inline code and compact technical metadata                | `mono`    | `xs`   | `regular` | `normal`    | `normal` |
+| Semantic recipe                  | Purpose                                                   | Family    | Size   | Weight     | Line height | Tracking |
+| -------------------------------- | --------------------------------------------------------- | --------- | ------ | ---------- | ----------- | -------- |
+| `semantic.typography.heading.lg` | Primary page and major region headings                    | `display` | `2xl`  | `medium`   | `tight`     | `tight`  |
+| `semantic.typography.heading.md` | Standard section and card headings                        | `display` | `xl`   | `medium`   | `snug`      | `snug`   |
+| `semantic.typography.heading.sm` | Compact headings within dense surfaces                    | `display` | `lg`   | `medium`   | `snug`      | `snug`   |
+| `semantic.typography.body.md`    | Default interface copy and prose                          | `sans`    | `base` | `regular`  | `normal`    | `normal` |
+| `semantic.typography.body.sm`    | Supporting copy, descriptions, and compact interface text | `sans`    | `sm`   | `regular`  | `normal`    | `normal` |
+| `semantic.typography.title`      | Bold title above body copy in alerts and dialogs          | `sans`    | `base` | `semibold` | `normal`    | `normal` |
+| `semantic.typography.label.md`   | Control labels, buttons, tabs, and prominent metadata     | `sans`    | `sm`   | `medium`   | `snug`      | `normal` |
+| `semantic.typography.label.sm`   | Badges, compact metadata, and space-constrained labels    | `sans`    | `xs`   | `medium`   | `snug`      | `normal` |
+| `semantic.typography.eyebrow`    | Short contextual text that introduces a following heading | `sans`    | `xs`   | `medium`   | `snug`      | `caps`   |
+| `semantic.typography.code.md`    | Code blocks and technical values                          | `mono`    | `sm`   | `regular`  | `normal`    | `normal` |
+| `semantic.typography.code.sm`    | Inline code and compact technical metadata                | `mono`    | `xs`   | `regular`  | `normal`    | `normal` |
 
 The values in the table are primitive suffixes. For example, the complete `eyebrow` recipe maps to
 `primitives.font.sans`, `primitives.text.xs`, `primitives.weight.medium`,
@@ -460,6 +461,25 @@ visual recipe is chosen independently from its document level.
 
 Add a role or variant only when a shipped consumer demonstrates that its typography must move as a
 stable unit across the system.
+
+## Shape and focus
+
+Shape roles name the kind of object, not a size step, so a component keeps its token if the
+primitive scale changes. They are theme-independent.
+
+| Token                     | Purpose                                                                    | Primitive      |
+| ------------------------- | -------------------------------------------------------------------------- | -------------- |
+| `semantic.radius.control` | Buttons, inputs, tabs, and other interactive controls                      | `radius.md`    |
+| `semantic.radius.compact` | Small controls, such as the checkbox box, where control radius looks round | `radius.xs`    |
+| `semantic.radius.surface` | Cards, panels, dialogs, and containing surfaces                            | `radius.lg`    |
+| `semantic.radius.pill`    | Fully rounded badges, switches, and selection indicators                   | `radius.full`  |
+| `semantic.border.width`   | Control, surface, and divider borders                                      | `border.thin`  |
+| `semantic.focus.width`    | Thickness of the focus outline on every focusable element                  | `border.thick` |
+| `semantic.focus.offset`   | Gap between an element and its focus outline                               | `border.thick` |
+
+Every focus ring is `outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus)`
+with `outline-offset: var(--ds-semantic-focus-offset)`. Where the outline would be clipped, as in a
+scrolling tab list, it is drawn inside with an offset of `calc(-1 * var(--ds-semantic-focus-width))`.
 
 ## Size
 

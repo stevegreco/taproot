@@ -2,6 +2,7 @@ import { afterEach, beforeAll, describe, expect, test } from "vitest";
 
 import { defineIcon } from "../src/icon.js";
 import { exposedNodes } from "./helpers/accessibility.js";
+import { expectRendered } from "./helpers/rendered.js";
 import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-icon";
@@ -23,6 +24,7 @@ function render(markup) {
 describe("DsIcon", () => {
   test("[decorative-by-default] is hidden from assistive technology without a label", async () => {
     render(`<p>Delete <${tagName}>${svg}</${tagName}></p>`);
+    expectRendered(document.querySelector(tagName), "icon");
 
     const nodes = await exposedNodes();
 
@@ -48,12 +50,14 @@ describe("DsIcon", () => {
 
   test("never adds role or aria attributes to the host", () => {
     const icon = render(`<${tagName} label="Warning">${svg}</${tagName}>`);
+    expectRendered(icon, "icon");
 
     expect(icon.getAttributeNames()).toEqual(["label"]);
   });
 
   test("[not-a-control] takes no focus and exposes no control", () => {
     const icon = render(`<${tagName} label="Warning">${svg}</${tagName}>`);
+    expectRendered(icon, "icon");
 
     icon.focus();
 

@@ -120,6 +120,29 @@
           }
         }
       },
+      "title": {
+        "$description": "Bold title above body copy in alerts and dialogs",
+        "fontFamily": {
+          "$value": "{primitives.font.sans}",
+          "$type": "fontFamily"
+        },
+        "fontSize": {
+          "$value": "{primitives.text.base}",
+          "$type": "dimension"
+        },
+        "fontWeight": {
+          "$value": "{primitives.weight.semibold}",
+          "$type": "fontWeight"
+        },
+        "lineHeight": {
+          "$value": "{primitives.leading.normal}",
+          "$type": "number"
+        },
+        "letterSpacing": {
+          "$value": "{primitives.tracking.normal}",
+          "$type": "dimension"
+        }
+      },
       "label": {
         "md": {
           "$description": "Control labels, buttons, tabs, and prominent metadata",

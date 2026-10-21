@@ -53,7 +53,7 @@
   margin: 0;
   padding: var(--ds-primitives-space-2) var(--ds-primitives-space-3);
   border-style: solid;
-  border-width: 1px;
+  border-width: var(--ds-semantic-border-width);
   border-color: var(--ds-semantic-color-border-default);
   border-radius: var(--ds-semantic-radius-control);
   background-color: var(--ds-semantic-color-background-surface);
@@ -78,8 +78,8 @@
 }
 
 .control:focus-visible {
-  outline: 2px solid var(--ds-semantic-color-border-focus);
-  outline-offset: 2px;
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
 }
 
 .control[aria-invalid="true"]:not(:disabled) {

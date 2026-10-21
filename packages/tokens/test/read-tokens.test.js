@@ -247,13 +247,14 @@ test("Rust stays categorically redder than the warm brand ramp", () => {
 
 // ────────────────────────────────────────────────────────────────────────────
 
-test("semantic typography publishes ten complete, theme-independent recipes", () => {
+test("semantic typography publishes eleven complete, theme-independent recipes", () => {
   const recipes = [
     "heading.lg",
     "heading.md",
     "heading.sm",
     "body.md",
     "body.sm",
+    "title",
     "label.md",
     "label.sm",
     "eyebrow",

@@ -44,7 +44,7 @@
   gap: var(--ds-primitives-space-3);
   box-sizing: border-box;
   padding: var(--ds-primitives-space-3) var(--ds-primitives-space-4);
-  border: 1px solid var(--_border);
+  border: var(--ds-semantic-border-width) solid var(--_border);
   border-radius: var(--ds-semantic-radius-surface);
   background-color: var(--_background);
   color: var(--ds-semantic-color-foreground-default);
@@ -72,7 +72,11 @@
 
 .title {
   color: var(--ds-semantic-color-foreground-default);
-  font-weight: var(--ds-primitives-weight-semibold);
+  font-family: var(--ds-semantic-typography-title-font-family);
+  font-size: var(--ds-semantic-typography-title-font-size);
+  font-weight: var(--ds-semantic-typography-title-font-weight);
+  line-height: var(--ds-semantic-typography-title-line-height);
+  letter-spacing: var(--ds-semantic-typography-title-letter-spacing);
 }
 
 .actions {
@@ -111,8 +115,8 @@
 }
 
 .dismiss:focus-visible {
-  outline: 2px solid var(--ds-semantic-color-border-focus);
-  outline-offset: 2px;
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
 }
 
 @media (forced-colors: active) {

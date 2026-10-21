@@ -33,35 +33,111 @@
           "$description": "Scrim that dims the page behind modal content"
         },
         "brand": {
-          "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
-          "muted": { "$value": "{primitives.color.robRoy.950}", "$type": "color" }
+          "default": {
+            "$value": "{primitives.color.robRoy.400}",
+            "$type": "color",
+            "$description": "Solid non-interactive brand fill"
+          },
+          "muted": {
+            "$value": "{primitives.color.robRoy.950}",
+            "$type": "color",
+            "$description": "Tinted brand surface for highlighted cards and badges"
+          }
         },
         "action": {
           "primary": {
-            "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
-            "hover": { "$value": "{primitives.color.robRoy.300}", "$type": "color" },
-            "pressed": { "$value": "{primitives.color.robRoy.200}", "$type": "color" }
+            "default": {
+              "$value": "{primitives.color.robRoy.400}",
+              "$type": "color",
+              "$description": "Resting primary-action fill"
+            },
+            "hover": {
+              "$value": "{primitives.color.robRoy.300}",
+              "$type": "color",
+              "$description": "Hovered primary-action fill"
+            },
+            "pressed": {
+              "$value": "{primitives.color.robRoy.200}",
+              "$type": "color",
+              "$description": "Pressed primary-action fill"
+            }
           },
           "secondary": {
-            "default": { "$value": "{primitives.color.gray.900}", "$type": "color" },
-            "hover": { "$value": "{primitives.color.gray.800}", "$type": "color" },
-            "pressed": { "$value": "{primitives.color.gray.700}", "$type": "color" }
+            "default": {
+              "$value": "{primitives.color.gray.900}",
+              "$type": "color",
+              "$description": "Resting secondary-action fill"
+            },
+            "hover": {
+              "$value": "{primitives.color.gray.800}",
+              "$type": "color",
+              "$description": "Hovered secondary-action fill"
+            },
+            "pressed": {
+              "$value": "{primitives.color.gray.700}",
+              "$type": "color",
+              "$description": "Pressed secondary-action fill"
+            }
           },
           "tertiary": {
-            "hover": { "$value": "{primitives.color.grayAlpha.25.6}", "$type": "color" },
-            "pressed": { "$value": "{primitives.color.grayAlpha.25.10}", "$type": "color" }
+            "hover": {
+              "$value": "{primitives.color.grayAlpha.25.6}",
+              "$type": "color",
+              "$description": "Hovered low-emphasis action fill"
+            },
+            "pressed": {
+              "$value": "{primitives.color.grayAlpha.25.10}",
+              "$type": "color",
+              "$description": "Pressed low-emphasis action fill"
+            }
           },
           "destructive": {
-            "default": { "$value": "{primitives.color.rust.400}", "$type": "color" },
-            "hover": { "$value": "{primitives.color.rust.300}", "$type": "color" },
-            "pressed": { "$value": "{primitives.color.rust.200}", "$type": "color" }
+            "default": {
+              "$value": "{primitives.color.rust.400}",
+              "$type": "color",
+              "$description": "Resting destructive-action fill"
+            },
+            "hover": {
+              "$value": "{primitives.color.rust.300}",
+              "$type": "color",
+              "$description": "Hovered destructive-action fill"
+            },
+            "pressed": {
+              "$value": "{primitives.color.rust.200}",
+              "$type": "color",
+              "$description": "Pressed destructive-action fill"
+            }
           }
         },
         "status": {
-          "success": { "default": { "$value": "{primitives.color.moss.900}", "$type": "color" } },
-          "warning": { "default": { "$value": "{primitives.color.amber.900}", "$type": "color" } },
-          "info": { "default": { "$value": "{primitives.color.sky.800}", "$type": "color" } },
-          "danger": { "default": { "$value": "{primitives.color.rust.800}", "$type": "color" } }
+          "success": {
+            "default": {
+              "$value": "{primitives.color.moss.900}",
+              "$type": "color",
+              "$description": "Positive outcome or confirmation fill"
+            }
+          },
+          "warning": {
+            "default": {
+              "$value": "{primitives.color.amber.900}",
+              "$type": "color",
+              "$description": "Caution or attention-required fill"
+            }
+          },
+          "info": {
+            "default": {
+              "$value": "{primitives.color.sky.800}",
+              "$type": "color",
+              "$description": "Informational or guidance fill"
+            }
+          },
+          "danger": {
+            "default": {
+              "$value": "{primitives.color.rust.800}",
+              "$type": "color",
+              "$description": "Negative condition or error-outcome fill"
+            }
+          }
         }
       },
       "foreground": {
@@ -81,20 +157,60 @@
           "$description": "Unavailable text and icons"
         },
         "brand": {
-          "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" }
+          "default": {
+            "$value": "{primitives.color.robRoy.400}",
+            "$type": "color",
+            "$description": "Non-interactive brand-colored text and icons on supported foundation backgrounds"
+          }
         },
         "on": {
-          "brand": { "$value": "{primitives.color.gray.950}", "$type": "color" },
+          "brand": {
+            "$value": "{primitives.color.gray.950}",
+            "$type": "color",
+            "$description": "Text and icons placed on the solid brand fill"
+          },
           "action": {
-            "primary": { "$value": "{primitives.color.gray.950}", "$type": "color" },
-            "destructive": { "$value": "{primitives.color.gray.950}", "$type": "color" }
+            "primary": {
+              "$value": "{primitives.color.gray.950}",
+              "$type": "color",
+              "$description": "Text and icons placed on primary-action fills"
+            },
+            "destructive": {
+              "$value": "{primitives.color.gray.950}",
+              "$type": "color",
+              "$description": "Text and icons placed on destructive-action fills"
+            }
           }
         },
         "status": {
-          "success": { "default": { "$value": "{primitives.color.moss.100}", "$type": "color" } },
-          "warning": { "default": { "$value": "{primitives.color.amber.100}", "$type": "color" } },
-          "info": { "default": { "$value": "{primitives.color.sky.100}", "$type": "color" } },
-          "danger": { "default": { "$value": "{primitives.color.rust.100}", "$type": "color" } }
+          "success": {
+            "default": {
+              "$value": "{primitives.color.moss.100}",
+              "$type": "color",
+              "$description": "Success-colored text and icons on supported foundation backgrounds"
+            }
+          },
+          "warning": {
+            "default": {
+              "$value": "{primitives.color.amber.100}",
+              "$type": "color",
+              "$description": "Warning-colored text and icons on supported foundation backgrounds"
+            }
+          },
+          "info": {
+            "default": {
+              "$value": "{primitives.color.sky.100}",
+              "$type": "color",
+              "$description": "Informational text and icons on supported foundation backgrounds"
+            }
+          },
+          "danger": {
+            "default": {
+              "$value": "{primitives.color.rust.100}",
+              "$type": "color",
+              "$description": "Danger-colored text and icons on supported foundation backgrounds"
+            }
+          }
         }
       },
       "border": {
@@ -125,24 +241,76 @@
         },
         "action": {
           "primary": {
-            "default": { "$value": "{primitives.color.robRoy.400}", "$type": "color" },
-            "hover": { "$value": "{primitives.color.robRoy.300}", "$type": "color" },
-            "pressed": { "$value": "{primitives.color.robRoy.200}", "$type": "color" }
+            "default": {
+              "$value": "{primitives.color.robRoy.400}",
+              "$type": "color",
+              "$description": "Primary action boundary at rest"
+            },
+            "hover": {
+              "$value": "{primitives.color.robRoy.300}",
+              "$type": "color",
+              "$description": "Primary action boundary on hover"
+            },
+            "pressed": {
+              "$value": "{primitives.color.robRoy.200}",
+              "$type": "color",
+              "$description": "Primary action boundary when pressed"
+            }
           },
           "destructive": {
-            "default": { "$value": "{primitives.color.rust.400}", "$type": "color" },
-            "hover": { "$value": "{primitives.color.rust.300}", "$type": "color" },
-            "pressed": { "$value": "{primitives.color.rust.200}", "$type": "color" }
+            "default": {
+              "$value": "{primitives.color.rust.400}",
+              "$type": "color",
+              "$description": "Destructive action boundary at rest"
+            },
+            "hover": {
+              "$value": "{primitives.color.rust.300}",
+              "$type": "color",
+              "$description": "Destructive action boundary on hover"
+            },
+            "pressed": {
+              "$value": "{primitives.color.rust.200}",
+              "$type": "color",
+              "$description": "Destructive action boundary when pressed"
+            }
           }
         },
         "brand": {
-          "muted": { "$value": "{primitives.color.robRoy.800}", "$type": "color" }
+          "muted": {
+            "$value": "{primitives.color.robRoy.800}",
+            "$type": "color",
+            "$description": "Quiet brand-colored boundary for non-interactive emphasis"
+          }
         },
         "status": {
-          "success": { "default": { "$value": "{primitives.color.moss.300}", "$type": "color" } },
-          "warning": { "default": { "$value": "{primitives.color.amber.300}", "$type": "color" } },
-          "info": { "default": { "$value": "{primitives.color.sky.300}", "$type": "color" } },
-          "danger": { "default": { "$value": "{primitives.color.rust.300}", "$type": "color" } }
+          "success": {
+            "default": {
+              "$value": "{primitives.color.moss.300}",
+              "$type": "color",
+              "$description": "Positive or confirmed boundary"
+            }
+          },
+          "warning": {
+            "default": {
+              "$value": "{primitives.color.amber.300}",
+              "$type": "color",
+              "$description": "Caution or attention-required boundary"
+            }
+          },
+          "info": {
+            "default": {
+              "$value": "{primitives.color.sky.300}",
+              "$type": "color",
+              "$description": "Informational or guidance boundary"
+            }
+          },
+          "danger": {
+            "default": {
+              "$value": "{primitives.color.rust.300}",
+              "$type": "color",
+              "$description": "Error, invalid, or danger-status boundary"
+            }
+          }
         }
       }
     },

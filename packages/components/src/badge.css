@@ -53,7 +53,7 @@
   gap: var(--ds-primitives-space-1);
   box-sizing: border-box;
   padding: var(--ds-primitives-space-1) var(--ds-primitives-space-2);
-  border: 1px solid var(--_border);
+  border: var(--ds-semantic-border-width) solid var(--_border);
   border-radius: var(--ds-semantic-radius-pill);
   background-color: var(--_background);
   color: var(--_foreground);

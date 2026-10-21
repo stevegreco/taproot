@@ -111,6 +111,21 @@ test("a role's description is identical in both themes", () => {
   assert.deepEqual(groupDrift, [], "group description text differs between light and dark");
 });
 
+test("every semantic color role is described", () => {
+  // Hover and pressed states too: a consumer picking a token reads the comment.
+  const undescribed = [];
+  const walk = (node, parts) => {
+    for (const [key, value] of Object.entries(node)) {
+      if (key.startsWith("$") || value === null || typeof value !== "object") continue;
+      const path = [...parts, key];
+      if (!("$value" in value)) walk(value, path);
+      else if (value.$type === "color" && !value.$description) undescribed.push(path.join("."));
+    }
+  };
+  for (const sourceFile of sourcesFor("light")) walk(sourceFile, []);
+  assert.deepEqual(undescribed, [], "semantic color roles without a description");
+});
+
 test("every description is prose the path could not carry", () => {
   const { tokens, groups } = forTheme("light");
   const described = [...tokens, ...groups.map(([path, description]) => [path, { description }])];

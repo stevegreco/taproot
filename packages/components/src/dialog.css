@@ -10,7 +10,7 @@ dialog {
   max-block-size: calc(100dvh - 2rem);
   overflow: auto;
   overscroll-behavior: contain;
-  border: 1px solid var(--ds-semantic-color-border-default);
+  border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-default);
   border-radius: var(--ds-semantic-radius-surface);
   padding: var(--ds-primitives-space-6);
   color: var(--ds-semantic-color-foreground-default);
@@ -30,12 +30,15 @@ dialog::backdrop {
 }
 h2 {
   margin: 0;
-  font: inherit;
-  font-weight: var(--ds-primitives-weight-semibold);
+  font-family: var(--ds-semantic-typography-title-font-family);
+  font-size: var(--ds-semantic-typography-title-font-size);
+  font-weight: var(--ds-semantic-typography-title-font-weight);
+  line-height: var(--ds-semantic-typography-title-line-height);
+  letter-spacing: var(--ds-semantic-typography-title-letter-spacing);
 }
 h2:focus-visible {
-  outline: 2px solid var(--ds-semantic-color-border-focus);
-  outline-offset: 2px;
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
 }
 p {
   margin: 0;

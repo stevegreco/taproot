@@ -51,9 +51,9 @@
   box-sizing: border-box;
   margin: 0;
   border-style: solid;
-  border-width: 1px;
+  border-width: var(--ds-semantic-border-width);
   border-color: var(--ds-semantic-color-border-default);
-  border-radius: var(--ds-primitives-radius-xs);
+  border-radius: var(--ds-semantic-radius-compact);
   background-color: var(--ds-semantic-color-background-surface);
   outline: none;
   cursor: pointer;
@@ -71,8 +71,8 @@
 }
 
 .control:focus-visible {
-  outline: 2px solid var(--ds-semantic-color-border-focus);
-  outline-offset: 2px;
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
 }
 
 .control:is(:checked, :indeterminate):not(:disabled) {

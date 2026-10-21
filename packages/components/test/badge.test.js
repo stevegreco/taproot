@@ -2,6 +2,7 @@ import { afterEach, beforeAll, describe, expect, test } from "vitest";
 
 import { defineBadge } from "../src/badge.js";
 import { defineIcon } from "../src/icon.js";
+import { expectRendered } from "./helpers/rendered.js";
 import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-badge";
@@ -44,6 +45,7 @@ describe("DsBadge", () => {
   test("[non-interactive][a11y-not-a-control] takes no focus and exposes no control", () => {
     document.body.innerHTML = `<${tagName}>New</${tagName}>`;
     const badge = document.querySelector(tagName);
+    expectRendered(badge, "badge");
 
     badge.focus();
     expect(document.activeElement).not.toBe(badge);
@@ -56,6 +58,7 @@ describe("DsBadge", () => {
   test("[a11y-no-live-region] sets no role or live region", () => {
     document.body.innerHTML = `<${tagName} variant="success">Active</${tagName}>`;
     const badge = document.querySelector(tagName);
+    expectRendered(badge, "badge");
 
     expect(badge.hasAttribute("role")).toBe(false);
     expect(badge.hasAttribute("aria-live")).toBe(false);
