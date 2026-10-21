@@ -70,6 +70,16 @@ export default async function verify({ page, step, eventually, exposedNodes }) {
   reads the right frame and throws if the example is not in the tree. Do not open your own CDP
   session.
 - The runner waits for hydration before your steps. Do not add sleeps.
+- A step that cannot fail proves nothing. Break each one once, for example by expecting the wrong
+  value, and watch it fail with its step name before you put it back.
+
+Run one example's steps on their own while you work. Build the site once, then rerun only the
+steps; a change to `.verify.js` needs no rebuild, but a change to the example does:
+
+```bash
+pnpm exec turbo run build --filter=documentation
+pnpm --filter documentation exec vitest run test/examples.test.ts -t "the <name> example"
+```
 
 ## 3. Preview prose (optional)
 
