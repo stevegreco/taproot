@@ -18,6 +18,9 @@ usage:
     - situation: Choose from a long list.
       instead: component.select
       why: A compact picker makes a long list easier to scan.
+    - situation: Switch which view of the same subject is shown, without saving a choice.
+      instead: component.tabs
+      why: Tabs change what is shown. A radio group records a value.
 anatomy:
   field: { role: container, description: Group label and choices and messages. }
   label: { role: label, description: Visible group name. }
