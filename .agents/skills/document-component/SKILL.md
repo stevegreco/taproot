@@ -5,15 +5,16 @@ description: Write the docs example and Verify steps for an implemented componen
 
 # Document a component
 
-The last of three phases, each its own pull request:
+The last of three phases, one commit each in a single pull request:
 
 1. **spec-component**: a draft spec that says what the component is for.
 2. **implement-component**: completes the spec and builds the web component.
 3. **document-component** (this skill): the docs example and its Verify steps.
 
-Start from an implemented component on `main`: its spec is not a draft and
-`apps/documentation/implementation/<name>.md` exists. The component already has a docs page built
-from the spec and that file. This phase adds a realistic example and steps that prove it works.
+Start on the component's branch, after its implementation commit is reviewed: its spec is not a
+draft and `apps/documentation/implementation/<name>.md` exists. The component already has a docs
+page built from the spec and that file. This phase adds a realistic example and steps that prove
+it works.
 
 ```bash
 pnpm spec get component.<name> --impl web
@@ -80,4 +81,7 @@ The docs tests build the site first, so they take longer than the others. Then r
 
 ## Pull request
 
-Base on `main` and never stack. The description lists what each Verify step proves.
+Commit on the same branch and add a "Docs" section to the pull request description that lists what
+each Verify step proves. The pull request merges after this commit is reviewed.
+
+Fixing or documenting a component that is already on `main` is a pull request of its own.

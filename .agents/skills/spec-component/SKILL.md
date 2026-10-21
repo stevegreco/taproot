@@ -5,11 +5,15 @@ description: Propose a new component for the Ember & Sage design system as a min
 
 # Spec a component
 
-The first of three phases, each its own pull request:
+The first of three phases, one commit each in a single pull request:
 
 1. **spec-component** (this skill): a draft spec that says what the component is for.
 2. **implement-component**: completes the spec contract and builds the web component.
 3. **document-component**: the docs example and its Verify steps.
+
+All three phases are commits on one branch off `main`, in one pull request. Review pauses
+after each commit, and the next phase starts only once that commit is reviewed. The pull request
+merges after the docs commit, so a draft or an undocumented component never reaches `main`.
 
 A draft is small on purpose. It is the proposal people review before anything is built, so it
 holds only what the schema requires. Parameters, rules, tokens, and rationale come in the
@@ -88,7 +92,8 @@ including any `TODO:` left. A link or `instead` that names a record must resolve
 
 ## Pull request
 
-Base on `main` and never stack. The description says:
+Branch from `main`, commit the draft, and open the pull request with this commit. Ask for review
+and stop: the implementation commit starts only after the draft is reviewed. The description says:
 
 - What the component is for, and why composing existing components is not enough.
 - Its boundaries: the `avoid` entries in a sentence each.
