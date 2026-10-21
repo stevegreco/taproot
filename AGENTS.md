@@ -62,8 +62,8 @@ pauses after each commit:
    removes `status: draft`.
 3. `document-component`: the docs example and its Verify steps.
 
-`pnpm component:new <name> --phase spec` scaffolds the draft spec, and
-`pnpm component:status <name> [--phase spec|implementation|docs]` checks each phase.
+`pnpm component:new <name> --phase spec|implementation|docs` scaffolds each phase, and
+`pnpm component:status <name> [--phase spec|implementation|docs]` checks it.
 
 Token decisions live in `packages/tokens/docs/adr/`. Do not place design system facts only in a
 documentation page or an agent skill. Those consume the spec.

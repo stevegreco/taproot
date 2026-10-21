@@ -52,40 +52,42 @@ decisions that change public API.
 
 Check: `pnpm spec validate`.
 
-## 2. Write the failing tests
-
-Before any runtime code, list the MUST rules and write one test per rule in
-`packages/components/test/<name>.test.js`:
+## 2. Scaffold the files and write the failing tests
 
 ```bash
-pnpm spec rules --id component.<name> --level must
+pnpm component:new <name> --phase implementation
 ```
 
-Start each test name with the IDs of the rules it proves, such as
-`"[square-box] scales slotted artwork to fill the square"`, or `"[a] [b] …"` for a test that
-proves several. Add an empty `src/<name>.js` first so the file imports, then run them and watch
-every one fail.
+This reads the spec and writes every file this phase needs, with `TODO` comments where the work
+goes: `src/<name>.js` (property accessors from the parameters, an empty shadow root), `.css`,
+`.d.ts`, `test/<name>.test.js`, `implementation/<name>.md` (an `api` row per parameter and event),
+and `stories/<name>.stories.js`. It adds the `src/index.js`, `src/index.d.ts`, and
+`test/host-checks.test.js` entries. It never overwrites a file or entry that exists.
+
+The test file has one failing test per MUST rule, named `[rule-id] <statement>`. Before any runtime
+code, replace each `expect.fail` with a test that proves the rule. Rename a test to say what it
+checks, keeping the ID first, or tag a test that proves several rules `"[a] [b] …"`. Run them and
+watch every one fail for the right reason.
 A test that passes before the runtime exists proves nothing. For role, name, or hidden state, use
 `exposedNodes()` from `test/helpers/accessibility.js` (see the gotchas).
 
 ## 3. Write the runtime
 
-By hand, in `packages/components`:
+In `packages/components`, fill in the scaffold:
 
-- `src/<name>.js` and `src/<name>.css`. Use `./internal/element.js` (`Base`, `ForwardsFocus`,
-  `focusTarget`, `lazyStyleSheet`, `defineElement`). CSS uses the tokens the spec maps.
-- `src/<name>.d.ts`: the element class, attribute types for JSX, and `HTMLElementTagNameMap`.
-- Entries in `src/index.js` (import, export, and call the define helper) and `src/index.d.ts`
-  (import, re-export, and the JSX attributes map).
+- `src/<name>.js` and `src/<name>.css`: render the parts and their behavior. Use
+  `./internal/element.js` (`Base`, `ForwardsFocus`, `focusTarget`, `lazyStyleSheet`,
+  `defineElement`). CSS uses the tokens the spec maps.
+- `src/<name>.d.ts`: add doc comments, and anything the accessors do not cover.
 
 ## 4. Finish the tests
 
 - `test/<name>.test.js`: this component's behavior only. Add tests for SHOULD rules and anything
   else the runtime does. Every test from step 2 now passes.
-- A row in the table in `test/host-checks.test.js`. The shared checks cover alias registration,
-  `hidden`, parts, the required slot, focus forwarding, visible focus, events while disabled,
-  keyboard activation, `form`, enum properties, and properties set before registration. The test
-  fails if a component in `src/` has no row.
+- The row in `test/host-checks.test.js`. Fix its `TODO`s: `focusPart`, and `parts`, which start
+  as the spec's anatomy names. The shared checks cover alias registration, `hidden`, parts, the
+  required slot, focus forwarding, visible focus, events while disabled, keyboard activation,
+  `form`, enum properties, and properties set before registration.
 
 `test/package-root.test.js` and `packages/spec/test/content.test.js` find components and records
 on disk, so they need no edits. Nothing checks the implementation against the spec. When you
@@ -95,14 +97,13 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 
 ## 5. Map the web API and add stories
 
-- `apps/documentation/implementation/<name>.md`: front matter with `component`, `package`,
-  `tagName`, `defineExport`, `usage`, and `api` rows that map web attributes, properties, and
-  events to spec parameters and events. The body is web-specific guidance only: slots, the `hidden`
-  attribute, framework notes. Behavior is in the spec's rules, so cite them rather than restating
-  them. Copy `implementation/button.md`. This file gives the component its docs page and serves
-  `pnpm spec get component.<name> --impl web`.
-- `apps/storybook/stories/<name>.stories.js`: a control for every attribute and one story per
-  notable state. Copy `stories/checkbox.stories.js`. Check that the Accessibility panel reports no
+- `apps/documentation/implementation/<name>.md`: replace the `usage` placeholder, and add `api`
+  rows for anything the scaffold could not derive, such as extra properties. The body is
+  web-specific guidance only: slots, the `hidden` attribute, framework notes. Behavior is in the
+  spec's rules, so cite them rather than restating them. This file gives the component its docs
+  page and serves `pnpm spec get component.<name> --impl web`.
+- `apps/storybook/stories/<name>.stories.js`: the scaffold has a control for every parameter. Add
+  one story per notable state, as `stories/checkbox.stories.js` does. Check that the Accessibility panel reports no
   violations in both themes: `pnpm exec turbo run dev --filter=storybook`.
 
 ## 6. Ship it
