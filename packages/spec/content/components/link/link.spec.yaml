@@ -6,6 +6,9 @@ summary: Use Link to navigate to another page, a location on the page, or a reso
 tags:
   - action
   - navigation
+links:
+  composes:
+    - component.icon
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -22,6 +25,9 @@ usage:
     - situation: Display status or metadata.
       instead: component.badge
       why: Link communicates a destination.
+    - situation: Switch between a few views of the same subject without leaving the page.
+      instead: component.tabs
+      why: Tabs show one view in place. A link changes the address.
 anatomy:
   control:
     role: interactive-surface

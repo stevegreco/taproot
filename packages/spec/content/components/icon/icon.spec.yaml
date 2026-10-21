@@ -9,9 +9,7 @@ tags:
   - media
 links:
   related:
-    - component.button
     - component.badge
-    - component.link
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md

@@ -6,6 +6,9 @@ summary: Use Button to trigger an action or to submit or reset a form.
 tags:
   - action
   - form
+links:
+  composes:
+    - component.icon
 sources:
   - title: Button component tokens
     url: packages/tokens/src/tokens/components/button.tokens.json
