@@ -10,7 +10,7 @@ dialog {
   max-block-size: calc(100dvh - 2rem);
   overflow: auto;
   overscroll-behavior: contain;
-  border: 1px solid var(--semantic-color-border-default);
+  border: var(--semantic-border-width) solid var(--semantic-color-border-default);
   border-radius: var(--semantic-radius-surface);
   padding: var(--primitives-space-6);
   color: var(--semantic-color-foreground-default);
@@ -37,8 +37,8 @@ h2 {
   letter-spacing: var(--semantic-typography-title-letter-spacing);
 }
 h2:focus-visible {
-  outline: 2px solid var(--semantic-color-border-focus);
-  outline-offset: 2px;
+  outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
+  outline-offset: var(--semantic-focus-offset);
 }
 p {
   margin: 0;

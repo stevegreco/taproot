@@ -90,7 +90,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: var(--_padding-y) var(--_padding-x);
-  border: 1px solid var(--_border);
+  border: var(--semantic-border-width) solid var(--_border);
   border-radius: var(--_radius);
   background-color: var(--_background);
   color: var(--_foreground);
@@ -140,8 +140,8 @@ slot {
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--semantic-color-border-focus);
-  outline-offset: 2px;
+  outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
+  outline-offset: var(--semantic-focus-offset);
 }
 
 /*

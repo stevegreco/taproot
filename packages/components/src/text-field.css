@@ -53,7 +53,7 @@
   margin: 0;
   padding: var(--primitives-space-2) var(--primitives-space-3);
   border-style: solid;
-  border-width: 1px;
+  border-width: var(--semantic-border-width);
   border-color: var(--semantic-color-border-default);
   border-radius: var(--semantic-radius-control);
   background-color: var(--semantic-color-background-surface);
@@ -78,8 +78,8 @@
 }
 
 .control:focus-visible {
-  outline: 2px solid var(--semantic-color-border-focus);
-  outline-offset: 2px;
+  outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
+  outline-offset: var(--semantic-focus-offset);
 }
 
 .control[aria-invalid="true"]:not(:disabled) {

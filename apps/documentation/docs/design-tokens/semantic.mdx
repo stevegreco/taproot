@@ -171,6 +171,14 @@ changes.
 
 <SemanticTokenReference kind="shape" />
 
+Borders and focus rings share three more shape tokens. Use `--semantic-border-width` for a border,
+and draw every focus ring with `--semantic-focus-width` and `--semantic-focus-offset`:
+
+```css
+outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
+outline-offset: var(--semantic-focus-offset);
+```
+
 [Review the shape vocabulary](/labs/shape).
 
 ## Theming

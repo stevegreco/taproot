@@ -462,6 +462,25 @@ visual recipe is chosen independently from its document level.
 Add a role or variant only when a shipped consumer demonstrates that its typography must move as a
 stable unit across the system.
 
+## Shape and focus
+
+Shape roles name the kind of object, not a size step, so a component keeps its token if the
+primitive scale changes. They are theme-independent.
+
+| Token                     | Purpose                                                                    | Primitive      |
+| ------------------------- | -------------------------------------------------------------------------- | -------------- |
+| `semantic.radius.control` | Buttons, inputs, tabs, and other interactive controls                      | `radius.md`    |
+| `semantic.radius.compact` | Small controls, such as the checkbox box, where control radius looks round | `radius.xs`    |
+| `semantic.radius.surface` | Cards, panels, dialogs, and containing surfaces                            | `radius.lg`    |
+| `semantic.radius.pill`    | Fully rounded badges, switches, and selection indicators                   | `radius.full`  |
+| `semantic.border.width`   | Control, surface, and divider borders                                      | `border.thin`  |
+| `semantic.focus.width`    | Thickness of the focus outline on every focusable element                  | `border.thick` |
+| `semantic.focus.offset`   | Gap between an element and its focus outline                               | `border.thick` |
+
+Every focus ring is `outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus)`
+with `outline-offset: var(--semantic-focus-offset)`. Where the outline would be clipped, as in a
+scrolling tab list, it is drawn inside with an offset of `calc(-1 * var(--semantic-focus-width))`.
+
 ## Size
 
 Size segments use one scale at every tier: `xs`, `sm`, `md`, `lg`, and `xl`, extended with `2xs`

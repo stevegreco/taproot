@@ -6,6 +6,11 @@
         "$type": "dimension",
         "$description": "Buttons, inputs, tabs, and other interactive controls"
       },
+      "compact": {
+        "$value": "{primitives.radius.xs}",
+        "$type": "dimension",
+        "$description": "Small controls, such as the checkbox box, where control radius looks round"
+      },
       "surface": {
         "$value": "{primitives.radius.lg}",
         "$type": "dimension",
@@ -15,6 +20,25 @@
         "$value": "{primitives.radius.full}",
         "$type": "dimension",
         "$description": "Fully rounded badges, switches, and selection indicators"
+      }
+    },
+    "border": {
+      "width": {
+        "$value": "{primitives.border.thin}",
+        "$type": "dimension",
+        "$description": "Control, surface, and divider borders"
+      }
+    },
+    "focus": {
+      "width": {
+        "$value": "{primitives.border.thick}",
+        "$type": "dimension",
+        "$description": "Thickness of the focus outline on every focusable element"
+      },
+      "offset": {
+        "$value": "{primitives.border.thick}",
+        "$type": "dimension",
+        "$description": "Gap between an element and its focus outline"
       }
     }
   }

@@ -44,7 +44,7 @@
   gap: var(--primitives-space-3);
   box-sizing: border-box;
   padding: var(--primitives-space-3) var(--primitives-space-4);
-  border: 1px solid var(--_border);
+  border: var(--semantic-border-width) solid var(--_border);
   border-radius: var(--semantic-radius-surface);
   background-color: var(--_background);
   color: var(--semantic-color-foreground-default);
@@ -115,8 +115,8 @@
 }
 
 .dismiss:focus-visible {
-  outline: 2px solid var(--semantic-color-border-focus);
-  outline-offset: 2px;
+  outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
+  outline-offset: var(--semantic-focus-offset);
 }
 
 @media (forced-colors: active) {

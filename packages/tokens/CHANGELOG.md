@@ -4,6 +4,8 @@
 
 - **New recipe: `semantic.typography.title`.** Body-size, semibold text for the title above body copy.
   Alert and Dialog use it.
+- **New shape roles:** `semantic.radius.compact`, `semantic.border.width`, `semantic.focus.width`, and
+  `semantic.focus.offset`. Every component border and focus ring uses them.
 - Every semantic color role now has a description.
 
 ## 0.1.0
