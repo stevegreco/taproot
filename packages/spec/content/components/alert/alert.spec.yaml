@@ -76,7 +76,7 @@ parameters:
     default: info
   label:
     kind: string
-    description: Optional visible title, read before the message.
+    description: Optional text shown as the title part, read before the message.
   announce:
     kind: enum
     values:
@@ -284,6 +284,12 @@ rationale:
       Icon supplies no artwork, so the adopter chooses the symbol for each variant and composes Icon.
       The right heading level depends on the surrounding page, so a consumer who needs a heading
       puts it in the message.
+  - decision: The visible title is set by the label parameter, not a title parameter.
+    why: >-
+      Dialog names its visible title label too, so label stays the one name for the visible text
+      that names a component. A title attribute is already a global HTML attribute that shows a
+      browser tooltip, and title is already a property of every element. The anatomy part stays
+      title because it describes the rendered part, not the parameter.
   - decision: Alert has no neutral or accent variant.
     why: >-
       Every alert reports a status. Info is the neutral case. Brand emphasis without a status is
