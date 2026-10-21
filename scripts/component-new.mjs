@@ -264,8 +264,20 @@ ${[
 ].join("\n")}
 ---
 
-TODO: web-specific guidance only: slots, the \`hidden\` attribute, framework notes. Cite behavior
-by rule address, such as \`component.${name}#${must[0]?.id ?? "rule-id"}\`, instead of restating it.
+<!-- Web-specific guidance only. For behavior, cite the rule by address, such as
+\`component.${name}#${must[0]?.id ?? "rule-id"}\`, instead of restating it. Delete a section with nothing to say. -->
+
+## Slots
+
+TODO: what goes in each slot, and what an empty slot does.
+
+## The hidden attribute
+
+TODO: what the component does with \`hidden\`, and anything that sets it.
+
+## Framework notes
+
+TODO: what a framework author has to know, such as when to render it or which event to clear state from.
 `,
   );
 

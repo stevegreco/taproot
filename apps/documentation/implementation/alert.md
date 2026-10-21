@@ -22,32 +22,27 @@ api:
   - { name: dismiss, kind: event, event: dismiss }
 ---
 
-## Content
+## Slots
 
 The message uses the default slot. Put a `<ds-icon>` in `slot="icon"` and actions, usually
 `<ds-button>` or `<ds-link>`, in `slot="actions"`. Empty icon and actions slots take no space. The
 `label` attribute renders the title as text, not a heading. If the page outline needs a heading, put
 one in the message.
 
-## Announcing
+The live region for `announce` is inside the shadow root, around the title and message only
+(`component.alert#announce-on-request`). The host never gains `role` or `aria-*` attributes.
 
-With `announce="polite"` the title and message sit in a `role="status"` region inside the shadow
-root, and with `announce="urgent"` in a `role="alert"` region. The icon, actions, and dismiss
-control stay outside it. The host itself never gains `role` or `aria-*` attributes.
+## The hidden attribute
 
-A live region announces text that appears inside it, which an element inserted with its text in
-place does not reliably do. So when an announcing alert connects, is unhidden, or switches
-`announce` on, it adds its text one frame after the region. Insert the alert, or remove `hidden`,
-when the event happens. Changing the slotted text of a connected announcing alert is announced
-again.
+Dismissing sets the alert's own `hidden` attribute unless a `dismiss` listener calls
+`preventDefault()` (`component.alert#dismiss-reports`). Setting `hidden` while the alert contains
+focus moves focus on, however it was set (`component.alert#focus-after-dismiss`).
 
-## Dismissal
+## Framework notes
 
-`dismissible` adds a native button named by `dismiss-label` (default `Dismiss`). Activating it
-dispatches a cancelable, bubbling `dismiss` event from the host. Unless a listener calls
-`preventDefault()`, the alert sets its own `hidden` attribute. In a framework, clear your state from
-the event, or the next render may still hold the hidden element.
-
-When the alert is hidden for any reason while it contains focus, focus moves to the next tabbable
-element after it in the document, or the previous one when nothing follows. To send focus somewhere
-else, focus it from your `dismiss` listener; the alert leaves focus wherever the listener put it.
+- Render the alert, or remove `hidden`, when the event it reports happens. An announcing alert adds
+  its text one frame after it connects or is unhidden, so a live region already in place announces
+  it.
+- Clear your state from the `dismiss` event, or the next render may still hold the hidden element.
+- To send focus somewhere other than the next tabbable element, focus it from your `dismiss`
+  listener.

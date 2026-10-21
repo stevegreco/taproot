@@ -99,8 +99,9 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 
 - `apps/documentation/implementation/<name>.md`: replace the `usage` placeholder, and add `api`
   rows for anything the scaffold could not derive, such as extra properties. The body is
-  web-specific guidance only: slots, the `hidden` attribute, framework notes. Behavior is in the
-  spec's rules, so cite them rather than restating them. This file gives the component its docs
+  web-specific guidance only, in three sections: Slots, The hidden attribute, and Framework notes.
+  Behavior is in the spec's rules, so cite a rule by address (`component.<name>#<rule-id>`) rather
+  than restating it. `implementation/alert.md` is the example. This file gives the component its docs
   page and serves `pnpm spec get component.<name> --impl web`.
 - `apps/storybook/stories/<name>.stories.js`: the scaffold has a control for every parameter. Add
   one story per notable state, as `stories/checkbox.stories.js` does. Check that the Accessibility panel reports no
