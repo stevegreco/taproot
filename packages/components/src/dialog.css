@@ -16,9 +16,9 @@ dialog {
   color: var(--semantic-color-foreground-default);
   background: var(--semantic-color-background-surface);
   box-shadow: var(--semantic-elevation-lg);
-  font-family: var(--semantic-typography-body-default-font-family);
-  font-size: var(--semantic-typography-body-default-font-size);
-  line-height: var(--semantic-typography-body-default-line-height);
+  font-family: var(--semantic-typography-body-md-font-family);
+  font-size: var(--semantic-typography-body-md-font-size);
+  line-height: var(--semantic-typography-body-md-line-height);
 }
 dialog[open] {
   display: flex;

@@ -25,7 +25,7 @@ export default function IconExample() {
   return (
     <div className="flex flex-col gap-8 p-6 text-slate-900 dark:text-white" data-icon-example>
       <div className="flex flex-wrap items-center gap-3">
-        <ds-button variant="danger" data-icon-button>
+        <ds-button variant="destructive" data-icon-button>
           <ds-icon>{trash}</ds-icon>
           Delete project
         </ds-button>

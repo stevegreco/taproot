@@ -101,10 +101,10 @@ parameters:
     kind: enum
     values:
       primary: Highest-emphasis action.
-      danger: Destructive or difficult-to-reverse action.
+      destructive: Destructive or difficult-to-reverse action.
     examples:
       primary: Save changes
-      danger: Delete project
+      destructive: Delete project
     default: primary
   disabled:
     kind: boolean
@@ -139,17 +139,17 @@ accessibility:
 tokens:
   control:
     base:
-      radius: component.button.radius
+      radius: semantic.radius.control
     variant.primary:
-      background: component.button.primary.background.default
+      background: semantic.color.background.action.primary.default
     variant.primary + hover:
-      background: component.button.primary.background.hover
+      background: semantic.color.background.action.primary.hover
     reducedMotion.reduce:
       motion: none
 
 rationale:
-  - decision: Button has its own token namespace.
-    why: Consumers need a stable customization boundary for variants and states.
+  - decision: Button reads semantic tokens directly.
+    why: A component token namespace would only restate the semantic tier.
 ```
 
 | Field           | Required | Meaning                                                                                 |
@@ -180,9 +180,9 @@ parameters:
   variant:
     kind: enum
     values:
-      danger: Destructive or difficult-to-reverse action.
+      destructive: Destructive or difficult-to-reverse action.
     guidance:
-      danger: pattern.action-hierarchy#danger
+      destructive: pattern.action-hierarchy#destructive
 ```
 
 ### Rules
@@ -275,8 +275,8 @@ Some links come from fields rather than from `links`:
 - A rule's `references` create a `follows` link to each pattern or guideline they name, and a
   `related` link to anything else.
 - An enum parameter's `guidance` creates a `follows` link from the value, such as
-  `parameters.variant.danger`, to the section it names. Its inverse, `followed-by`, points back at
-  that value: `component.button#parameters.variant.danger`.
+  `parameters.variant.destructive`, to the section it names. Its inverse, `followed-by`, points back at
+  that value: `component.button#parameters.variant.destructive`.
 - An annotation's `references` create no links. They are checked like any other link.
 
 ### Sections
@@ -290,7 +290,7 @@ A link target is a record ID, optionally followed by `#` and a section:
   and `foo-1-1`.
 - In a component record, a section is a rule ID, a top-level field (`usage`, `anatomy`,
   `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, or `events`,
-  such as `parameters.variant` or `parameters.variant.danger`.
+  such as `parameters.variant` or `parameters.variant.destructive`.
   A parameter value's section holds its meaning with the example and guidance paired with it.
 - In an example record, a section is also an annotation ID. It must not repeat another annotation
   ID or a heading's slug.

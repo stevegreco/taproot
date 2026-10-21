@@ -4,58 +4,56 @@
 
 ## Context
 
-The system publishes primitive and semantic tokens as its shared foundation. Some components also
-need a stable customization boundary that can compose several shared token decisions without
-exposing their internal CSS variables.
+The system publishes primitive and semantic tokens as its shared foundation. Button once published
+a third, component tier (`component.button.*`). Every one of its 45 tokens was a one-hop alias that
+matched its semantic or primitive target in both themes, so the tier added names without adding a
+customization boundary.
+
+The CSS also published every primitive, including the raw color palette. A consumer who styles with
+a palette color skips the theme and the contrast guarantees the semantic tier carries.
 
 ## Decision
 
-### Semantic tokens remain the default styling API
+### Semantic tokens are the styling API
 
 Components consume semantic tokens directly whenever a semantic contract expresses the intended
 role. Background tokens style fills, foreground tokens style visible content, and border tokens
 style boundaries and focus indicators.
 
-### A component tier is optional and scoped
+### There is no component tier
 
-A component may publish component-scoped aliases when the alias creates a useful public contract
-for that component. Component tokens must reference current semantic or primitive tokens. They do
-not introduce independent values, replace semantic intent, or require every component to have a
-component namespace.
+No component publishes component-scoped tokens. A component's spec record lists the semantic and
+primitive tokens it reads in its `tokens` map, and its stylesheet reads the same tokens. Those
+internal choices are not a public customization API.
 
-A component publishes a component-token namespace only when it adds a customization boundary,
-paired with a `src/tokens/components/<name>.tokens.json` file. A component without one uses
-semantic tokens directly, plus primitives where the rule below allows. The `tokens` map in each
-component record in `packages/knowledge/content/components/` shows which tokens it references.
+Add a component tier only when a shipped consumer needs to customize a component in a way the
+semantic tier cannot express. That change revises this ADR first.
 
 ### Primitive use is allowed when it is honest
 
 A component may consume a primitive directly when the semantic vocabulary has no matching role,
-such as spacing or motion scale choices. Never reference a primitive when a semantic token already
-expresses the same intent.
+such as spacing, radius, or motion scale choices. Never reference a primitive when a semantic token
+already expresses the same intent.
+
+### Color primitives are not published as CSS
+
+`tokens.css` publishes every primitive except `primitives.color.*`. Color reaches CSS only through
+semantic tokens, which resolve per theme. `primitives.json` keeps the palette for documentation
+swatches and the token audits.
 
 ## Example
 
 ```css
-background: var(--component-button-primary-background-default);
-color: var(--component-button-primary-foreground-default);
-gap: var(--component-button-gap);
-```
-
-The component source definitions alias those contracts to shared tokens:
-
-```json
-{
-  "$value": "{semantic.color.background.action.primary.default}",
-  "$type": "color"
-}
+background: var(--semantic-color-background-action-primary-default);
+color: var(--semantic-color-foreground-on-action-primary);
+gap: var(--primitives-space-2);
 ```
 
 ## Consequences
 
-- Primitive and semantic tokens remain the shared public vocabulary.
-- A component tier may expose a deliberately scoped customization API.
-- Component aliases inherit theme changes through semantic references.
-- `components.json` preserves those references and is not split by theme; semantic artifacts own theme resolution.
-- Adding a component contract requires a current consumer and tests that verify every alias resolves.
-- Reviews verify that a token matches the CSS property and intent rather than merely matching a value.
+- Primitive and semantic tokens are the whole public vocabulary.
+- A theme change reaches every component through semantic references alone.
+- Product code that needs a color it cannot find proposes a semantic role instead of reaching for
+  the palette.
+- Reviews verify that a token matches the CSS property and intent rather than merely matching a
+  value.

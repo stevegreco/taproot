@@ -93,7 +93,7 @@ export const Composition = {
         <ds-icon slot="icon">${icons.danger}</ds-icon>
         The file is larger than 10 MB.
         <ds-button slot="actions" variant="secondary" size="sm">Choose another file</ds-button>
-        <ds-button slot="actions" variant="ghost" size="sm">Cancel upload</ds-button>
+        <ds-button slot="actions" variant="tertiary" size="sm">Cancel upload</ds-button>
       </ds-alert>
       <ds-alert variant="warning" label="Billing details needed">
         <ds-icon slot="icon">${icons.warning}</ds-icon>

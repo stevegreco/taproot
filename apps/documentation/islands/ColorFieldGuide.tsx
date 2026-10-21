@@ -26,11 +26,11 @@ const contrast = (first: string, second: string) => {
 
 const preferredInk = (value: string) =>
   contrast(value, colors.blueSmoke["950"]) >= contrast(value, colors.white)
-    ? "var(--primitives-color-blue-smoke-950)"
-    : "var(--primitives-color-white)";
+    ? colors.blueSmoke["950"]
+    : colors.white;
 
 const swatchStyle = (token: ColorToken): GuideStyle => ({
-  "--guide-swatch": `var(${token.name})`,
+  "--guide-swatch": token.value,
   "--guide-swatch-ink": preferredInk(token.value),
 });
 

@@ -1,9 +1,9 @@
 // Public token-loading contracts for the fixed primitive tier and the
-// theme-specific semantic tier and theme-independent component references.
+// theme-specific semantic tier.
 
 import { test } from "vitest";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { loadTokens } from "../src/read-tokens.js";
 
 const byPath = (tokens) => new Map(tokens.map((t) => [t.path, t.value]));
@@ -47,89 +47,11 @@ test("loadTokens returns tokens for both themes", () => {
       tokens.some((t) => t.tier === "semantic"),
       `${theme} loaded no semantic tokens`,
     );
-    assert.ok(
+    assert.equal(
       tokens.some((t) => t.tier === "component"),
-      `${theme} loaded no component tokens`,
+      false,
+      `${theme} loaded component tokens, but the package publishes none`,
     );
-    // Each component-token file owns exactly one namespace named after it.
-    const namespaces = readdirSync(new URL("../src/tokens/components/", import.meta.url))
-      .filter((file) => file.endsWith(".tokens.json"))
-      .map((file) => `component.${file.slice(0, -".tokens.json".length)}.`);
-    for (const token of tokens.filter((t) => t.tier === "component")) {
-      assert.ok(
-        namespaces.some((namespace) => token.path.startsWith(namespace)),
-        `${theme}: ${token.path} is outside every component-token file's namespace`,
-      );
-    }
-  }
-});
-
-test("Button component tokens preserve their shared-token references", () => {
-  const light = byPath(loadTokens("light"));
-  const dark = byPath(loadTokens("dark"));
-
-  for (const [component, reference] of [
-    [
-      "component.button.primary.background.default",
-      "{semantic.color.background.action.primary.default}",
-    ],
-    [
-      "component.button.primary.foreground.default",
-      "{semantic.color.foreground.on.action.primary}",
-    ],
-    ["component.button.primary.border.default", "{semantic.color.border.action.primary.default}"],
-    ["component.button.primary.border.hover", "{semantic.color.border.action.primary.hover}"],
-    ["component.button.primary.border.pressed", "{semantic.color.border.action.primary.pressed}"],
-    ["component.button.secondary.border.default", "{semantic.color.border.default}"],
-    [
-      "component.button.danger.background.default",
-      "{semantic.color.background.action.destructive.default}",
-    ],
-    ["component.button.font.lineHeight", "{semantic.typography.label.default.lineHeight}"],
-    ["component.button.font.letterSpacing", "{semantic.typography.label.default.letterSpacing}"],
-  ]) {
-    assert.equal(light.get(component), reference, `${component} should preserve ${reference}`);
-    assert.equal(dark.get(component), reference, `${component} should be theme-independent`);
-  }
-});
-
-test("every component token aliases a current shared token in both themes", () => {
-  const primitives = readJson(new URL("../src/tokens/primitives.tokens.json", import.meta.url));
-  const shape = readJson(new URL("../src/tokens/semantic/shape.tokens.json", import.meta.url));
-  const typography = readJson(
-    new URL("../src/tokens/semantic/typography.tokens.json", import.meta.url),
-  );
-  const componentDirectory = new URL("../src/tokens/components/", import.meta.url);
-  const componentFiles = readdirSync(componentDirectory).filter((file) =>
-    file.endsWith(".tokens.json"),
-  );
-
-  assert.ok(componentFiles.length > 0, "no component token files found");
-
-  for (const theme of ["light", "dark"]) {
-    const semantic = readJson(
-      new URL(`../src/tokens/semantic/${theme}.tokens.json`, import.meta.url),
-    );
-    const sharedPaths = new Set([
-      ...sourceLeaves(primitives).map(([path]) => path),
-      ...sourceLeaves(shape).map(([path]) => path),
-      ...sourceLeaves(typography).map(([path]) => path),
-      ...sourceLeaves(semantic).map(([path]) => path),
-    ]);
-
-    for (const file of componentFiles) {
-      const component = readJson(new URL(file, componentDirectory));
-      for (const [path, value] of sourceLeaves(component)) {
-        const match = /^\{(primitives|semantic)\.[^}]+\}$/.exec(value);
-        assert.ok(match, `${file}: ${path} must alias a primitive or semantic token`);
-
-        const target = value.slice(1, -1);
-        assert.ok(
-          sharedPaths.has(target),
-          `${file}: ${path} references missing ${target} in ${theme}`,
-        );
-      }
-    }
   }
 });
 
@@ -265,26 +187,6 @@ test("tertiary actions publish direct hover and pressed tokens", () => {
   }
 });
 
-test("Button neutral variants alias one semantic background per state", () => {
-  const light = byPath(loadTokens("light"));
-  const dark = byPath(loadTokens("dark"));
-  for (const [variant, semanticFamily, states] of [
-    ["secondary", "secondary", ["default", "hover", "pressed"]],
-    ["ghost", "tertiary", ["hover", "pressed"]],
-  ]) {
-    for (const state of states) {
-      const component = `component.button.${variant}.background.${state}`;
-      const reference = `{semantic.color.background.action.${semanticFamily}.${state}}`;
-      assert.equal(light.get(component), reference, `${component} must alias ${reference}`);
-      assert.equal(dark.get(component), reference, `${component} must be theme-independent`);
-    }
-  }
-  assert.equal(
-    [...light.keys()].some((path) => path.startsWith("component.button.stateLayer")),
-    false,
-  );
-});
-
 test("destructive action contracts are distinct from danger status contracts", () => {
   const expected = {
     light: {
@@ -343,47 +245,20 @@ test("Rust stays categorically redder than the warm brand ramp", () => {
   }
 });
 
-test("Button danger tokens alias destructive action contracts", () => {
-  const light = byPath(loadTokens("light"));
-  const dark = byPath(loadTokens("dark"));
-  const aliases = [
-    [
-      "component.button.danger.foreground.default",
-      "{semantic.color.foreground.on.action.destructive}",
-    ],
-  ];
-
-  for (const state of ["default", "hover", "pressed"]) {
-    aliases.push([
-      `component.button.danger.background.${state}`,
-      `{semantic.color.background.action.destructive.${state}}`,
-    ]);
-    aliases.push([
-      `component.button.danger.border.${state}`,
-      `{semantic.color.border.action.destructive.${state}}`,
-    ]);
-  }
-
-  for (const [component, reference] of aliases) {
-    assert.equal(light.get(component), reference, `${component} must alias ${reference}`);
-    assert.equal(dark.get(component), reference, `${component} must be theme-independent`);
-  }
-});
-
 // ────────────────────────────────────────────────────────────────────────────
 
 test("semantic typography publishes ten complete, theme-independent recipes", () => {
   const recipes = [
-    "heading.large",
-    "heading.default",
-    "heading.small",
-    "body.default",
-    "body.small",
-    "label.default",
-    "label.small",
+    "heading.lg",
+    "heading.md",
+    "heading.sm",
+    "body.md",
+    "body.sm",
+    "label.md",
+    "label.sm",
     "eyebrow",
-    "code.default",
-    "code.small",
+    "code.md",
+    "code.sm",
   ];
   const properties = ["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing"];
   const light = byPath(loadTokens("light"));
@@ -403,7 +278,7 @@ test("semantic typography publishes ten complete, theme-independent recipes", ()
     }
   }
 
-  assert.equal(light.get("semantic.typography.heading.large.fontSize"), "30px");
-  assert.equal(light.get("semantic.typography.heading.small.fontSize"), "20px");
+  assert.equal(light.get("semantic.typography.heading.lg.fontSize"), "30px");
+  assert.equal(light.get("semantic.typography.heading.sm.fontSize"), "20px");
   assert.equal(light.get("semantic.typography.eyebrow.letterSpacing"), "0.08em");
 });

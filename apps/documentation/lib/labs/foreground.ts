@@ -15,7 +15,7 @@ const foregroundTheme = (theme: LabTheme) => {
       muted: swatch("foreground.muted"),
       disabled: swatch("foreground.disabled"),
       brand: swatch("foreground.brand.default"),
-      onBrand: swatch("foreground.on.brand.default"),
+      onBrand: swatch("foreground.on.brand"),
       onPrimary: swatch("foreground.on.action.primary"),
       onDestructive: swatch("foreground.on.action.destructive"),
     },
@@ -149,7 +149,7 @@ export const renderForegroundBoard = (themeName: LabTheme) => {
         <p class="board-section-label">Explicit brand and action pairs</p>
         <div class="paired-tests">
           <article class="paired-card brand-pair">
-            <h3>foreground.on.brand.default</h3>
+            <h3>foreground.on.brand</h3>
             <p>Content paired specifically with background.brand.default.</p>
             <div class="contrast-line"><span class="contrast-pill ${brandPairRatio >= 4.5 ? "pass" : ""}">${foregrounds.onBrand.value} · ${brandPairRatio.toFixed(2)}:1</span></div>
           </article>

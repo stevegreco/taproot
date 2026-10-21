@@ -33,7 +33,7 @@ export default {
       >
       <ds-button
         slot="actions"
-        variant="danger"
+        variant="destructive"
         @click=${(event) => event.currentTarget.closest("ds-dialog").close()}
         >Delete project</ds-button
       >

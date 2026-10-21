@@ -28,6 +28,11 @@ The naming strategy is intentionally minimal:
 - Use `action.primary` for the primary interaction hierarchy.
 - Use `action.destructive` for controls that perform destructive or difficult-to-reverse actions;
   reserve `status.danger` for communicating a condition or outcome.
+- Use one word per concept at every tier. A component option uses the word of the semantic intent
+  it applies: Button's `destructive` variant uses `action.destructive`, and its `tertiary` variant
+  uses `action.tertiary`. `danger` names a status only.
+- A `foreground.on.*` pairing ends at the background it names, such as `foreground.on.brand` and
+  `foreground.on.action.primary`. A pairing has no states or variants, so it has no `.default`.
 - Do not make one semantic contract alias another merely because their current values match.
 - Use a genuinely neutral, theme-independent gray primitive scale for achromatic roles. The scale
   runs from near-white to near-black ink without inheriting a palette hue; light and dark semantics
@@ -179,7 +184,7 @@ semantic.color.foreground.on.<background-intent>[.<variant>][.<state>]
 
 | Proposed token                                    | Purpose                                           | Supported background pair                                         |
 | ------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------- |
-| `semantic.color.foreground.on.brand.default`      | Text and icons placed on the solid brand fill     | `background.brand.default`                                        |
+| `semantic.color.foreground.on.brand`      | Text and icons placed on the solid brand fill     | `background.brand.default`                                        |
 | `semantic.color.foreground.on.action.primary`     | Text and icons placed on primary-action fills     | `background.action.primary.default`, `.hover`, and `.pressed`     |
 | `semantic.color.foreground.on.action.destructive` | Text and icons placed on destructive-action fills | `background.action.destructive.default`, `.hover`, and `.pressed` |
 
@@ -326,8 +331,8 @@ the character of the underlying semantic surface and keep tertiary actions visua
 secondary actions.
 
 `tertiary` names the semantic hierarchy and may support text buttons, icon buttons, toolbar
-actions, and other low-emphasis controls. A component may retain a visual variant name such as
-`ghost` while aliasing the shared tertiary-action contract.
+actions, and other low-emphasis controls. Button's low-emphasis variant is named `tertiary` to
+match.
 
 ## Typography
 
@@ -339,9 +344,9 @@ semantic.typography.<role>[.<variant>].<property>
 ```
 
 The published vocabulary contains ten recipes across `heading`, `body`, `label`, `eyebrow`, and
-`code`. A role uses `large`, `default`, or `small` only when it needs more than one supported
-expression. `default` is explicit whenever siblings exist; a single-expression role such as
-`eyebrow` has no redundant variant segment.
+`code`. A role uses a size segment only when it needs more than one supported expression, and the
+segment uses the same `sm`, `md`, and `lg` words as the primitive scales. `md` is explicit whenever
+siblings exist; a single-expression role such as `eyebrow` has no redundant size segment.
 
 ### Recipe contract
 
@@ -353,17 +358,17 @@ Every recipe publishes five atomic leaf tokens beneath the same path:
 - `lineHeight`; and
 - `letterSpacing`.
 
-For example, the `body.default` contract is:
+For example, the `body.md` contract is:
 
 ```text
-semantic.typography.body.default.fontFamily
-semantic.typography.body.default.fontSize
-semantic.typography.body.default.fontWeight
-semantic.typography.body.default.lineHeight
-semantic.typography.body.default.letterSpacing
+semantic.typography.body.md.fontFamily
+semantic.typography.body.md.fontSize
+semantic.typography.body.md.fontWeight
+semantic.typography.body.md.lineHeight
+semantic.typography.body.md.letterSpacing
 ```
 
-The shared `body.default` path is the recipe; the five leaves are the published tokens. Consumers
+The shared `body.md` path is the recipe; the five leaves are the published tokens. Consumers
 can address a leaf individually, and future composite tokens, utilities, or components may apply a
 complete recipe as a convenience. System cohesion is guaranteed only when all five properties come
 from the same recipe. A consumer that mixes leaves from different recipes owns the risk that later
@@ -380,18 +385,18 @@ requiring consumers to depend on a primitive path.
 
 ### Published vocabulary
 
-| Semantic recipe                       | Purpose                                                   | Family    | Size   | Weight    | Line height | Tracking |
-| ------------------------------------- | --------------------------------------------------------- | --------- | ------ | --------- | ----------- | -------- |
-| `semantic.typography.heading.large`   | Primary page and major region headings                    | `display` | `2xl`  | `medium`  | `tight`     | `tight`  |
-| `semantic.typography.heading.default` | Standard section and card headings                        | `display` | `xl`   | `medium`  | `snug`      | `snug`   |
-| `semantic.typography.heading.small`   | Compact headings within dense surfaces                    | `display` | `lg`   | `medium`  | `snug`      | `snug`   |
-| `semantic.typography.body.default`    | Default interface copy and prose                          | `sans`    | `base` | `regular` | `normal`    | `normal` |
-| `semantic.typography.body.small`      | Supporting copy, descriptions, and compact interface text | `sans`    | `sm`   | `regular` | `normal`    | `normal` |
-| `semantic.typography.label.default`   | Control labels, buttons, tabs, and prominent metadata     | `sans`    | `sm`   | `medium`  | `snug`      | `normal` |
-| `semantic.typography.label.small`     | Badges, compact metadata, and space-constrained labels    | `sans`    | `xs`   | `medium`  | `snug`      | `normal` |
-| `semantic.typography.eyebrow`         | Short contextual text that introduces a following heading | `sans`    | `xs`   | `medium`  | `snug`      | `caps`   |
-| `semantic.typography.code.default`    | Code blocks and technical values                          | `mono`    | `sm`   | `regular` | `normal`    | `normal` |
-| `semantic.typography.code.small`      | Inline code and compact technical metadata                | `mono`    | `xs`   | `regular` | `normal`    | `normal` |
+| Semantic recipe                  | Purpose                                                   | Family    | Size   | Weight    | Line height | Tracking |
+| -------------------------------- | --------------------------------------------------------- | --------- | ------ | --------- | ----------- | -------- |
+| `semantic.typography.heading.lg` | Primary page and major region headings                    | `display` | `2xl`  | `medium`  | `tight`     | `tight`  |
+| `semantic.typography.heading.md` | Standard section and card headings                        | `display` | `xl`   | `medium`  | `snug`      | `snug`   |
+| `semantic.typography.heading.sm` | Compact headings within dense surfaces                    | `display` | `lg`   | `medium`  | `snug`      | `snug`   |
+| `semantic.typography.body.md`    | Default interface copy and prose                          | `sans`    | `base` | `regular` | `normal`    | `normal` |
+| `semantic.typography.body.sm`    | Supporting copy, descriptions, and compact interface text | `sans`    | `sm`   | `regular` | `normal`    | `normal` |
+| `semantic.typography.label.md`   | Control labels, buttons, tabs, and prominent metadata     | `sans`    | `sm`   | `medium`  | `snug`      | `normal` |
+| `semantic.typography.label.sm`   | Badges, compact metadata, and space-constrained labels    | `sans`    | `xs`   | `medium`  | `snug`      | `normal` |
+| `semantic.typography.eyebrow`    | Short contextual text that introduces a following heading | `sans`    | `xs`   | `medium`  | `snug`      | `caps`   |
+| `semantic.typography.code.md`    | Code blocks and technical values                          | `mono`    | `sm`   | `regular` | `normal`    | `normal` |
+| `semantic.typography.code.sm`    | Inline code and compact technical metadata                | `mono`    | `xs`   | `regular` | `normal`    | `normal` |
 
 The values in the table are primitive suffixes. For example, the complete `eyebrow` recipe maps to
 `primitives.font.sans`, `primitives.text.xs`, `primitives.weight.medium`,
@@ -409,9 +414,9 @@ disabled, brand, status, and explicit background-pairing case. Components and hi
 styles may combine the two contracts:
 
 ```text
-semantic.typography.body.small + semantic.color.foreground.muted
-semantic.typography.body.small + semantic.color.foreground.status.danger.default
-semantic.typography.label.default + semantic.color.foreground.on.action.primary
+semantic.typography.body.sm + semantic.color.foreground.muted
+semantic.typography.body.sm + semantic.color.foreground.status.danger.default
+semantic.typography.label.md + semantic.color.foreground.on.action.primary
 semantic.typography.eyebrow + semantic.color.foreground.brand.default
 ```
 
@@ -436,12 +441,12 @@ visual recipe is chosen independently from its document level.
 - Choose a recipe from the text's purpose, not from the primitive value it currently resolves to.
 - Use all five leaves from one recipe for the cohesive, supported result. Individual leaves remain
   available for intentional composition, with the compatibility risk owned by the consumer.
-- HTML heading levels express document structure; `heading.large`, `.default`, and `.small` express
+- HTML heading levels express document structure; `heading.lg`, `.md`, and `.sm` express
   visual hierarchy and do not map directly to `h1`, `h2`, and `h3`.
 - Responsive typography is a consumer composition concern. A consumer may switch from one complete
   semantic recipe to another at a breakpoint, but responsive behavior is not encoded in token
   names.
-- Component names such as `button` and `badge` belong in the component tier, not the semantic
+- Component names such as `button` and `badge` belong in component specs, not the semantic
   typography vocabulary.
 
 ### Deferred typography roles
@@ -458,4 +463,8 @@ stable unit across the system.
 
 ## Size
 
-**WIP:** To discuss.
+Size segments use one scale at every tier: `xs`, `sm`, `md`, `lg`, and `xl`, extended with `2xs`
+below and `2xl` and up above. The primitive scales (`primitives.text.*`, `primitives.radius.*`,
+`primitives.shadow.*`) and the semantic typography recipes (`heading.lg`, `body.md`, `label.sm`) use
+the same words. `md` is the middle step, not `default` or `medium`. `primitives.text.base` is the one
+exception: it names the body text size. A token publishes only the steps a consumer needs.

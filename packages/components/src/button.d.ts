@@ -1,4 +1,4 @@
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "secondary" | "tertiary" | "destructive";
 export type ButtonSize = "sm" | "md";
 export type ButtonType = "button" | "submit" | "reset";
 

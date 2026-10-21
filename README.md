@@ -74,19 +74,21 @@ If you are using a bundler with a `<head>` injection plugin (e.g. Vite's `vite-p
 
 ## Token architecture
 
-Primitive and semantic tokens form the shared foundation. A component tier is
-available only where a published component contract adds a useful customization boundary.
+Primitive and semantic tokens are the whole public vocabulary. Components read semantic tokens
+directly; there is no component tier.
 
 ```
-Primitives  →  Semantic  →  Component (optional)
-  (scale)       (intent)       (scoped API)
+Primitives  →  Semantic
+  (scale)       (intent)
 ```
 
-| Tier          | Prefix           | Use when                                                     |
-| ------------- | ---------------- | ------------------------------------------------------------ |
-| **Primitive** | `--primitives-*` | No semantic role expresses the raw scale choice              |
-| **Semantic**  | `--semantic-*`   | Styling components and product interfaces by intent          |
-| **Component** | `--component-*`  | Styling or customizing a component with a published contract |
+| Tier          | Prefix           | Use when                                            |
+| ------------- | ---------------- | --------------------------------------------------- |
+| **Primitive** | `--primitives-*` | No semantic role expresses the raw scale choice     |
+| **Semantic**  | `--semantic-*`   | Styling components and product interfaces by intent |
+
+Color primitives are not published as CSS variables. Use a semantic color token, which follows the
+active theme. The palette is still in `primitives.json` for design tooling.
 
 ### Semantic token groups
 
@@ -123,7 +125,7 @@ When the attribute is absent, changes to the system preference apply without Jav
 refresh. The stylesheet also sets `color-scheme`, so supported browser controls and scrollbars
 match the active theme.
 
-The sidebar and other always-dark surfaces should define their own local aliases referencing primitive tokens, since they are not affected by the semantic theme switch.
+A surface that must keep one appearance in both themes needs a semantic role for it. Propose one rather than hard-coding palette values.
 
 ## JSON tokens
 
@@ -132,7 +134,6 @@ Resolved token values are also available as JSON for use in design tooling, styl
 ```js
 import primitives from "@stevegreco/design-system/tokens/primitives";
 import semantic from "@stevegreco/design-system/tokens/semantic-light";
-import components from "@stevegreco/design-system/tokens/components";
 ```
 
 The semantic tier is theme-specific. Import the semantic file that matches the
@@ -152,14 +153,13 @@ The CSS build needs no such split: `dist/css/tokens.css` carries both themes and
 
 ## Build outputs
 
-| File                              | Contents                                              |
-| --------------------------------- | ----------------------------------------------------- |
-| `dist/css/tokens.css`             | Primitive, semantic light/dark, and component aliases |
-| `dist/tokens/primitives.json`     | Raw primitive scale values                            |
-| `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme              |
-| `dist/tokens/semantic.dark.json`  | Resolved semantic tokens for dark theme               |
-| `dist/tokens/semantic.meta.json`  | Type and purpose for every semantic token             |
-| `dist/tokens/components.json`     | Theme-independent references to shared tokens         |
+| File                              | Contents                                                                    |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| `dist/css/tokens.css`             | Primitives except color, and semantic light/dark. The package's main entry. |
+| `dist/tokens/primitives.json`     | Raw primitive scale values, including the color palette                     |
+| `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme                                    |
+| `dist/tokens/semantic.dark.json`  | Resolved semantic tokens for dark theme                                     |
+| `dist/tokens/semantic.meta.json`  | Type and purpose for every semantic token                                   |
 
 ## Building from source
 

@@ -10,8 +10,6 @@ links:
   composes:
     - component.icon
 sources:
-  - title: Button component tokens
-    url: packages/tokens/src/tokens/components/button.tokens.json
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
 description: Triggers an action or submits or resets a form.
@@ -39,18 +37,18 @@ parameters:
     values:
       primary: Highest-emphasis action.
       secondary: Supporting action.
-      ghost: Low-emphasis action.
-      danger: Destructive or difficult-to-reverse action.
+      tertiary: Low-emphasis action.
+      destructive: Destructive or difficult-to-reverse action.
     examples:
       primary: Save changes
       secondary: Cancel
-      ghost: View details
-      danger: Delete project
+      tertiary: View details
+      destructive: Delete project
     guidance:
       primary: pattern.action-hierarchy#primary
       secondary: pattern.action-hierarchy#secondary
-      ghost: pattern.action-hierarchy#ghost
-      danger: pattern.action-hierarchy#danger
+      tertiary: pattern.action-hierarchy#tertiary
+      destructive: pattern.action-hierarchy#destructive
     default: primary
   size:
     kind: enum
@@ -97,10 +95,10 @@ rules:
         - Delete account
       avoid:
         - Click here
-  - id: danger-for-destructive
+  - id: destructive-for-risky-actions
     level: must
     topic: content
-    statement: Use the danger variant only for destructive or difficult-to-reverse actions.
+    statement: Use the destructive variant only for destructive or difficult-to-reverse actions.
   - id: explain-disabled
     level: should
     topic: content
@@ -148,76 +146,78 @@ accessibility:
 tokens:
   control:
     base:
-      radius: component.button.radius
-      gap: component.button.gap
-      font-family: component.button.font.family
-      font-size: component.button.font.size
-      font-weight: component.button.font.weight
-      line-height: component.button.font.lineHeight
-      letter-spacing: component.button.font.letterSpacing
-      motion-duration: component.button.motion.duration
-      motion-easing: component.button.motion.easing
+      radius: semantic.radius.control
+      gap: primitives.space.2
+      font-family: semantic.typography.label.md.fontFamily
+      font-size: semantic.typography.label.md.fontSize
+      font-weight: semantic.typography.label.md.fontWeight
+      line-height: semantic.typography.label.md.lineHeight
+      letter-spacing: semantic.typography.label.md.letterSpacing
+      motion-duration: primitives.duration.fast
+      motion-easing: primitives.ease.out
     focus:
-      focus-ring: component.button.focus.border
+      focus-ring: semantic.color.border.focus
     size.md:
-      padding-horizontal: component.button.size.medium.paddingInline
-      padding-vertical: component.button.size.medium.paddingBlock
+      padding-horizontal: primitives.space.4
+      padding-vertical: primitives.space.3
     size.sm:
-      padding-horizontal: component.button.size.small.paddingInline
-      padding-vertical: component.button.size.small.paddingBlock
+      padding-horizontal: primitives.space.3
+      padding-vertical: primitives.space.2
     variant.primary:
-      background: component.button.primary.background.default
-      foreground: component.button.primary.foreground.default
-      border: component.button.primary.border.default
+      background: semantic.color.background.action.primary.default
+      foreground: semantic.color.foreground.on.action.primary
+      border: semantic.color.border.action.primary.default
     variant.primary + hover:
-      background: component.button.primary.background.hover
-      border: component.button.primary.border.hover
+      background: semantic.color.background.action.primary.hover
+      border: semantic.color.border.action.primary.hover
     variant.primary + pressed:
-      background: component.button.primary.background.pressed
-      border: component.button.primary.border.pressed
+      background: semantic.color.background.action.primary.pressed
+      border: semantic.color.border.action.primary.pressed
     variant.primary + disabled:
-      background: component.button.primary.background.disabled
-      foreground: component.button.primary.foreground.disabled
-      border: component.button.primary.border.disabled
+      background: semantic.color.background.disabled
+      foreground: semantic.color.foreground.disabled
+      border: semantic.color.border.disabled
     variant.secondary:
-      background: component.button.secondary.background.default
-      foreground: component.button.secondary.foreground.default
-      border: component.button.secondary.border.default
+      background: semantic.color.background.action.secondary.default
+      foreground: semantic.color.foreground.default
+      border: semantic.color.border.default
     variant.secondary + hover:
-      background: component.button.secondary.background.hover
+      background: semantic.color.background.action.secondary.hover
     variant.secondary + pressed:
-      background: component.button.secondary.background.pressed
+      background: semantic.color.background.action.secondary.pressed
     variant.secondary + disabled:
       background: transparent
-      foreground: component.button.secondary.foreground.disabled
-      border: component.button.secondary.border.disabled
-    variant.ghost:
+      foreground: semantic.color.foreground.disabled
+      border: semantic.color.border.disabled
+    variant.tertiary:
       background: transparent
-      foreground: component.button.ghost.foreground.default
+      foreground: semantic.color.foreground.default
       border: transparent
-    variant.ghost + hover:
-      background: component.button.ghost.background.hover
-    variant.ghost + pressed:
-      background: component.button.ghost.background.pressed
-    variant.ghost + disabled:
+    variant.tertiary + hover:
+      background: semantic.color.background.action.tertiary.hover
+    variant.tertiary + pressed:
+      background: semantic.color.background.action.tertiary.pressed
+    variant.tertiary + disabled:
       background: transparent
-      foreground: component.button.ghost.foreground.disabled
-    variant.danger:
-      background: component.button.danger.background.default
-      foreground: component.button.danger.foreground.default
-      border: component.button.danger.border.default
-    variant.danger + hover:
-      background: component.button.danger.background.hover
-      border: component.button.danger.border.hover
-    variant.danger + pressed:
-      background: component.button.danger.background.pressed
-      border: component.button.danger.border.pressed
-    variant.danger + disabled:
-      background: component.button.danger.background.disabled
-      foreground: component.button.danger.foreground.disabled
-      border: component.button.danger.border.disabled
+      foreground: semantic.color.foreground.disabled
+    variant.destructive:
+      background: semantic.color.background.action.destructive.default
+      foreground: semantic.color.foreground.on.action.destructive
+      border: semantic.color.border.action.destructive.default
+    variant.destructive + hover:
+      background: semantic.color.background.action.destructive.hover
+      border: semantic.color.border.action.destructive.hover
+    variant.destructive + pressed:
+      background: semantic.color.background.action.destructive.pressed
+      border: semantic.color.border.action.destructive.pressed
+    variant.destructive + disabled:
+      background: semantic.color.background.disabled
+      foreground: semantic.color.foreground.disabled
+      border: semantic.color.border.disabled
     reducedMotion.reduce:
       motion: none
 rationale:
-  - decision: Button has a published component-token namespace.
-    why: Consumers need a stable customization boundary for variants and states.
+  - decision: Button reads semantic tokens directly and has no component-token namespace.
+    why: >-
+      Its component tokens only restated the semantic tier, so they added names without adding a
+      customization boundary (tokens ADR 0003).

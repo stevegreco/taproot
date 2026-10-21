@@ -13,7 +13,7 @@ The primitive color guide lets users browse fixed palette values, inspect contra
 
 - Open `/design-tokens/primitives/color`.
 - Browse sections within `[data-color-field-guide]`.
-- Choose a button whose accessible name begins with `Copy --primitives-color-`.
+- Choose a button whose accessible name begins with `Copy primitives.color.`.
 
 ## Driving it with Playwright
 

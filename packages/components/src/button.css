@@ -10,21 +10,21 @@
 
 :host {
   /* Variant surface. Remapped by the :host([variant=...]) rules below. */
-  --_background: var(--component-button-primary-background-default);
-  --_background-hover: var(--component-button-primary-background-hover);
-  --_background-press: var(--component-button-primary-background-pressed);
-  --_background-disabled: var(--component-button-primary-background-disabled);
-  --_foreground: var(--component-button-primary-foreground-default);
-  --_foreground-disabled: var(--component-button-primary-foreground-disabled);
-  --_border: var(--component-button-primary-border-default);
-  --_border-hover: var(--component-button-primary-border-hover);
-  --_border-press: var(--component-button-primary-border-pressed);
-  --_border-disabled: var(--component-button-primary-border-disabled);
+  --_background: var(--semantic-color-background-action-primary-default);
+  --_background-hover: var(--semantic-color-background-action-primary-hover);
+  --_background-press: var(--semantic-color-background-action-primary-pressed);
+  --_background-disabled: var(--semantic-color-background-disabled);
+  --_foreground: var(--semantic-color-foreground-on-action-primary);
+  --_foreground-disabled: var(--semantic-color-foreground-disabled);
+  --_border: var(--semantic-color-border-action-primary-default);
+  --_border-hover: var(--semantic-color-border-action-primary-hover);
+  --_border-press: var(--semantic-color-border-action-primary-pressed);
+  --_border-disabled: var(--semantic-color-border-disabled);
 
   /* Metrics. Remapped by size. */
-  --_padding-x: var(--component-button-size-medium-padding-inline);
-  --_padding-y: var(--component-button-size-medium-padding-block);
-  --_radius: var(--component-button-radius);
+  --_padding-x: var(--primitives-space-4);
+  --_padding-y: var(--primitives-space-3);
+  --_radius: var(--semantic-radius-control);
 
   display: inline-block;
   vertical-align: middle;
@@ -39,54 +39,54 @@
 }
 
 :host([variant="secondary"]) {
-  --_background: var(--component-button-secondary-background-default);
-  --_background-hover: var(--component-button-secondary-background-hover);
-  --_background-press: var(--component-button-secondary-background-pressed);
+  --_background: var(--semantic-color-background-action-secondary-default);
+  --_background-hover: var(--semantic-color-background-action-secondary-hover);
+  --_background-press: var(--semantic-color-background-action-secondary-pressed);
   --_background-disabled: transparent;
-  --_foreground: var(--component-button-secondary-foreground-default);
-  --_foreground-disabled: var(--component-button-secondary-foreground-disabled);
-  --_border: var(--component-button-secondary-border-default);
-  --_border-hover: var(--component-button-secondary-border-default);
-  --_border-press: var(--component-button-secondary-border-default);
-  --_border-disabled: var(--component-button-secondary-border-disabled);
+  --_foreground: var(--semantic-color-foreground-default);
+  --_foreground-disabled: var(--semantic-color-foreground-disabled);
+  --_border: var(--semantic-color-border-default);
+  --_border-hover: var(--semantic-color-border-default);
+  --_border-press: var(--semantic-color-border-default);
+  --_border-disabled: var(--semantic-color-border-disabled);
 }
 
-:host([variant="ghost"]) {
+:host([variant="tertiary"]) {
   --_background: transparent;
-  --_background-hover: var(--component-button-ghost-background-hover);
-  --_background-press: var(--component-button-ghost-background-pressed);
+  --_background-hover: var(--semantic-color-background-action-tertiary-hover);
+  --_background-press: var(--semantic-color-background-action-tertiary-pressed);
   --_background-disabled: transparent;
-  --_foreground: var(--component-button-ghost-foreground-default);
-  --_foreground-disabled: var(--component-button-ghost-foreground-disabled);
+  --_foreground: var(--semantic-color-foreground-default);
+  --_foreground-disabled: var(--semantic-color-foreground-disabled);
   --_border: transparent;
   --_border-hover: transparent;
   --_border-press: transparent;
   --_border-disabled: transparent;
 }
 
-:host([variant="danger"]) {
-  --_background: var(--component-button-danger-background-default);
-  --_background-hover: var(--component-button-danger-background-hover);
-  --_background-press: var(--component-button-danger-background-pressed);
-  --_background-disabled: var(--component-button-danger-background-disabled);
-  --_foreground: var(--component-button-danger-foreground-default);
-  --_foreground-disabled: var(--component-button-danger-foreground-disabled);
-  --_border: var(--component-button-danger-border-default);
-  --_border-hover: var(--component-button-danger-border-hover);
-  --_border-press: var(--component-button-danger-border-pressed);
-  --_border-disabled: var(--component-button-danger-border-disabled);
+:host([variant="destructive"]) {
+  --_background: var(--semantic-color-background-action-destructive-default);
+  --_background-hover: var(--semantic-color-background-action-destructive-hover);
+  --_background-press: var(--semantic-color-background-action-destructive-pressed);
+  --_background-disabled: var(--semantic-color-background-disabled);
+  --_foreground: var(--semantic-color-foreground-on-action-destructive);
+  --_foreground-disabled: var(--semantic-color-foreground-disabled);
+  --_border: var(--semantic-color-border-action-destructive-default);
+  --_border-hover: var(--semantic-color-border-action-destructive-hover);
+  --_border-press: var(--semantic-color-border-action-destructive-pressed);
+  --_border-disabled: var(--semantic-color-border-disabled);
 }
 
 :host([size="sm"]) {
-  --_padding-x: var(--component-button-size-small-padding-inline);
-  --_padding-y: var(--component-button-size-small-padding-block);
+  --_padding-x: var(--primitives-space-3);
+  --_padding-y: var(--primitives-space-2);
 }
 
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--component-button-gap);
+  gap: var(--primitives-space-2);
   box-sizing: border-box;
   margin: 0;
   padding: var(--_padding-y) var(--_padding-x);
@@ -94,11 +94,11 @@
   border-radius: var(--_radius);
   background-color: var(--_background);
   color: var(--_foreground);
-  font-family: var(--component-button-font-family);
-  font-size: var(--component-button-font-size);
-  font-weight: var(--component-button-font-weight);
-  line-height: var(--component-button-font-line-height);
-  letter-spacing: var(--component-button-font-letter-spacing);
+  font-family: var(--semantic-typography-label-md-font-family);
+  font-size: var(--semantic-typography-label-md-font-size);
+  font-weight: var(--semantic-typography-label-md-font-weight);
+  line-height: var(--semantic-typography-label-md-line-height);
+  letter-spacing: var(--semantic-typography-label-md-letter-spacing);
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
@@ -106,9 +106,9 @@
   -webkit-appearance: none;
   user-select: none;
   transition:
-    background-color var(--component-button-motion-duration) var(--component-button-motion-easing),
-    border-color var(--component-button-motion-duration) var(--component-button-motion-easing),
-    color var(--component-button-motion-duration) var(--component-button-motion-easing);
+    background-color var(--primitives-duration-fast) var(--primitives-ease-out),
+    border-color var(--primitives-duration-fast) var(--primitives-ease-out),
+    color var(--primitives-duration-fast) var(--primitives-ease-out);
 }
 
 :host([full-width]) .button {
@@ -140,7 +140,7 @@ slot {
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--component-button-focus-border);
+  outline: 2px solid var(--semantic-color-border-focus);
   outline-offset: 2px;
 }
 

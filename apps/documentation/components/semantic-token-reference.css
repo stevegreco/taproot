@@ -12,11 +12,11 @@
 .semantic-reference__pairing h4 {
   margin-block: 0 0.65rem;
   color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-heading-small-font-family);
-  font-size: var(--semantic-typography-heading-small-font-size);
-  font-weight: var(--semantic-typography-heading-small-font-weight);
-  line-height: var(--semantic-typography-heading-small-line-height);
-  letter-spacing: var(--semantic-typography-heading-small-letter-spacing);
+  font-family: var(--semantic-typography-heading-sm-font-family);
+  font-size: var(--semantic-typography-heading-sm-font-size);
+  font-weight: var(--semantic-typography-heading-sm-font-weight);
+  line-height: var(--semantic-typography-heading-sm-line-height);
+  letter-spacing: var(--semantic-typography-heading-sm-letter-spacing);
 }
 
 .semantic-reference__list,
@@ -52,9 +52,9 @@
 
 .semantic-reference__row-content strong {
   color: var(--semantic-color-foreground-muted);
-  font-size: var(--semantic-typography-label-small-font-size);
-  font-weight: var(--semantic-typography-label-small-font-weight);
-  line-height: var(--semantic-typography-label-small-line-height);
+  font-size: var(--semantic-typography-label-sm-font-size);
+  font-weight: var(--semantic-typography-label-sm-font-weight);
+  line-height: var(--semantic-typography-label-sm-line-height);
 }
 
 .semantic-reference code,
@@ -62,9 +62,9 @@
   display: block;
   min-width: 0;
   color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-code-small-font-family);
-  font-size: var(--semantic-typography-code-small-font-size);
-  line-height: var(--semantic-typography-code-small-line-height);
+  font-family: var(--semantic-typography-code-sm-font-family);
+  font-size: var(--semantic-typography-code-sm-font-size);
+  line-height: var(--semantic-typography-code-sm-line-height);
   overflow-wrap: anywhere;
 }
 
@@ -126,7 +126,7 @@
 
 .semantic-reference__action header > span {
   color: var(--semantic-color-foreground-muted);
-  font-size: var(--semantic-typography-label-small-font-size);
+  font-size: var(--semantic-typography-label-sm-font-size);
 }
 
 .semantic-reference__transparent {
@@ -186,7 +186,7 @@
 .semantic-reference__recipe summary {
   color: var(--semantic-color-foreground-muted);
   cursor: pointer;
-  font-size: var(--semantic-typography-label-small-font-size);
+  font-size: var(--semantic-typography-label-sm-font-size);
 }
 
 .semantic-reference__recipe ul {
@@ -255,11 +255,11 @@
 
 .semantic-example__card h3 {
   margin-block: 0.5rem;
-  font-family: var(--semantic-typography-heading-small-font-family);
-  font-size: var(--semantic-typography-heading-small-font-size);
-  font-weight: var(--semantic-typography-heading-small-font-weight);
-  line-height: var(--semantic-typography-heading-small-line-height);
-  letter-spacing: var(--semantic-typography-heading-small-letter-spacing);
+  font-family: var(--semantic-typography-heading-sm-font-family);
+  font-size: var(--semantic-typography-heading-sm-font-size);
+  font-weight: var(--semantic-typography-heading-sm-font-weight);
+  line-height: var(--semantic-typography-heading-sm-line-height);
+  letter-spacing: var(--semantic-typography-heading-sm-letter-spacing);
 }
 
 .semantic-example__card p {
@@ -289,7 +289,7 @@
   padding: 0.55rem 0.85rem;
   border: 1px solid;
   border-radius: var(--semantic-radius-control);
-  font-weight: var(--semantic-typography-label-default-font-weight);
+  font-weight: var(--semantic-typography-label-md-font-weight);
 }
 
 .semantic-example__primary {

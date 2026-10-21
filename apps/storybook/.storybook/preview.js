@@ -37,12 +37,7 @@ export default {
     controls: { expanded: true },
     options: {
       storySort: {
-        order: [
-          "Introduction",
-          "Tokens",
-          ["Overview", "Primitives", "Semantic", "Component"],
-          "Components",
-        ],
+        order: ["Introduction", "Tokens", ["Overview", "Primitives", "Semantic"], "Components"],
       },
     },
     a11y: { test: "error" },

@@ -55,9 +55,9 @@
 
 .component-spec__default {
   color: var(--semantic-color-foreground-muted);
-  font-family: var(--semantic-typography-label-small-font-family);
-  font-size: var(--semantic-typography-label-small-font-size);
-  font-weight: var(--semantic-typography-label-small-font-weight);
+  font-family: var(--semantic-typography-label-sm-font-family);
+  font-size: var(--semantic-typography-label-sm-font-size);
+  font-weight: var(--semantic-typography-label-sm-font-weight);
 }
 
 .component-spec__variant-copy p {
@@ -72,7 +72,7 @@
 
 .component-spec__variant-copy code {
   display: block;
-  font-size: var(--semantic-typography-code-small-font-size);
+  font-size: var(--semantic-typography-code-sm-font-size);
   overflow-wrap: anywhere;
 }
 
@@ -91,7 +91,7 @@
 .component-spec__figure figcaption {
   margin-block-start: 0.5rem;
   color: var(--semantic-color-foreground-muted);
-  font-size: var(--semantic-typography-body-small-font-size);
+  font-size: var(--semantic-typography-body-sm-font-size);
 }
 
 .component-spec__table {
@@ -111,7 +111,7 @@
   display: block;
   margin-block-start: 0.2rem;
   color: var(--semantic-color-foreground-muted);
-  font-size: var(--semantic-typography-label-small-font-size);
+  font-size: var(--semantic-typography-label-sm-font-size);
 }
 
 .component-spec__values {

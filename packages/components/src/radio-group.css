@@ -32,8 +32,8 @@
   flex: none;
   align-items: center;
   height: 1lh;
-  font-size: var(--semantic-typography-body-default-font-size);
-  line-height: var(--semantic-typography-body-default-line-height);
+  font-size: var(--semantic-typography-body-md-font-size);
+  line-height: var(--semantic-typography-body-md-line-height);
 }
 
 .control {
@@ -100,11 +100,11 @@
   align-items: baseline;
   gap: var(--primitives-space-1);
   color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-body-default-font-family);
-  font-size: var(--semantic-typography-body-default-font-size);
-  font-weight: var(--semantic-typography-body-default-font-weight);
-  line-height: var(--semantic-typography-body-default-line-height);
-  letter-spacing: var(--semantic-typography-body-default-letter-spacing);
+  font-family: var(--semantic-typography-body-md-font-family);
+  font-size: var(--semantic-typography-body-md-font-size);
+  font-weight: var(--semantic-typography-body-md-font-weight);
+  line-height: var(--semantic-typography-body-md-line-height);
+  letter-spacing: var(--semantic-typography-body-md-letter-spacing);
   cursor: pointer;
 }
 
@@ -112,11 +112,11 @@
 .hint,
 .error {
   margin: 0;
-  font-family: var(--semantic-typography-body-small-font-family);
-  font-size: var(--semantic-typography-body-small-font-size);
-  font-weight: var(--semantic-typography-body-small-font-weight);
-  line-height: var(--semantic-typography-body-small-line-height);
-  letter-spacing: var(--semantic-typography-body-small-letter-spacing);
+  font-family: var(--semantic-typography-body-sm-font-family);
+  font-size: var(--semantic-typography-body-sm-font-size);
+  font-weight: var(--semantic-typography-body-sm-font-weight);
+  line-height: var(--semantic-typography-body-sm-line-height);
+  letter-spacing: var(--semantic-typography-body-sm-letter-spacing);
 }
 
 .hint {

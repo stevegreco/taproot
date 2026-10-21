@@ -219,9 +219,9 @@ tokens:
       padding-horizontal: primitives.space.4
       padding-vertical: primitives.space.3
       gap: primitives.space.3
-      font-family: semantic.typography.body.default.fontFamily
-      font-size: semantic.typography.body.default.fontSize
-      line-height: semantic.typography.body.default.lineHeight
+      font-family: semantic.typography.body.md.fontFamily
+      font-size: semantic.typography.body.md.fontSize
+      line-height: semantic.typography.body.md.lineHeight
     variant.info:
       background: semantic.color.background.status.info.default
       border: semantic.color.border.status.info.default

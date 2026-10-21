@@ -49,7 +49,7 @@ spec.get("component.button"); // the whole record, frozen
 
 spec.section("pattern.action-hierarchy#assign-emphasis"); // heading, rule, field, or annotation
 spec.section("component.button#label-describes-result");
-spec.section("component.button#parameters.variant.danger");
+spec.section("component.button#parameters.variant.destructive");
 // An enum value's content is { meaning, example?, guidance? }: its meaning, with the example and
 // guidance section the parameter pairs with it.
 
@@ -76,7 +76,7 @@ spec.render("pattern.action-hierarchy#choose-button-or-link"); // or one section
 Links come from four places: the `links` field, `usage.avoid[].instead` (an `alternative` link),
 rule `references` (`follows` for a pattern or guideline, `related` otherwise), and an enum
 parameter's `guidance` (a `follows` link whose `fromSection` names the value, such as
-`parameters.variant.danger`). `links` returns links
+`parameters.variant.destructive`). `links` returns links
 from the record (`direction: "out"`), links to it (`"in"`), or `"both"`. The default, `"out"`, is
 complete on its own because every link is stored with its inverse, so `"both"` lists each
 relationship once. A link's kind reads from its `from` side: an incoming `alternative` link from

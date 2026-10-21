@@ -162,11 +162,11 @@ tokens:
   label:
     base:
       foreground: semantic.color.foreground.default
-      font-family: semantic.typography.label.default.fontFamily
-      font-size: semantic.typography.label.default.fontSize
-      font-weight: semantic.typography.label.default.fontWeight
-      line-height: semantic.typography.label.default.lineHeight
-      letter-spacing: semantic.typography.label.default.letterSpacing
+      font-family: semantic.typography.label.md.fontFamily
+      font-size: semantic.typography.label.md.fontSize
+      font-weight: semantic.typography.label.md.fontWeight
+      line-height: semantic.typography.label.md.lineHeight
+      letter-spacing: semantic.typography.label.md.letterSpacing
     disabled:
       foreground: semantic.color.foreground.disabled
   control:
@@ -177,11 +177,11 @@ tokens:
       radius: semantic.radius.control
       padding-horizontal: primitives.space.3
       padding-vertical: primitives.space.2
-      font-family: semantic.typography.body.default.fontFamily
-      font-size: semantic.typography.body.default.fontSize
-      font-weight: semantic.typography.body.default.fontWeight
-      line-height: semantic.typography.body.default.lineHeight
-      letter-spacing: semantic.typography.body.default.letterSpacing
+      font-family: semantic.typography.body.md.fontFamily
+      font-size: semantic.typography.body.md.fontSize
+      font-weight: semantic.typography.body.md.fontWeight
+      line-height: semantic.typography.body.md.lineHeight
+      letter-spacing: semantic.typography.body.md.letterSpacing
     hover:
       border: semantic.color.border.strong
     focus:
@@ -195,21 +195,21 @@ tokens:
   hint:
     base:
       foreground: semantic.color.foreground.muted
-      font-family: semantic.typography.body.small.fontFamily
-      font-size: semantic.typography.body.small.fontSize
-      font-weight: semantic.typography.body.small.fontWeight
-      line-height: semantic.typography.body.small.lineHeight
-      letter-spacing: semantic.typography.body.small.letterSpacing
+      font-family: semantic.typography.body.sm.fontFamily
+      font-size: semantic.typography.body.sm.fontSize
+      font-weight: semantic.typography.body.sm.fontWeight
+      line-height: semantic.typography.body.sm.lineHeight
+      letter-spacing: semantic.typography.body.sm.letterSpacing
     disabled:
       foreground: semantic.color.foreground.disabled
   error:
     base:
       foreground: semantic.color.foreground.status.danger.default
-      font-family: semantic.typography.body.small.fontFamily
-      font-size: semantic.typography.body.small.fontSize
-      font-weight: semantic.typography.body.small.fontWeight
-      line-height: semantic.typography.body.small.lineHeight
-      letter-spacing: semantic.typography.body.small.letterSpacing
+      font-family: semantic.typography.body.sm.fontFamily
+      font-size: semantic.typography.body.sm.fontSize
+      font-weight: semantic.typography.body.sm.fontWeight
+      line-height: semantic.typography.body.sm.lineHeight
+      letter-spacing: semantic.typography.body.sm.letterSpacing
 rationale:
   - decision: Select consumes semantic tokens directly.
     why: >-

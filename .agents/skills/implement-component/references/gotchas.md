@@ -31,7 +31,7 @@ document-component.
 - An `avoid[].instead` that is a record ID creates an `alternative` link and must resolve. Plain
   text is allowed for a component that does not exist yet.
 - Links and references may target a section: a heading slug, a rule ID, or a field path such as
-  `parameters.variant.danger`. A missing target is a validation error.
+  `parameters.variant.destructive`. A missing target is a validation error.
 - A boolean that is also a state (checked, disabled) should be both a `parameters` entry and a
   `states` entry with the same name, so token conditions can use it either way.
 

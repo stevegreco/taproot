@@ -44,7 +44,7 @@ primary action completes the routine editing task.
 
 Account deletion is destructive and operates on a different subject. A labeled danger zone
 separates it from the profile form. Its supporting text explains the consequence before the person
-reaches the danger Button.
+reaches the destructive Button.
 
 ![Account settings action hierarchy](assets/action-hierarchy-settings.svg)
 

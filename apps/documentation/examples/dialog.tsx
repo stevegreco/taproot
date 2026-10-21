@@ -10,7 +10,11 @@ export default function DialogExample() {
   const [status, setStatus] = useState("The archived project is available.");
   return (
     <div className="flex flex-col items-start gap-4 p-6 text-slate-900 dark:text-white">
-      <ds-button data-dialog-trigger onClick={() => dialog.current?.showModal()} variant="danger">
+      <ds-button
+        data-dialog-trigger
+        onClick={() => dialog.current?.showModal()}
+        variant="destructive"
+      >
         Delete archived project
       </ds-button>
       <p data-dialog-status>{status}</p>
@@ -31,7 +35,7 @@ export default function DialogExample() {
         </ds-button>
         <ds-button
           slot="actions"
-          variant="danger"
+          variant="destructive"
           data-dialog-confirm
           onClick={() => {
             setStatus("Archived project deleted.");

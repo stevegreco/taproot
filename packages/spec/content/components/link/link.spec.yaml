@@ -133,11 +133,11 @@ tokens:
       line-height: inherit
       letter-spacing: inherit
     variant.standalone:
-      font-family: semantic.typography.label.default.fontFamily
-      font-size: semantic.typography.label.default.fontSize
-      font-weight: semantic.typography.label.default.fontWeight
-      line-height: semantic.typography.label.default.lineHeight
-      letter-spacing: semantic.typography.label.default.letterSpacing
+      font-family: semantic.typography.label.md.fontFamily
+      font-size: semantic.typography.label.md.fontSize
+      font-weight: semantic.typography.label.md.fontWeight
+      line-height: semantic.typography.label.md.lineHeight
+      letter-spacing: semantic.typography.label.md.letterSpacing
 rationale:
   - decision: Link consumes semantic tokens directly.
     why: >-

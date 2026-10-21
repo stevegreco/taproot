@@ -84,9 +84,7 @@
           "default": { "$value": "{primitives.color.robRoy.700}", "$type": "color" }
         },
         "on": {
-          "brand": {
-            "default": { "$value": "{primitives.color.gray.25}", "$type": "color" }
-          },
+          "brand": { "$value": "{primitives.color.gray.25}", "$type": "color" },
           "action": {
             "primary": { "$value": "{primitives.color.gray.25}", "$type": "color" },
             "destructive": { "$value": "{primitives.color.gray.25}", "$type": "color" }

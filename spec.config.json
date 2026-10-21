@@ -10,15 +10,13 @@
         "packages/tokens/src/tokens/primitives.tokens.json",
         "packages/tokens/src/tokens/semantic/light.tokens.json",
         "packages/tokens/src/tokens/semantic/shape.tokens.json",
-        "packages/tokens/src/tokens/semantic/typography.tokens.json",
-        "packages/tokens/src/tokens/components/button.tokens.json"
+        "packages/tokens/src/tokens/semantic/typography.tokens.json"
       ],
       "dark": [
         "packages/tokens/src/tokens/primitives.tokens.json",
         "packages/tokens/src/tokens/semantic/dark.tokens.json",
         "packages/tokens/src/tokens/semantic/shape.tokens.json",
-        "packages/tokens/src/tokens/semantic/typography.tokens.json",
-        "packages/tokens/src/tokens/components/button.tokens.json"
+        "packages/tokens/src/tokens/semantic/typography.tokens.json"
       ]
     }
   }

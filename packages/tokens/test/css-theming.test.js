@@ -1,5 +1,6 @@
 import { test } from "vitest";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { createCombinedCss, SYSTEM_DARK_QUERY } from "../build-css-utils.js";
 import { semanticConfig } from "../style-dictionary.config.js";
 
@@ -22,7 +23,6 @@ test("combined CSS uses the system dark theme only when data-theme is absent", (
     semanticLight: ":root { --semantic: light; }",
     semanticDarkSystem: ":root:not([data-theme]) { --semantic: dark; }",
     semanticDark: ':root[data-theme="dark"] { --semantic: dark; }',
-    components: ":root { --component: var(--semantic); }",
   });
 
   assert.match(
@@ -39,10 +39,17 @@ test("combined CSS keeps native browser UI in sync with the selected theme", () 
     semanticLight: "",
     semanticDarkSystem: "",
     semanticDark: "",
-    components: "",
   });
 
   assert.match(css, /:root \{\n  color-scheme: light;/);
   assert.match(css, /:root:not\(\[data-theme\]\) \{\n    color-scheme: dark;/);
   assert.match(css, /:root\[data-theme="dark"\] \{\n  color-scheme: dark;/);
+});
+
+test("tokens.css publishes no color primitives and no component tier", () => {
+  const css = readFileSync(new URL("../dist/css/tokens.css", import.meta.url), "utf-8");
+
+  assert.match(css, /--primitives-space-/, "non-color primitives stay published");
+  assert.doesNotMatch(css, /--primitives-color-/, "color reaches CSS only through semantic tokens");
+  assert.doesNotMatch(css, /--component-/, "there is no component tier");
 });

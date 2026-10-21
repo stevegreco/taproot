@@ -253,7 +253,7 @@ export function links(spec, { id: typed, kind, direction } = {}) {
   for (const [heading, group] of groups) {
     lines.push(`## ${heading}`, "");
     for (const link of group) {
-      // A link from a parameter value names that value, such as `parameters.variant.danger`.
+      // A link from a parameter value names that value, such as `parameters.variant.destructive`.
       const from = link.from === id ? link.fromSection : link.from;
       const source = link.fromSection && link.from !== id ? `${from}#${link.fromSection}` : from;
       let line = source ? `- ${source} → ${link.to}` : `- ${link.to}`;

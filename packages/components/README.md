@@ -85,10 +85,9 @@ ds-button::part(button) {
 
 ## Tokens consumed
 
-Button consumes its published `--component-button-*` contract. Every component
-token aliases a current semantic or primitive token, so themes still flow
-through the semantic layer while consumers gain a stable customization
-boundary. Every other component consumes `--semantic-*` tokens directly.
+Every component consumes `--semantic-*` tokens directly, plus primitives for
+scale choices such as spacing and motion that have no semantic role. The tokens a
+component reads are internal, not a customization API (tokens ADR 0003).
 
 ## Styles are authored as real CSS
 
