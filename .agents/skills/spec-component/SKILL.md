@@ -88,7 +88,7 @@ pnpm component:status <name> --phase spec
 
 `get` shows the draft status note. `validate` reports each mistake once, with file and line,
 including any `TODO:` left. A link or `instead` that names a record must resolve, and a section target (a heading slug, rule ID, or field path such as
-`parameters.variant.danger`) must exist.
+`parameters.variant.destructive`) must exist.
 
 ## Pull request
 

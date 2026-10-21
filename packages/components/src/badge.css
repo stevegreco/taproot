@@ -57,10 +57,10 @@
   border-radius: var(--semantic-radius-pill);
   background-color: var(--_background);
   color: var(--_foreground);
-  font-family: var(--semantic-typography-label-small-font-family);
-  font-size: var(--semantic-typography-label-small-font-size);
-  font-weight: var(--semantic-typography-label-small-font-weight);
-  line-height: var(--semantic-typography-label-small-line-height);
-  letter-spacing: var(--semantic-typography-label-small-letter-spacing);
+  font-family: var(--semantic-typography-label-sm-font-family);
+  font-size: var(--semantic-typography-label-sm-font-size);
+  font-weight: var(--semantic-typography-label-sm-font-weight);
+  line-height: var(--semantic-typography-label-sm-line-height);
+  letter-spacing: var(--semantic-typography-label-sm-letter-spacing);
   white-space: nowrap;
 }

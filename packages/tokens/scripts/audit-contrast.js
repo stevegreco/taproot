@@ -34,7 +34,7 @@ const PAIRS = [
   ["color.foreground.muted", "color.background.muted", TEXT, "muted text on muted"],
 
   // Explicit solid-fill pairings
-  ["color.foreground.on.brand.default", "color.background.brand.default", TEXT, "content on brand"],
+  ["color.foreground.on.brand", "color.background.brand.default", TEXT, "content on brand"],
   ...["default", "hover", "pressed"].map((state) => [
     "color.foreground.on.action.primary",
     `color.background.action.primary.${state}`,

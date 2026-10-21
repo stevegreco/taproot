@@ -3,7 +3,7 @@
 // should import ./flatten.js directly and load token JSON via bundler imports
 // instead, since this module touches fs.
 
-import { readFileSync, readdirSync, statSync } from "fs";
+import { readFileSync, statSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { flatten, inferType } from "./flatten.js";
@@ -18,33 +18,24 @@ export const DIST = {
   semanticLight: join(ROOT, "dist/tokens/semantic.light.json"),
   semanticDark: join(ROOT, "dist/tokens/semantic.dark.json"),
   semanticMeta: join(ROOT, "dist/tokens/semantic.meta.json"),
-  components: join(ROOT, "dist/tokens/components.json"),
 };
 
-// The files backing one theme. Primitives and component references are fixed;
-// only semantic JSON resolves independently for each theme.
+// The files backing one theme. Primitives are fixed; only semantic JSON
+// resolves independently for each theme.
 export function themeFiles(theme = "light") {
   return theme === "dark"
-    ? [DIST.primitives, DIST.semanticDark, DIST.components]
-    : [DIST.primitives, DIST.semanticLight, DIST.components];
+    ? [DIST.primitives, DIST.semanticDark]
+    : [DIST.primitives, DIST.semanticLight];
 }
 
 export function sourceFiles() {
-  const base = [
+  return [
     join(ROOT, "src/tokens/primitives.tokens.json"),
     join(ROOT, "src/tokens/semantic/light.tokens.json"),
     join(ROOT, "src/tokens/semantic/dark.tokens.json"),
     join(ROOT, "src/tokens/semantic/shape.tokens.json"),
     join(ROOT, "src/tokens/semantic/typography.tokens.json"),
   ];
-  try {
-    const components = readdirSync(join(ROOT, "src/tokens/components"))
-      .filter((file) => file.endsWith(".tokens.json"))
-      .map((file) => join(ROOT, "src/tokens/components", file));
-    return [...base, ...components];
-  } catch {
-    return base;
-  }
 }
 
 export function isStale() {

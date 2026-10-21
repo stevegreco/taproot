@@ -117,10 +117,12 @@ describe("spec MCP server", () => {
     expect(text(conditional)).toContain("  - Applies when: The checkbox belongs to a form.");
     const value = await client.callTool({
       name: "get",
-      arguments: { target: "component.button#parameters.variant.danger" },
+      arguments: { target: "component.button#parameters.variant.destructive" },
     });
     expect(text(value)).toContain("Example: Delete project");
-    expect(text(value)).toContain("Guidance: [Action hierarchy](pattern.action-hierarchy#danger)");
+    expect(text(value)).toContain(
+      "Guidance: [Action hierarchy](pattern.action-hierarchy#destructive)",
+    );
     const links = await client.callTool({ name: "links", arguments: { id: "component.link" } });
     expect(text(links)).toContain("## alternative");
     const validated = await client.callTool({ name: "validate", arguments: {} });
@@ -144,7 +146,7 @@ describe("spec MCP server", () => {
       arguments: { target: "component.button#tokens" },
     });
     expect(got.isError).toBeFalsy();
-    expect(text(got)).toContain("component.button.primary.background.hover");
+    expect(text(got)).toContain("semantic.color.background.action.primary.hover");
 
     const plain = await client.callTool({ name: "tokens", arguments: { id: "component.button" } });
     expect(plain.isError).toBeFalsy();

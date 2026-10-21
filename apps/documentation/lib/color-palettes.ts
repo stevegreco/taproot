@@ -3,6 +3,7 @@ import primitiveTokenData from "@stevegreco/design-system/tokens/primitives";
 type ColorScale = Record<string, string>;
 
 export type ColorToken = {
+  // The token path. Color primitives are not published as CSS variables.
   name: string;
   step: string;
   value: string;
@@ -79,7 +80,7 @@ export const palettes: ColorPalette[] = [
     description: "Absolute endpoints · shared white and black references",
     items: (["white", "black"] as const).map((step) => ({
       step: step[0].toUpperCase() + step.slice(1),
-      name: `--primitives-color-${step}`,
+      name: `primitives.color.${step}`,
       value: colors[step],
     })),
   },
@@ -91,7 +92,7 @@ export const palettes: ColorPalette[] = [
       items: Object.entries(colors[key] as ColorScale).map(([step, value]) => ({
         step,
         value,
-        name: `--primitives-color-${slug}-${step}`,
+        name: `primitives.color.${key}.${step}`,
       })),
     };
   }),

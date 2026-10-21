@@ -141,11 +141,11 @@ tokens:
       radius: semantic.radius.control
       padding-horizontal: primitives.space.3
       padding-vertical: primitives.space.2
-      font-family: semantic.typography.label.default.fontFamily
-      font-size: semantic.typography.label.default.fontSize
-      font-weight: semantic.typography.label.default.fontWeight
-      line-height: semantic.typography.label.default.lineHeight
-      letter-spacing: semantic.typography.label.default.letterSpacing
+      font-family: semantic.typography.label.md.fontFamily
+      font-size: semantic.typography.label.md.fontSize
+      font-weight: semantic.typography.label.md.fontWeight
+      line-height: semantic.typography.label.md.lineHeight
+      letter-spacing: semantic.typography.label.md.letterSpacing
     hover:
       foreground: semantic.color.foreground.default
       background: semantic.color.background.action.tertiary.hover

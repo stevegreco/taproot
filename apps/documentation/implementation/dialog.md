@@ -7,7 +7,7 @@ usage: |
   <ds-dialog label="Delete project?" description="This cannot be undone.">
     <p>Delete the archived project and its files.</p>
     <ds-button slot="actions" variant="secondary">Cancel</ds-button>
-    <ds-button slot="actions" variant="danger">Delete project</ds-button>
+    <ds-button slot="actions" variant="destructive">Delete project</ds-button>
   </ds-dialog>
 api:
   - name: open

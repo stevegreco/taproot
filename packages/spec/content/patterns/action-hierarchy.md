@@ -32,26 +32,26 @@ per action group.
 Use `secondary` for a supporting action that should remain visible. It can offer an alternative,
 return to the prior state, or dismiss the current task without competing with the primary action.
 
-### Ghost
+### Tertiary
 
-Use `ghost` for a low-emphasis action that remains discoverable in context. Do not use it for the
+Use `tertiary` for a low-emphasis action that remains discoverable in context. Do not use it for the
 main path through a task.
 
-### Danger
+### Destructive
 
-Use `danger` only for a destructive or difficult-to-reverse action. Danger communicates risk rather
-than hierarchy. In a destructive confirmation group, danger can be the highest-emphasis action and
-replaces the primary action.
+Use `destructive` only for a destructive or difficult-to-reverse action. It communicates risk
+rather than hierarchy. In a destructive confirmation group, the destructive action can be the
+highest-emphasis action and replaces the primary action.
 
-Do not use danger styling for an error status, warning message, or action that merely needs more
-attention.
+Do not use destructive styling for an error status, warning message, or action that merely needs
+more attention. Status colors such as `danger` belong to Alert and Badge, not to actions.
 
 ## Choose Button or Link
 
 Choose the control by what happens, not by how prominent it should look. A Button changes
 something in the current view or submits a form. A Link takes the person somewhere: another page, a
 location on this page, or a file. Do not style a Link as a Button to raise its emphasis, and do not
-use a ghost Button for navigation.
+use a tertiary Button for navigation.
 
 A Link sits beside an action group, not inside its emphasis order. "View billing history" next to
 "Save changes" is a Link because it leaves the task without resolving it.
@@ -79,9 +79,9 @@ make the hierarchy understandable without relying on color.
 ## Avoid
 
 - More than one primary Button in the same action group
-- A primary and a danger Button competing as terminal actions in one confirmation group
-- Danger styling used only to attract attention
-- Ghost styling for the action required to finish the task
+- A primary and a destructive Button competing as terminal actions in one confirmation group
+- Destructive styling used only to attract attention
+- Tertiary styling for the action required to finish the task
 - Disabled actions with no nearby explanation when the reason is unclear
 - A Button that only navigates, or a Link that changes data or submits a form
 - Relying on control order or color as the only expression of importance or risk

@@ -8,12 +8,12 @@
   --blume-muted-foreground: var(--semantic-color-foreground-muted);
   --blume-border: var(--semantic-color-border-subtle);
   --blume-accent: var(--semantic-color-background-brand-default);
-  --blume-accent-foreground: var(--semantic-color-foreground-on-brand-default);
+  --blume-accent-foreground: var(--semantic-color-foreground-on-brand);
   --blume-action: var(--semantic-color-background-action-primary-default);
   --blume-action-foreground: var(--semantic-color-foreground-on-action-primary);
   --blume-code-background: var(--semantic-color-background-sunken);
   --blume-radius: var(--semantic-radius-surface);
-  --blume-font-body: var(--semantic-typography-body-default-font-family);
-  --blume-font-display: var(--semantic-typography-heading-default-font-family);
-  --blume-font-mono: var(--semantic-typography-code-default-font-family);
+  --blume-font-body: var(--semantic-typography-body-md-font-family);
+  --blume-font-display: var(--semantic-typography-heading-md-font-family);
+  --blume-font-mono: var(--semantic-typography-code-md-font-family);
 }

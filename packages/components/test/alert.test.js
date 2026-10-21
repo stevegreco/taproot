@@ -81,7 +81,7 @@ describe("DsAlert", () => {
     const alert = render(
       `<${tagName} announce="polite" label="Saved" dismissible>
         Your changes were saved.
-        <${buttonTag} slot="actions" variant="ghost">Undo</${buttonTag}>
+        <${buttonTag} slot="actions" variant="tertiary">Undo</${buttonTag}>
       </${tagName}>`,
     );
     const region = liveRegionOf(alert);

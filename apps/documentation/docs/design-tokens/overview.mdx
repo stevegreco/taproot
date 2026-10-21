@@ -1,16 +1,15 @@
 ---
 title: Introduction
-description: How primitive, semantic, and optional component tokens work together.
+description: How primitive and semantic tokens work together.
 ---
 
-Primitive and semantic tokens form the shared foundation. Component tokens are
-published only when a component needs a stable customization contract.
+Primitive and semantic tokens are the whole public vocabulary. Components read semantic tokens
+directly; there is no component tier.
 
 | Tier      | Purpose                                                              | Typical use                                                  |
 | --------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
 | Primitive | Raw visual scales such as color, spacing, type, and motion           | Use when no semantic intent fits                             |
 | Semantic  | Intent such as foreground, background, border, status, and elevation | The normal styling API for components and product interfaces |
-| Component | Scoped aliases over current shared tokens                            | Styling or customizing a component with a published contract |
 
 ## Choosing a tier
 
@@ -18,8 +17,8 @@ Use the semantic token that expresses the intended role. Use a primitive only wh
 layer has no matching contract. Never bypass an existing semantic token merely because a primitive
 currently resolves to the same value.
 
-When a component publishes a component contract, prefer it at that component boundary. Button is
-currently the only component contract; Badge consumes semantic tokens directly.
+Color primitives are not published as CSS variables. Color reaches CSS only through semantic
+tokens, so it always follows the active theme.
 
 ```css
 /* Shared UI intent */
@@ -27,7 +26,4 @@ color: var(--semantic-color-foreground-default);
 
 /* No matching semantic role */
 gap: var(--primitives-space-2);
-
-/* Published Button contract */
-background: var(--component-button-primary-background-default);
 ```

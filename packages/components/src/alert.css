@@ -48,9 +48,9 @@
   border-radius: var(--semantic-radius-surface);
   background-color: var(--_background);
   color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-body-default-font-family);
-  font-size: var(--semantic-typography-body-default-font-size);
-  line-height: var(--semantic-typography-body-default-line-height);
+  font-family: var(--semantic-typography-body-md-font-family);
+  font-size: var(--semantic-typography-body-md-font-size);
+  line-height: var(--semantic-typography-body-md-line-height);
 }
 
 /* The icon sits on the first line of text, whatever the line height. */

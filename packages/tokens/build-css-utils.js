@@ -11,13 +11,7 @@ export function wrapInMediaQuery(css, query) {
   return `@media (${query}) {\n${indent(css.trim())}\n}`;
 }
 
-export function createCombinedCss({
-  primitives,
-  semanticLight,
-  semanticDarkSystem,
-  semanticDark,
-  components,
-}) {
+export function createCombinedCss({ primitives, semanticLight, semanticDarkSystem, semanticDark }) {
   const colorScheme = `:root {
   color-scheme: light;
 }
@@ -38,7 +32,6 @@ export function createCombinedCss({
     semanticLight,
     wrapInMediaQuery(semanticDarkSystem, SYSTEM_DARK_QUERY),
     semanticDark,
-    components,
   ]
     .map((css) => css.trim())
     .join("\n\n")

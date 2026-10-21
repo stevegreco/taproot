@@ -149,18 +149,18 @@ tokens:
   title:
     base:
       foreground: semantic.color.foreground.default
-      font-family: semantic.typography.body.default.fontFamily
-      font-size: semantic.typography.body.default.fontSize
+      font-family: semantic.typography.body.md.fontFamily
+      font-size: semantic.typography.body.md.fontSize
       font-weight: primitives.weight.semibold
-      line-height: semantic.typography.body.default.lineHeight
+      line-height: semantic.typography.body.md.lineHeight
     focus:
       focus-ring: semantic.color.border.focus
   description:
     base:
       foreground: semantic.color.foreground.muted
-      font-family: semantic.typography.body.default.fontFamily
-      font-size: semantic.typography.body.default.fontSize
-      line-height: semantic.typography.body.default.lineHeight
+      font-family: semantic.typography.body.md.fontFamily
+      font-size: semantic.typography.body.md.fontSize
+      line-height: semantic.typography.body.md.lineHeight
   actions:
     base:
       gap: primitives.space.2

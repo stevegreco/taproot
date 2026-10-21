@@ -18,7 +18,7 @@ import {
 } from "./internal/element.js";
 
 const styleSheet = lazyStyleSheet(styles);
-const VARIANTS = new Set(["primary", "secondary", "ghost", "danger"]);
+const VARIANTS = new Set(["primary", "secondary", "tertiary", "destructive"]);
 
 export class DsButton extends ForwardsFocus(Base) {
   /** Lets ElementInternals find the containing <form> across the shadow boundary. */

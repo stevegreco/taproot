@@ -12,8 +12,8 @@ export default function ButtonExample() {
       <div className="flex flex-wrap items-center gap-3">
         <ds-button onClick={() => setSaves((count) => count + 1)}>Save changes</ds-button>
         <ds-button variant="secondary">Preview</ds-button>
-        <ds-button variant="ghost">Cancel</ds-button>
-        <ds-button variant="danger">Delete draft</ds-button>
+        <ds-button variant="tertiary">Cancel</ds-button>
+        <ds-button variant="destructive">Delete draft</ds-button>
         <ds-button disabled>Publish</ds-button>
       </div>
       <div className="text-sm text-slate-600 dark:text-slate-300">

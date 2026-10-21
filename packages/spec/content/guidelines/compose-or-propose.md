@@ -36,10 +36,9 @@ a review.
 Composition stops being composition when product code rebuilds what a component owns. Do not:
 
 - Copy a component's styles or structure to make a variant that the contract does not publish.
-- Restyle a component's internal parts, or override its component tokens, to create a variant,
-  state, or size the contract does not publish. Setting a component token to customize an existing
-  variant is fine.
-- Define new component tokens in product code.
+- Restyle a component's internal parts, or override the tokens it reads, to create a variant,
+  state, or size the contract does not publish.
+- Define component tokens in product code.
 - Use one component to do another's job, such as a Badge as a control or a Link styled as a
   Button. The action hierarchy pattern says which control fits which job.
 - Rebuild a component's states, focus ring, or accessible name handling in a new element.

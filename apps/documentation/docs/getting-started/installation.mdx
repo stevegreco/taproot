@@ -88,15 +88,14 @@ For most applications, the CSS entry point is all you need.
 ## Use tokens programmatically
 
 Import individual token tiers as structured JSON for design tools, build
-scripts, or Style Dictionary pipelines. Component JSON preserves references to
-shared tokens; select a semantic theme when resolving those references.
+scripts, or Style Dictionary pipelines. Select the semantic file for the theme
+whose resolved values you need.
 
 <CodeBlock
   lang="ts"
   code={`import primitives from "@stevegreco/design-system/tokens/primitives";
 import semanticLight from "@stevegreco/design-system/tokens/semantic-light";
-import semanticDark from "@stevegreco/design-system/tokens/semantic-dark";
-import components from "@stevegreco/design-system/tokens/components";`}
+import semanticDark from "@stevegreco/design-system/tokens/semantic-dark";`}
 />
 
 ## Next step

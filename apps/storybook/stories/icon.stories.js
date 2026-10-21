@@ -42,7 +42,7 @@ export const InComponents = {
   parameters: { controls: { disable: true } },
   render: () => html`
     <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
-      <ds-button variant="danger"><ds-icon>${trash}</ds-icon>Delete project</ds-button>
+      <ds-button variant="destructive"><ds-icon>${trash}</ds-icon>Delete project</ds-button>
       <ds-button variant="secondary" disabled><ds-icon>${trash}</ds-icon>Delete archive</ds-button>
       <ds-badge variant="warning"><ds-icon>${warning}</ds-icon> Pending</ds-badge>
     </div>

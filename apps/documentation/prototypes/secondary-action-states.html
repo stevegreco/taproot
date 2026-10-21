@@ -14,11 +14,7 @@
       }
 
       :root {
-        font-family: var(
-          --semantic-typography-body-default-font-family,
-          "Source Sans 3",
-          sans-serif
-        );
+        font-family: var(--semantic-typography-body-md-font-family, "Source Sans 3", sans-serif);
         color: var(--semantic-color-foreground-default);
         background: var(--semantic-color-background-default);
       }
@@ -56,9 +52,9 @@
         border-radius: var(--semantic-radius-pill);
         color: var(--semantic-color-foreground-muted);
         background: transparent;
-        font-family: var(--semantic-typography-label-small-font-family);
-        font-size: var(--semantic-typography-label-small-font-size);
-        font-weight: var(--semantic-typography-label-small-font-weight);
+        font-family: var(--semantic-typography-label-sm-font-family);
+        font-size: var(--semantic-typography-label-sm-font-size);
+        font-weight: var(--semantic-typography-label-sm-font-weight);
         cursor: pointer;
       }
 
@@ -84,45 +80,45 @@
       }
 
       .variant-a {
-        --option-default: var(--primitives-color-gray-25);
-        --option-hover: var(--primitives-color-gray-50);
-        --option-pressed: var(--primitives-color-gray-100);
-        --option-border-hover: var(--component-button-secondary-border-default);
-        --option-border-pressed: var(--component-button-secondary-border-default);
+        --option-default: #fcfcfc;
+        --option-hover: #f7f7f7;
+        --option-pressed: #e7e7e7;
+        --option-border-hover: var(--semantic-color-border-default);
+        --option-border-pressed: var(--semantic-color-border-default);
       }
 
       .variant-b {
-        --option-default: var(--primitives-color-blue-smoke-50);
-        --option-hover: var(--primitives-color-blue-smoke-100);
-        --option-pressed: var(--primitives-color-blue-smoke-200);
-        --option-border-hover: var(--component-button-secondary-border-default);
-        --option-border-pressed: var(--component-button-secondary-border-default);
+        --option-default: #f6f7f7;
+        --option-hover: #e0e7e3;
+        --option-pressed: #c1cec7;
+        --option-border-hover: var(--semantic-color-border-default);
+        --option-border-pressed: var(--semantic-color-border-default);
       }
 
       .variant-c {
-        --option-default: var(--primitives-color-clay-50);
-        --option-hover: var(--primitives-color-clay-100);
-        --option-pressed: var(--primitives-color-clay-200);
-        --option-border-hover: var(--component-button-secondary-border-default);
-        --option-border-pressed: var(--component-button-secondary-border-default);
+        --option-default: #faf6f0;
+        --option-hover: #f2ebdf;
+        --option-pressed: #e6d8c3;
+        --option-border-hover: var(--semantic-color-border-default);
+        --option-border-pressed: var(--semantic-color-border-default);
       }
 
       :root[data-theme="dark"] .variant-a {
-        --option-default: var(--primitives-color-gray-900);
-        --option-hover: var(--primitives-color-gray-800);
-        --option-pressed: var(--primitives-color-gray-700);
+        --option-default: #2b2b2b;
+        --option-hover: #373737;
+        --option-pressed: #484848;
       }
 
       :root[data-theme="dark"] .variant-b {
-        --option-default: var(--primitives-color-blue-smoke-900);
-        --option-hover: var(--primitives-color-blue-smoke-800);
-        --option-pressed: var(--primitives-color-blue-smoke-700);
+        --option-default: #2c3531;
+        --option-hover: #323d38;
+        --option-pressed: #3b4a43;
       }
 
       :root[data-theme="dark"] .variant-c {
-        --option-default: var(--primitives-color-clay-900);
-        --option-hover: var(--primitives-color-clay-800);
-        --option-pressed: var(--primitives-color-clay-700);
+        --option-default: #221a13;
+        --option-hover: #3f2f22;
+        --option-pressed: #5e4733;
       }
 
       .intro {
@@ -137,9 +133,9 @@
       .kicker,
       .state-label,
       .surface-token {
-        font-family: var(--semantic-typography-code-small-font-family);
-        font-size: var(--semantic-typography-code-small-font-size);
-        letter-spacing: var(--semantic-typography-code-small-letter-spacing);
+        font-family: var(--semantic-typography-code-sm-font-family);
+        font-size: var(--semantic-typography-code-sm-font-size);
+        letter-spacing: var(--semantic-typography-code-sm-letter-spacing);
       }
 
       .kicker {
@@ -150,18 +146,18 @@
       h1 {
         max-width: 760px;
         margin: 0;
-        font-family: var(--semantic-typography-heading-large-font-family);
+        font-family: var(--semantic-typography-heading-lg-font-family);
         font-size: clamp(2rem, 4vw, 3.5rem);
-        font-weight: var(--semantic-typography-heading-large-font-weight);
+        font-weight: var(--semantic-typography-heading-lg-font-weight);
         line-height: 1.05;
-        letter-spacing: var(--semantic-typography-heading-large-letter-spacing);
+        letter-spacing: var(--semantic-typography-heading-lg-letter-spacing);
       }
 
       .summary {
         margin: 0;
         color: var(--semantic-color-foreground-muted);
-        font-size: var(--semantic-typography-body-small-font-size);
-        line-height: var(--semantic-typography-body-small-line-height);
+        font-size: var(--semantic-typography-body-sm-font-size);
+        line-height: var(--semantic-typography-body-sm-line-height);
       }
 
       .surface-grid {
@@ -190,10 +186,10 @@
 
       .surface h2 {
         margin: 0;
-        font-family: var(--semantic-typography-heading-small-font-family);
-        font-size: var(--semantic-typography-heading-small-font-size);
-        font-weight: var(--semantic-typography-heading-small-font-weight);
-        line-height: var(--semantic-typography-heading-small-line-height);
+        font-family: var(--semantic-typography-heading-sm-font-family);
+        font-size: var(--semantic-typography-heading-sm-font-size);
+        font-weight: var(--semantic-typography-heading-sm-font-weight);
+        line-height: var(--semantic-typography-heading-sm-line-height);
       }
 
       .surface-token {
@@ -222,26 +218,24 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: var(--component-button-gap);
+        gap: var(--primitives-space-2);
         margin: 0;
-        padding: var(--component-button-size-medium-padding-block)
-          var(--component-button-size-medium-padding-inline);
-        border: 1px solid var(--component-button-secondary-border-default);
-        border-radius: var(--component-button-radius);
-        color: var(--component-button-secondary-foreground-default);
+        padding: var(--primitives-space-3) var(--primitives-space-4);
+        border: 1px solid var(--semantic-color-border-default);
+        border-radius: var(--semantic-radius-control);
+        color: var(--semantic-color-foreground-default);
         background: var(--option-default);
-        font-family: var(--component-button-font-family);
-        font-size: var(--component-button-font-size);
-        font-weight: var(--component-button-font-weight);
-        line-height: var(--component-button-font-line-height);
-        letter-spacing: var(--component-button-font-letter-spacing);
+        font-family: var(--semantic-typography-label-md-font-family);
+        font-size: var(--semantic-typography-label-md-font-size);
+        font-weight: var(--semantic-typography-label-md-font-weight);
+        line-height: var(--semantic-typography-label-md-line-height);
+        letter-spacing: var(--semantic-typography-label-md-letter-spacing);
         white-space: nowrap;
         cursor: pointer;
         appearance: none;
         transition:
-          background-color var(--component-button-motion-duration)
-            var(--component-button-motion-easing),
-          border-color var(--component-button-motion-duration) var(--component-button-motion-easing);
+          background-color var(--primitives-duration-fast) var(--primitives-ease-out),
+          border-color var(--primitives-duration-fast) var(--primitives-ease-out);
       }
 
       .secondary-button.force-hover,
@@ -257,7 +251,7 @@
       }
 
       .secondary-button:focus-visible {
-        outline: 2px solid var(--component-button-focus-border);
+        outline: 2px solid var(--semantic-color-border-focus);
         outline-offset: 2px;
       }
 

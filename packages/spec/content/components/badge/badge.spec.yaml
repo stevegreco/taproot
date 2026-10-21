@@ -88,11 +88,11 @@ tokens:
       padding-horizontal: primitives.space.2
       gap: primitives.space.1
       radius: semantic.radius.pill
-      font-family: semantic.typography.label.small.fontFamily
-      font-size: semantic.typography.label.small.fontSize
-      font-weight: semantic.typography.label.small.fontWeight
-      line-height: semantic.typography.label.small.lineHeight
-      letter-spacing: semantic.typography.label.small.letterSpacing
+      font-family: semantic.typography.label.sm.fontFamily
+      font-size: semantic.typography.label.sm.fontSize
+      font-weight: semantic.typography.label.sm.fontWeight
+      line-height: semantic.typography.label.sm.lineHeight
+      letter-spacing: semantic.typography.label.sm.letterSpacing
     variant.default:
       background: semantic.color.background.muted
       foreground: semantic.color.foreground.muted

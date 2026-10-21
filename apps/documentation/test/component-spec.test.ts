@@ -34,8 +34,8 @@ test("button slice variants and api come from the spec record and the implementa
 
   assert.deepEqual(
     slice.variants.map((variant) => variant.name),
-    ["primary", "secondary", "ghost", "danger"],
-    "variant names are the contract enum keys, including ghost",
+    ["primary", "secondary", "tertiary", "destructive"],
+    "variant names are the contract enum keys, including tertiary",
   );
   assert.equal(
     slice.variants.filter((variant) => variant.isDefault).length,
@@ -43,8 +43,8 @@ test("button slice variants and api come from the spec record and the implementa
     "exactly one variant is the contract default",
   );
   assert.match(
-    slice.variants.find((variant) => variant.name === "danger")?.guidance ?? "",
-    /^Use `danger` only for a destructive or difficult-to-reverse action\./,
+    slice.variants.find((variant) => variant.name === "destructive")?.guidance ?? "",
+    /^Use `destructive` only for a destructive or difficult-to-reverse action\./,
     "variant guidance is the pattern section the spec names in parameters.variant.guidance",
   );
   assert.match(
@@ -105,7 +105,7 @@ test("button slice variants and api come from the spec record and the implementa
   assert.ok(variant);
   assert.deepEqual(
     variant.values.map((value) => value.name),
-    ["primary", "secondary", "ghost", "danger"],
+    ["primary", "secondary", "tertiary", "destructive"],
   );
   assert.equal(variant.description, "", "enum members keep value text off the row description");
   assert.equal(slice.accessibility.keyboard.length, 3, "keyboard bindings come from the record");
@@ -133,15 +133,15 @@ test("button slice variants and api come from the spec record and the implementa
     slice.review?.checks.slice(0, 2).map((check) => [check.id, check.level]),
     [
       ["label-describes-result", "must"],
-      ["danger-for-destructive", "must"],
+      ["destructive-for-risky-actions", "must"],
     ],
   );
 });
 
-test("button spec markdown keeps ghost and aria-label without reprinting the pattern", () => {
+test("button spec markdown keeps tertiary and aria-label without reprinting the pattern", () => {
   const markdown = componentSpecMarkdown("button");
 
-  assert.match(markdown, /ghost/, "markdown lists the ghost variant");
+  assert.match(markdown, /tertiary/, "markdown lists the tertiary variant");
   assert.match(markdown, /aria-label/, "markdown lists the aria-label attribute");
   assert.match(markdown, /\/spec-assets\//, "example image is a docs URL");
   assert.doesNotMatch(
@@ -152,7 +152,7 @@ test("button spec markdown keeps ghost and aria-label without reprinting the pat
   assert.match(
     markdown,
     /Do not use it for the\s+main path through a task/,
-    "ghost guidance appears in the variants section",
+    "tertiary guidance appears in the variants section",
   );
   assert.doesNotMatch(
     markdown,

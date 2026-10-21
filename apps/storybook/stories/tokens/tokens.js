@@ -2,7 +2,8 @@
  * Token data and previews for the token tier stories. Everything is read from
  * the built artifacts of @stevegreco/design-system, so the pages follow the
  * token source without a copy here. Previews paint with `var(--token)`, so
- * the theme toolbar switches them live.
+ * the theme toolbar switches them live. Color primitives are not published as
+ * CSS variables, so their swatches paint the literal value instead.
  */
 import { html, nothing } from "lit";
 import { flatten } from "@stevegreco/design-system/flatten";
@@ -10,14 +11,12 @@ import primitivesJson from "@stevegreco/design-system/tokens/primitives";
 import semanticLightJson from "@stevegreco/design-system/tokens/semantic-light";
 import semanticDarkJson from "@stevegreco/design-system/tokens/semantic-dark";
 import semanticMeta from "@stevegreco/design-system/tokens/semantic-meta";
-import componentsJson from "@stevegreco/design-system/tokens/components";
 
 import "./tokens.css";
 
 export const primitives = flatten(primitivesJson);
 export const semanticLight = flatten(semanticLightJson);
 const darkValues = new Map(flatten(semanticDarkJson).map((token) => [token.path, token.value]));
-export const components = flatten(componentsJson);
 
 const byPath = new Map([...primitives, ...semanticLight].map((token) => [token.path, token]));
 const REFERENCE = /^\{(.+)\}$/;
@@ -35,7 +34,9 @@ function resolve(token) {
   return current;
 }
 
-const cssVariable = (path) => byPath.get(path)?.cssVariable ?? path;
+/** The CSS value that paints a token: its variable, or the literal for a color primitive. */
+const paint = (token) =>
+  token.path.startsWith("primitives.color.") ? token.value : `var(${token.cssVariable})`;
 
 /** Tokens whose dot path starts with one of the given prefixes. */
 export function select(tokens, ...prefixes) {
@@ -68,7 +69,7 @@ function kind(path) {
 const SAMPLE = "Ember & Sage";
 
 function preview(token) {
-  const value = `var(${token.cssVariable})`;
+  const value = paint(token);
   switch (kind(resolve(token).path)) {
     case "color":
       return html`<span class="swatch" style="background: ${value}"></span>`;
@@ -148,33 +149,6 @@ export function tokenTable(tokens, { themed = false } = {}) {
   `;
 }
 
-/** A table of component tokens, showing the reference chain each one aliases. */
-export function aliasTable(tokens) {
-  return html`
-    <table class="tokens">
-      <thead>
-        <tr>
-          <th>Preview</th>
-          <th>Token</th>
-          <th>References</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${tokens.map((token) => {
-          const target = referenced(token);
-          return html`
-            <tr>
-              <td class="preview">${preview(token)}</td>
-              <td>${code(token.cssVariable)}</td>
-              <td>${target ? code(cssVariable(target.path)) : code(token.value)}</td>
-            </tr>
-          `;
-        })}
-      </tbody>
-    </table>
-  `;
-}
-
 /** Semantic typography roles, one specimen each, set entirely by the role's tokens. */
 export function typeSpecimens(tokens) {
   const roles = Map.groupBy(tokens, ({ path }) => path.split(".").slice(0, -1).join("."));
@@ -212,12 +186,12 @@ export function ramps(tokens) {
       ${[...families.values()].map(
         (steps) => html`
           <section class="ramp">
-            ${code(steps[0].cssVariable.replace(/-[^-]+$/, "-*"))}
+            ${code(steps[0].path.replace(/\.[^.]+$/, ".*"))}
             <ol>
               ${steps.map(
                 (token) => html`
                   <li>
-                    <span class="swatch" style="background: var(${token.cssVariable})"></span>
+                    <span class="swatch" style="background: ${paint(token)}"></span>
                     <span>${token.path.split(".").at(-1)}</span>
                     ${code(token.value)}
                   </li>

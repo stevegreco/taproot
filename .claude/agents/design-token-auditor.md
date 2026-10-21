@@ -23,8 +23,9 @@ All token systems you review MUST be evaluated against a **three-tier architectu
 
 Judge tier use against this system's ADRs (`packages/tokens/docs/adr/`), not a strict chain:
 
-- **The component tier is optional** (ADR 0003). Components consume semantic tokens directly by default. Do not flag a component for lacking component tokens.
-- **A primitive reference is allowed when no semantic role exists** (ADR 0003), such as spacing, duration, or easing scale choices. Do not flag it. Button's padding, duration, and easing aliases in `packages/tokens/src/tokens/components/button.tokens.json` are this case.
+- **There is no component tier** (ADR 0003). Components consume semantic tokens directly. Do not flag a component for lacking component tokens.
+- **A primitive reference is allowed when no semantic role exists** (ADR 0003), such as spacing, duration, or easing scale choices. Do not flag it. Button's padding, duration, and easing are this case.
+- **Color primitives are not published as CSS** (ADR 0003). Flag any `--primitives-color-*` reference: the variable does not exist.
 - **Flag a primitive reference only when a semantic token already expresses the same intent**, for example a component color aliasing `primitives.color.*` when a `semantic.color.*` role covers it. Name the semantic token it should use.
 
 ## Audit Procedure

@@ -2,7 +2,7 @@
   "semantic": {
     "typography": {
       "heading": {
-        "large": {
+        "lg": {
           "$description": "Primary page and major region headings",
           "fontFamily": {
             "$value": "{primitives.font.display}",
@@ -25,7 +25,7 @@
             "$type": "dimension"
           }
         },
-        "default": {
+        "md": {
           "$description": "Standard section and card headings",
           "fontFamily": {
             "$value": "{primitives.font.display}",
@@ -48,7 +48,7 @@
             "$type": "dimension"
           }
         },
-        "small": {
+        "sm": {
           "$description": "Compact headings within dense surfaces",
           "fontFamily": {
             "$value": "{primitives.font.display}",
@@ -73,7 +73,7 @@
         }
       },
       "body": {
-        "default": {
+        "md": {
           "$description": "Default interface copy and prose",
           "fontFamily": {
             "$value": "{primitives.font.sans}",
@@ -96,7 +96,7 @@
             "$type": "dimension"
           }
         },
-        "small": {
+        "sm": {
           "$description": "Supporting copy, descriptions, and compact interface text",
           "fontFamily": {
             "$value": "{primitives.font.sans}",
@@ -121,7 +121,7 @@
         }
       },
       "label": {
-        "default": {
+        "md": {
           "$description": "Control labels, buttons, tabs, and prominent metadata",
           "fontFamily": {
             "$value": "{primitives.font.sans}",
@@ -144,7 +144,7 @@
             "$type": "dimension"
           }
         },
-        "small": {
+        "sm": {
           "$description": "Badges, compact metadata, and space-constrained labels",
           "fontFamily": {
             "$value": "{primitives.font.sans}",
@@ -192,7 +192,7 @@
         }
       },
       "code": {
-        "default": {
+        "md": {
           "$description": "Code blocks and technical values",
           "fontFamily": {
             "$value": "{primitives.font.mono}",
@@ -215,7 +215,7 @@
             "$type": "dimension"
           }
         },
-        "small": {
+        "sm": {
           "$description": "Inline code and compact technical metadata",
           "fontFamily": {
             "$value": "{primitives.font.mono}",

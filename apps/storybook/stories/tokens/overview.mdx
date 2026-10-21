@@ -4,15 +4,13 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Token tiers
 
-The tokens in `@stevegreco/design-system` come in three tiers. Every page here reads the built
+The tokens in `@stevegreco/design-system` come in two tiers. Every page here reads the built
 token files, so it always matches the package.
 
 - **Primitives** are the raw scales: color ramps, type, space, radius, shadow, and motion. They
-  carry no intent.
+  carry no intent. Color primitives are not published as CSS variables; use semantic color tokens.
 - **Semantic** tokens name a role, such as a page background or a focus border, and resolve per
   theme. They are the default styling API.
-- **Component** tokens alias semantic or primitive tokens when a component needs a public
-  customization boundary. Most components do not have them.
 
 When to use each tier is decided in `packages/tokens/docs/adr/0003-token-tier-consumption.md`, and
 theming in `0002-theming-policy.md`.

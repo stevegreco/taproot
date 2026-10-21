@@ -42,11 +42,11 @@
 }
 
 :host([variant="standalone"]) .link {
-  font-family: var(--semantic-typography-label-default-font-family);
-  font-size: var(--semantic-typography-label-default-font-size);
-  font-weight: var(--semantic-typography-label-default-font-weight);
-  line-height: var(--semantic-typography-label-default-line-height);
-  letter-spacing: var(--semantic-typography-label-default-letter-spacing);
+  font-family: var(--semantic-typography-label-md-font-family);
+  font-size: var(--semantic-typography-label-md-font-size);
+  font-weight: var(--semantic-typography-label-md-font-weight);
+  line-height: var(--semantic-typography-label-md-line-height);
+  letter-spacing: var(--semantic-typography-label-md-letter-spacing);
   text-decoration-line: none;
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@stevegreco/design-system",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Design tokens distributed as CSS and JSON artifacts.",
   "keywords": [
     "css-variables",
@@ -14,15 +14,14 @@
     "dist"
   ],
   "type": "module",
-  "main": "./dist/tokens/primitives.json",
+  "main": "./dist/css/tokens.css",
   "exports": {
-    ".": "./dist/tokens/primitives.json",
+    ".": "./dist/css/tokens.css",
     "./css": "./dist/css/tokens.css",
     "./tokens/primitives": "./dist/tokens/primitives.json",
     "./tokens/semantic-light": "./dist/tokens/semantic.light.json",
     "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
     "./tokens/semantic-meta": "./dist/tokens/semantic.meta.json",
-    "./tokens/components": "./dist/tokens/components.json",
     "./read-tokens": "./dist/read-tokens.js",
     "./flatten": "./dist/flatten.js"
   },

@@ -56,15 +56,15 @@ behavior.
 
 - Use `primary` for the highest-emphasis action in the group.
 - Use `secondary` for a visible supporting action.
-- Use `ghost` for a low-emphasis contextual action.
-- Use `danger` for a destructive or difficult-to-reverse action.
+- Use `tertiary` for a low-emphasis contextual action.
+- Use `destructive` for a destructive or difficult-to-reverse action.
 
 Apply the hierarchy to each action group, not to the page as a whole.
 
 ## Use the component contract
 
-Load the published token stylesheet once at the application root. Button consumes its
-`--component-button-*` contract and follows the active theme through semantic aliases.
+Load the published token stylesheet once at the application root. Button reads semantic tokens
+directly, so it follows the active theme. The tokens it reads are not a customization API.
 
 Do not recreate Button states with product CSS. Use the published variants and sizes first. Treat
 `::part(button)` as an escape hatch that requires a specific product need and design review.
