@@ -1,6 +1,6 @@
 /**
- * JSX types for every design system element. The components package generates
- * `ElementAttributes` from the bindings, so a new component needs no edit here.
+ * JSX types for every design system element, built from the components package's
+ * hand-written `ElementAttributes`. A new component adds its entry there, not here.
  */
 import type { ElementAttributes } from "@stevegreco/design-system-components";
 import type { DetailedHTMLProps, HTMLAttributes } from "react";

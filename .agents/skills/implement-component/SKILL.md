@@ -62,7 +62,9 @@ pnpm spec rules --id component.<name> --level must
 ```
 
 Start each test name with the IDs of the rules it proves, such as
-`"[square-box] scales slotted artwork to fill the square"`. Run them and watch every one fail.
+`"[square-box] scales slotted artwork to fill the square"`, or `"[a] [b] …"` for a test that
+proves several. Add an empty `src/<name>.js` first so the file imports, then run them and watch
+every one fail.
 A test that passes before the runtime exists proves nothing. For role, name, or hidden state, use
 `exposedNodes()` from `test/helpers/accessibility.js` (see the gotchas).
 
