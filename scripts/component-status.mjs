@@ -253,12 +253,13 @@ function checklist(spec) {
 }
 
 /**
- * MUST rules with no test named `[<rule-id>] …` in the component's test file.
+ * MUST rules with no test named `[<rule-id>] …` in the component's test file. A test that
+ * proves several rules starts with each tag, with or without spaces: `[a] [b] …`.
  * Content rules say what authors write, which a component test can't check.
  */
 function ruleCoverage(spec, testSource) {
   const tagged = new Set();
-  for (const [, tags] of testSource.matchAll(/["'`]((?:\[[a-z0-9-]+\])+) /g)) {
+  for (const [, tags] of testSource.matchAll(/["'`]((?:\[[a-z0-9-]+\] ?)+) /g)) {
     for (const [, id] of tags.matchAll(/\[([a-z0-9-]+)\]/g)) tagged.add(id);
   }
   const must = (spec.rules ?? []).filter(
