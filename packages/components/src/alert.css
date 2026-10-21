@@ -72,7 +72,11 @@
 
 .title {
   color: var(--semantic-color-foreground-default);
-  font-weight: var(--primitives-weight-semibold);
+  font-family: var(--semantic-typography-title-font-family);
+  font-size: var(--semantic-typography-title-font-size);
+  font-weight: var(--semantic-typography-title-font-weight);
+  line-height: var(--semantic-typography-title-line-height);
+  letter-spacing: var(--semantic-typography-title-letter-spacing);
 }
 
 .actions {

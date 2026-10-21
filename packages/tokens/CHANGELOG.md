@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **New recipe: `semantic.typography.title`.** Body-size, semibold text for the title above body copy.
+  Alert and Dialog use it.
+- Every semantic color role now has a description.
+
 ## 0.1.0
 
 Breaking. Color primitives, the component tier, and several token names change in one release.

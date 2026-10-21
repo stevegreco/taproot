@@ -1065,6 +1065,14 @@
   letter-spacing: var(--semantic-typography-label-sm-letter-spacing);
 }
 
+.ds-lab .type-semantic-title {
+  font-family: var(--semantic-typography-title-font-family);
+  font-size: var(--semantic-typography-title-font-size);
+  font-weight: var(--semantic-typography-title-font-weight);
+  line-height: var(--semantic-typography-title-line-height);
+  letter-spacing: var(--semantic-typography-title-letter-spacing);
+}
+
 .ds-lab .type-semantic-eyebrow {
   font-family: var(--semantic-typography-eyebrow-font-family);
   font-size: var(--semantic-typography-eyebrow-font-size);

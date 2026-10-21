@@ -30,8 +30,11 @@ dialog::backdrop {
 }
 h2 {
   margin: 0;
-  font: inherit;
-  font-weight: var(--primitives-weight-semibold);
+  font-family: var(--semantic-typography-title-font-family);
+  font-size: var(--semantic-typography-title-font-size);
+  font-weight: var(--semantic-typography-title-font-weight);
+  line-height: var(--semantic-typography-title-line-height);
+  letter-spacing: var(--semantic-typography-title-letter-spacing);
 }
 h2:focus-visible {
   outline: 2px solid var(--semantic-color-border-focus);

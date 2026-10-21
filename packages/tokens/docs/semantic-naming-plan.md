@@ -385,18 +385,19 @@ requiring consumers to depend on a primitive path.
 
 ### Published vocabulary
 
-| Semantic recipe                  | Purpose                                                   | Family    | Size   | Weight    | Line height | Tracking |
-| -------------------------------- | --------------------------------------------------------- | --------- | ------ | --------- | ----------- | -------- |
-| `semantic.typography.heading.lg` | Primary page and major region headings                    | `display` | `2xl`  | `medium`  | `tight`     | `tight`  |
-| `semantic.typography.heading.md` | Standard section and card headings                        | `display` | `xl`   | `medium`  | `snug`      | `snug`   |
-| `semantic.typography.heading.sm` | Compact headings within dense surfaces                    | `display` | `lg`   | `medium`  | `snug`      | `snug`   |
-| `semantic.typography.body.md`    | Default interface copy and prose                          | `sans`    | `base` | `regular` | `normal`    | `normal` |
-| `semantic.typography.body.sm`    | Supporting copy, descriptions, and compact interface text | `sans`    | `sm`   | `regular` | `normal`    | `normal` |
-| `semantic.typography.label.md`   | Control labels, buttons, tabs, and prominent metadata     | `sans`    | `sm`   | `medium`  | `snug`      | `normal` |
-| `semantic.typography.label.sm`   | Badges, compact metadata, and space-constrained labels    | `sans`    | `xs`   | `medium`  | `snug`      | `normal` |
-| `semantic.typography.eyebrow`    | Short contextual text that introduces a following heading | `sans`    | `xs`   | `medium`  | `snug`      | `caps`   |
-| `semantic.typography.code.md`    | Code blocks and technical values                          | `mono`    | `sm`   | `regular` | `normal`    | `normal` |
-| `semantic.typography.code.sm`    | Inline code and compact technical metadata                | `mono`    | `xs`   | `regular` | `normal`    | `normal` |
+| Semantic recipe                  | Purpose                                                   | Family    | Size   | Weight     | Line height | Tracking |
+| -------------------------------- | --------------------------------------------------------- | --------- | ------ | ---------- | ----------- | -------- |
+| `semantic.typography.heading.lg` | Primary page and major region headings                    | `display` | `2xl`  | `medium`   | `tight`     | `tight`  |
+| `semantic.typography.heading.md` | Standard section and card headings                        | `display` | `xl`   | `medium`   | `snug`      | `snug`   |
+| `semantic.typography.heading.sm` | Compact headings within dense surfaces                    | `display` | `lg`   | `medium`   | `snug`      | `snug`   |
+| `semantic.typography.body.md`    | Default interface copy and prose                          | `sans`    | `base` | `regular`  | `normal`    | `normal` |
+| `semantic.typography.body.sm`    | Supporting copy, descriptions, and compact interface text | `sans`    | `sm`   | `regular`  | `normal`    | `normal` |
+| `semantic.typography.title`      | Bold title above body copy in alerts and dialogs          | `sans`    | `base` | `semibold` | `normal`    | `normal` |
+| `semantic.typography.label.md`   | Control labels, buttons, tabs, and prominent metadata     | `sans`    | `sm`   | `medium`   | `snug`      | `normal` |
+| `semantic.typography.label.sm`   | Badges, compact metadata, and space-constrained labels    | `sans`    | `xs`   | `medium`   | `snug`      | `normal` |
+| `semantic.typography.eyebrow`    | Short contextual text that introduces a following heading | `sans`    | `xs`   | `medium`   | `snug`      | `caps`   |
+| `semantic.typography.code.md`    | Code blocks and technical values                          | `mono`    | `sm`   | `regular`  | `normal`    | `normal` |
+| `semantic.typography.code.sm`    | Inline code and compact technical metadata                | `mono`    | `xs`   | `regular`  | `normal`    | `normal` |
 
 The values in the table are primitive suffixes. For example, the complete `eyebrow` recipe maps to
 `primitives.font.sans`, `primitives.text.xs`, `primitives.weight.medium`,
