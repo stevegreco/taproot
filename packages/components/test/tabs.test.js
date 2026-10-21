@@ -160,7 +160,10 @@ describe("DsTabs", () => {
       false,
     ]);
     expect(getComputedStyle(indicators[0]).backgroundColor).toBe(
-      resolvedValue("background-color", "var(--semantic-color-background-action-primary-default)"),
+      resolvedValue(
+        "background-color",
+        "var(--ds-semantic-color-background-action-primary-default)",
+      ),
     );
   });
 

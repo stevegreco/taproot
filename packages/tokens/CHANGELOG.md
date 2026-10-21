@@ -2,10 +2,14 @@
 
 ## 0.1.0
 
-Breaking. Color primitives, the component tier, and several token names change in one release.
+Breaking. The CSS prefix, color primitives, the component tier, and several token names change in
+one release.
 The reasons are in [ADR 0003](docs/adr/0003-token-tier-consumption.md) and the
 [semantic naming plan](docs/semantic-naming-plan.md).
 
+- **Every CSS variable starts with `--ds-`.** `--semantic-*` is now `--ds-semantic-*` and
+  `--primitives-*` is now `--ds-primitives-*`, so a consumer's own variables cannot collide with
+  ours. Token paths in JSON are unchanged. `CSS_PREFIX` from `./flatten` holds the prefix.
 - **Color primitives are no longer CSS variables.** `tokens.css` drops every
   `--primitives-color-*` variable. Use the semantic color token for the role instead. The palette is
   still in `primitives.json`.
@@ -22,7 +26,7 @@ The reasons are in [ADR 0003](docs/adr/0003-token-tier-consumption.md) and the
 ### Renamed tokens
 
 The CSS variable follows the same rename: `semantic.typography.body.default.fontSize` was
-`--semantic-typography-body-default-font-size` and is now `--semantic-typography-body-md-font-size`.
+`--semantic-typography-body-default-font-size` and is now `--ds-semantic-typography-body-md-font-size`.
 
 | Before                                       | After                                |
 | -------------------------------------------- | ------------------------------------ |

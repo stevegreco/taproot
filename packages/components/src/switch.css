@@ -16,13 +16,13 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: var(--primitives-space-1);
+  gap: var(--ds-primitives-space-1);
 }
 
 .choice {
   display: flex;
   align-items: flex-start;
-  gap: var(--primitives-space-2);
+  gap: var(--ds-primitives-space-2);
 }
 
 /* One label line tall, so the 32px box centers on the first line of the label. */
@@ -32,8 +32,8 @@
   flex: none;
   align-items: center;
   height: 1lh;
-  font-size: var(--semantic-typography-body-md-font-size);
-  line-height: var(--semantic-typography-body-md-line-height);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
 }
 
 .control {
@@ -44,9 +44,9 @@
   margin: 0;
   border-style: solid;
   border-width: 1px;
-  border-color: var(--semantic-color-border-default);
-  border-radius: var(--semantic-radius-pill);
-  background-color: var(--semantic-color-background-surface);
+  border-color: var(--ds-semantic-color-border-default);
+  border-radius: var(--ds-semantic-radius-pill);
+  background-color: var(--ds-semantic-color-background-surface);
   outline: none;
   cursor: pointer;
   appearance: none;
@@ -54,26 +54,26 @@
 }
 
 :is(.control:hover, .choice:hover .control):not(:disabled, :checked, [aria-invalid="true"]) {
-  border-color: var(--semantic-color-border-strong);
+  border-color: var(--ds-semantic-color-border-strong);
 }
 
 .control:focus-visible {
-  outline: 2px solid var(--semantic-color-border-focus);
+  outline: 2px solid var(--ds-semantic-color-border-focus);
   outline-offset: 2px;
 }
 
 .control:checked:not(:disabled) {
-  background-color: var(--semantic-color-background-action-primary-default);
-  border-color: var(--semantic-color-border-action-primary-default);
+  background-color: var(--ds-semantic-color-background-action-primary-default);
+  border-color: var(--ds-semantic-color-border-action-primary-default);
 }
 
 .control[aria-invalid="true"]:not(:disabled) {
-  border-color: var(--semantic-color-border-status-danger-default);
+  border-color: var(--ds-semantic-color-border-status-danger-default);
 }
 
 .control:disabled {
-  background-color: var(--semantic-color-background-disabled);
-  border-color: var(--semantic-color-border-disabled);
+  background-color: var(--ds-semantic-color-background-disabled);
+  border-color: var(--ds-semantic-color-border-disabled);
   cursor: not-allowed;
 }
 
@@ -83,29 +83,29 @@
   top: 50%;
   width: 12px;
   height: 12px;
-  border-radius: var(--semantic-radius-pill);
+  border-radius: var(--ds-semantic-radius-pill);
   transform: translateY(-50%);
-  background: var(--semantic-color-foreground-default);
+  background: var(--ds-semantic-color-foreground-default);
   pointer-events: none;
 }
 .control:checked + .indicator {
   inset-inline-start: 17px;
-  background: var(--semantic-color-foreground-on-action-primary);
+  background: var(--ds-semantic-color-foreground-on-action-primary);
 }
 .control:disabled + .indicator {
-  background: var(--semantic-color-foreground-disabled);
+  background: var(--ds-semantic-color-foreground-disabled);
 }
 
 .label {
   display: inline-flex;
   align-items: baseline;
-  gap: var(--primitives-space-1);
-  color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-body-md-font-family);
-  font-size: var(--semantic-typography-body-md-font-size);
-  font-weight: var(--semantic-typography-body-md-font-weight);
-  line-height: var(--semantic-typography-body-md-line-height);
-  letter-spacing: var(--semantic-typography-body-md-letter-spacing);
+  gap: var(--ds-primitives-space-1);
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
   cursor: pointer;
 }
 
@@ -113,25 +113,25 @@
 .hint,
 .error {
   margin: 0;
-  padding-inline-start: calc(32px + var(--primitives-space-2));
-  font-family: var(--semantic-typography-body-sm-font-family);
-  font-size: var(--semantic-typography-body-sm-font-size);
-  font-weight: var(--semantic-typography-body-sm-font-weight);
-  line-height: var(--semantic-typography-body-sm-line-height);
-  letter-spacing: var(--semantic-typography-body-sm-letter-spacing);
+  padding-inline-start: calc(32px + var(--ds-primitives-space-2));
+  font-family: var(--ds-semantic-typography-body-sm-font-family);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
+  font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+  line-height: var(--ds-semantic-typography-body-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-sm-letter-spacing);
 }
 
 .hint {
-  color: var(--semantic-color-foreground-muted);
+  color: var(--ds-semantic-color-foreground-muted);
 }
 
 .error {
-  color: var(--semantic-color-foreground-status-danger-default);
+  color: var(--ds-semantic-color-foreground-status-danger-default);
 }
 
 .field.is-disabled .label,
 .field.is-disabled .hint {
-  color: var(--semantic-color-foreground-disabled);
+  color: var(--ds-semantic-color-foreground-disabled);
 }
 
 .field.is-disabled .label {

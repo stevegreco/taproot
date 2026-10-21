@@ -25,7 +25,7 @@ Judge tier use against this system's ADRs (`packages/tokens/docs/adr/`), not a s
 
 - **There is no component tier** (ADR 0003). Components consume semantic tokens directly. Do not flag a component for lacking component tokens.
 - **A primitive reference is allowed when no semantic role exists** (ADR 0003), such as spacing, duration, or easing scale choices. Do not flag it. Button's padding, duration, and easing are this case.
-- **Color primitives are not published as CSS** (ADR 0003). Flag any `--primitives-color-*` reference: the variable does not exist.
+- **Color primitives are not published as CSS** (ADR 0003). Flag any `--ds-primitives-color-*` reference: the variable does not exist.
 - **Flag a primitive reference only when a semantic token already expresses the same intent**, for example a component color aliasing `primitives.color.*` when a `semantic.color.*` role covers it. Name the semantic token it should use.
 
 ## Audit Procedure

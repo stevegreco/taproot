@@ -19,6 +19,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import StyleDictionary from "style-dictionary";
+import { CSS_PREFIX } from "../src/flatten.js";
 import { THEMES, semanticConfig, semanticDescriptionSources } from "../style-dictionary.config.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -26,7 +27,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (path) => JSON.parse(readFileSync(join(ROOT, path), "utf-8"));
 
 const kebabCase = (segment) => segment.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-const cssVariable = (path) => "--" + path.split(".").map(kebabCase).join("-");
+const cssVariable = (path) => `--${CSS_PREFIX}-${path.split(".").map(kebabCase).join("-")}`;
 
 /**
  * [dottedPath, description] for every TOKEN carrying a description — an object

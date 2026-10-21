@@ -1,28 +1,28 @@
 .tokens {
   inline-size: 100%;
   border-collapse: collapse;
-  font-family: var(--primitives-font-sans);
-  font-size: var(--primitives-text-sm);
-  color: var(--semantic-color-foreground-default);
+  font-family: var(--ds-primitives-font-sans);
+  font-size: var(--ds-primitives-text-sm);
+  color: var(--ds-semantic-color-foreground-default);
 }
 
 .tokens th {
-  padding: var(--primitives-space-2) var(--primitives-space-3);
-  border-block-end: var(--primitives-border-thin) solid var(--semantic-color-border-default);
-  color: var(--semantic-color-foreground-muted);
-  font-weight: var(--primitives-weight-semibold);
+  padding: var(--ds-primitives-space-2) var(--ds-primitives-space-3);
+  border-block-end: var(--ds-primitives-border-thin) solid var(--ds-semantic-color-border-default);
+  color: var(--ds-semantic-color-foreground-muted);
+  font-weight: var(--ds-primitives-weight-semibold);
   text-align: start;
 }
 
 .tokens td {
-  padding: var(--primitives-space-2) var(--primitives-space-3);
-  border-block-end: var(--primitives-border-thin) solid var(--semantic-color-border-default);
+  padding: var(--ds-primitives-space-2) var(--ds-primitives-space-3);
+  border-block-end: var(--ds-primitives-border-thin) solid var(--ds-semantic-color-border-default);
   vertical-align: middle;
 }
 
 .tokens code {
-  font-family: var(--primitives-font-mono);
-  font-size: var(--primitives-text-xs);
+  font-family: var(--ds-primitives-font-mono);
+  font-size: var(--ds-primitives-text-xs);
 }
 
 .tokens .preview {
@@ -30,7 +30,7 @@
 }
 
 .tokens .use {
-  color: var(--semantic-color-foreground-muted);
+  color: var(--ds-semantic-color-foreground-muted);
 }
 
 .swatch,
@@ -39,19 +39,19 @@
   display: block;
   inline-size: 3rem;
   block-size: 2rem;
-  border: var(--primitives-border-thin) solid var(--semantic-color-border-default);
-  border-radius: var(--primitives-radius-xs);
+  border: var(--ds-primitives-border-thin) solid var(--ds-semantic-color-border-default);
+  border-radius: var(--ds-primitives-radius-xs);
 }
 
 .shadow {
   border-color: transparent;
-  background: var(--semantic-color-background-surface);
+  background: var(--ds-semantic-color-background-surface);
 }
 
 .radius {
   inline-size: 2.5rem;
   block-size: 2.5rem;
-  background: var(--semantic-color-background-muted);
+  background: var(--ds-semantic-color-background-muted);
 }
 
 .space {
@@ -59,13 +59,13 @@
   max-inline-size: 7.5rem;
   min-inline-size: 1px;
   block-size: 0.75rem;
-  background: var(--semantic-color-background-brand-default);
+  background: var(--ds-semantic-color-background-brand-default);
 }
 
 .border {
   display: block;
   inline-size: 3rem;
-  border-block-start: 0 solid var(--semantic-color-foreground-default);
+  border-block-start: 0 solid var(--ds-semantic-color-foreground-default);
 }
 
 .sample {
@@ -77,25 +77,25 @@
 }
 
 .sample.lines {
-  font-size: var(--primitives-text-xs);
+  font-size: var(--ds-primitives-text-xs);
   white-space: normal;
-  background: var(--semantic-color-background-muted);
+  background: var(--ds-semantic-color-background-muted);
 }
 
 .motion {
   display: block;
   inline-size: 7rem;
   block-size: 0.75rem;
-  border-radius: var(--primitives-radius-full);
-  background: var(--semantic-color-background-muted);
+  border-radius: var(--ds-primitives-radius-full);
+  background: var(--ds-semantic-color-background-muted);
 }
 
 .motion span {
   display: block;
   inline-size: 0.75rem;
   block-size: 0.75rem;
-  border-radius: var(--primitives-radius-full);
-  background: var(--semantic-color-background-brand-default);
+  border-radius: var(--ds-primitives-radius-full);
+  background: var(--ds-semantic-color-background-brand-default);
   transition-property: translate;
   transition-timing-function: linear;
 }
@@ -106,8 +106,8 @@
 
 .specimens {
   display: grid;
-  gap: var(--primitives-space-6);
-  color: var(--semantic-color-foreground-default);
+  gap: var(--ds-primitives-space-6);
+  color: var(--ds-semantic-color-foreground-default);
 }
 
 .specimen {
@@ -115,20 +115,20 @@
 }
 
 .specimen p {
-  margin: 0 0 var(--primitives-space-2);
+  margin: 0 0 var(--ds-primitives-space-2);
 }
 
 .specimen figcaption {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--primitives-space-3);
-  font-family: var(--primitives-font-sans);
-  font-size: var(--primitives-text-xs);
-  color: var(--semantic-color-foreground-muted);
+  gap: var(--ds-primitives-space-3);
+  font-family: var(--ds-primitives-font-sans);
+  font-size: var(--ds-primitives-text-xs);
+  color: var(--ds-semantic-color-foreground-muted);
 }
 
 .specimen code {
-  font-family: var(--primitives-font-mono);
+  font-family: var(--ds-primitives-font-mono);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -139,30 +139,30 @@
 
 .ramps {
   display: grid;
-  gap: var(--primitives-space-5);
-  font-family: var(--primitives-font-sans);
-  font-size: var(--primitives-text-xs);
-  color: var(--semantic-color-foreground-default);
+  gap: var(--ds-primitives-space-5);
+  font-family: var(--ds-primitives-font-sans);
+  font-size: var(--ds-primitives-text-xs);
+  color: var(--ds-semantic-color-foreground-default);
 }
 
 .ramp > code,
 .ramp li code {
-  font-family: var(--primitives-font-mono);
-  color: var(--semantic-color-foreground-muted);
+  font-family: var(--ds-primitives-font-mono);
+  color: var(--ds-semantic-color-foreground-muted);
 }
 
 .ramp ol {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
-  gap: var(--primitives-space-2);
-  margin: var(--primitives-space-2) 0 0;
+  gap: var(--ds-primitives-space-2);
+  margin: var(--ds-primitives-space-2) 0 0;
   padding: 0;
   list-style: none;
 }
 
 .ramp li {
   display: grid;
-  gap: var(--primitives-space-1);
+  gap: var(--ds-primitives-space-1);
 }
 
 .ramp .swatch {

@@ -23,7 +23,7 @@ Primitive and semantic tokens are the whole public vocabulary. There is no compo
 - Use a semantic token when it expresses the intended role.
 - Keep application groups separate: backgrounds for fills, foregrounds for content, and borders for boundaries.
 - Use a primitive only when the semantic layer has no matching contract.
-- Never reference a color primitive in CSS. `--primitives-color-*` variables are not published; use a semantic color token.
+- Never reference a color primitive in CSS. `--ds-primitives-color-*` variables are not published; use a semantic color token.
 - Do not invent a component token namespace. Components consume semantic tokens directly.
 - Do not choose a token merely because its current resolved value looks right.
 

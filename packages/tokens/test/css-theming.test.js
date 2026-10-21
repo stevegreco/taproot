@@ -49,7 +49,23 @@ test("combined CSS keeps native browser UI in sync with the selected theme", () 
 test("tokens.css publishes no color primitives and no component tier", () => {
   const css = readFileSync(new URL("../dist/css/tokens.css", import.meta.url), "utf-8");
 
-  assert.match(css, /--primitives-space-/, "non-color primitives stay published");
-  assert.doesNotMatch(css, /--primitives-color-/, "color reaches CSS only through semantic tokens");
+  assert.match(css, /--ds-primitives-space-/, "non-color primitives stay published");
+  assert.doesNotMatch(
+    css,
+    /--ds-primitives-color-/,
+    "color reaches CSS only through semantic tokens",
+  );
   assert.doesNotMatch(css, /--component-/, "there is no component tier");
+});
+
+test("every published CSS variable carries the ds prefix", () => {
+  const css = readFileSync(new URL("../dist/css/tokens.css", import.meta.url), "utf-8");
+  const declared = [...css.matchAll(/^\s*(--[\w-]+):/gm)].map(([, name]) => name);
+
+  assert.ok(declared.length > 0, "tokens.css declares no variables");
+  assert.deepEqual(
+    declared.filter((name) => !name.startsWith("--ds-")),
+    [],
+    "unprefixed variables can collide with a consumer's own",
+  );
 });

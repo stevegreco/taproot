@@ -87,7 +87,7 @@ describe("DsLink", () => {
 
     expect(style.fontSize).not.toBe("23px");
     expect(style.fontSize).toBe(
-      resolvedValue("font-size", "var(--semantic-typography-label-md-font-size)"),
+      resolvedValue("font-size", "var(--ds-semantic-typography-label-md-font-size)"),
     );
     expect(style.textDecorationLine).toBe("none");
   });

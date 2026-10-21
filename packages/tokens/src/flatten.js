@@ -17,6 +17,10 @@ export function inferType(value) {
   return "string";
 }
 
+// Every published CSS variable starts with this, so consumer variables cannot
+// collide with ours. style-dictionary.config.js reads it from here.
+export const CSS_PREFIX = "ds";
+
 // Matches Style Dictionary's css transformGroup, which kebab-cases each
 // path segment (e.g. "robRoy" -> "rob-roy", "onAccent" -> "on-accent").
 const kebabCase = (segment) => segment.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
@@ -31,7 +35,7 @@ export function flatten(obj, parts = []) {
       const root = path[0];
       tokens.push({
         path: path.join("."),
-        cssVariable: "--" + path.map(kebabCase).join("-"),
+        cssVariable: `--${CSS_PREFIX}-${path.map(kebabCase).join("-")}`,
         value: String(val),
         type: inferType(val),
         tier: root === "primitives" ? "primitive" : root === "semantic" ? "semantic" : "component",

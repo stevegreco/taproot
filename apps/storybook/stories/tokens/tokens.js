@@ -106,7 +106,7 @@ function motionStyle(token) {
   const value = `var(${token.cssVariable})`;
   return property === "duration"
     ? `transition-duration: ${value}`
-    : `transition-duration: var(--primitives-duration-slow); transition-timing-function: ${value}`;
+    : `transition-duration: var(--ds-primitives-duration-slow); transition-timing-function: ${value}`;
 }
 
 const code = (text) => html`<code>${text}</code>`;
