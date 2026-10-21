@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * The definition of done for a component, by phase. Each phase is its own
- * skill and its own pull request, in order:
+ * skill and its own commit in the component's pull request, in order:
  *
  *   spec            a draft spec record (spec-component)
  *   implementation  runtime, tests, web API file, and stories (implement-component)
@@ -149,7 +149,7 @@ if (inPhase("spec")) {
       spec.status === "draft",
       "status: draft",
       spec.status === "draft"
-        ? "remove it in the pull request that ships the implementation"
+        ? "remove it in the implementation commit"
         : "a spec with no implementation is a draft",
     );
   }

@@ -5,13 +5,14 @@ description: Build a component of the Ember & Sage design system from its draft 
 
 # Implement a component
 
-The second of three phases, each its own pull request:
+The second of three phases, one commit each in a single pull request:
 
 1. **spec-component**: a draft spec that says what the component is for.
 2. **implement-component** (this skill): completes the spec and builds the web component.
 3. **document-component**: the docs example and its Verify steps.
 
-Start from a draft on `main`. If there is none, run spec-component first.
+Start on the component's branch, after its draft commit is reviewed. If there is no draft, run
+spec-component first.
 
 ```bash
 pnpm spec get component.<name>
@@ -129,7 +130,8 @@ Then run the repo gates from the root: `pnpm build`, `pnpm test`, `pnpm lint`,
 
 ## Pull request
 
-Base on `main` and never stack. The description lists:
+Commit on the same branch and add an "Implementation" section to the pull request description.
+Ask for review and stop before the docs commit. The section lists:
 
 - Public API decisions.
 - Each checklist item that is not in the spec, with its `rationale` decision.

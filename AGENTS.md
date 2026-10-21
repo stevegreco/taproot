@@ -52,8 +52,9 @@ consistent in review.
   `pnpm exec turbo run dev --filter=storybook` (port 6006).
 
 Before adding a component or variant, read `pnpm spec get guideline.compose-or-propose`. A new
-component is built in three phases, each its own pull request and its own skill in
-`.agents/skills/`:
+component is built in three phases, each its own skill in `.agents/skills/` and its own commit on
+one branch. The phases share one pull request that merges after the docs commit, and review
+pauses after each commit:
 
 1. `spec-component`: a minimal spec with `status: draft`, reviewed before anything is built.
 2. `implement-component`: completes the spec (record each option the component does not ship in
