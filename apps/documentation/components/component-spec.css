@@ -31,9 +31,9 @@
   gap: 1rem 1.25rem;
   align-items: start;
   padding: 1rem 1.1rem;
-  border: 1px solid var(--semantic-color-border-subtle);
-  border-radius: var(--semantic-radius-surface);
-  background: var(--semantic-color-background-surface);
+  border: 1px solid var(--ds-semantic-color-border-subtle);
+  border-radius: var(--ds-semantic-radius-surface);
+  background: var(--ds-semantic-color-background-surface);
 }
 
 .component-spec__specimen {
@@ -54,10 +54,10 @@
 }
 
 .component-spec__default {
-  color: var(--semantic-color-foreground-muted);
-  font-family: var(--semantic-typography-label-sm-font-family);
-  font-size: var(--semantic-typography-label-sm-font-size);
-  font-weight: var(--semantic-typography-label-sm-font-weight);
+  color: var(--ds-semantic-color-foreground-muted);
+  font-family: var(--ds-semantic-typography-label-sm-font-family);
+  font-size: var(--ds-semantic-typography-label-sm-font-size);
+  font-weight: var(--ds-semantic-typography-label-sm-font-weight);
 }
 
 .component-spec__variant-copy p {
@@ -67,12 +67,12 @@
 .component-spec__guidance,
 .component-spec__guidance p {
   margin: 0 0 0.5rem;
-  color: var(--semantic-color-foreground-muted);
+  color: var(--ds-semantic-color-foreground-muted);
 }
 
 .component-spec__variant-copy code {
   display: block;
-  font-size: var(--semantic-typography-code-sm-font-size);
+  font-size: var(--ds-semantic-typography-code-sm-font-size);
   overflow-wrap: anywhere;
 }
 
@@ -84,14 +84,14 @@
   display: block;
   width: 100%;
   height: auto;
-  border: 1px solid var(--semantic-color-border-subtle);
-  border-radius: var(--semantic-radius-surface);
+  border: 1px solid var(--ds-semantic-color-border-subtle);
+  border-radius: var(--ds-semantic-radius-surface);
 }
 
 .component-spec__figure figcaption {
   margin-block-start: 0.5rem;
-  color: var(--semantic-color-foreground-muted);
-  font-size: var(--semantic-typography-body-sm-font-size);
+  color: var(--ds-semantic-color-foreground-muted);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
 }
 
 .component-spec__table {
@@ -102,7 +102,7 @@
 .component-spec__table th,
 .component-spec__table td {
   padding: 0.65rem 0.75rem;
-  border-bottom: 1px solid var(--semantic-color-border-subtle);
+  border-bottom: 1px solid var(--ds-semantic-color-border-subtle);
   text-align: start;
   vertical-align: top;
 }
@@ -110,8 +110,8 @@
 .component-spec__kind {
   display: block;
   margin-block-start: 0.2rem;
-  color: var(--semantic-color-foreground-muted);
-  font-size: var(--semantic-typography-label-sm-font-size);
+  color: var(--ds-semantic-color-foreground-muted);
+  font-size: var(--ds-semantic-typography-label-sm-font-size);
 }
 
 .component-spec__values {

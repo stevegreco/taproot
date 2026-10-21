@@ -62,7 +62,7 @@ document-component.
 - Add the component's row to the table in `test/host-checks.test.js`. A test fails when a
   component in `src/` has no row. `test/package-root.test.js` finds components itself.
 - Do not repeat the shared host checks in `<name>.test.js`.
-- Token values: never set `--semantic-*` inline. The setup file loads the real `tokens.css`.
+- Token values: never set `--ds-semantic-*` inline. The setup file loads the real `tokens.css`.
   Compare with `resolvedValue(property, "var(--token)")` from `test/helpers/tokens.js`.
 - Role and name set through `ElementInternals` are invisible to the DOM, and to Vitest and
   Playwright role locators. Read them with `exposedNodes()` from `test/helpers/accessibility.js`,

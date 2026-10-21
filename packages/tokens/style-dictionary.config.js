@@ -1,3 +1,5 @@
+import { CSS_PREFIX } from "./src/flatten.js";
+
 export const THEMES = ["light", "dark"];
 
 export const PRIMITIVES_SOURCE = "src/tokens/primitives.tokens.json";
@@ -27,6 +29,7 @@ export const primitivesConfig = {
   platforms: {
     css: {
       transformGroup: "css",
+      prefix: CSS_PREFIX,
       buildPath: "dist/css/",
       files: [
         {
@@ -83,6 +86,7 @@ export function semanticConfig(theme) {
     platforms: {
       css: {
         transformGroup: "css",
+        prefix: CSS_PREFIX,
         buildPath: "dist/css/",
         files: cssFiles,
       },

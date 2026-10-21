@@ -44,9 +44,9 @@ swatches and the token audits.
 ## Example
 
 ```css
-background: var(--semantic-color-background-action-primary-default);
-color: var(--semantic-color-foreground-on-action-primary);
-gap: var(--primitives-space-2);
+background: var(--ds-semantic-color-background-action-primary-default);
+color: var(--ds-semantic-color-foreground-on-action-primary);
+gap: var(--ds-primitives-space-2);
 ```
 
 ## Consequences

@@ -35,15 +35,15 @@ Then use tokens in your CSS:
 
 ```css
 .card {
-  background: var(--semantic-color-background-surface);
-  border: 1px solid var(--semantic-color-border-default);
-  color: var(--semantic-color-foreground-default);
+  background: var(--ds-semantic-color-background-surface);
+  border: 1px solid var(--ds-semantic-color-border-default);
+  color: var(--ds-semantic-color-foreground-default);
 }
 
 .btn-primary {
-  background: var(--semantic-color-background-action-primary-default);
-  color: var(--semantic-color-foreground-on-action-primary);
-  border-radius: var(--semantic-radius-control);
+  background: var(--ds-semantic-color-background-action-primary-default);
+  color: var(--ds-semantic-color-foreground-on-action-primary);
+  border-radius: var(--ds-semantic-radius-control);
 }
 ```
 
@@ -51,11 +51,11 @@ Then use tokens in your CSS:
 
 The design system uses three typefaces, each mapped to a font token:
 
-| Token                       | Family         | Role                             |
-| --------------------------- | -------------- | -------------------------------- |
-| `--primitives-font-display` | Lora           | Headings, card titles, logotype  |
-| `--primitives-font-sans`    | Source Sans 3  | Body text, UI labels, buttons    |
-| `--primitives-font-mono`    | JetBrains Mono | Code, token values, numeric data |
+| Token                          | Family         | Role                             |
+| ------------------------------ | -------------- | -------------------------------- |
+| `--ds-primitives-font-display` | Lora           | Headings, card titles, logotype  |
+| `--ds-primitives-font-sans`    | Source Sans 3  | Body text, UI labels, buttons    |
+| `--ds-primitives-font-mono`    | JetBrains Mono | Code, token values, numeric data |
 
 Each token includes a system fallback stack, so the UI remains readable if Google Fonts fails to load. To use the intended typefaces, add the following `<link>` tags to your document `<head>` **before** the tokens stylesheet:
 
@@ -82,25 +82,25 @@ Primitives  →  Semantic
   (scale)       (intent)
 ```
 
-| Tier          | Prefix           | Use when                                            |
-| ------------- | ---------------- | --------------------------------------------------- |
-| **Primitive** | `--primitives-*` | No semantic role expresses the raw scale choice     |
-| **Semantic**  | `--semantic-*`   | Styling components and product interfaces by intent |
+| Tier          | Prefix              | Use when                                            |
+| ------------- | ------------------- | --------------------------------------------------- |
+| **Primitive** | `--ds-primitives-*` | No semantic role expresses the raw scale choice     |
+| **Semantic**  | `--ds-semantic-*`   | Styling components and product interfaces by intent |
 
 Color primitives are not published as CSS variables. Use a semantic color token, which follows the
 active theme. The palette is still in `primitives.json` for design tooling.
 
 ### Semantic token groups
 
-| Group                       | Example                                              | Purpose                                 |
-| --------------------------- | ---------------------------------------------------- | --------------------------------------- |
-| `background`                | `--semantic-color-background-default`                | Page and surface fills                  |
-| `foreground`                | `--semantic-color-foreground-muted`                  | Text and icon colors                    |
-| `border`                    | `--semantic-color-border-default`                    | Dividers and outlines                   |
-| `background.action.primary` | `--semantic-color-background-action-primary-default` | Primary interactions                    |
-| `background.brand`          | `--semantic-color-background-brand-muted`            | Brand surfaces                          |
-| `foreground.on`             | `--semantic-color-foreground-on-action-primary`      | Content paired with a specific fill     |
-| `*.status.*`                | `--semantic-color-background-status-success-default` | Feedback surfaces, content, and borders |
+| Group                       | Example                                                 | Purpose                                 |
+| --------------------------- | ------------------------------------------------------- | --------------------------------------- |
+| `background`                | `--ds-semantic-color-background-default`                | Page and surface fills                  |
+| `foreground`                | `--ds-semantic-color-foreground-muted`                  | Text and icon colors                    |
+| `border`                    | `--ds-semantic-color-border-default`                    | Dividers and outlines                   |
+| `background.action.primary` | `--ds-semantic-color-background-action-primary-default` | Primary interactions                    |
+| `background.brand`          | `--ds-semantic-color-background-brand-muted`            | Brand surfaces                          |
+| `foreground.on`             | `--ds-semantic-color-foreground-on-action-primary`      | Content paired with a specific fill     |
+| `*.status.*`                | `--ds-semantic-color-background-status-success-default` | Feedback surfaces, content, and borders |
 
 ## Theming
 

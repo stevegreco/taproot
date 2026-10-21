@@ -453,7 +453,7 @@
       const scale = (title, slug, alias, steps) => ({
         title,
         items: Object.entries(steps).map(([step, value]) => ({
-          name: `--primitives-color-${slug}-${step}`,
+          name: `--ds-primitives-color-${slug}-${step}`,
           alias: `${alias}.${step}`,
           value,
         })),
@@ -463,8 +463,8 @@
         {
           title: "Fixed",
           items: [
-            { name: "--primitives-color-white", alias: "white", value: "#ffffff" },
-            { name: "--primitives-color-black", alias: "black", value: "#000000" },
+            { name: "--ds-primitives-color-white", alias: "white", value: "#ffffff" },
+            { name: "--ds-primitives-color-black", alias: "black", value: "#000000" },
           ],
         },
         scale("Rob Roy", "rob-roy", "robRoy", {

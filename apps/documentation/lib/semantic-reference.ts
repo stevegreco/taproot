@@ -1,3 +1,4 @@
+import { CSS_PREFIX } from "@stevegreco/design-system/flatten";
 import semanticLight from "@stevegreco/design-system/tokens/semantic-light";
 
 export type SemanticReferenceKind =
@@ -31,7 +32,7 @@ const flattenTokens = (value: unknown, parts: string[] = []): FlatToken[] => {
   return [
     {
       path: parts.join("."),
-      cssVariable: `--${parts.map(kebabCase).join("-")}`,
+      cssVariable: `--${CSS_PREFIX}-${parts.map(kebabCase).join("-")}`,
       value: String(value),
     },
   ];
@@ -273,11 +274,11 @@ export const semanticReferenceMarkdown = (kind: SemanticReferenceKind) => {
   return [
     "```css",
     ".card {",
-    "  background: var(--semantic-color-background-surface);",
-    "  border: 1px solid var(--semantic-color-border-subtle);",
-    "  color: var(--semantic-color-foreground-default);",
-    "  border-radius: var(--semantic-radius-surface);",
-    "  box-shadow: var(--semantic-elevation-sm);",
+    "  background: var(--ds-semantic-color-background-surface);",
+    "  border: 1px solid var(--ds-semantic-color-border-subtle);",
+    "  color: var(--ds-semantic-color-foreground-default);",
+    "  border-radius: var(--ds-semantic-radius-surface);",
+    "  box-shadow: var(--ds-semantic-elevation-sm);",
     "}",
     "```",
   ].join("\n");

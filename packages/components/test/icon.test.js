@@ -71,9 +71,9 @@ describe("DsIcon", () => {
   });
 
   test.each([
-    ["small", "--primitives-space-4"],
-    ["medium", "--primitives-space-5"],
-    ["large", "--primitives-space-6"],
+    ["small", "--ds-primitives-space-4"],
+    ["medium", "--ds-primitives-space-5"],
+    ["large", "--ds-primitives-space-6"],
   ])("[square-box] size %s uses %s for both sides", (size, token) => {
     const icon = render(`<${tagName} size="${size}">${svg}</${tagName}>`);
     const expected = resolvedValue("width", `var(${token})`);

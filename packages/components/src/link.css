@@ -15,7 +15,7 @@
 }
 
 .link {
-  color: var(--semantic-color-foreground-brand-default);
+  color: var(--ds-semantic-color-foreground-brand-default);
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
@@ -32,21 +32,21 @@
 }
 
 .link[href]:hover {
-  color: var(--semantic-color-foreground-default);
+  color: var(--ds-semantic-color-foreground-default);
 }
 
 .link:focus-visible {
-  outline: 2px solid var(--semantic-color-border-focus);
+  outline: 2px solid var(--ds-semantic-color-border-focus);
   outline-offset: 2px;
-  border-radius: var(--semantic-radius-control);
+  border-radius: var(--ds-semantic-radius-control);
 }
 
 :host([variant="standalone"]) .link {
-  font-family: var(--semantic-typography-label-md-font-family);
-  font-size: var(--semantic-typography-label-md-font-size);
-  font-weight: var(--semantic-typography-label-md-font-weight);
-  line-height: var(--semantic-typography-label-md-line-height);
-  letter-spacing: var(--semantic-typography-label-md-letter-spacing);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
   text-decoration-line: none;
 }
 

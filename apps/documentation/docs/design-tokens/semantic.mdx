@@ -23,11 +23,11 @@ borders style boundaries.
 
 ```css
 .card {
-  background: var(--semantic-color-background-surface);
-  border: 1px solid var(--semantic-color-border-subtle);
-  color: var(--semantic-color-foreground-default);
-  border-radius: var(--semantic-radius-surface);
-  box-shadow: var(--semantic-elevation-sm);
+  background: var(--ds-semantic-color-background-surface);
+  border: 1px solid var(--ds-semantic-color-border-subtle);
+  color: var(--ds-semantic-color-foreground-default);
+  border-radius: var(--ds-semantic-radius-surface);
+  box-shadow: var(--ds-semantic-elevation-sm);
 }
 ```
 
@@ -35,11 +35,11 @@ borders style boundaries.
 
 Semantic colors are organized by the property they style and the intent they communicate.
 
-| Group      | Use for                                           | Example                               |
-| ---------- | ------------------------------------------------- | ------------------------------------- |
-| Background | Fills behind content                              | `--semantic-color-background-surface` |
-| Foreground | Text, icons, and SVG content                      | `--semantic-color-foreground-muted`   |
-| Border     | Borders, dividers, outlines, and focus indicators | `--semantic-color-border-focus`       |
+| Group      | Use for                                           | Example                                  |
+| ---------- | ------------------------------------------------- | ---------------------------------------- |
+| Background | Fills behind content                              | `--ds-semantic-color-background-surface` |
+| Foreground | Text, icons, and SVG content                      | `--ds-semantic-color-foreground-muted`   |
+| Border     | Borders, dividers, outlines, and focus indicators | `--ds-semantic-color-border-focus`       |
 
 ### Background
 
@@ -65,11 +65,11 @@ action, while the other communicates a condition.
 
 ```css
 .primary-action {
-  background: var(--semantic-color-background-action-primary-default);
+  background: var(--ds-semantic-color-background-action-primary-default);
 }
 
 .primary-action:hover {
-  background: var(--semantic-color-background-action-primary-hover);
+  background: var(--ds-semantic-color-background-action-primary-hover);
 }
 ```
 
@@ -95,7 +95,7 @@ supports.
 
 ```css
 .primary-action {
-  color: var(--semantic-color-foreground-on-action-primary);
+  color: var(--ds-semantic-color-foreground-on-action-primary);
 }
 ```
 
@@ -145,11 +145,11 @@ Apply all five leaves when adopting a recipe. Swap the whole recipe when the tex
 
 ```css
 .card-title {
-  font-family: var(--semantic-typography-heading-sm-font-family);
-  font-size: var(--semantic-typography-heading-sm-font-size);
-  font-weight: var(--semantic-typography-heading-sm-font-weight);
-  line-height: var(--semantic-typography-heading-sm-line-height);
-  letter-spacing: var(--semantic-typography-heading-sm-letter-spacing);
+  font-family: var(--ds-semantic-typography-heading-sm-font-family);
+  font-size: var(--ds-semantic-typography-heading-sm-font-size);
+  font-weight: var(--ds-semantic-typography-heading-sm-font-weight);
+  line-height: var(--ds-semantic-typography-heading-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-heading-sm-letter-spacing);
 }
 ```
 

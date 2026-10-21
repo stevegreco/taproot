@@ -2,18 +2,18 @@
 
 :root,
 :root[data-theme="dark"] {
-  --blume-background: var(--semantic-color-background-default);
-  --blume-foreground: var(--semantic-color-foreground-default);
-  --blume-muted: var(--semantic-color-background-muted);
-  --blume-muted-foreground: var(--semantic-color-foreground-muted);
-  --blume-border: var(--semantic-color-border-subtle);
-  --blume-accent: var(--semantic-color-background-brand-default);
-  --blume-accent-foreground: var(--semantic-color-foreground-on-brand);
-  --blume-action: var(--semantic-color-background-action-primary-default);
-  --blume-action-foreground: var(--semantic-color-foreground-on-action-primary);
-  --blume-code-background: var(--semantic-color-background-sunken);
-  --blume-radius: var(--semantic-radius-surface);
-  --blume-font-body: var(--semantic-typography-body-md-font-family);
-  --blume-font-display: var(--semantic-typography-heading-md-font-family);
-  --blume-font-mono: var(--semantic-typography-code-md-font-family);
+  --blume-background: var(--ds-semantic-color-background-default);
+  --blume-foreground: var(--ds-semantic-color-foreground-default);
+  --blume-muted: var(--ds-semantic-color-background-muted);
+  --blume-muted-foreground: var(--ds-semantic-color-foreground-muted);
+  --blume-border: var(--ds-semantic-color-border-subtle);
+  --blume-accent: var(--ds-semantic-color-background-brand-default);
+  --blume-accent-foreground: var(--ds-semantic-color-foreground-on-brand);
+  --blume-action: var(--ds-semantic-color-background-action-primary-default);
+  --blume-action-foreground: var(--ds-semantic-color-foreground-on-action-primary);
+  --blume-code-background: var(--ds-semantic-color-background-sunken);
+  --blume-radius: var(--ds-semantic-radius-surface);
+  --blume-font-body: var(--ds-semantic-typography-body-md-font-family);
+  --blume-font-display: var(--ds-semantic-typography-heading-md-font-family);
+  --blume-font-mono: var(--ds-semantic-typography-code-md-font-family);
 }

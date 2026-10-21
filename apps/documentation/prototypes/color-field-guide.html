@@ -1030,7 +1030,7 @@
         items: Object.entries(steps).map(([step, value]) => ({
           step,
           value,
-          name: `--primitives-color-${slug}-${step}`,
+          name: `--ds-primitives-color-${slug}-${step}`,
         })),
       });
 
@@ -1247,7 +1247,7 @@
         </div>`;
       };
 
-      inspectToken(document.querySelector('[data-name="--primitives-color-rob-roy-500"]'));
+      inspectToken(document.querySelector('[data-name="--ds-primitives-color-rob-roy-500"]'));
 
       const search = document.querySelector("[data-search]");
       const resultCount = document.querySelector("[data-result-count]");
