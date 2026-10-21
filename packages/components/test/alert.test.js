@@ -4,6 +4,7 @@ import { cdp, userEvent } from "vitest/browser";
 import { defineAlert } from "../src/alert.js";
 import { defineButton } from "../src/button.js";
 import { exposedNodes } from "./helpers/accessibility.js";
+import { expectRendered } from "./helpers/rendered.js";
 import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-alert";
@@ -53,7 +54,7 @@ describe("DsAlert", () => {
   test("[announce-on-request] is not a live region when announce is off", async () => {
     const alert = render(`<${tagName} label="Update">A new version is available.</${tagName}>`);
 
-    expect(alert.shadowRoot.querySelector('[part="message"]')).not.toBe(null);
+    expectRendered(alert, "message");
     expect(await liveNodes()).toEqual([]);
   });
 
@@ -123,6 +124,7 @@ describe("DsAlert", () => {
   test("[dismiss-reports] shows no dismiss control unless dismissible", async () => {
     const alert = render(`<${tagName}>Message</${tagName}>`);
 
+    expectRendered(alert, "message", "dismiss");
     expect(dismissOf(alert).getClientRects().length).toBe(0);
     expect((await exposedNodes()).filter((node) => node.role === "button")).toEqual([]);
     alert.dismissible = true;

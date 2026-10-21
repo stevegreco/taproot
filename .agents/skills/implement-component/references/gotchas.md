@@ -70,8 +70,10 @@ document-component.
   `Accessibility.getFullAXTree` yourself: tests run in an iframe, the call reads the top frame by
   default, and an "is hidden" assertion then passes against a tree that never had the component.
   The helper throws instead.
-- A hidden-element test passes when nothing renders. Pair it with a positive test that reads the
-  same tree, and see each one fail at least once.
+- A negative test (no live region, no focus, no events, hidden from assistive technology) passes
+  just as well for an element that never rendered. Start it with
+  `expectRendered(element, "part", …)` from `test/helpers/rendered.js`, which fails unless the
+  element upgraded and rendered those parts. Then see the test fail at least once.
 - No test compares the implementation to the spec. Review them together.
 
 ## Docs implementation file

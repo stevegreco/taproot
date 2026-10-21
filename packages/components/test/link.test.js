@@ -2,6 +2,7 @@ import { afterEach, beforeAll, describe, expect, test } from "vitest";
 import { userEvent } from "vitest/browser";
 
 import { defineLink } from "../src/link.js";
+import { expectRendered } from "./helpers/rendered.js";
 import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-link";
@@ -138,6 +139,7 @@ describe("DsLink", () => {
 
   test("click() without href does nothing", () => {
     const link = render(`<${tagName}>Text</${tagName}>`);
+    expectRendered(link, "link");
 
     link.click();
 

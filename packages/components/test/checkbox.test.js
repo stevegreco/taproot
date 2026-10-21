@@ -3,6 +3,7 @@ import { cdp, userEvent } from "vitest/browser";
 
 import { defineButton } from "../src/button.js";
 import { defineCheckbox } from "../src/checkbox.js";
+import { expectRendered } from "./helpers/rendered.js";
 
 const tagName = "test-ds-checkbox";
 const buttonTag = "test-ds-checkbox-button";
@@ -139,6 +140,7 @@ describe("DsCheckbox", () => {
 
   test("[programmatic-no-events] setting checked or indeterminate from script fires no events", () => {
     const checkbox = render(`<${tagName} label="Updates"></${tagName}>`);
+    expectRendered(checkbox, "control");
     const events = recordEvents(checkbox);
 
     checkbox.checked = true;
