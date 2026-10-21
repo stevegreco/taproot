@@ -25,6 +25,13 @@ says, and the Verify steps prove what a person would check.
 
 ## 1. Write the example
 
+```bash
+pnpm component:new <name> --phase docs
+```
+
+This writes the example with its exact Verify header and a `data-<name>-subject` handle, and a
+`.verify.js` file with one placeholder step that fails until you write it.
+
 `apps/documentation/examples/<name>.tsx`: one realistic demo, not a gallery of variants (Storybook
 covers those).
 

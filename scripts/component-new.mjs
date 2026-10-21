@@ -1,18 +1,33 @@
 #!/usr/bin/env node
 /**
- * Scaffold a draft spec for the spec phase.
+ * Scaffold the files for one phase of a component.
  *
  *   pnpm component:new <name> --phase spec
+ *   pnpm component:new <name> --phase implementation
+ *   pnpm component:new <name> --phase docs
  *
- * Writes a draft record with a `TODO:` placeholder for each field a draft needs.
- * `pnpm spec validate` reports each placeholder until it is replaced. It never overwrites.
+ * spec writes a draft record with a `TODO:` placeholder for each field a draft
+ * needs. `pnpm spec validate` reports each placeholder until it is replaced.
+ *
+ * implementation reads the completed spec and writes the runtime, types, styles,
+ * a failing test per MUST rule, the web API file, and stories, then adds the
+ * index and host-checks entries.
+ *
+ * docs writes the example with its exact Verify header and the Verify steps.
+ *
+ * It never overwrites: a file that exists is skipped, and an entry that exists
+ * is left alone. Everything it writes is formatted with oxfmt.
+ * `pnpm component:status <name> --phase <phase>` checks the result.
  */
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
-const usage = "Usage: pnpm component:new <name> --phase spec   (for example: tooltip)";
+const PHASES = ["spec", "implementation", "docs"];
+const usage = `Usage: pnpm component:new <name> --phase ${PHASES.join("|")}   (for example: tooltip)`;
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schema = JSON.parse(
   readFileSync(path.join(root, "packages/spec/src/schema/spec-record.schema.json"), "utf8"),
@@ -25,41 +40,54 @@ const { values, positionals } = parseArgs({
 const [name] = positionals;
 if (
   positionals.length !== 1 ||
-  values.phase !== "spec" ||
+  !PHASES.includes(values.phase) ||
   !new RegExp(schema.$defs.name.pattern).test(name)
 ) {
   console.error(usage);
   process.exit(2);
 }
 
+// `radio-group` → `Radio group`, the way component titles are written.
+const title = name[0].toUpperCase() + name.slice(1).replaceAll("-", " ");
+// `radio-group` → `RadioGroup`, for class and export names.
+const pascal = name
+  .split("-")
+  .map((word) => word[0].toUpperCase() + word.slice(1))
+  .join("");
+const tagName = `ds-${name}`;
+const className = `Ds${pascal}`;
+const defineExport = `define${pascal}`;
+/** Files this run wrote or changed, for format(). */
+const touched = [];
+
 // A record's identity is its id, not its path, so look for the id in every spec file.
 const contentDir = path.join(root, "packages/spec/content");
 const idLine = new RegExp(`^id:\\s*["']?component\\.${name}["']?\\s*$`, "m");
-const existing = readdirSync(contentDir, { recursive: true }).find(
+const existingSpec = readdirSync(contentDir, { recursive: true }).find(
   (entry) =>
     entry.endsWith(".spec.yaml") && idLine.test(readFileSync(path.join(contentDir, entry), "utf8")),
 );
-if (existing) {
-  console.error(
-    `component.${name} already exists in packages/spec/content/${existing}. Edit it instead.`,
-  );
-  process.exit(1);
-}
 
-const relative = `packages/spec/content/components/${name}/${name}.spec.yaml`;
-const file = path.join(root, relative);
-if (existsSync(file)) {
-  console.error(`${relative} already exists. Edit it instead.`);
-  process.exit(1);
-}
+if (values.phase === "spec") scaffoldSpec();
+if (values.phase === "implementation") scaffoldImplementation();
+if (values.phase === "docs") scaffoldDocs();
+format();
 
-// `radio-group` → `Radio group`, the way component titles are written.
-const title = name[0].toUpperCase() + name.slice(1).replaceAll("-", " ");
-
-mkdirSync(path.dirname(file), { recursive: true });
-writeFileSync(
-  file,
-  `# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+function scaffoldSpec() {
+  if (existingSpec) {
+    console.error(
+      `component.${name} already exists in packages/spec/content/${existingSpec}. Edit it instead.`,
+    );
+    process.exit(1);
+  }
+  const relative = `packages/spec/content/components/${name}/${name}.spec.yaml`;
+  if (existsSync(path.join(root, relative))) {
+    console.error(`${relative} already exists. Edit it instead.`);
+    process.exit(1);
+  }
+  write(
+    relative,
+    `# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
 id: component.${name}
 type: component
 title: ${title}
@@ -78,7 +106,391 @@ anatomy:
     role: container
     description: "TODO: What this part is. Name each part in reading order."
 `,
-);
-console.log(
-  `Wrote ${relative}. Replace every TODO: placeholder; \`pnpm spec validate\` lists the ones left.`,
-);
+  );
+  console.log("Replace every TODO: placeholder; `pnpm spec validate` lists the ones left.");
+}
+
+function scaffoldImplementation() {
+  if (!existingSpec) {
+    console.error(`component.${name} has no spec. Run: pnpm component:new ${name} --phase spec`);
+    process.exit(1);
+  }
+  const requireFromSpec = createRequire(path.join(root, "packages/spec/package.json"));
+  const spec = requireFromSpec("yaml").parse(
+    readFileSync(path.join(contentDir, existingSpec), "utf8"),
+  );
+  if (!spec.rules?.length) {
+    console.error(
+      `component.${name} has no rules yet. Complete the spec contract first (implement-component step 1).`,
+    );
+    process.exit(1);
+  }
+  const parameters = Object.entries(spec.parameters ?? {}).map(([key, parameter]) => ({
+    ...parameter,
+    name: key,
+    attribute: key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`),
+    constant: `${key.replace(/[A-Z]/g, (letter) => `_${letter}`).toUpperCase()}_VALUES`,
+    type: `${pascal}${key[0].toUpperCase()}${key.slice(1)}`,
+  }));
+  const events = Object.keys(spec.events ?? {});
+  const parts = Object.keys(spec.anatomy ?? {});
+  const must = (spec.rules ?? []).filter(
+    (rule) => rule.level === "must" && rule.topic !== "content",
+  );
+  const enums = parameters.filter((parameter) => parameter.kind === "enum");
+  const literal = (value) => JSON.stringify(value);
+
+  write(
+    `packages/components/src/${name}.js`,
+    `/**
+ * <${tagName}> — ${spec.summary}
+ *
+ * Behavior is in the spec: \`pnpm spec get component.${name}\`.
+ */
+
+// Generated from src/${name}.css by build-styles.js (run \`pnpm run build\`).
+import { styles } from "../dist/${name}.styles.js";
+import { Base, defineElement, lazyStyleSheet } from "./internal/element.js";
+
+const styleSheet = lazyStyleSheet(styles);
+${enums.map((parameter) => `const ${parameter.constant} = new Set(${literal(Object.keys(parameter.values))});\n`).join("")}
+export class ${className} extends Base {
+  constructor() {
+    super();
+
+    const root = this.attachShadow({ mode: "open" });
+    root.adoptedStyleSheets = [styleSheet()];
+    // TODO: render a part for each anatomy entry (${parts.join(", ") || "none yet"}).
+    root.innerHTML = "";
+  }
+${parameters.map(accessor).join("")}}
+
+/** Register the element. Safe to call more than once. Defaults to "${tagName}". */
+export const ${defineExport} = defineElement("${tagName}", ${className});
+`,
+  );
+
+  write(
+    `packages/components/src/${name}.css`,
+    `:host {
+  display: inline-block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+/* TODO: style each part with the tokens the spec maps. */
+`,
+  );
+
+  write(
+    `packages/components/src/${name}.d.ts`,
+    `${enums.map((parameter) => `export type ${parameter.type} = ${Object.keys(parameter.values).map(literal).join(" | ")};\n`).join("")}${enums.length ? "\n" : ""}/** The attributes \`<${tagName}>\` accepts, for typing framework templates. */
+export interface ${className}Attributes {
+${parameters.map((parameter) => `${typeDoc(parameter)}  ${parameter.attribute.includes("-") ? literal(parameter.attribute) : parameter.attribute}?: ${typeOf(parameter)};\n`).join("")}}
+
+/** \`<${tagName}>\`: ${spec.summary} */
+export declare class ${className} extends HTMLElement {
+${parameters.map((parameter) => `${typeDoc(parameter)}  ${parameter.name}: ${typeOf(parameter)};\n`).join("")}}
+
+/** Registers \`<${tagName}>\`, or an alias when given a tag name. Safe to call more than once. */
+export declare function ${defineExport}(tagName?: string): void;
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "${tagName}": ${className};
+  }
+}
+`,
+  );
+
+  write(
+    `packages/components/test/${name}.test.js`,
+    `import { afterEach, beforeAll, describe, expect, test } from "vitest";
+
+import { ${defineExport} } from "../src/${name}.js";
+
+const tagName = "test-${tagName}";
+
+beforeAll(() => {
+  ${defineExport}(tagName);
+});
+
+afterEach(() => {
+  document.body.replaceChildren();
+});
+
+function render(markup) {
+  document.body.innerHTML = markup;
+  return document.body.querySelector(tagName);
+}
+
+// One test per MUST rule: \`pnpm spec rules --id component.${name} --level must\`.
+// Each fails until it is written. Watch it fail for the right reason before the runtime exists.
+describe("${className}", () => {
+${must
+  .map(
+    (
+      rule,
+    ) => `  test(${literal(`[${rule.id}] ${rule.statement.replace(/\s+/g, " ").trim()}`)}, () => {
+    render(\`<\${tagName}></\${tagName}>\`);
+    expect.fail("TODO: prove component.${name}#${rule.id}");
+  });
+`,
+  )
+  .join("\n")}});
+`,
+  );
+
+  write(
+    `apps/documentation/implementation/${name}.md`,
+    `---
+component: component.${name}
+package: "@stevegreco/design-system-components"
+tagName: ${tagName}
+defineExport: ${defineExport}
+usage: |
+  <${tagName}>TODO: a realistic use</${tagName}>
+api:${parameters.length + events.length ? "" : " []"}
+${[
+  ...parameters.flatMap((parameter) => [
+    `  - { name: ${parameter.attribute}, kind: attribute, parameter: ${parameter.name} }`,
+    ...(parameter.attribute === parameter.name
+      ? []
+      : [`  - { name: ${parameter.name}, kind: property, parameter: ${parameter.name} }`]),
+  ]),
+  ...events.map((event) => `  - { name: ${event}, kind: event, event: ${event} }`),
+].join("\n")}
+---
+
+TODO: web-specific guidance only: slots, the \`hidden\` attribute, framework notes. Cite behavior
+by rule address, such as \`component.${name}#${must[0]?.id ?? "rule-id"}\`, instead of restating it.
+`,
+  );
+
+  const defaults = Object.fromEntries(
+    parameters.map((parameter) => [parameter.name, defaultOf(parameter)]),
+  );
+  write(
+    `apps/storybook/stories/${name}.stories.js`,
+    `import { html } from "lit";
+
+${enums.map((parameter) => `const ${parameter.constant} = ${literal(Object.keys(parameter.values))};\n`).join("")}
+export default {
+  title: "Components/${title}",
+  component: "${tagName}",
+  argTypes: {
+${parameters.map((parameter) => `    ${parameter.name}: ${control(parameter)},\n`).join("")}  },
+  args: ${literal(defaults)},
+  render: (args) =>
+    html\`<${tagName}${parameters.map((parameter) => ` ${parameter.kind === "boolean" ? "?" : ""}${parameter.attribute}=\${args.${parameter.name}}`).join("")}></${tagName}>\`,
+};
+
+// TODO: one story per notable state. Copy stories/checkbox.stories.js.
+export const Default = {};
+`,
+  );
+
+  addLine(
+    "packages/components/src/index.js",
+    defineExport,
+    (source) =>
+      insertAfterLast(
+        insertAfterLast(source, /^import .*$/gm, `import { ${defineExport} } from "./${name}.js";`),
+        /^export .*$/gm,
+        `export { ${className}, ${defineExport} } from "./${name}.js";`,
+      ).trimEnd() + `\n${defineExport}();\n`,
+  );
+  addLine("packages/components/src/index.d.ts", `./${name}.js`, (source) => {
+    const withExports = insertAfterLast(
+      insertAfterLast(
+        source,
+        /^import type .*$/gm,
+        `import type { ${className}Attributes } from "./${name}.js";`,
+      ),
+      /^export \* from .*$/gm,
+      `export * from "./${name}.js";`,
+    );
+    const start = withExports.indexOf("export interface ElementAttributes {");
+    const end = withExports.indexOf("\n}", start);
+    return `${withExports.slice(0, end)}\n  "${tagName}": ${className}Attributes;${withExports.slice(end)}`;
+  });
+  addLine("packages/components/test/host-checks.test.js", `id: "${name}"`, (source) =>
+    source.replace(
+      "const ELEMENTS = [\n",
+      `const ELEMENTS = [
+  {
+    id: "${name}",
+    tagName: "${tagName}",
+    className: "${className}",
+    defineExport: "${defineExport}",
+    events: ${literal(events)},
+    // TODO: the part that takes focus, or null when nothing does.
+    focusPart: null,
+    // TODO: the shadow parts it renders. These are the spec's anatomy names.
+    parts: ${literal(parts)},
+    requiresDefaultSlot: false,
+    disabledAttribute: ${defaults.disabled === undefined ? "null" : '"disabled"'},
+    fieldsetDisables: false,
+    hasFormProperty: false,
+    activationKeys: [],
+    fixture: {},
+    textAttributes: {},
+    enums: [
+${enums
+  .map(
+    (parameter) => `      {
+        attribute: "${parameter.attribute}",
+        property: "${parameter.name}",
+        values: ${literal(Object.keys(parameter.values))},
+        default: ${literal(parameter.default)},
+      },
+`,
+  )
+  .join("")}    ],
+    properties: ${literal(Object.fromEntries(parameters.map((parameter) => [parameter.name, sampleOf(parameter)])))},
+  },
+`,
+    ),
+  );
+
+  console.log(
+    `Next: watch the tests fail, write the runtime, then run \`pnpm component:status ${name} --phase implementation\`.`,
+  );
+}
+
+function scaffoldDocs() {
+  write(
+    `apps/documentation/examples/${name}.tsx`,
+    `/**
+ * Verify: run the steps in \`${name}.verify.js\`. The docs tests run them against the built site.
+ */
+import "@stevegreco/design-system-components";
+
+export default function ${pascal}Example() {
+  // TODO: one realistic use, not a gallery of variants (Storybook covers those).
+  return (
+    <div className="p-6">
+      <${tagName} data-${name}-subject>TODO</${tagName}>
+    </div>
+  );
+}
+`,
+  );
+  write(
+    `apps/documentation/examples/${name}.verify.js`,
+    `/** Verify steps for ${name}.tsx. */
+export default async function verify({ page, step, eventually }) {
+  const subject = page.locator("[data-${name}-subject]");
+
+  await step("TODO: what this step proves", async () => {
+    await eventually(() => subject.count(), 1, "${name} count");
+    // TODO: act the way a person would, then check. Break the step once to see it fail.
+    throw new Error("TODO: write this step");
+  });
+}
+`,
+  );
+  console.log(
+    `Next: check whether examples/custom-elements.d.ts needs a ${tagName} entry, then run \`pnpm component:status ${name} --phase docs\`.`,
+  );
+}
+
+/** Writes a new file, or says it skipped one that exists. */
+function write(relative, content) {
+  const file = path.join(root, relative);
+  if (existsSync(file)) {
+    console.log(`skip   ${relative} (exists)`);
+    return;
+  }
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, content);
+  touched.push(file);
+  console.log(`wrote  ${relative}`);
+}
+
+/** Adds an entry to a shared file unless `marker` is already there. */
+function addLine(relative, marker, edit) {
+  const file = path.join(root, relative);
+  const source = readFileSync(file, "utf8");
+  if (source.includes(marker)) {
+    console.log(`skip   ${relative} (has ${marker})`);
+    return;
+  }
+  writeFileSync(file, edit(source));
+  touched.push(file);
+  console.log(`added  ${relative}`);
+}
+
+/** The templates leave line wrapping to the formatter. */
+function format() {
+  if (touched.length === 0) return;
+  const { status } = spawnSync(path.join(root, "node_modules/.bin/oxfmt"), touched, {
+    stdio: "ignore",
+  });
+  if (status !== 0) console.log("Could not run oxfmt. Run `pnpm format` before committing.");
+}
+
+function insertAfterLast(source, pattern, line) {
+  const last = [...source.matchAll(pattern)].at(-1);
+  const end = last.index + last[0].length;
+  return `${source.slice(0, end)}\n${line}${source.slice(end)}`;
+}
+
+function accessor(parameter) {
+  const attribute = JSON.stringify(parameter.attribute);
+  const get = {
+    enum: `const value = this.getAttribute(${attribute});
+    return ${parameter.constant}.has(value) ? value : ${JSON.stringify(parameter.default)};`,
+    boolean: `return this.hasAttribute(${attribute});`,
+    string: `return this.getAttribute(${attribute}) ?? ${JSON.stringify(parameter.default ?? "")};`,
+    number: `return this.hasAttribute(${attribute}) ? Number(this.getAttribute(${attribute})) : ${parameter.default ?? 0};`,
+  }[parameter.kind];
+  const set =
+    parameter.kind === "boolean"
+      ? `this.toggleAttribute(${attribute}, Boolean(value));`
+      : `this.setAttribute(${attribute}, value);`;
+  return `
+  get ${parameter.name}() {
+    ${get}
+  }
+
+  set ${parameter.name}(value) {
+    ${set}
+  }
+`;
+}
+
+function typeOf(parameter) {
+  return parameter.kind === "enum" ? parameter.type : parameter.kind;
+}
+
+function typeDoc(parameter) {
+  return parameter.default === undefined || parameter.default === false
+    ? ""
+    : `  /** Defaults to \`${JSON.stringify(parameter.default)}\`. */\n`;
+}
+
+function defaultOf(parameter) {
+  if (parameter.default !== undefined) return parameter.default;
+  return { enum: Object.keys(parameter.values ?? {})[0], boolean: false, string: "", number: 0 }[
+    parameter.kind
+  ];
+}
+
+/** A value that differs from the default, for the host checks' property replay. */
+function sampleOf(parameter) {
+  if (parameter.kind === "enum") {
+    const values = Object.keys(parameter.values);
+    return values.find((value) => value !== parameter.default) ?? values[0];
+  }
+  if (parameter.kind === "boolean") return !parameter.default;
+  if (parameter.kind === "number") return (parameter.default ?? 0) + 1;
+  return `sample ${parameter.name}`;
+}
+
+function control(parameter) {
+  if (parameter.kind === "enum") return `{ control: "select", options: ${parameter.constant} }`;
+  return `{ control: "${{ boolean: "boolean", string: "text", number: "number" }[parameter.kind]}" }`;
+}
