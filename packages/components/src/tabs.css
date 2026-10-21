@@ -15,9 +15,9 @@
 /* A row that does not fit scrolls sideways rather than wrapping. */
 .tab-list {
   display: flex;
-  gap: var(--primitives-space-1);
+  gap: var(--ds-primitives-space-1);
   overflow-x: auto;
-  border-block-end: var(--semantic-border-width) solid var(--semantic-color-border-subtle);
+  border-block-end: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-subtle);
   scrollbar-width: thin;
 }
 
@@ -25,34 +25,34 @@
   position: relative;
   flex: none;
   margin: 0;
-  padding: var(--primitives-space-2) var(--primitives-space-3);
+  padding: var(--ds-primitives-space-2) var(--ds-primitives-space-3);
   border: 0;
-  border-radius: var(--semantic-radius-control);
+  border-radius: var(--ds-semantic-radius-control);
   background: transparent;
-  color: var(--semantic-color-foreground-muted);
-  font-family: var(--semantic-typography-label-md-font-family);
-  font-size: var(--semantic-typography-label-md-font-size);
-  font-weight: var(--semantic-typography-label-md-font-weight);
-  line-height: var(--semantic-typography-label-md-line-height);
-  letter-spacing: var(--semantic-typography-label-md-letter-spacing);
+  color: var(--ds-semantic-color-foreground-muted);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
   white-space: nowrap;
   cursor: pointer;
   outline: none;
 }
 
 .tab:hover {
-  color: var(--semantic-color-foreground-default);
-  background: var(--semantic-color-background-action-tertiary-hover);
+  color: var(--ds-semantic-color-foreground-default);
+  background: var(--ds-semantic-color-background-action-tertiary-hover);
 }
 
 .tab[aria-selected="true"] {
-  color: var(--semantic-color-foreground-default);
+  color: var(--ds-semantic-color-foreground-default);
 }
 
 /* Inset, so the scrolling tab list does not clip it. */
 .tab:focus-visible {
-  outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
-  outline-offset: calc(-1 * var(--semantic-focus-width));
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: calc(-1 * var(--ds-semantic-focus-width));
 }
 
 .indicator {
@@ -61,7 +61,7 @@
   inset-block-end: 0;
   display: none;
   height: 2px;
-  background: var(--semantic-color-background-action-primary-default);
+  background: var(--ds-semantic-color-background-action-primary-default);
 }
 
 .tab[aria-selected="true"] .indicator {
@@ -69,13 +69,13 @@
 }
 
 .panel {
-  padding-block: var(--primitives-space-4);
+  padding-block: var(--ds-primitives-space-4);
   outline: none;
 }
 
 .panel:focus-visible {
-  outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
-  outline-offset: var(--semantic-focus-offset);
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
 }
 
 ::slotted(*) {

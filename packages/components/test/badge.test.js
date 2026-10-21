@@ -73,7 +73,7 @@ describe("DsBadge", () => {
     const range = document.createRange();
     range.selectNodeContents(badge.lastChild);
     const label = range.getBoundingClientRect();
-    const gap = resolvedValue("column-gap", "var(--primitives-space-1)");
+    const gap = resolvedValue("column-gap", "var(--ds-primitives-space-1)");
 
     expect(getComputedStyle(surface).columnGap).toBe(gap);
     expect(label.left - icon.right).toBeCloseTo(parseFloat(gap), 0);

@@ -270,7 +270,9 @@ describe("DsAlert", () => {
       const style = getComputedStyle(dismiss);
       expect(style.outlineStyle).toBe("solid");
       expect(parseFloat(style.outlineWidth)).toBeGreaterThan(0);
-      expect(style.outlineColor).toBe(resolvedValue("color", "var(--semantic-color-border-focus)"));
+      expect(style.outlineColor).toBe(
+        resolvedValue("color", "var(--ds-semantic-color-border-focus)"),
+      );
     },
   );
 
@@ -290,15 +292,17 @@ describe("DsAlert", () => {
     expect(surface.backgroundColor).toBe(
       resolvedValue(
         "background-color",
-        `var(--semantic-color-background-status-${status}-default)`,
+        `var(--ds-semantic-color-background-status-${status}-default)`,
       ),
     );
     expect(surface.borderTopColor).toBe(
-      resolvedValue("color", `var(--semantic-color-border-status-${status}-default)`),
+      resolvedValue("color", `var(--ds-semantic-color-border-status-${status}-default)`),
     );
-    expect(surface.color).toBe(resolvedValue("color", "var(--semantic-color-foreground-default)"));
+    expect(surface.color).toBe(
+      resolvedValue("color", "var(--ds-semantic-color-foreground-default)"),
+    );
     expect(icon.color).toBe(
-      resolvedValue("color", `var(--semantic-color-foreground-status-${status}-default)`),
+      resolvedValue("color", `var(--ds-semantic-color-foreground-status-${status}-default)`),
     );
   });
 

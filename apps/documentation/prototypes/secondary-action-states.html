@@ -14,9 +14,9 @@
       }
 
       :root {
-        font-family: var(--semantic-typography-body-md-font-family, "Source Sans 3", sans-serif);
-        color: var(--semantic-color-foreground-default);
-        background: var(--semantic-color-background-default);
+        font-family: var(--ds-semantic-typography-body-md-font-family, "Source Sans 3", sans-serif);
+        color: var(--ds-semantic-color-foreground-default);
+        background: var(--ds-semantic-color-background-default);
       }
 
       body {
@@ -37,10 +37,14 @@
         display: flex;
         gap: 4px;
         padding: 5px;
-        border: 1px solid var(--semantic-color-border-subtle);
-        border-radius: var(--semantic-radius-pill);
-        background: color-mix(in srgb, var(--semantic-color-background-surface) 92%, transparent);
-        box-shadow: var(--semantic-elevation-md);
+        border: 1px solid var(--ds-semantic-color-border-subtle);
+        border-radius: var(--ds-semantic-radius-pill);
+        background: color-mix(
+          in srgb,
+          var(--ds-semantic-color-background-surface) 92%,
+          transparent
+        );
+        box-shadow: var(--ds-semantic-elevation-md);
         backdrop-filter: blur(14px);
         transform: translateX(-50%);
       }
@@ -49,24 +53,24 @@
         min-height: 34px;
         padding: 0 13px;
         border: 0;
-        border-radius: var(--semantic-radius-pill);
-        color: var(--semantic-color-foreground-muted);
+        border-radius: var(--ds-semantic-radius-pill);
+        color: var(--ds-semantic-color-foreground-muted);
         background: transparent;
-        font-family: var(--semantic-typography-label-sm-font-family);
-        font-size: var(--semantic-typography-label-sm-font-size);
-        font-weight: var(--semantic-typography-label-sm-font-weight);
+        font-family: var(--ds-semantic-typography-label-sm-font-family);
+        font-size: var(--ds-semantic-typography-label-sm-font-size);
+        font-weight: var(--ds-semantic-typography-label-sm-font-weight);
         cursor: pointer;
       }
 
       .prototype-toolbar button[aria-pressed="true"] {
-        color: var(--semantic-color-foreground-on-action-primary);
-        background: var(--semantic-color-background-action-primary-default);
+        color: var(--ds-semantic-color-foreground-on-action-primary);
+        background: var(--ds-semantic-color-background-action-primary-default);
       }
 
       .toolbar-divider {
         width: 1px;
         margin: 6px 2px;
-        background: var(--semantic-color-border-subtle);
+        background: var(--ds-semantic-color-border-subtle);
       }
 
       .variant {
@@ -83,24 +87,24 @@
         --option-default: #fcfcfc;
         --option-hover: #f7f7f7;
         --option-pressed: #e7e7e7;
-        --option-border-hover: var(--semantic-color-border-default);
-        --option-border-pressed: var(--semantic-color-border-default);
+        --option-border-hover: var(--ds-semantic-color-border-default);
+        --option-border-pressed: var(--ds-semantic-color-border-default);
       }
 
       .variant-b {
         --option-default: #f6f7f7;
         --option-hover: #e0e7e3;
         --option-pressed: #c1cec7;
-        --option-border-hover: var(--semantic-color-border-default);
-        --option-border-pressed: var(--semantic-color-border-default);
+        --option-border-hover: var(--ds-semantic-color-border-default);
+        --option-border-pressed: var(--ds-semantic-color-border-default);
       }
 
       .variant-c {
         --option-default: #faf6f0;
         --option-hover: #f2ebdf;
         --option-pressed: #e6d8c3;
-        --option-border-hover: var(--semantic-color-border-default);
-        --option-border-pressed: var(--semantic-color-border-default);
+        --option-border-hover: var(--ds-semantic-color-border-default);
+        --option-border-pressed: var(--ds-semantic-color-border-default);
       }
 
       :root[data-theme="dark"] .variant-a {
@@ -133,31 +137,31 @@
       .kicker,
       .state-label,
       .surface-token {
-        font-family: var(--semantic-typography-code-sm-font-family);
-        font-size: var(--semantic-typography-code-sm-font-size);
-        letter-spacing: var(--semantic-typography-code-sm-letter-spacing);
+        font-family: var(--ds-semantic-typography-code-sm-font-family);
+        font-size: var(--ds-semantic-typography-code-sm-font-size);
+        letter-spacing: var(--ds-semantic-typography-code-sm-letter-spacing);
       }
 
       .kicker {
         margin: 0 0 8px;
-        color: var(--semantic-color-foreground-brand-default);
+        color: var(--ds-semantic-color-foreground-brand-default);
       }
 
       h1 {
         max-width: 760px;
         margin: 0;
-        font-family: var(--semantic-typography-heading-lg-font-family);
+        font-family: var(--ds-semantic-typography-heading-lg-font-family);
         font-size: clamp(2rem, 4vw, 3.5rem);
-        font-weight: var(--semantic-typography-heading-lg-font-weight);
+        font-weight: var(--ds-semantic-typography-heading-lg-font-weight);
         line-height: 1.05;
-        letter-spacing: var(--semantic-typography-heading-lg-letter-spacing);
+        letter-spacing: var(--ds-semantic-typography-heading-lg-letter-spacing);
       }
 
       .summary {
         margin: 0;
-        color: var(--semantic-color-foreground-muted);
-        font-size: var(--semantic-typography-body-sm-font-size);
-        line-height: var(--semantic-typography-body-sm-line-height);
+        color: var(--ds-semantic-color-foreground-muted);
+        font-size: var(--ds-semantic-typography-body-sm-font-size);
+        line-height: var(--ds-semantic-typography-body-sm-line-height);
       }
 
       .surface-grid {
@@ -171,9 +175,9 @@
       .surface {
         min-width: 0;
         padding: 22px;
-        border: 1px solid var(--semantic-color-border-subtle);
-        border-radius: var(--semantic-radius-surface);
-        color: var(--semantic-color-foreground-default);
+        border: 1px solid var(--ds-semantic-color-border-subtle);
+        border-radius: var(--ds-semantic-radius-surface);
+        color: var(--ds-semantic-color-foreground-default);
       }
 
       .surface-header {
@@ -186,14 +190,14 @@
 
       .surface h2 {
         margin: 0;
-        font-family: var(--semantic-typography-heading-sm-font-family);
-        font-size: var(--semantic-typography-heading-sm-font-size);
-        font-weight: var(--semantic-typography-heading-sm-font-weight);
-        line-height: var(--semantic-typography-heading-sm-line-height);
+        font-family: var(--ds-semantic-typography-heading-sm-font-family);
+        font-size: var(--ds-semantic-typography-heading-sm-font-size);
+        font-weight: var(--ds-semantic-typography-heading-sm-font-weight);
+        line-height: var(--ds-semantic-typography-heading-sm-line-height);
       }
 
       .surface-token {
-        color: var(--semantic-color-foreground-muted);
+        color: var(--ds-semantic-color-foreground-muted);
         overflow-wrap: anywhere;
         text-align: right;
       }
@@ -211,31 +215,31 @@
       }
 
       .state-label {
-        color: var(--semantic-color-foreground-muted);
+        color: var(--ds-semantic-color-foreground-muted);
       }
 
       .secondary-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: var(--primitives-space-2);
+        gap: var(--ds-primitives-space-2);
         margin: 0;
-        padding: var(--primitives-space-3) var(--primitives-space-4);
-        border: 1px solid var(--semantic-color-border-default);
-        border-radius: var(--semantic-radius-control);
-        color: var(--semantic-color-foreground-default);
+        padding: var(--ds-primitives-space-3) var(--ds-primitives-space-4);
+        border: 1px solid var(--ds-semantic-color-border-default);
+        border-radius: var(--ds-semantic-radius-control);
+        color: var(--ds-semantic-color-foreground-default);
         background: var(--option-default);
-        font-family: var(--semantic-typography-label-md-font-family);
-        font-size: var(--semantic-typography-label-md-font-size);
-        font-weight: var(--semantic-typography-label-md-font-weight);
-        line-height: var(--semantic-typography-label-md-line-height);
-        letter-spacing: var(--semantic-typography-label-md-letter-spacing);
+        font-family: var(--ds-semantic-typography-label-md-font-family);
+        font-size: var(--ds-semantic-typography-label-md-font-size);
+        font-weight: var(--ds-semantic-typography-label-md-font-weight);
+        line-height: var(--ds-semantic-typography-label-md-line-height);
+        letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
         white-space: nowrap;
         cursor: pointer;
         appearance: none;
         transition:
-          background-color var(--primitives-duration-fast) var(--primitives-ease-out),
-          border-color var(--primitives-duration-fast) var(--primitives-ease-out);
+          background-color var(--ds-primitives-duration-fast) var(--ds-primitives-ease-out),
+          border-color var(--ds-primitives-duration-fast) var(--ds-primitives-ease-out);
       }
 
       .secondary-button.force-hover,
@@ -251,44 +255,44 @@
       }
 
       .secondary-button:focus-visible {
-        outline: 2px solid var(--semantic-color-border-focus);
+        outline: 2px solid var(--ds-semantic-color-border-focus);
         outline-offset: 2px;
       }
 
       .surface-default {
-        background: var(--semantic-color-background-default);
+        background: var(--ds-semantic-color-background-default);
       }
 
       .surface-surface {
-        background: var(--semantic-color-background-surface);
+        background: var(--ds-semantic-color-background-surface);
       }
 
       .surface-sunken {
-        background: var(--semantic-color-background-sunken);
+        background: var(--ds-semantic-color-background-sunken);
       }
 
       .surface-muted {
-        background: var(--semantic-color-background-muted);
+        background: var(--ds-semantic-color-background-muted);
       }
 
       .surface-brand {
-        background: var(--semantic-color-background-brand-muted);
+        background: var(--ds-semantic-color-background-brand-muted);
       }
 
       .surface-success {
-        background: var(--semantic-color-background-status-success-default);
+        background: var(--ds-semantic-color-background-status-success-default);
       }
 
       .surface-warning {
-        background: var(--semantic-color-background-status-warning-default);
+        background: var(--ds-semantic-color-background-status-warning-default);
       }
 
       .surface-info {
-        background: var(--semantic-color-background-status-info-default);
+        background: var(--ds-semantic-color-background-status-info-default);
       }
 
       .surface-danger {
-        background: var(--semantic-color-background-status-danger-default);
+        background: var(--ds-semantic-color-background-status-danger-default);
       }
 
       @media (max-width: 720px) {

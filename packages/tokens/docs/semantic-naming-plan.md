@@ -477,9 +477,9 @@ primitive scale changes. They are theme-independent.
 | `semantic.focus.width`    | Thickness of the focus outline on every focusable element                  | `border.thick` |
 | `semantic.focus.offset`   | Gap between an element and its focus outline                               | `border.thick` |
 
-Every focus ring is `outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus)`
-with `outline-offset: var(--semantic-focus-offset)`. Where the outline would be clipped, as in a
-scrolling tab list, it is drawn inside with an offset of `calc(-1 * var(--semantic-focus-width))`.
+Every focus ring is `outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus)`
+with `outline-offset: var(--ds-semantic-focus-offset)`. Where the outline would be clipped, as in a
+scrolling tab list, it is drawn inside with an offset of `calc(-1 * var(--ds-semantic-focus-width))`.
 
 ## Size
 

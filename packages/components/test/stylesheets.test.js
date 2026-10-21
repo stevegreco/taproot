@@ -10,7 +10,7 @@ const stylesheets = Object.entries(
 ).map(([file, css]) => [file.slice("../src/".length), css]);
 
 const rawColor =
-  /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\(|--primitives-color-/gi;
+  /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\(|--ds-primitives-color-/gi;
 
 test("finds the stylesheets in src/", () => {
   expect(stylesheets.length).toBeGreaterThan(0);
@@ -23,14 +23,15 @@ test.each(stylesheets)("%s uses no raw colors", (_file, css) => {
 });
 
 test.each(stylesheets)("%s takes radius and border width from semantic tokens", (_file, css) => {
-  expect(withoutComments(css).match(/--primitives-(?:radius|border)-[\w-]+/g) ?? []).toEqual([]);
+  expect(withoutComments(css).match(/--ds-primitives-(?:radius|border)-[\w-]+/g) ?? []).toEqual([]);
   expect(withoutComments(css).match(/border(?:-[\w-]+)?:\s*\d+px\b/g) ?? []).toEqual([]);
 });
 
 test.each(stylesheets)("%s draws focus rings with the shared focus tokens", (_file, css) => {
   const outlines = withoutComments(css).match(/outline(?:-offset)?:[^;]+/g) ?? [];
   const handWritten = outlines.filter(
-    (declaration) => declaration !== "outline: none" && !declaration.includes("--semantic-focus-"),
+    (declaration) =>
+      declaration !== "outline: none" && !declaration.includes("--ds-semantic-focus-"),
   );
   expect(handWritten).toEqual([]);
 });

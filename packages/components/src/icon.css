@@ -21,15 +21,15 @@
 }
 
 :host([size="small"]) {
-  --_size: var(--primitives-space-4);
+  --_size: var(--ds-primitives-space-4);
 }
 
 :host([size="medium"]) {
-  --_size: var(--primitives-space-5);
+  --_size: var(--ds-primitives-space-5);
 }
 
 :host([size="large"]) {
-  --_size: var(--primitives-space-6);
+  --_size: var(--ds-primitives-space-6);
 }
 
 .icon {

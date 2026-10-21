@@ -25,25 +25,25 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: var(--primitives-space-1);
+  gap: var(--ds-primitives-space-1);
   width: 100%;
 }
 
 .label {
   display: inline-flex;
   align-items: baseline;
-  gap: var(--primitives-space-1);
-  color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-label-md-font-family);
-  font-size: var(--semantic-typography-label-md-font-size);
-  font-weight: var(--semantic-typography-label-md-font-weight);
-  line-height: var(--semantic-typography-label-md-line-height);
-  letter-spacing: var(--semantic-typography-label-md-letter-spacing);
+  gap: var(--ds-primitives-space-1);
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
 }
 
 .field.is-disabled .label,
 .field.is-disabled .hint {
-  color: var(--semantic-color-foreground-disabled);
+  color: var(--ds-semantic-color-foreground-disabled);
 }
 
 .control {
@@ -51,64 +51,64 @@
   width: 100%;
   box-sizing: border-box;
   margin: 0;
-  padding: var(--primitives-space-2) var(--primitives-space-3);
+  padding: var(--ds-primitives-space-2) var(--ds-primitives-space-3);
   border-style: solid;
-  border-width: var(--semantic-border-width);
-  border-color: var(--semantic-color-border-default);
-  border-radius: var(--semantic-radius-control);
-  background-color: var(--semantic-color-background-surface);
-  color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-body-md-font-family);
-  font-size: var(--semantic-typography-body-md-font-size);
-  font-weight: var(--semantic-typography-body-md-font-weight);
-  line-height: var(--semantic-typography-body-md-line-height);
-  letter-spacing: var(--semantic-typography-body-md-letter-spacing);
+  border-width: var(--ds-semantic-border-width);
+  border-color: var(--ds-semantic-color-border-default);
+  border-radius: var(--ds-semantic-radius-control);
+  background-color: var(--ds-semantic-color-background-surface);
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
   outline: none;
   appearance: auto;
   -webkit-appearance: auto;
 }
 
 .control::placeholder {
-  color: var(--semantic-color-foreground-muted);
+  color: var(--ds-semantic-color-foreground-muted);
   opacity: 1;
 }
 
 .control:hover:not(:disabled):not([aria-invalid="true"]) {
-  border-color: var(--semantic-color-border-strong);
+  border-color: var(--ds-semantic-color-border-strong);
 }
 
 .control:focus-visible {
-  outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
-  outline-offset: var(--semantic-focus-offset);
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
 }
 
 .control[aria-invalid="true"]:not(:disabled) {
-  border-color: var(--semantic-color-border-status-danger-default);
+  border-color: var(--ds-semantic-color-border-status-danger-default);
 }
 
 .control:disabled {
-  background-color: var(--semantic-color-background-disabled);
-  border-color: var(--semantic-color-border-disabled);
-  color: var(--semantic-color-foreground-disabled);
+  background-color: var(--ds-semantic-color-background-disabled);
+  border-color: var(--ds-semantic-color-border-disabled);
+  color: var(--ds-semantic-color-foreground-disabled);
   cursor: not-allowed;
 }
 
 .hint,
 .error {
   margin: 0;
-  font-family: var(--semantic-typography-body-sm-font-family);
-  font-size: var(--semantic-typography-body-sm-font-size);
-  font-weight: var(--semantic-typography-body-sm-font-weight);
-  line-height: var(--semantic-typography-body-sm-line-height);
-  letter-spacing: var(--semantic-typography-body-sm-letter-spacing);
+  font-family: var(--ds-semantic-typography-body-sm-font-family);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
+  font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+  line-height: var(--ds-semantic-typography-body-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-sm-letter-spacing);
 }
 
 .hint {
-  color: var(--semantic-color-foreground-muted);
+  color: var(--ds-semantic-color-foreground-muted);
 }
 
 .error {
-  color: var(--semantic-color-foreground-status-danger-default);
+  color: var(--ds-semantic-color-foreground-status-danger-default);
 }
 
 @media (forced-colors: active) {

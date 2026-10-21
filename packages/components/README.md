@@ -85,7 +85,7 @@ ds-button::part(button) {
 
 ## Tokens consumed
 
-Every component consumes `--semantic-*` tokens directly, plus primitives for
+Every component consumes `--ds-semantic-*` tokens directly, plus primitives for
 scale choices such as spacing and motion that have no semantic role. The tokens a
 component reads are internal, not a customization API (tokens ADR 0003).
 

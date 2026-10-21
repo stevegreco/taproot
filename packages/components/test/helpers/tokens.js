@@ -1,6 +1,6 @@
 /**
  * The computed value `property` takes when set to `value` (for example
- * `var(--semantic-color-border-focus)` or `transparent`) on a throwaway element
+ * `var(--ds-semantic-color-border-focus)` or `transparent`) on a throwaway element
  * under `container`. Comparing it with a part's computed value proves the token
  * resolved, in the same serialization the browser reports for the part.
  * @param {string} property CSS longhand, e.g. "font-size"

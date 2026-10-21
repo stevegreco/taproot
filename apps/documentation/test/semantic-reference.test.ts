@@ -30,7 +30,7 @@ test("background reference Markdown uses readable per-family state lists", () =>
   assert.doesNotMatch(markdown, /state-layer|\| Action \|/i);
   assert.match(
     markdown,
-    /##### Secondary[\s\S]*- Hover: `--semantic-color-background-action-secondary-hover`/,
+    /##### Secondary[\s\S]*- Hover: `--ds-semantic-color-background-action-secondary-hover`/,
   );
   assert.match(markdown, /##### Tertiary[\s\S]*- Default: Transparent/);
 });

@@ -5,9 +5,9 @@
  */
 
 :host {
-  --_background: var(--semantic-color-background-muted);
-  --_foreground: var(--semantic-color-foreground-muted);
-  --_border: var(--semantic-color-border-subtle);
+  --_background: var(--ds-semantic-color-background-muted);
+  --_foreground: var(--ds-semantic-color-foreground-muted);
+  --_border: var(--ds-semantic-color-border-subtle);
 
   display: inline-block;
   vertical-align: middle;
@@ -18,49 +18,49 @@
 }
 
 :host([variant="accent"]) {
-  --_background: var(--semantic-color-background-brand-muted);
-  --_foreground: var(--semantic-color-foreground-brand-default);
-  --_border: var(--semantic-color-border-brand-muted);
+  --_background: var(--ds-semantic-color-background-brand-muted);
+  --_foreground: var(--ds-semantic-color-foreground-brand-default);
+  --_border: var(--ds-semantic-color-border-brand-muted);
 }
 
 :host([variant="success"]) {
-  --_background: var(--semantic-color-background-status-success-default);
-  --_foreground: var(--semantic-color-foreground-status-success-default);
-  --_border: var(--semantic-color-border-status-success-default);
+  --_background: var(--ds-semantic-color-background-status-success-default);
+  --_foreground: var(--ds-semantic-color-foreground-status-success-default);
+  --_border: var(--ds-semantic-color-border-status-success-default);
 }
 
 :host([variant="danger"]) {
-  --_background: var(--semantic-color-background-status-danger-default);
-  --_foreground: var(--semantic-color-foreground-status-danger-default);
-  --_border: var(--semantic-color-border-status-danger-default);
+  --_background: var(--ds-semantic-color-background-status-danger-default);
+  --_foreground: var(--ds-semantic-color-foreground-status-danger-default);
+  --_border: var(--ds-semantic-color-border-status-danger-default);
 }
 
 :host([variant="warning"]) {
-  --_background: var(--semantic-color-background-status-warning-default);
-  --_foreground: var(--semantic-color-foreground-status-warning-default);
-  --_border: var(--semantic-color-border-status-warning-default);
+  --_background: var(--ds-semantic-color-background-status-warning-default);
+  --_foreground: var(--ds-semantic-color-foreground-status-warning-default);
+  --_border: var(--ds-semantic-color-border-status-warning-default);
 }
 
 :host([variant="info"]) {
-  --_background: var(--semantic-color-background-status-info-default);
-  --_foreground: var(--semantic-color-foreground-status-info-default);
-  --_border: var(--semantic-color-border-status-info-default);
+  --_background: var(--ds-semantic-color-background-status-info-default);
+  --_foreground: var(--ds-semantic-color-foreground-status-info-default);
+  --_border: var(--ds-semantic-color-border-status-info-default);
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--primitives-space-1);
+  gap: var(--ds-primitives-space-1);
   box-sizing: border-box;
-  padding: var(--primitives-space-1) var(--primitives-space-2);
-  border: var(--semantic-border-width) solid var(--_border);
-  border-radius: var(--semantic-radius-pill);
+  padding: var(--ds-primitives-space-1) var(--ds-primitives-space-2);
+  border: var(--ds-semantic-border-width) solid var(--_border);
+  border-radius: var(--ds-semantic-radius-pill);
   background-color: var(--_background);
   color: var(--_foreground);
-  font-family: var(--semantic-typography-label-sm-font-family);
-  font-size: var(--semantic-typography-label-sm-font-size);
-  font-weight: var(--semantic-typography-label-sm-font-weight);
-  line-height: var(--semantic-typography-label-sm-line-height);
-  letter-spacing: var(--semantic-typography-label-sm-letter-spacing);
+  font-family: var(--ds-semantic-typography-label-sm-font-family);
+  font-size: var(--ds-semantic-typography-label-sm-font-size);
+  font-weight: var(--ds-semantic-typography-label-sm-font-weight);
+  line-height: var(--ds-semantic-typography-label-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-sm-letter-spacing);
   white-space: nowrap;
 }

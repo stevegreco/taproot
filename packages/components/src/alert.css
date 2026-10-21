@@ -5,9 +5,9 @@
  */
 
 :host {
-  --_background: var(--semantic-color-background-status-info-default);
-  --_border: var(--semantic-color-border-status-info-default);
-  --_icon: var(--semantic-color-foreground-status-info-default);
+  --_background: var(--ds-semantic-color-background-status-info-default);
+  --_border: var(--ds-semantic-color-border-status-info-default);
+  --_icon: var(--ds-semantic-color-foreground-status-info-default);
 
   display: block;
 }
@@ -17,21 +17,21 @@
 }
 
 :host([variant="success"]) {
-  --_background: var(--semantic-color-background-status-success-default);
-  --_border: var(--semantic-color-border-status-success-default);
-  --_icon: var(--semantic-color-foreground-status-success-default);
+  --_background: var(--ds-semantic-color-background-status-success-default);
+  --_border: var(--ds-semantic-color-border-status-success-default);
+  --_icon: var(--ds-semantic-color-foreground-status-success-default);
 }
 
 :host([variant="warning"]) {
-  --_background: var(--semantic-color-background-status-warning-default);
-  --_border: var(--semantic-color-border-status-warning-default);
-  --_icon: var(--semantic-color-foreground-status-warning-default);
+  --_background: var(--ds-semantic-color-background-status-warning-default);
+  --_border: var(--ds-semantic-color-border-status-warning-default);
+  --_icon: var(--ds-semantic-color-foreground-status-warning-default);
 }
 
 :host([variant="danger"]) {
-  --_background: var(--semantic-color-background-status-danger-default);
-  --_border: var(--semantic-color-border-status-danger-default);
-  --_icon: var(--semantic-color-foreground-status-danger-default);
+  --_background: var(--ds-semantic-color-background-status-danger-default);
+  --_border: var(--ds-semantic-color-border-status-danger-default);
+  --_icon: var(--ds-semantic-color-foreground-status-danger-default);
 }
 
 [hidden] {
@@ -41,16 +41,16 @@
 .surface {
   display: flex;
   align-items: flex-start;
-  gap: var(--primitives-space-3);
+  gap: var(--ds-primitives-space-3);
   box-sizing: border-box;
-  padding: var(--primitives-space-3) var(--primitives-space-4);
-  border: var(--semantic-border-width) solid var(--_border);
-  border-radius: var(--semantic-radius-surface);
+  padding: var(--ds-primitives-space-3) var(--ds-primitives-space-4);
+  border: var(--ds-semantic-border-width) solid var(--_border);
+  border-radius: var(--ds-semantic-radius-surface);
   background-color: var(--_background);
-  color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-body-md-font-family);
-  font-size: var(--semantic-typography-body-md-font-size);
-  line-height: var(--semantic-typography-body-md-line-height);
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
 }
 
 /* The icon sits on the first line of text, whatever the line height. */
@@ -66,23 +66,23 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--primitives-space-3);
+  gap: var(--ds-primitives-space-3);
   min-width: 0;
 }
 
 .title {
-  color: var(--semantic-color-foreground-default);
-  font-family: var(--semantic-typography-title-font-family);
-  font-size: var(--semantic-typography-title-font-size);
-  font-weight: var(--semantic-typography-title-font-weight);
-  line-height: var(--semantic-typography-title-line-height);
-  letter-spacing: var(--semantic-typography-title-letter-spacing);
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-title-font-family);
+  font-size: var(--ds-semantic-typography-title-font-size);
+  font-weight: var(--ds-semantic-typography-title-font-weight);
+  line-height: var(--ds-semantic-typography-title-line-height);
+  letter-spacing: var(--ds-semantic-typography-title-letter-spacing);
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--primitives-space-2);
+  gap: var(--ds-primitives-space-2);
 }
 
 /* Pulled into the padding so the graphic lines up with the first line of text. */
@@ -91,12 +91,12 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  margin: calc(-1 * var(--primitives-space-1));
-  padding: var(--primitives-space-1);
+  margin: calc(-1 * var(--ds-primitives-space-1));
+  padding: var(--ds-primitives-space-1);
   border: 0;
-  border-radius: var(--semantic-radius-control);
+  border-radius: var(--ds-semantic-radius-control);
   background-color: transparent;
-  color: var(--semantic-color-foreground-default);
+  color: var(--ds-semantic-color-foreground-default);
   font: inherit;
   cursor: pointer;
 }
@@ -107,16 +107,16 @@
 }
 
 .dismiss:hover {
-  background-color: var(--semantic-color-background-action-tertiary-hover);
+  background-color: var(--ds-semantic-color-background-action-tertiary-hover);
 }
 
 .dismiss:active {
-  background-color: var(--semantic-color-background-action-tertiary-pressed);
+  background-color: var(--ds-semantic-color-background-action-tertiary-pressed);
 }
 
 .dismiss:focus-visible {
-  outline: var(--semantic-focus-width) solid var(--semantic-color-border-focus);
-  outline-offset: var(--semantic-focus-offset);
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
 }
 
 @media (forced-colors: active) {
