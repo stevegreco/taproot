@@ -1,0 +1,28 @@
+/** The host checks for <ds-select>. test/host-checks.test.js reads every file here. */
+export default {
+  id: "select",
+  tagName: "ds-select",
+  className: "DsSelect",
+  defineExport: "defineSelect",
+  events: ["change"],
+  focusPart: "control",
+  parts: ["field", "label", "control", "hint", "error"],
+  requiresDefaultSlot: false,
+  disabledAttribute: "disabled",
+  fieldsetDisables: true,
+  hasFormProperty: true,
+  activationKeys: [],
+  fixture: {},
+  fixtureContent: '<option value="one">One</option><option value="two">Two</option>',
+  textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+  enums: [],
+  properties: {
+    label: "sample label",
+    hint: "sample hint",
+    error: "sample error",
+    name: "choice",
+    value: "two",
+    disabled: true,
+    required: true,
+  },
+};

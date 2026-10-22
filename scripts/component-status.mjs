@@ -116,10 +116,6 @@ if (
 }
 const inPhase = (name) => !phase || phase === name;
 
-const pascal = slug
-  .split("-")
-  .map((word) => word[0].toUpperCase() + word.slice(1))
-  .join("");
 const specPath = `packages/spec/content/components/${slug}/${slug}.spec.yaml`;
 const testPath = `packages/components/test/${slug}.test.js`;
 const read = (file) => {
@@ -134,7 +130,6 @@ const row = (ok, label, detail = "") => {
   console.log(`  ${mark}  ${label}${detail ? `  (${detail})` : ""}`);
 };
 
-const has = (file, pattern) => pattern.test(read(file) ?? "");
 const specSource = read(specPath);
 let spec;
 if (specSource) {
@@ -167,23 +162,12 @@ if (inPhase("implementation")) {
     `packages/components/src/${slug}.css`,
     `packages/components/src/${slug}.d.ts`,
     testPath,
+    `packages/components/test/host-checks/${slug}.js`,
     `apps/documentation/implementation/${slug}.md`,
     `apps/storybook/stories/${slug}.stories.js`,
   ]) {
     row(existsSync(path.join(root, file)), file);
   }
-  row(
-    has("packages/components/src/index.js", new RegExp(`^define${pascal}\\(\\);$`, "m")),
-    `src/index.js exports and calls define${pascal}`,
-  );
-  row(
-    has("packages/components/src/index.d.ts", new RegExp(`\\./${slug}\\.js`)),
-    "src/index.d.ts re-exports the types and adds the JSX attributes",
-  );
-  row(
-    has("packages/components/test/host-checks.test.js", new RegExp(`id: "${slug}"`)),
-    "test/host-checks.test.js table row",
-  );
   if (spec) {
     const draft = spec.status === "draft";
     row(!draft, "spec has no status: draft", draft ? "remove it now that it is built" : "");
