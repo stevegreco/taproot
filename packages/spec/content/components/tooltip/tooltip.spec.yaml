@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.tooltip
+type: component
+title: Tooltip
+summary: Use Tooltip to show the name of an icon-only control when a person points at it or focuses it.
+status: draft
+tags:
+  - label
+  - icon-only
+  - hover
+  - overlay
+links:
+  follows:
+    - guideline.compose-or-propose
+  related:
+    - component.button
+description: >-
+  A short text label that appears next to an icon-only control while a person points at it or
+  focuses it, and disappears when they move away or dismiss it. Its text is the control's
+  accessible name, so the label people see and the name assistive technology reads are the same.
+usage:
+  do:
+    - Name an icon-only button, such as a trash icon that deletes a row or a pencil icon that edits it.
+    - Name each control in a toolbar of icon-only actions, where there is no room for text labels.
+  avoid:
+    - situation: Label a control that already shows its name as text.
+      instead: no tooltip
+      why: >-
+        The visible text already names it. A tooltip repeats it and gets in the way of whatever
+        sits next to the control.
+    - situation: Name an icon that is not a control, such as a status symbol beside a value.
+      instead: component.icon
+      why: >-
+        A tooltip only appears on something a person can focus. Give the icon a label, or state its
+        meaning in text beside it.
+    - situation: Explain the expected format of a form field, or why its value is invalid.
+      instead: component.text-field
+      why: >-
+        The field's hint and error are always visible and are read with the field. A tooltip hides
+        the information until someone goes looking for it.
+    - situation: Explain why an action is disabled.
+      instead: a short text near the action
+      why: >-
+        A disabled control cannot take focus, so keyboard users would never see a tooltip on it.
+        Button's explain-disabled rule asks for visible text.
+    - situation: Show content that has links, buttons, or more than a short phrase.
+      instead: component.dialog
+      why: >-
+        A tooltip cannot be interacted with and disappears when the pointer leaves. Content a person
+        has to read or act on needs a surface they open on purpose.
+    - situation: Give information that people must see to complete a task.
+      instead: visible text on the page
+      why: >-
+        Touch screens have no hover, and many people never point at a control before using it. A
+        tooltip is only a reminder of what a control does.
+anatomy:
+  trigger:
+    role: interactive-surface
+    description: >-
+      The supplied icon-only control that the tooltip names, such as a Button. Tooltip does not
+      draw it.
+  bubble:
+    role: label
+    description: >-
+      The floating text that names the trigger. It appears beside the trigger, above other content,
+      and does not take focus.
