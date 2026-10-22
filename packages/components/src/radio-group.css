@@ -100,6 +100,15 @@
   align-items: baseline;
   gap: var(--ds-primitives-space-1);
   color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
+}
+
+.option-label {
+  color: var(--ds-semantic-color-foreground-default);
   font-family: var(--ds-semantic-typography-body-md-font-family);
   font-size: var(--ds-semantic-typography-body-md-font-size);
   font-weight: var(--ds-semantic-typography-body-md-font-weight);
@@ -127,13 +136,13 @@
   color: var(--ds-semantic-color-foreground-status-danger-default);
 }
 
-.choice.is-disabled .label,
+.choice.is-disabled .option-label,
 .field.is-disabled > .label,
 .field.is-disabled > .hint {
   color: var(--ds-semantic-color-foreground-disabled);
 }
 
-.choice.is-disabled .label {
+.choice.is-disabled .option-label {
   cursor: not-allowed;
 }
 

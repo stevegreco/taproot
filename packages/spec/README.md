@@ -4,10 +4,17 @@
 records for components, patterns, guidelines, and examples, with rules that have an address and a
 level. A small library reads, validates, and queries them.
 
-- The format is defined in [SPEC.md](SPEC.md) and the JSON Schema in
-  [`src/schema/spec-record.schema.json`](src/schema/spec-record.schema.json).
-- The reasoning is in [RFC 0002](../../docs/rfcs/0002-knowledge-layer-architecture.md), written when
-  this package was called the knowledge layer.
+## Start here
+
+| To                                  | Read                                                          |
+| ----------------------------------- | ------------------------------------------------------------- |
+| Look up a field or write a record   | [SPEC.md](SPEC.md), the only field reference                  |
+| Query the spec                      | [CLI](#cli), or `pnpm spec help` from the repository root     |
+| Understand the format's decisions   | ADRs 0001 through 0003 in [`docs/adr/`](../../docs/adr)       |
+
+The JSON Schema is [`src/schema/spec-record.schema.json`](src/schema/spec-record.schema.json).
+[RFC 0002](../../docs/rfcs/0002-knowledge-layer-architecture.md) is historical background, written
+when this package was called the knowledge layer.
 
 There is no build step. The library reads the authored files directly and keeps an index in memory.
 A command-line tool and a local MCP server call the same library. See [CLI](#cli) and

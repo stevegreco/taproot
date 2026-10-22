@@ -7,8 +7,8 @@ component, with patterns and guidelines) in [`packages/spec`](packages/spec/READ
 the web components in [`packages/components`](packages/components/README.md), and the
 documentation site in `apps/documentation`.
 
-Query the spec from the repository root with `pnpm spec search <query>` or
-`pnpm spec get <id>`. An MCP server for the same content is
+Start with the spec's [Start here](packages/spec/README.md#start-here) table. Query the spec
+from the repository root with `pnpm spec search <query>` or `pnpm spec get <id>`. An MCP server for the same content is
 registered in `.mcp.json`.
 
 ## Install

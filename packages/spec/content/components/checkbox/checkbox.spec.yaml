@@ -293,11 +293,11 @@ tokens:
       line-height: semantic.typography.body.sm.lineHeight
       letter-spacing: semantic.typography.body.sm.letterSpacing
 rationale:
-  - decision: Checkbox consumes semantic tokens directly, plus one radius primitive.
+  - decision: Checkbox consumes semantic tokens directly.
     why: >-
       ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is
-      already audited against them. No semantic radius fits a 16px box, so the box uses
-      primitives.radius.xs. No component-token namespace.
+      already audited against them. The box uses semantic.radius.compact, the radius for small
+      controls. No component-token namespace.
   - decision: Checked and indeterminate are states driven by their parameters.
     why: >-
       They paint the box the same way and differ only in the indicator. When both are set, the box

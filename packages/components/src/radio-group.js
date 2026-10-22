@@ -171,7 +171,8 @@ export class DsRadioGroup extends ForwardsFocus(Base) {
       indicator.setAttribute("aria-hidden", "true");
       box.append(input, indicator);
       const text = document.createElement("span");
-      text.className = "label";
+      text.className = "option-label";
+      text.setAttribute("part", "option-label");
       text.textContent = option.label;
       choice.append(box, text);
       this.#options.append(choice);

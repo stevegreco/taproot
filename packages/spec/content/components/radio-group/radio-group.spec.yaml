@@ -3,11 +3,17 @@ id: component.radio-group
 type: component
 title: Radio group
 summary: Use Radio group to choose exactly one option from a short visible list.
-tags: [form, selection]
+tags:
+  - form
+  - selection
 links:
-  follows: [guideline.compose-or-propose]
-  related: [component.checkbox]
-description: A labeled set of mutually exclusive options with a shared hint and error. Selecting an option clears the previous selection.
+  follows:
+    - guideline.compose-or-propose
+  related:
+    - component.checkbox
+description: >-
+  A labeled set of mutually exclusive options with a shared hint and error. Selecting an option
+  clears the previous selection.
 usage:
   do:
     - Choose one delivery method or plan from a short list.
@@ -22,97 +28,127 @@ usage:
       instead: component.tabs
       why: Tabs change what is shown. A radio group records a value.
 anatomy:
-  field: { role: container, description: Group label and choices and messages. }
-  label: { role: label, description: Visible group name. }
+  field:
+    role: container
+    description: Group label and choices and messages.
+  label:
+    role: label
+    description: Visible group name.
   options:
-    {
-      role: container,
-      description: Ordered collection of labeled options with unique values and optional unavailability.,
-    }
-  choice: { role: container, description: One radio control and its visible option label. }
-  control: { role: interactive-surface, description: Circular selection control. }
-  indicator: { role: indicator, description: Dot appears inside the selected control. }
-  hint: { role: description, description: Shared supporting guidance. }
-  error: { role: description, description: Shared message describing what to fix. }
+    role: container
+    description: >-
+      Ordered collection of labeled options with unique values and optional unavailability.
+  choice:
+    role: container
+    description: One radio control and its visible option label.
+  control:
+    role: interactive-surface
+    description: Circular selection control.
+  indicator:
+    role: indicator
+    description: Dot appears inside the selected control.
+  option-label:
+    role: label
+    description: Visible name of one option.
+  hint:
+    role: description
+    description: Shared supporting guidance.
+  error:
+    role: description
+    description: Shared message describing what to fix.
 parameters:
-  label: { kind: string, description: Visible accessible name of the group. }
-  hint: { kind: string, description: Supporting guidance associated with the group. }
-  error: { kind: string, description: Nonempty text marks the group invalid and blocks submission. }
-  name: { kind: string, description: Field name used for submission. }
-  value: { kind: string, description: Selected option value. Empty means no selection. }
-  disabled: { kind: boolean, default: false, description: Makes all options unavailable. }
+  label:
+    kind: string
+    description: Visible accessible name of the group.
+  hint:
+    kind: string
+    description: Supporting guidance associated with the group.
+  error:
+    kind: string
+    description: Nonempty text marks the group invalid and blocks submission.
+  name:
+    kind: string
+    description: Field name used for submission.
+  value:
+    kind: string
+    description: Selected option value. Empty means no selection.
+  disabled:
+    kind: boolean
+    default: false
+    description: Makes all options unavailable.
   required:
-    { kind: boolean, default: false, description: Requires one enabled option before submission. }
+    kind: boolean
+    default: false
+    description: Requires one enabled option before submission.
 events:
   input: Selection changed from user interaction.
   change: Selection committed from user interaction.
-states: [default, hover, focus, checked, disabled, invalid]
+states:
+  - default
+  - hover
+  - focus
+  - checked
+  - disabled
+  - invalid
 rules:
-  - {
-      id: unique-options,
-      level: must,
-      topic: content,
-      statement: Each option has a visible label and a unique nonempty value. The group has a visible label.,
-    }
-  - {
-      id: exclusive-choice,
-      level: must,
-      topic: behavior,
-      statement: Selecting an option clears any previous selection. Activating the selected option keeps it selected.,
-    }
-  - {
-      id: selection-events,
-      level: must,
-      topic: behavior,
-      statement: User selection changes report input then change. Programmatic changes report neither.,
-    }
-  - {
-      id: disabled-options,
-      level: must,
-      topic: behavior,
-      statement: Disabled options cannot be selected by pointer or keyboard. Disabled groups prevent all interaction.,
-    }
-  - {
-      id: form-value,
-      level: should,
-      topic: behavior,
-      statement: Submit the selected enabled option under the group name. Submit nothing without a selection or while disabled. Reset restores the initial selection.,
-    }
-  - {
-      id: invalid-submit,
-      level: must,
-      topic: behavior,
-      statement: A nonempty error or a missing required selection blocks submission.,
-    }
-  - {
-      id: required-message,
-      level: must,
-      topic: accessibility,
-      statement: Announce required state and convey it visibly without color alone.,
-    }
-  - {
-      id: accessible-group,
-      level: must,
-      topic: accessibility,
-      statement: Associate the group label and hint and error with the options. Expose each option name and selected state.,
-    }
-  - {
-      id: keyboard-selection,
-      level: must,
-      topic: accessibility,
-      statement: Tab enters and leaves the group. Arrow keys move focus and selection between enabled options and wrap at either end. Space selects the focused option.,
-    }
-  - {
-      id: visible-state,
-      level: must,
-      topic: accessibility,
-      statement: A selected dot and visible keyboard focus remain distinguishable under forced colors.,
-    }
+  - id: unique-options
+    level: must
+    topic: content
+    statement: >-
+      Each option has a visible label and a unique nonempty value. The group has a visible label.
+  - id: exclusive-choice
+    level: must
+    topic: behavior
+    statement: >-
+      Selecting an option clears any previous selection. Activating the selected option keeps it
+      selected.
+  - id: selection-events
+    level: must
+    topic: behavior
+    statement: User selection changes report input then change. Programmatic changes report neither.
+  - id: disabled-options
+    level: must
+    topic: behavior
+    statement: >-
+      Disabled options cannot be selected by pointer or keyboard. Disabled groups prevent all
+      interaction.
+  - id: form-value
+    level: should
+    topic: behavior
+    statement: >-
+      Submit the selected enabled option under the group name. Submit nothing without a selection or
+      while disabled. Reset restores the initial selection.
+  - id: invalid-submit
+    level: must
+    topic: behavior
+    statement: A nonempty error or a missing required selection blocks submission.
+  - id: required-message
+    level: must
+    topic: accessibility
+    statement: Announce required state and convey it visibly without color alone.
+  - id: accessible-group
+    level: must
+    topic: accessibility
+    statement: >-
+      Associate the group label and hint and error with the options. Expose each option name and
+      selected state.
+  - id: keyboard-selection
+    level: must
+    topic: accessibility
+    statement: >-
+      Tab enters and leaves the group. Arrow keys move focus and selection between enabled options
+      and wrap at either end. Space selects the focused option.
+  - id: visible-state
+    level: must
+    topic: accessibility
+    statement: A selected dot and visible keyboard focus remain distinguishable under forced colors.
 accessibility:
   role: Radio group
   name: From the visible group label. Each option has its own visible label.
   keyboard:
-    Tab: Enter or leave the group using the selected enabled option or the platform entry option when none is selected.
+    Tab: >-
+      Enter or leave the group using the selected enabled option or the platform entry option when
+      none is selected.
     Arrow keys: Move focus and selection between enabled options with wrapping.
     Space: Select the focused option.
 tokens:
@@ -150,6 +186,16 @@ tokens:
   label:
     base:
       foreground: semantic.color.foreground.default
+      font-family: semantic.typography.label.md.fontFamily
+      font-size: semantic.typography.label.md.fontSize
+      font-weight: semantic.typography.label.md.fontWeight
+      line-height: semantic.typography.label.md.lineHeight
+      letter-spacing: semantic.typography.label.md.letterSpacing
+    disabled:
+      foreground: semantic.color.foreground.disabled
+  option-label:
+    base:
+      foreground: semantic.color.foreground.default
       font-family: semantic.typography.body.md.fontFamily
       font-size: semantic.typography.body.md.fontSize
       font-weight: semantic.typography.body.md.fontWeight
@@ -177,20 +223,30 @@ tokens:
       letter-spacing: semantic.typography.body.sm.letterSpacing
 rationale:
   - decision: Options are ordered content rather than a scalar parameter.
-    why: Each option contains a label and value and disabled state. The current parameter schema describes scalar values only.
+    why: >-
+      Each option contains a label and value and disabled state. The current parameter schema
+      describes scalar values only.
   - decision: One size and vertical layout with no density or icon-only option.
-    why: A 16px circular control and visible label suit short lists. Layout around the group controls density.
+    why: >-
+      A 16px circular control and visible label suit short lists. Layout around the group controls
+      density.
   - decision: No mixed or loading state.
     why: Exactly one option can be selected and a form applies the choice later.
   - decision: No animation or reduced motion variation.
     why: Selection updates immediately.
   - decision: Option order follows the inline direction in right-to-left layouts.
-    why: Labels follow their controls and directional keyboard behavior follows platform conventions.
+    why: >-
+      Labels follow their controls and directional keyboard behavior follows platform conventions.
   - decision: Consume semantic colors and typography with the semantic pill radius.
     why: Radio circles need the semantic pill radius.
-  - decision: Disabled colors override selected and invalid colors while the selected dot stays visible.
+  - decision: >-
+      Disabled colors override selected and invalid colors while the selected dot stays visible.
     why: The group communicates availability and selection together.
   - decision: No visited state and spacing consumes existing primitives.
-    why: Selection does not track navigation history. The system has no semantic spacing roles for choice rows.
+    why: >-
+      Selection does not track navigation history. The system has no semantic spacing roles for
+      choice rows.
   - decision: Selected and invalid borders take precedence over hover.
-    why: Hover strengthens only the unselected valid control. Checked and invalid together retain the selected background with the danger border.
+    why: >-
+      Hover strengthens only the unselected valid control. Checked and invalid together retain the
+      selected background with the danger border.

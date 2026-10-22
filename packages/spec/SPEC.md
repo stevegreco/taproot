@@ -164,7 +164,7 @@ rationale:
 | `rules`         | no       | Requirements, each with a stable `id`, a `level`, and a `topic`.                        |
 | `accessibility` | no       | The role, where the accessible name comes from, and keyboard interaction.               |
 | `tokens`        | no       | Which design tokens paint each part. See [Tokens](#tokens).                             |
-| `rationale`     | no       | Decisions and why they were made. `covers` optionally names the checklist items a decision settles, such as `loading`. |
+| `rationale`     | no       | Decisions and why they were made. `covers` optionally names the checklist items a decision settles, such as `loading`. In this repository the checklist ids are `CHECKLIST` in [`scripts/component-status.mjs`](../../scripts/component-status.mjs). |
 
 Anatomy roles are `interactive-surface`, `label`, `description`, `indicator`, and `container`.
 
@@ -214,10 +214,14 @@ tokens:
 - A **property** is a neutral visual name. Use these where they fit: `background`, `foreground`,
   `border`, `border-width`, `radius`, `gap`, `padding-horizontal`, `padding-vertical`,
   `focus-ring`, `font-family`, `font-size`, `font-weight`, `line-height`, `letter-spacing`,
-  `motion`, `motion-duration`, and `motion-easing`. Other lowercase, hyphenated names are allowed.
+  `motion`, `motion-duration`, `motion-easing`, `shadow`, `size`, `height`, and `track` (the
+  unfilled path behind an indicator). Other lowercase, hyphenated names are allowed.
 - A **token reference** is an opaque string that names a token in the adopter's token system. The
-  format does not define token names, tiers, or file formats. `transparent` and `none` are allowed
-  where no token applies.
+  format does not define token names, tiers, or file formats. Where no token applies, these values
+  are allowed: `transparent`, `none`, `inherit` (the value comes from the surrounding content), and
+  `linear` (for `motion-easing`).
+- System-wide constants, such as border width and focus-ring width and offset, are the same for
+  every component, so a component map does not have to list them.
 
 The map is reference data. It answers "which token does primary hover use for its background?" It
 defines no rule for combining conditions, so it does not compute the final style of a combination.

@@ -42,7 +42,7 @@ describe("DsBadge", () => {
     expect(badge.variant).toBe("success");
   });
 
-  test("[non-interactive][a11y-not-a-control] takes no focus and exposes no control", () => {
+  test("[non-interactive] takes no focus and exposes no control", () => {
     document.body.innerHTML = `<${tagName}>New</${tagName}>`;
     const badge = document.querySelector(tagName);
     expectRendered(badge, "badge");
