@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.progress-bar
+type: component
+title: Progress bar
+summary: Use Progress bar to show how much of a task is done when you can measure it, such as an upload or a multi-step setup.
+status: draft
+tags:
+  - progress
+  - loading
+  - upload
+  - feedback
+links:
+  follows:
+    - guideline.compose-or-propose
+description: >-
+  Shows a visible label and a horizontal bar that fills from start to end as a task moves toward
+  done. It always shows a known amount of progress. When the amount is not known, use a Spinner.
+usage:
+  do:
+    - Show how much of a file upload or download has transferred.
+    - Show how far a person is through a setup or import that runs in measurable steps.
+    - Sit in a panel or dialog while a long task runs, with a label that names the task.
+  avoid:
+    - situation: Show that work is happening when you cannot say how much is done.
+      instead: component.spinner
+      why: >-
+        A bar needs an amount to fill to. A bar that guesses, or that jumps back, misleads the
+        person about how long to wait.
+    - situation: Show a static measurement, such as storage used or a password strength score.
+      instead: a meter
+      why: >-
+        A progress bar says a task is moving toward done. A measurement is not a task and does not
+        finish, so assistive technology would describe it wrongly.
+    - situation: Show which named step of a form or wizard the person is on.
+      instead: a step list that names each step
+      why: >-
+        People need the step names to know where they are and what is left. A bar shows only how
+        much, not which.
+    - situation: Report that the task finished or failed.
+      instead: component.alert
+      why: The bar stops at done but does not say what happened. Alert states the outcome and can announce it.
+    - situation: Cover a task that finishes in about a second.
+      instead: no indicator
+      why: A bar that appears and fills at once reads as a flicker. Show the result when it arrives.
+anatomy:
+  label:
+    role: label
+    description: >-
+      Visible text above the bar that names the task, such as Uploading report.pdf. It is the
+      progress bar's accessible name.
+  track:
+    role: container
+    description: The full length of the bar, which stands for the whole task.
+  fill:
+    role: indicator
+    description: >-
+      The filled part of the track, measured from the start edge, that shows how much of the task
+      is done.
