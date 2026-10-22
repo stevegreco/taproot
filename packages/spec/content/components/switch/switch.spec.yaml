@@ -8,6 +8,7 @@ tags:
   - selection
 links:
   follows:
+    - pattern.form-field
     - guideline.compose-or-propose
   related:
     - component.checkbox
@@ -96,25 +97,11 @@ rules:
     topic: behavior
     statement: >-
       Activating the track or label or pressing Space toggles checked and reports input then change.
-  - id: disabled-blocks-toggle
-    level: must
-    topic: behavior
-    statement: >-
-      Disabled prevents pointer and keyboard interaction. Explain why the setting is unavailable
-      when the reason is not obvious.
   - id: programmatic-no-events
     level: must
     topic: behavior
     statement: Programmatic state changes do not report user input or change.
-  - id: error-marks-invalid
-    level: must
-    topic: behavior
-    statement: A nonempty error marks the setting invalid and describes what failed.
-  - id: error-blocks-submit
-    level: must
-    topic: behavior
-    statement: A nonempty error blocks the switch's form from submitting.
-  - id: optional-form-value
+  - id: form-value
     level: should
     topic: behavior
     statement: >-
@@ -124,11 +111,7 @@ rules:
     level: must
     topic: accessibility
     statement: Thumb position communicates the state without color alone.
-  - id: associated-messages
-    level: must
-    topic: accessibility
-    statement: Associate the visible label and any hint or error with the control.
-  - id: forced-colors-visible
+  - id: forced-colors
     level: must
     topic: accessibility
     statement: Keep the track outline and thumb and keyboard focus visible under forced colors.
@@ -219,7 +202,7 @@ rationale:
     why: >-
       Selection does not track navigation history. The system has no semantic spacing roles for
       choice rows.
-  - decision: Selected and invalid borders take precedence over hover.
+  - decision: Checked and invalid borders take precedence over hover.
     why: >-
-      Hover strengthens only the unselected valid control. Checked and invalid together retain the
-      selected background with the danger border.
+      Hover strengthens only the unchecked valid control. Checked and invalid together retain the
+      checked background with the danger border.

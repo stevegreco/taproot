@@ -8,12 +8,13 @@ tags:
   - selection
 links:
   follows:
+    - pattern.form-field
     - guideline.compose-or-propose
   related:
     - component.checkbox
 description: >-
-  A labeled set of mutually exclusive options with a shared hint and error. Selecting an option
-  clears the previous selection.
+  A labeled set of mutually exclusive options with a shared hint and error. Choosing an option
+  unchecks the previous one.
 usage:
   do:
     - Choose one delivery method or plan from a short list.
@@ -46,7 +47,7 @@ anatomy:
     description: Circular selection control.
   indicator:
     role: indicator
-    description: Dot appears inside the selected control.
+    description: Dot appears inside the checked control.
   option-label:
     role: label
     description: Visible name of one option.
@@ -71,7 +72,7 @@ parameters:
     description: Field name used for submission.
   value:
     kind: string
-    description: Selected option value. Empty means no selection.
+    description: Checked option value. Empty means no option is checked.
   disabled:
     kind: boolean
     default: false
@@ -100,8 +101,7 @@ rules:
     level: must
     topic: behavior
     statement: >-
-      Selecting an option clears any previous selection. Activating the selected option keeps it
-      selected.
+      Choosing an option unchecks any other. Activating the checked option keeps it checked.
   - id: selection-events
     level: must
     topic: behavior
@@ -110,45 +110,37 @@ rules:
     level: must
     topic: behavior
     statement: >-
-      Disabled options cannot be selected by pointer or keyboard. Disabled groups prevent all
+      Disabled options cannot be checked by pointer or keyboard. Disabled groups prevent all
       interaction.
   - id: form-value
     level: should
     topic: behavior
     statement: >-
-      Submit the selected enabled option under the group name. Submit nothing without a selection or
-      while disabled. Reset restores the initial selection.
-  - id: invalid-submit
-    level: must
-    topic: behavior
-    statement: A nonempty error or a missing required selection blocks submission.
-  - id: required-message
-    level: must
-    topic: accessibility
-    statement: Announce required state and convey it visibly without color alone.
+      Submit the checked enabled option under the group name. Submit nothing when no option is checked
+      or while disabled. Reset restores the initially checked option.
   - id: accessible-group
     level: must
     topic: accessibility
     statement: >-
       Associate the group label and hint and error with the options. Expose each option name and
-      selected state.
+      checked state.
   - id: keyboard-selection
     level: must
     topic: accessibility
     statement: >-
-      Tab enters and leaves the group. Arrow keys move focus and selection between enabled options
-      and wrap at either end. Space selects the focused option.
-  - id: visible-state
+      Tab enters and leaves the group. Arrow keys move focus and the checked option between enabled
+      options and wrap at either end. Space checks the focused option.
+  - id: forced-colors
     level: must
     topic: accessibility
-    statement: A selected dot and visible keyboard focus remain distinguishable under forced colors.
+    statement: A checked dot and visible keyboard focus remain distinguishable under forced colors.
 accessibility:
   role: Radio group
   name: From the visible group label. Each option has its own visible label.
   keyboard:
     Tab: >-
-      Enter or leave the group using the selected enabled option or the platform entry option when
-      none is selected.
+      Enter or leave the group using the checked enabled option or the platform entry option when
+      none is checked.
     Arrow keys: Move focus and selection between enabled options with wrapping.
     Space: Select the focused option.
 tokens:
@@ -231,7 +223,7 @@ rationale:
       A 16px circular control and visible label suit short lists. Layout around the group controls
       density.
   - decision: No mixed or loading state.
-    why: Exactly one option can be selected and a form applies the choice later.
+    why: Exactly one option can be checked and a form applies the choice later.
   - decision: No animation or reduced motion variation.
     why: Selection updates immediately.
   - decision: Option order follows the inline direction in right-to-left layouts.
@@ -240,13 +232,13 @@ rationale:
   - decision: Consume semantic colors and typography with the semantic pill radius.
     why: Radio circles need the semantic pill radius.
   - decision: >-
-      Disabled colors override selected and invalid colors while the selected dot stays visible.
-    why: The group communicates availability and selection together.
+      Disabled colors override checked and invalid colors while the checked dot stays visible.
+    why: The group communicates availability and the checked option together.
   - decision: No visited state and spacing consumes existing primitives.
     why: >-
       Selection does not track navigation history. The system has no semantic spacing roles for
       choice rows.
-  - decision: Selected and invalid borders take precedence over hover.
+  - decision: Checked and invalid borders take precedence over hover.
     why: >-
-      Hover strengthens only the unselected valid control. Checked and invalid together retain the
-      selected background with the danger border.
+      Hover strengthens only the unchecked valid control. Checked and invalid together retain the
+      checked background with the danger border.

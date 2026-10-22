@@ -9,6 +9,8 @@ tags:
 links:
   related:
     - component.text-field
+  follows:
+    - pattern.form-field
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -103,10 +105,6 @@ states:
   - focus
   - default
 rules:
-  - id: visible-label
-    level: must
-    topic: content
-    statement: Provide a visible label that names the option when checked.
   - id: label-states-positive
     level: should
     topic: content
@@ -119,19 +117,6 @@ rules:
         - I agree to the terms
       avoid:
         - Don't email me
-  - id: hint-adds-guidance
-    level: should
-    topic: content
-    statement: Use a hint for consequence or detail that the label does not already state.
-  - id: error-says-what-to-fix
-    level: must
-    topic: content
-    statement: Write the error as what to fix.
-    examples:
-      do:
-        - Agree to the terms to continue.
-      avoid:
-        - Required
   - id: toggle-on-activate
     level: must
     topic: behavior
@@ -150,18 +135,6 @@ rules:
     level: must
     topic: behavior
     statement: Setting checked or indeterminate from script does not fire input or change.
-  - id: error-marks-invalid
-    level: must
-    topic: behavior
-    statement: A non-empty error marks the control invalid, and clearing the error removes that state.
-  - id: error-blocks-submit
-    level: must
-    topic: behavior
-    statement: While a non-empty error is set, the control blocks its form from submitting.
-  - id: disabled-blocks-toggle
-    level: must
-    topic: behavior
-    statement: Disabled prevents toggling from pointer and keyboard.
   - id: form-value
     level: should
     topic: behavior
@@ -169,40 +142,18 @@ rules:
       When checked, the value submits under the name. Unchecked submits nothing. Reset restores the
       initial checked state and clears indeterminate.
     applicability: The checkbox belongs to a form.
-  - id: a11y-visible-label
-    level: must
-    topic: accessibility
-    statement: >-
-      The checkbox has a visible label that is its accessible name, and clicking the label toggles
-      it.
-  - id: a11y-mixed-state
+  - id: mixed-state
     level: must
     topic: accessibility
     statement: Indeterminate is exposed to assistive technology as mixed.
-  - id: a11y-described-by
-    level: must
-    topic: accessibility
-    statement: Hint and error are associated so assistive technology can describe the checkbox.
-  - id: a11y-invalid-message
-    level: must
-    topic: accessibility
-    statement: Invalid state includes a text message. Meaning does not depend on color alone.
-  - id: a11y-required
-    level: must
-    topic: accessibility
-    statement: Required is announced and is not conveyed by color alone.
-  - id: a11y-state-not-color-alone
+  - id: state-not-color-alone
     level: must
     topic: accessibility
     statement: Checked and indeterminate are shown by the indicator's shape, not by fill color alone.
-  - id: a11y-forced-colors
+  - id: forced-colors
     level: must
     topic: accessibility
     statement: Under forced colors, the box outline, the indicator, and focus stay visible in every state.
-  - id: a11y-visible-focus
-    level: must
-    topic: accessibility
-    statement: Keyboard focus remains visibly indicated.
 accessibility:
   role: Checkbox
   name: Required from the visible label.

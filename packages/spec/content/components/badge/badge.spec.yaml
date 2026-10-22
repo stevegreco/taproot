@@ -61,15 +61,15 @@ rules:
     level: should
     topic: content
     statement: Keep the label short.
-  - id: non-interactive
+  - id: not-a-control
     level: must
     topic: behavior
     statement: Badge is not a control. It is not focusable and does not activate.
-  - id: a11y-text-communicates-state
+  - id: text-communicates-state
     level: must
     topic: accessibility
     statement: The text communicates the state. Meaning does not depend on color alone.
-  - id: a11y-no-live-region
+  - id: no-live-region
     level: must
     topic: accessibility
     statement: >-
