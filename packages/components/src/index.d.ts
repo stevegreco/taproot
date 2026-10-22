@@ -11,6 +11,7 @@ import type { DsSelectAttributes } from "./select.js";
 import type { DsSwitchAttributes } from "./switch.js";
 import type { DsTabPanelAttributes, DsTabsAttributes } from "./tabs.js";
 import type { DsTextAreaAttributes } from "./text-area.js";
+import type { DsSpinnerAttributes } from "./spinner.js";
 
 export * from "./alert.js";
 export * from "./badge.js";
@@ -25,6 +26,7 @@ export * from "./select.js";
 export * from "./switch.js";
 export * from "./tabs.js";
 export * from "./text-area.js";
+export * from "./spinner.js";
 
 /**
  * The attributes each element accepts, keyed by default tag name. Map it onto a
@@ -45,4 +47,5 @@ export interface ElementAttributes {
   "ds-tabs": DsTabsAttributes;
   "ds-tab-panel": DsTabPanelAttributes;
   "ds-text-area": DsTextAreaAttributes;
+  "ds-spinner": DsSpinnerAttributes;
 }

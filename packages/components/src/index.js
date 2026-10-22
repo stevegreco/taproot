@@ -19,6 +19,7 @@ import { defineSelect } from "./select.js";
 import { defineSwitch } from "./switch.js";
 import { defineTabs } from "./tabs.js";
 import { defineTextArea } from "./text-area.js";
+import { defineSpinner } from "./spinner.js";
 
 export { DsAlert, defineAlert } from "./alert.js";
 export { DsBadge, defineBadge } from "./badge.js";
@@ -33,6 +34,7 @@ export { DsSelect, defineSelect } from "./select.js";
 export { DsSwitch, defineSwitch } from "./switch.js";
 export { DsTabPanel, DsTabs, defineTabs } from "./tabs.js";
 export { DsTextArea, defineTextArea } from "./text-area.js";
+export { DsSpinner, defineSpinner } from "./spinner.js";
 
 defineAlert();
 defineBadge();
@@ -48,3 +50,4 @@ defineSelect();
 defineSwitch();
 defineTabs();
 defineTextArea();
+defineSpinner();
