@@ -1,0 +1,44 @@
+/**
+ * <ds-divider> styles.
+ *
+ * Built into dist/divider.styles.js by build-styles.js — this file is the source.
+ */
+
+/* The line is one border, so the divider is exactly the border width thick and
+ * adds no margin: the layout sets the space on either side. */
+:host {
+  display: block;
+  margin: 0;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+/* Vertical: stretch to the height of the row it sits in. Outside a flex or
+ * grid row, it falls back to the height of a line of text. */
+:host([orientation="vertical"]) {
+  align-self: stretch;
+  min-block-size: 1em;
+}
+
+.line {
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+  border: 0 solid var(--ds-semantic-color-border-subtle);
+  border-block-start-width: var(--ds-semantic-border-width);
+}
+
+:host([orientation="vertical"]) .line {
+  inline-size: auto;
+  block-size: 100%;
+  border-block-start-width: 0;
+  border-inline-start-width: var(--ds-semantic-border-width);
+}
+
+@media (forced-colors: active) {
+  .line {
+    border-color: CanvasText;
+  }
+}

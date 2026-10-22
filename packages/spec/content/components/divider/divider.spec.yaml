@@ -3,7 +3,6 @@ id: component.divider
 type: component
 title: Divider
 summary: Use Divider to separate groups of related content within one surface or region with a thin line.
-status: draft
 tags:
   - separator
   - rule
@@ -11,6 +10,11 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+known-issues:
+  - statement: >-
+      In the dark theme the subtle border color measures 1.06:1 on the surface background, so a
+      divider inside a Card or panel is nearly invisible. On the page background it measures 1.45:1.
+    issue: https://github.com/stevegreco/design-system/issues/245
 description: >-
   A thin line that marks the boundary between two groups of content that belong to the same
   surface or region. It runs across the width of its container between stacked groups, or along
@@ -43,3 +47,99 @@ anatomy:
   line:
     role: indicator
     description: The line itself, drawn in a quiet border color across or along its container.
+parameters:
+  orientation:
+    kind: enum
+    values:
+      horizontal: A line across the container, between groups stacked one above the other.
+      vertical: A line along the container, between groups placed side by side in a row.
+    default: horizontal
+states:
+  - default
+rules:
+  - id: exposed-as-separator
+    level: must
+    topic: accessibility
+    statement: >-
+      The divider is exposed to assistive technology as a separator with its orientation, and has
+      no accessible name.
+  - id: not-a-control
+    level: must
+    topic: behavior
+    statement: The divider is not focusable, does not activate, and holds no content.
+  - id: spans-container
+    level: must
+    topic: behavior
+    statement: >-
+      A horizontal divider spans the full width its container gives it. A vertical divider spans
+      the full height of the row it sits in. Its thickness is the border width, and it adds no
+      space of its own on either side.
+  - id: forced-colors
+    level: must
+    topic: accessibility
+    statement: Under forced colors, the line stays visible in the system text color.
+  - id: between-groups
+    level: should
+    topic: content
+    statement: >-
+      Place a divider only between two groups. Do not start or end a container with one, and do
+      not place two in a row.
+  - id: layout-sets-space
+    level: should
+    topic: content
+    statement: >-
+      Let the layout set equal space on both sides of the divider, the same space it uses between
+      the groups.
+accessibility:
+  role: Separator, with its orientation. Not focusable.
+  name: None. The groups on either side carry the meaning.
+tokens:
+  line:
+    base:
+      border: semantic.color.border.subtle
+      border-width: semantic.border.width
+rationale:
+  - decision: The divider is always exposed as a separator, with no option to hide it from assistive technology.
+    why: >-
+      A divider marks a boundary between groups, and people using assistive technology benefit
+      from hearing the same boundary sighted people see. A line that is only decoration, such as a
+      rule under every row, belongs to the layout's borders, which the usage section already says.
+      One fewer option keeps the contract small.
+  - decision: Vertical orientation ships in the first version.
+    why: >-
+      Separating groups of actions in one row is one of the main uses, and it needs a vertical
+      line. The orientation is also part of what assistive technology reports, so it cannot be left
+      to product styling.
+  - decision: Divider adds no margin. The layout sets the space around it.
+    covers: [sizes, density]
+    why: >-
+      Space between groups is a layout decision that already varies by context, such as a Card's
+      gap or a settings panel's spacing. A divider with its own margin would double that space or
+      fight it. There is one thickness, the border width, so there are no sizes.
+  - decision: The line uses the subtle border color.
+    why: >-
+      The semantic border.subtle role is described for decorative dividers and quiet surface edges.
+      The groups' own content and spacing carry the structure, so the line does not need the 3:1
+      contrast of a control boundary.
+  - decision: Divider has no inset, label, or line style variants.
+    why: >-
+      An inset line, text in the middle of the line, or a dashed or thicker line are each common
+      elsewhere, but none is needed by the components and pages that use a divider today. Each can
+      be proposed as a parameter when a real need appears.
+  - decision: Divider has no disabled, selected, loading, or invalid state.
+    covers: [disabled, selected, loading, invalid]
+    why: It is not a control and holds no value.
+  - decision: Divider has no text.
+    covers: [icon-only]
+    why: It has no visible content and no accessible name (exposed-as-separator).
+  - decision: Nothing mirrors in right-to-left layouts.
+    covers: [right-to-left]
+    why: A line looks the same in either reading direction.
+  - decision: Divider does not animate.
+    covers: [reduced-motion]
+    why: It has no motion to reduce.
+  - decision: The line takes the system text color under forced colors.
+    covers: [forced-colors]
+    why: >-
+      Forced colors replace the border color with a system color, so the line stays visible
+      without depending on the subtle color (forced-colors).
