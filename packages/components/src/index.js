@@ -20,6 +20,7 @@ import { defineSelect } from "./select.js";
 import { defineSwitch } from "./switch.js";
 import { defineTabs } from "./tabs.js";
 import { defineTextArea } from "./text-area.js";
+import { defineTooltip } from "./tooltip.js";
 import { defineSpinner } from "./spinner.js";
 import { defineCard } from "./card.js";
 
@@ -37,6 +38,7 @@ export { DsSelect, defineSelect } from "./select.js";
 export { DsSwitch, defineSwitch } from "./switch.js";
 export { DsTabPanel, DsTabs, defineTabs } from "./tabs.js";
 export { DsTextArea, defineTextArea } from "./text-area.js";
+export { DsTooltip, defineTooltip } from "./tooltip.js";
 export { DsSpinner, defineSpinner } from "./spinner.js";
 export { DsCard, defineCard } from "./card.js";
 
@@ -55,5 +57,6 @@ defineSelect();
 defineSwitch();
 defineTabs();
 defineTextArea();
+defineTooltip();
 defineSpinner();
 defineCard();
