@@ -1,12 +1,12 @@
 export type ButtonVariant = "primary" | "secondary" | "tertiary" | "destructive";
-export type ButtonSize = "sm" | "md";
+export type ButtonSize = "small" | "medium";
 export type ButtonType = "button" | "submit" | "reset";
 
 /** The attributes `<ds-button>` accepts, for typing framework templates. */
 export interface DsButtonAttributes {
   /** Defaults to `"primary"`. */
   variant?: ButtonVariant;
-  /** Defaults to `"md"`. */
+  /** Defaults to `"medium"`. */
   size?: ButtonSize;
   /** Defaults to `"button"`. */
   type?: ButtonType;
@@ -21,7 +21,7 @@ export declare class DsButton extends HTMLElement {
 
   /** Defaults to `"primary"`. */
   variant: ButtonVariant;
-  /** Defaults to `"md"`. */
+  /** Defaults to `"medium"`. */
   size: ButtonSize;
   /** Defaults to `"button"`. */
   type: ButtonType;

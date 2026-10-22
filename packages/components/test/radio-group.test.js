@@ -139,7 +139,7 @@ describe("DsRadioGroup", () => {
       getComputedStyle(root.querySelector("#hint")).color,
     );
     expect(getComputedStyle(root.querySelector("#label")).color).toBe(
-      getComputedStyle(root.querySelector(".choice .label")).color,
+      getComputedStyle(root.querySelector(".option-label")).color,
     );
   });
   test("forced colors retain outline, selected dot and keyboard focus in RTL", async () => {
@@ -157,7 +157,7 @@ describe("DsRadioGroup", () => {
     expect(getComputedStyle(indicator).backgroundColor).not.toBe(
       getComputedStyle(input).backgroundColor,
     );
-    const label = group.shadowRoot.querySelector(".choice .label");
+    const label = group.shadowRoot.querySelector(".option-label");
     expect(label.getBoundingClientRect().right).toBeLessThan(input.getBoundingClientRect().left);
   });
 });

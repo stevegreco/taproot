@@ -1,5 +1,9 @@
 # RFC 0002: Knowledge layer architecture
 
+> **Historical.** This RFC records the reasoning at the time it was accepted. The format has moved
+> on since. [`packages/spec/SPEC.md`](../../packages/spec/SPEC.md) is the current field reference,
+> and ADRs 0001 through 0003 hold the decisions.
+
 **Status:** Accepted
 **Created:** 2026-09-29
 **Accepted in:** [ADR 0001](../adr/0001-knowledge-layer-scope.md),

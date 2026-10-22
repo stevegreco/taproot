@@ -8,7 +8,7 @@ export default {
       control: "inline-radio",
       options: ["primary", "secondary", "tertiary", "destructive"],
     },
-    size: { control: "inline-radio", options: ["sm", "md"] },
+    size: { control: "inline-radio", options: ["small", "medium"] },
     type: { control: "inline-radio", options: ["button", "submit", "reset"] },
     disabled: { control: "boolean" },
     fullWidth: { name: "full-width", control: "boolean" },
@@ -16,7 +16,7 @@ export default {
   },
   args: {
     variant: "primary",
-    size: "md",
+    size: "medium",
     type: "button",
     disabled: false,
     fullWidth: false,
@@ -44,7 +44,7 @@ export const Destructive = { args: { variant: "destructive", label: "Delete draf
 
 export const Disabled = { args: { disabled: true, label: "Publish" } };
 
-export const Small = { args: { size: "sm" } };
+export const Small = { args: { size: "small" } };
 
 export const AllVariants = {
   parameters: { controls: { disable: true } },

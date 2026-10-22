@@ -67,7 +67,7 @@ describe("DsLink", () => {
     expect(link.variant).toBe("standalone");
   });
 
-  test("[inline-underline][a11y-not-color-alone] inline links inherit surrounding type and stay underlined", () => {
+  test("[inline-underline][not-color-alone] inline links inherit surrounding type and stay underlined", () => {
     render(
       `<p style="font-size: 23px; font-weight: 700"><${tagName} href="#x">ADR</${tagName}></p>`,
     );

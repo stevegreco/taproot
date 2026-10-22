@@ -4,8 +4,8 @@
 **Source:** [RFC 0002](../rfcs/0002-knowledge-layer-architecture.md). This ADR and ADRs 0001 and
 0003 replaced the earlier ADRs 0001 through 0007, which are available in git history.
 
-The normative text is [`packages/knowledge/SPEC.md`](../../packages/knowledge/SPEC.md). This ADR
-records the choices and why. It does not repeat the fields.
+The field reference is [`packages/spec/SPEC.md`](../../packages/spec/SPEC.md). This ADR records
+the choices and why. It does not list the fields.
 
 ## Context
 
@@ -15,40 +15,30 @@ references in this repository's tier and path terms. Other design systems could 
 
 ## Decision
 
-**Four record types:** `component`, `pattern`, `guideline`, and `example`. Adopters cannot add
-types. A fixed set lets tools and agents rely on a record's shape.
+**A fixed set of record types:** component, pattern, guideline, and example. Adopters cannot add
+types, so tools and agents can rely on a record's shape.
 
-**Common fields:** `id` (`<type>.<name>`), `type`, `title`, `summary`, and optional `tags`,
-`status`, `links`, and `sources`. A record's identity is its `id`, not its path. `sources` is
-provenance only.
+**Identity by id, not path.** A record is found by its `id`, so files can move without breaking
+links.
 
-**Component fields:** `description`, `usage`, `anatomy`, and optional `parameters`, `events`,
-`states`, `preferences`, `rules`, `accessibility`, `tokens`, and `rationale`. There is no
-`contract:` wrapper. `states` is an unordered list.
+**A flat component record.** There is no `contract:` wrapper, and states are an unordered list.
 
-**Rules** share one list. Each has a stable `id`, a `level` (`must`, `should`, or `may`, with RFC
-2119 meaning), and a `topic` (`content`, `behavior`, or `accessibility`). A rule's address is
-`<record id>#<rule id>`, so a review can cite it.
+**One list of rules.** Each rule has a stable id, an RFC 2119 level, and a topic, and has an
+address that a review can cite.
 
-**Typed links:** `alternative`, `composes`, `follows`, `example-of`, and `related`. Each link is
-written once. Tools add the inverse (`alternative-to`, `used-in`, `followed-by`, `examples`).
-`alternative` is derived from `usage.avoid[].instead`, so the reason travels with the link. A
-rule's `references` also create links.
+**Typed links, written once.** Tools add the inverse. Alternatives come from `usage.avoid`, so the
+reason travels with the link.
 
-**Section addressing:** a link target is a record ID with an optional `#section`. A section is a
-heading slug in Markdown, a rule ID or field path in a component, and an annotation ID in an
-example.
+**Section addressing.** A link can point at one heading, rule, field, or annotation in a record.
 
-**Token map:** `tokens` maps an anatomy part to conditions, and a condition to properties and
-token references. A condition is `base`, a parameter value, a state, a preference value, or
-several joined with ` + `, such as `variant.primary + hover`. A token reference is an opaque
-string. The map is reference data and defines no rule for combining conditions.
+**A token map as reference data.** It names which token paints each part under each condition.
+Token references are opaque strings, and the map defines no rule for combining conditions.
 
-**File formats:** YAML for components, because most of a component is structured. Markdown with
-front matter for the other types, because they are prose.
+**YAML for components, Markdown for the rest.** Most of a component is structured. The other types
+are prose.
 
-Validation is a JSON Schema plus cross-record checks for links, sections, and token conditions.
-The format version is the number at the end of the schema's `$id`.
+**Validation by JSON Schema plus cross-record checks.** The format version is the number at the end
+of the schema's `$id`.
 
 ## Consequences
 

@@ -14,7 +14,7 @@ const copy = icon("M5.5 5.5h7v7h-7zM3.5 10.5v-7h7");
 
 const iconButton = (label, graphic, placement = "above") => html`
   <ds-tooltip label=${label} placement=${placement}>
-    <ds-button variant="tertiary" size="sm"><ds-icon>${graphic}</ds-icon></ds-button>
+    <ds-button variant="tertiary" size="small"><ds-icon>${graphic}</ds-icon></ds-button>
   </ds-tooltip>
 `;
 

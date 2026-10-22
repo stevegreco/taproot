@@ -7,20 +7,17 @@ tags:
   - icon
   - graphic
   - media
-links:
-  related:
-    - component.badge
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
 description: >-
   Displays a graphic you supply at a consistent size, in the color of the surrounding text. It is
-  decorative unless it has a label.
+  decorative unless it has an accessible name.
 usage:
   do:
     - Reinforce a label with a recognizable symbol, such as an icon before a button label.
     - Mark a status or category next to text that states it.
-    - Convey meaning without text, when a label names what the graphic means.
+    - Convey meaning without text, when an accessible name says what the graphic means.
   avoid:
     - situation: Trigger an action with an icon alone.
       instead: component.button
@@ -48,7 +45,7 @@ parameters:
       medium: Fixed medium size, for icons that stand beside body text.
       large: Fixed large size, for icons that stand on their own.
     default: inherit
-  label:
+  accessibleName:
     kind: string
     description: >-
       What the graphic means. Without it the icon is decorative and hidden from assistive
@@ -59,32 +56,32 @@ rules:
   - id: decorative-by-default
     level: must
     topic: accessibility
-    statement: An icon without a label is hidden from assistive technology.
-  - id: label-when-meaningful
+    statement: An icon without an accessible name is hidden from assistive technology.
+  - id: name-when-meaningful
     level: must
     topic: accessibility
     statement: >-
-      Give the icon a label when it conveys meaning that no nearby text states.
+      Give the icon an accessible name when it conveys meaning that no nearby text states.
     examples:
       do:
-        - A warning symbol beside a field value, labeled Warning
+        - A warning symbol beside a field value, named Warning
       avoid:
-        - A warning symbol with no label and no nearby text
-  - id: no-label-when-repeated
+        - A warning symbol with no name and no nearby text
+  - id: no-name-when-repeated
     level: should
     topic: content
     statement: >-
-      Do not label an icon whose meaning repeats the text beside it. Assistive technology would
+      Do not name an icon whose meaning repeats the text beside it. Assistive technology would
       announce it twice.
     examples:
       do:
-        - A trash icon before the text Delete, with no label
+        - A trash icon before the text Delete, with no name
       avoid:
-        - A trash icon labeled Delete before the text Delete
-  - id: label-names-meaning
+        - A trash icon named Delete before the text Delete
+  - id: name-says-meaning
     level: must
     topic: content
-    statement: A label names what the graphic means, not what it depicts.
+    statement: The accessible name says what the graphic means, not what it depicts.
     examples:
       do:
         - Warning
@@ -97,7 +94,7 @@ rules:
     topic: behavior
     statement: Icon is not focusable and does not activate. Put it inside a Button or Link to act.
     references:
-      - component.button#a11y-icon-accessible-name
+      - component.button#icon-accessible-name
   - id: follows-text-color
     level: must
     topic: behavior
@@ -110,14 +107,14 @@ rules:
     statement: >-
       The icon occupies a square of its size. The artwork scales to fit inside it without
       distortion.
-  - id: a11y-not-color-alone
+  - id: not-color-alone
     level: must
     topic: accessibility
     statement: >-
-      Meaning carried by an icon does not depend on its color. The symbol or its label carries it.
+      Meaning carried by an icon does not depend on its color. The symbol or its accessible name carries it.
 accessibility:
-  role: Image when labeled. Otherwise hidden from assistive technology.
-  name: From the label parameter. None when decorative.
+  role: Image when named. Otherwise hidden from assistive technology.
+  name: From the accessibleName parameter. None when decorative.
 tokens:
   graphic:
     base:
@@ -160,8 +157,8 @@ rationale:
     why: >-
       Only directional symbols, such as arrows, should mirror, and only the adopter knows which
       artwork is directional. They supply mirrored artwork where needed.
-  - decision: Icon always renders without text. Its accessible name comes from the label parameter.
+  - decision: Icon always renders without text. Its accessible name comes from the accessibleName parameter.
     covers: [icon-only]
     why: >-
-      Text beside an icon belongs to the surrounding content, not to Icon. A meaningful icon takes a
-      label, and a decorative one has no name (see decorative-by-default and label-when-meaningful).
+      Text beside an icon belongs to the surrounding content, not to Icon. A meaningful icon takes an
+      accessible name, and a decorative one has none (see decorative-by-default and name-when-meaningful).

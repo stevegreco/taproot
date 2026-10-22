@@ -95,7 +95,7 @@ export class DsButton extends ForwardsFocus(Base) {
   }
 
   get size() {
-    return this.getAttribute("size") === "sm" ? "sm" : "md";
+    return this.getAttribute("size") === "small" ? "small" : "medium";
   }
 
   set size(value) {

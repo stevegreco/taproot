@@ -52,6 +52,17 @@ Breaking. The package is now a library over the authored files, and the record f
   optional `issue` URL that tracks the fix. `get` shows them under the summary.
 - Validation reports any text value that starts with `TODO`, the placeholder in the draft that the
   repository's `pnpm component:new <name> --phase spec` writes.
+- SPEC.md has a Conventions section, and the records follow it. Rule ids drop the `a11y-` prefix,
+  and focus and forced-colors rules are `visible-focus` and `forced-colors` everywhere. A rule cited
+  by its old address, such as `component.button#a11y-visible-focus`, no longer resolves.
+- New `pattern.form-field` holds the label, hint, error, required, disabled, form value, and focus
+  guidance that the form field records repeated. Text field, Text area, Select, Checkbox, Switch,
+  and Radio group follow it and keep only their own rules.
+- Renamed parameters: `label` is `accessibleName` on Icon, Spinner, and Tabs, where the name is not
+  shown, and Accordion's `heading-level` is `headingLevel`. Button's `size` values are `small` and
+  `medium`, not `sm` and `md`. Icon's rules `label-when-meaningful`, `no-label-when-repeated`, and
+  `label-names-meaning` are `name-when-meaningful`, `no-name-when-repeated`, and
+  `name-says-meaning`, and Spinner's `label-names-work` is `name-says-work`.
 
 ## 0.0.1
 

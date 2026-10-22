@@ -164,7 +164,7 @@ rationale:
 | `rules`         | no       | Requirements, each with a stable `id`, a `level`, and a `topic`.                        |
 | `accessibility` | no       | The role, where the accessible name comes from, and keyboard interaction.               |
 | `tokens`        | no       | Which design tokens paint each part. See [Tokens](#tokens).                             |
-| `rationale`     | no       | Decisions and why they were made. `covers` optionally names the checklist items a decision settles, such as `loading`. |
+| `rationale`     | no       | Decisions and why they were made. `covers` optionally names the checklist items a decision settles, such as `loading`. In this repository the checklist ids are `CHECKLIST` in [`scripts/component-status.mjs`](../../scripts/component-status.mjs). |
 
 Anatomy roles are `interactive-surface`, `label`, `description`, `indicator`, and `container`.
 
@@ -214,10 +214,14 @@ tokens:
 - A **property** is a neutral visual name. Use these where they fit: `background`, `foreground`,
   `border`, `border-width`, `radius`, `gap`, `padding-horizontal`, `padding-vertical`,
   `focus-ring`, `font-family`, `font-size`, `font-weight`, `line-height`, `letter-spacing`,
-  `motion`, `motion-duration`, and `motion-easing`. Other lowercase, hyphenated names are allowed.
+  `motion`, `motion-duration`, `motion-easing`, `shadow`, `size`, `height`, and `track` (the
+  unfilled path behind an indicator). Other lowercase, hyphenated names are allowed.
 - A **token reference** is an opaque string that names a token in the adopter's token system. The
-  format does not define token names, tiers, or file formats. `transparent` and `none` are allowed
-  where no token applies.
+  format does not define token names, tiers, or file formats. Where no token applies, these values
+  are allowed: `transparent`, `none`, `inherit` (the value comes from the surrounding content), and
+  `linear` (for `motion-easing`).
+- System-wide constants, such as border width and focus-ring width and offset, are the same for
+  every component, so a component map does not have to list them.
 
 The map is reference data. It answers "which token does primary hover use for its background?" It
 defines no rule for combining conditions, so it does not compute the final style of a combination.
@@ -248,6 +252,26 @@ An example record also has:
   `width` and `height` in pixels, and `alt` text.
 - `annotations`: callouts, each with an `id`, a `label`, a `description`, and optional
   `references`.
+
+## Conventions
+
+Records follow these so that one idea has one name everywhere.
+
+- **Rule ids** name the requirement in plain words, with no topic prefix, because `topic` already
+  says `accessibility`. Shared requirements use shared ids: `visible-focus`, `forced-colors`,
+  `not-a-control`, and `not-color-alone`.
+- **Form fields** follow `pattern.form-field` for label, hint, error, required, disabled, form
+  value, and focus, and keep only the rules about their own control.
+- **`label`** is visible text that names the component, and it is also the accessible name. A name
+  that is not shown is **`accessibleName`**.
+- **Decorative:** a graphic with no `accessibleName` is decorative and hidden from assistive
+  technology. A component that uses its name for something else, as Avatar shows initials, takes a
+  `decorative` boolean instead.
+- **Sizes** are `small`, `medium`, and `large`, plus `inherit` to match the surrounding text.
+- **Parameter names** are camelCase, such as `fullWidth` and `headingLevel`. A destination URL is
+  `href`.
+- **States:** `checked` is for a form choice, and `selected` is for choosing what is shown, as in
+  Tabs.
 
 ## Links
 

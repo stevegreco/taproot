@@ -3,11 +3,18 @@ id: component.switch
 type: component
 title: Switch
 summary: Use Switch to turn a setting on or off and apply the change immediately.
-tags: [settings, selection]
+tags:
+  - settings
+  - selection
 links:
-  follows: [guideline.compose-or-propose]
-  related: [component.checkbox]
-description: A two-state setting with a visible label and optional hint or error. Changing it applies the setting immediately.
+  follows:
+    - pattern.form-field
+    - guideline.compose-or-propose
+  related:
+    - component.checkbox
+description: >-
+  A two-state setting with a visible label and optional hint or error. Changing it applies the
+  setting immediately.
 usage:
   do:
     - Turn a setting on or off without a separate submit action.
@@ -19,102 +26,95 @@ usage:
       instead: component.radio-group
       why: A switch represents one independent setting.
 anatomy:
-  field: { role: container, description: Setting and its supporting messages. }
-  choice: { role: container, description: Track and label side by side. }
-  control: { role: interactive-surface, description: Track that toggles the setting. }
+  field:
+    role: container
+    description: Setting and its supporting messages.
+  choice:
+    role: container
+    description: Track and label side by side.
+  control:
+    role: interactive-surface
+    description: Track that toggles the setting.
   indicator:
-    { role: indicator, description: Thumb position communicates on or off without color alone. }
-  label: { role: label, description: Visible setting name. }
-  hint: { role: description, description: Optional consequence or guidance. }
-  error: { role: description, description: Optional failure message. }
+    role: indicator
+    description: Thumb position communicates on or off without color alone.
+  label:
+    role: label
+    description: Visible setting name.
+  hint:
+    role: description
+    description: Optional consequence or guidance.
+  error:
+    role: description
+    description: Optional failure message.
 parameters:
-  label: { kind: string, description: Visible accessible name that stays the same in both states. }
-  hint: { kind: string, description: Supporting guidance associated with the setting. }
-  error: { kind: string, description: Failure text that marks the setting invalid. }
-  checked: { kind: boolean, default: false, description: Whether the setting is on. }
+  label:
+    kind: string
+    description: Visible accessible name that stays the same in both states.
+  hint:
+    kind: string
+    description: Supporting guidance associated with the setting.
+  error:
+    kind: string
+    description: Failure text that marks the setting invalid.
+  checked:
+    kind: boolean
+    default: false
+    description: Whether the setting is on.
   disabled:
-    {
-      kind: boolean,
-      default: false,
-      description: Prevents interaction and removes the setting from keyboard navigation.,
-    }
+    kind: boolean
+    default: false
+    description: Prevents interaction and removes the setting from keyboard navigation.
   name:
-    {
-      kind: string,
-      description: Optional form field name. The value is recorded under this name when on.,
-    }
-  value: { kind: string, description: Value recorded when on. Defaults to on. }
+    kind: string
+    description: Optional form field name. The value is recorded under this name when on.
+  value:
+    kind: string
+    description: Value recorded when on. Defaults to on.
 events:
   input: The user changed the setting.
   change: The user committed the setting change. Apply the setting in response.
-states: [default, hover, focus, checked, disabled, invalid]
+states:
+  - default
+  - hover
+  - focus
+  - checked
+  - disabled
+  - invalid
 rules:
-  - {
-      id: stable-visible-label,
-      level: must,
-      topic: content,
-      statement: Provide a visible positive setting name that does not change between on and off.,
-    }
-  - {
-      id: immediate-effect,
-      level: must,
-      topic: behavior,
-      statement: Apply the setting immediately after interaction. If saving fails restore the prior state and explain the failure.,
-    }
-  - {
-      id: toggle-on-activate,
-      level: must,
-      topic: behavior,
-      statement: Activating the track or label or pressing Space toggles checked and reports input then change.,
-    }
-  - {
-      id: disabled-blocks-toggle,
-      level: must,
-      topic: behavior,
-      statement: Disabled prevents pointer and keyboard interaction. Explain why the setting is unavailable when the reason is not obvious.,
-    }
-  - {
-      id: programmatic-no-events,
-      level: must,
-      topic: behavior,
-      statement: Programmatic state changes do not report user input or change.,
-    }
-  - {
-      id: error-marks-invalid,
-      level: must,
-      topic: behavior,
-      statement: A nonempty error marks the setting invalid and describes what failed.,
-    }
-  - {
-      id: error-blocks-submit,
-      level: must,
-      topic: behavior,
-      statement: A nonempty error blocks the switch's form from submitting.,
-    }
-  - {
-      id: optional-form-value,
-      level: should,
-      topic: behavior,
-      statement: A form records the value only when the switch is on and enabled. Reset restores the initial state.,
-    }
-  - {
-      id: state-not-color-alone,
-      level: must,
-      topic: accessibility,
-      statement: Thumb position communicates the state without color alone.,
-    }
-  - {
-      id: associated-messages,
-      level: must,
-      topic: accessibility,
-      statement: Associate the visible label and any hint or error with the control.,
-    }
-  - {
-      id: forced-colors-visible,
-      level: must,
-      topic: accessibility,
-      statement: Keep the track outline and thumb and keyboard focus visible under forced colors.,
-    }
+  - id: stable-visible-label
+    level: must
+    topic: content
+    statement: Provide a visible positive setting name that does not change between on and off.
+  - id: immediate-effect
+    level: must
+    topic: behavior
+    statement: >-
+      Apply the setting immediately after interaction. If saving fails restore the prior state and
+      explain the failure.
+  - id: toggle-on-activate
+    level: must
+    topic: behavior
+    statement: >-
+      Activating the track or label or pressing Space toggles checked and reports input then change.
+  - id: programmatic-no-events
+    level: must
+    topic: behavior
+    statement: Programmatic state changes do not report user input or change.
+  - id: form-value
+    level: should
+    topic: behavior
+    statement: >-
+      A form records the value only when the switch is on and enabled. Reset restores the initial
+      state.
+  - id: state-not-color-alone
+    level: must
+    topic: accessibility
+    statement: Thumb position communicates the state without color alone.
+  - id: forced-colors
+    level: must
+    topic: accessibility
+    statement: Keep the track outline and thumb and keyboard focus visible under forced colors.
 accessibility:
   role: Switch
   name: From the visible label.
@@ -182,18 +182,27 @@ tokens:
       letter-spacing: semantic.typography.body.sm.letterSpacing
 rationale:
   - decision: One size with no density or icon-only variant.
-    why: A 32 by 18 track has a visible label and a thumb at either end. Surrounding layout controls density.
+    why: >-
+      A 32 by 18 track has a visible label and a thumb at either end. Surrounding layout controls
+      density.
   - decision: No mixed state or required setting or loading state.
-    why: A setting is on or off. The consumer can disable it during saving and restore its previous state with an error if saving fails.
+    why: >-
+      A setting is on or off. The consumer can disable it during saving and restore its previous
+      state with an error if saving fails.
   - decision: No animation or reduced motion variation.
     why: The thumb changes position immediately.
   - decision: The thumb follows the inline direction in right-to-left layouts.
     why: Off sits at the start and on sits at the end of the track.
   - decision: Consume existing semantic colors and typography with the semantic pill radius.
     why: The track and thumb need circular ends. The pill radius expresses circular ends.
-  - decision: Disabled colors override checked and invalid colors while thumb position remains visible.
+  - decision: >-
+      Disabled colors override checked and invalid colors while thumb position remains visible.
     why: Availability and the current setting must both be communicated.
   - decision: No visited state and spacing consumes existing primitives.
-    why: Selection does not track navigation history. The system has no semantic spacing roles for choice rows.
-  - decision: Selected and invalid borders take precedence over hover.
-    why: Hover strengthens only the unselected valid control. Checked and invalid together retain the selected background with the danger border.
+    why: >-
+      Selection does not track navigation history. The system has no semantic spacing roles for
+      choice rows.
+  - decision: Checked and invalid borders take precedence over hover.
+    why: >-
+      Hover strengthens only the unchecked valid control. Checked and invalid together retain the
+      checked background with the danger border.

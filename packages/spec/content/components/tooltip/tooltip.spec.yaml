@@ -105,7 +105,7 @@ rules:
       A tooltip names exactly one control, and that control is one a person can focus, such as a
       Button.
     references:
-      - component.button#a11y-icon-accessible-name
+      - component.button#icon-accessible-name
   - id: opens-on-hover-and-focus
     level: must
     topic: behavior

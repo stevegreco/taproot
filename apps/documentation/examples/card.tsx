@@ -41,7 +41,7 @@ export default function CardExample() {
               <ds-button
                 slot="actions"
                 variant="tertiary"
-                size="sm"
+                size="small"
                 data-card-share
                 onClick={() => setShared(project.label)}
               >

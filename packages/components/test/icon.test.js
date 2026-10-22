@@ -31,7 +31,7 @@ describe("DsIcon", () => {
     expect(nodes.filter((node) => node.role === "img" || node.role === "image")).toEqual([]);
   });
 
-  test("[label-when-meaningful] is a named image when it has a label", async () => {
+  test("[name-when-meaningful] is a named image when it has a label", async () => {
     render(`<${tagName} label="Warning">${svg}</${tagName}>`);
 
     const nodes = await exposedNodes();

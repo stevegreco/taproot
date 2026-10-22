@@ -149,10 +149,11 @@ tokens:
   title:
     base:
       foreground: semantic.color.foreground.default
-      font-family: semantic.typography.body.md.fontFamily
-      font-size: semantic.typography.body.md.fontSize
-      font-weight: primitives.weight.semibold
-      line-height: semantic.typography.body.md.lineHeight
+      font-family: semantic.typography.title.fontFamily
+      font-size: semantic.typography.title.fontSize
+      font-weight: semantic.typography.title.fontWeight
+      line-height: semantic.typography.title.lineHeight
+      letter-spacing: semantic.typography.title.letterSpacing
     focus:
       focus-ring: semantic.color.border.focus
   description:
@@ -186,5 +187,5 @@ rationale:
     why: >-
       Semantic tokens cover surface, foreground, border, radius, elevation, and the backdrop. The
       overlay role is darker in the dark theme, where the same scrim as in light dims the page less.
-      Spacing primitives describe this surface’s padding and gaps. The semibold weight primitive
-      distinguishes the title while retaining body typography.
+      Spacing primitives describe this surface’s padding and gaps. The title uses
+      semantic.typography.title, as in Alert.

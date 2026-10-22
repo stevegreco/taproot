@@ -18,7 +18,7 @@ const probePath = join(examplesDir, "__element-types-probe__.tsx");
 
 const PROBE = `
 export const probes = [
-  <ds-button variant="secondary" size="sm" type="submit" full-width disabled />,
+  <ds-button variant="secondary" size="small" type="submit" full-width disabled />,
   <ds-checkbox label="Terms" checked indeterminate={false} name="terms" value="yes" />,
   // @ts-expect-error "loud" is not a Button variant.
   <ds-button variant="loud" />,

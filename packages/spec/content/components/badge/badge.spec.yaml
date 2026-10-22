@@ -6,6 +6,9 @@ summary: Use Badge for status or metadata. It is not a control.
 tags:
   - status
   - metadata
+links:
+  composes:
+    - component.icon
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -58,26 +61,20 @@ rules:
     level: should
     topic: content
     statement: Keep the label short.
-  - id: non-interactive
+  - id: not-a-control
     level: must
     topic: behavior
-    statement: Badge is not focusable and does not activate.
-  - id: a11y-text-communicates-state
+    statement: Badge is not a control. It is not focusable and does not activate.
+  - id: text-communicates-state
     level: must
     topic: accessibility
     statement: The text communicates the state. Meaning does not depend on color alone.
-  - id: a11y-not-a-control
+  - id: no-live-region
     level: must
     topic: accessibility
-    statement: Badge is not used as a control.
-  - id: a11y-no-live-region
-    level: must
-    topic: accessibility
-    statement: Badge does not set a live-region role.
-  - id: a11y-surrounding-ui-announces
-    level: must
-    topic: accessibility
-    statement: Changing status that must be announced is the surrounding UI's job.
+    statement: >-
+      Badge does not set a live-region role. The surrounding UI announces a status change that must
+      be announced.
 accessibility:
   role: Non-interactive text
   name: Visible text is the accessible name.

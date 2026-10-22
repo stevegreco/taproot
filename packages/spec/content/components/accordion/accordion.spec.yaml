@@ -55,7 +55,7 @@ parameters:
     description: >-
       When true, expanding a section collapses the one that was expanded, so at most one is open.
     default: false
-  heading-level:
+  headingLevel:
     kind: number
     description: >-
       The heading level every trigger is exposed at, from 2 to 6, so the sections fit the outline

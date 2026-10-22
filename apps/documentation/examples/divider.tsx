@@ -18,14 +18,14 @@ export default function DividerExample() {
           <p className="m-0">Billed annually to the card ending 4242.</p>
         </div>
         <div slot="actions" className="flex items-center gap-2" data-divider-actions>
-          <ds-button variant="tertiary" size="sm">
+          <ds-button variant="tertiary" size="small">
             Add seats
           </ds-button>
-          <ds-button variant="tertiary" size="sm">
+          <ds-button variant="tertiary" size="small">
             Change plan
           </ds-button>
           <ds-divider orientation="vertical" data-divider-subject="actions" />
-          <ds-button variant="tertiary" size="sm">
+          <ds-button variant="tertiary" size="small">
             Download invoice
           </ds-button>
         </div>

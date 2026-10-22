@@ -188,7 +188,7 @@ rules:
     topic: accessibility
     statement: Leave the icon unlabeled when the text already states the status.
     references:
-      - component.icon#no-label-when-repeated
+      - component.icon#no-name-when-repeated
   - id: visible-focus
     level: must
     topic: accessibility
@@ -246,7 +246,11 @@ tokens:
   title:
     base:
       foreground: semantic.color.foreground.default
-      font-weight: primitives.weight.semibold
+      font-family: semantic.typography.title.fontFamily
+      font-size: semantic.typography.title.fontSize
+      font-weight: semantic.typography.title.fontWeight
+      line-height: semantic.typography.title.lineHeight
+      letter-spacing: semantic.typography.title.letterSpacing
   actions:
     base:
       gap: primitives.space.2
@@ -294,13 +298,12 @@ rationale:
     why: >-
       Every alert reports a status. Info is the neutral case. Brand emphasis without a status is
       product layout built from tokens, per the compose-or-propose guideline.
-  - decision: Alert consumes semantic status tokens directly, with spacing and weight primitives.
+  - decision: Alert consumes semantic status tokens directly, with spacing primitives.
     why: >-
       ADR 0003. The quiet status surfaces are audited for body text, status content, and borders in
       both themes, and the focus border and brand text (for a composed Link) are audited against
-      each of them. No semantic spacing role
-      exists, so spacing primitives set padding and gaps. The semibold weight primitive distinguishes
-      the title, as in Dialog. The dismiss control borrows the tertiary action hover and pressed
+      each of them. No semantic spacing role exists, so spacing primitives set padding and gaps.
+      The title uses semantic.typography.title, as in Dialog. The dismiss control borrows the tertiary action hover and pressed
       fills because it is a low-emphasis action.
   - decision: Alert has no disabled, selected, loading, or invalid state.
     covers: [disabled, selected, loading, invalid]

@@ -40,7 +40,7 @@ function recordEvents(checkbox) {
 }
 
 describe("DsCheckbox", () => {
-  test("[a11y-visible-label][a11y-invalid-message][a11y-required] associates the label, hint, error, and required state", () => {
+  test("[label][error][required] associates the label, hint, error, and required state", () => {
     const checkbox = render(`
       <${tagName}
         label="I agree to the terms"
@@ -66,14 +66,14 @@ describe("DsCheckbox", () => {
     );
   });
 
-  test("[a11y-visible-label] clicking the label toggles the checkbox", async () => {
+  test("[toggle-on-activate] clicking the label toggles the checkbox", async () => {
     const checkbox = render(`<${tagName} label="Email me updates"></${tagName}>`);
 
     await userEvent.click(checkbox.shadowRoot.querySelector("label"));
     expect(checkbox.checked).toBe(true);
   });
 
-  test("[a11y-described-by][error-marks-invalid] describes only the messages that have text", () => {
+  test("[hint][error] describes only the messages that have text", () => {
     const checkbox = render(`<${tagName} label="Updates" hint="Weekly"></${tagName}>`);
     const input = controlOf(checkbox);
 
@@ -106,7 +106,7 @@ describe("DsCheckbox", () => {
     expect(events).toEqual(["input:true", "change:true"]);
   });
 
-  test("[indeterminate-clears-on-activate][a11y-mixed-state] exposes mixed, then activation clears it and toggles checked", async () => {
+  test("[indeterminate-clears-on-activate][mixed-state] exposes mixed, then activation clears it and toggles checked", async () => {
     const checkbox = render(`<${tagName} label="All projects" indeterminate></${tagName}>`);
     const input = controlOf(checkbox);
 
@@ -150,7 +150,7 @@ describe("DsCheckbox", () => {
     expect(events).toEqual([]);
   });
 
-  test("[disabled-blocks-toggle] ignores pointer and keyboard while disabled, including from a fieldset", async () => {
+  test("[disabled] ignores pointer and keyboard while disabled, including from a fieldset", async () => {
     const fieldset = render(`
       <fieldset>
         <${tagName} label="Updates" disabled></${tagName}>
@@ -178,7 +178,7 @@ describe("DsCheckbox", () => {
     expect(input.disabled).toBe(false);
   });
 
-  test("[a11y-state-not-color-alone] draws a check when checked and a dash when indeterminate", () => {
+  test("[state-not-color-alone] draws a check when checked and a dash when indeterminate", () => {
     const checkbox = render(`<${tagName} label="Updates"></${tagName}>`);
 
     expect(shown(checkbox, ".check")).toBe(false);
@@ -196,7 +196,7 @@ describe("DsCheckbox", () => {
     expect(shown(checkbox, ".dash")).toBe(true);
   });
 
-  test("[a11y-forced-colors] keeps the box, indicator, and focus visible under forced colors", async () => {
+  test("[forced-colors] keeps the box, indicator, and focus visible under forced colors", async () => {
     await cdp().send("Emulation.setEmulatedMedia", {
       features: [{ name: "forced-colors", value: "active" }],
     });
@@ -230,7 +230,7 @@ describe("DsCheckbox", () => {
     expect(getComputedStyle(input).outlineStyle).not.toBe("none");
   });
 
-  test("[form-value][error-blocks-submit] submits its value only when checked and blocks submit while required, unchecked, or in error", () => {
+  test("[form-value][error] submits its value only when checked and blocks submit while required, unchecked, or in error", () => {
     const form = render(`
       <form>
         <${tagName} label="I agree" name="terms" required></${tagName}>

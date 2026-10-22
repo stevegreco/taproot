@@ -44,7 +44,7 @@ export default function TooltipExample() {
       {deleted ? (
         <p className="m-0" data-tooltip-deleted>
           Q3 report.pdf was deleted.{" "}
-          <ds-button variant="tertiary" size="sm" onClick={() => setDeleted(false)}>
+          <ds-button variant="tertiary" size="small" onClick={() => setDeleted(false)}>
             Undo
           </ds-button>
         </p>
@@ -59,7 +59,7 @@ export default function TooltipExample() {
               <ds-tooltip key={action.id} label={action.label} data-tooltip-subject={action.id}>
                 <ds-button
                   variant="tertiary"
-                  size="sm"
+                  size="small"
                   onClick={() =>
                     action.id === "delete" ? setDeleted(true) : setMessage(`${action.label}…`)
                   }

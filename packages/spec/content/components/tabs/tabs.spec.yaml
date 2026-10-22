@@ -51,7 +51,7 @@ anatomy:
       The content of the selected section, shown below the tab list. Each section supplies its
       tab's label and a unique value.
 parameters:
-  label:
+  accessibleName:
     kind: string
     description: >-
       Accessible name for the set of tabs. It is not shown; a visible heading above the tabs
@@ -97,9 +97,9 @@ rules:
     level: must
     topic: accessibility
     statement: >-
-      The tab list is named by the label parameter. Each tab exposes its label and whether it is
+      The tab list is named by the accessibleName parameter. Each tab exposes its label and whether it is
       selected, and the panel is named by the selected tab.
-  - id: visible-selection
+  - id: forced-colors
     level: must
     topic: accessibility
     statement: >-
@@ -108,7 +108,7 @@ rules:
   - id: labels-short-and-unique
     level: must
     topic: content
-    statement: Each tab has a short label that differs from the others. The set has a label.
+    statement: Each tab has a short label that differs from the others. The set has an accessible name.
     examples:
       do:
         - "Profile, Notifications, Billing"
@@ -123,7 +123,7 @@ rules:
 accessibility:
   role: A tab list of tabs, and one tab panel for the selected tab.
   name: >-
-    The tab list from the label parameter. Each tab from its section's label. The panel from the
+    The tab list from the accessibleName parameter. Each tab from its section's label. The panel from the
     selected tab.
   keyboard:
     Tab: Enter the tab list at the selected tab, then move to the panel.
@@ -217,7 +217,7 @@ rationale:
     covers: [forced-colors]
     why: >-
       The indicator takes the system highlight and focus rings keep their outline, so selection
-      and focus never depend on the theme colors (visible-selection).
+      and focus never depend on the theme colors (forced-colors).
   - decision: Tabs consume semantic colors and typography, with spacing primitives.
     why: >-
       ADR 0003. The selected indicator borrows the primary action fill as the strongest accent the

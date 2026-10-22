@@ -77,7 +77,7 @@
   --_border-disabled: var(--ds-semantic-color-border-disabled);
 }
 
-:host([size="sm"]) {
+:host([size="small"]) {
   --_padding-x: var(--ds-primitives-space-3);
   --_padding-y: var(--ds-primitives-space-2);
 }

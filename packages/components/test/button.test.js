@@ -89,7 +89,7 @@ describe("DsButton", () => {
     expect(form.elements.query.value).toBe("initial");
   });
 
-  test("[a11y-icon-accessible-name] mirrors its accessible label and forwards focus", () => {
+  test("[icon-accessible-name] mirrors its accessible label and forwards focus", () => {
     const button = render(
       `<${tagName} aria-label="Continue"><svg aria-hidden="true"></svg></${tagName}>`,
     );

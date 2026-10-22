@@ -4,10 +4,9 @@
 
 `packages/spec` is the design system spec: the source of truth for what each component is and how
 to use it. It is a technology-neutral contract: design and engineering agree on it before anyone builds. The format
-is defined in [`packages/spec/SPEC.md`](packages/spec/SPEC.md) and the reasoning is in
-ADRs 0001 through 0003 in `docs/adr/` and
-[RFC 0002](docs/rfcs/0002-knowledge-layer-architecture.md) (written when the spec was called the
-knowledge layer).
+is defined in [`packages/spec/SPEC.md`](packages/spec/SPEC.md), the only field reference. The
+decisions are in ADRs 0001 through 0003 in `docs/adr/`.
+[RFC 0002](docs/rfcs/0002-knowledge-layer-architecture.md) is historical background.
 
 **Query it** rather than reading files. From the repository root:
 
@@ -35,8 +34,9 @@ with `pnpm spec validate` or `pnpm --filter @stevegreco/design-system-spec test`
 
 **What not to put in a spec.** No element, attribute, slot, framework, or CSS names, and no code.
 A spec says what a component is, not how any technology builds it. Token references are opaque
-strings that name a token. Nothing checks an implementation against a spec, so keep the two
-consistent in review.
+strings that name a token. The tooling checks that an implementation's API mapping covers every
+parameter, value, and event in the spec. Nothing checks behavior or styling against the spec, so
+keep those consistent in review.
 
 **Implementation content** lives with the implementation:
 

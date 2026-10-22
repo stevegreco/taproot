@@ -5,7 +5,7 @@ tagName: ds-tooltip
 defineExport: defineTooltip
 usage: |
   <ds-tooltip label="Delete row">
-    <ds-button variant="tertiary" size="sm">
+    <ds-button variant="tertiary" size="small">
       <ds-icon><svg viewBox="0 0 16 16">…</svg></ds-icon>
     </ds-button>
   </ds-tooltip>
