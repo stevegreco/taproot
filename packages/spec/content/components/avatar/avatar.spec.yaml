@@ -3,7 +3,6 @@ id: component.avatar
 type: component
 title: Avatar
 summary: Use Avatar to show a small picture of a person, so people can recognize who did, owns, or wrote something.
-status: draft
 tags:
   - person
   - profile
@@ -54,3 +53,162 @@ anatomy:
   placeholder:
     role: indicator
     description: A generic person symbol, shown when there is neither a picture nor a name.
+parameters:
+  name:
+    kind: string
+    description: >-
+      The person's full name. It is the avatar's accessible name, and its initials show when there
+      is no picture.
+  image:
+    kind: string
+    description: >-
+      Where the picture of the person is loaded from. Without it, or when it fails to load, the
+      initials show instead.
+  size:
+    kind: enum
+    values:
+      small: Fixed small size, for dense lists and beside small text.
+      medium: Fixed medium size, beside body text, such as the author of a comment.
+      large: Fixed large size, for a profile or account header.
+    default: medium
+  decorative:
+    kind: boolean
+    default: false
+    description: >-
+      Hides the avatar from assistive technology. Use it when the person's name is shown beside
+      the avatar.
+states:
+  - default
+rules:
+  - id: named-by-person
+    level: must
+    topic: accessibility
+    statement: >-
+      An avatar with a name that is not decorative is exposed to assistive technology as an image
+      named with the person's name. An avatar that is decorative, or has no name, is hidden from
+      assistive technology.
+  - id: decorative-beside-name
+    level: should
+    topic: accessibility
+    statement: >-
+      Mark the avatar decorative when the person's name is shown beside it, so assistive
+      technology does not read the name twice.
+    examples:
+      do:
+        - A decorative avatar beside the author name of a comment
+      avoid:
+        - A named avatar directly beside the same name in text
+  - id: fallback-order
+    level: must
+    topic: behavior
+    statement: >-
+      The avatar shows the picture when it loads. When there is no picture, or it fails to load,
+      it shows the initials. When there is no name either, it shows the placeholder symbol. It
+      shows exactly one of the three.
+  - id: initials-from-name
+    level: must
+    topic: behavior
+    statement: >-
+      The initials are the first letter of the name's first word and the first letter of its last
+      word, in uppercase. A one-word name gives one letter.
+    examples:
+      do:
+        - Ada Lovelace shows AL
+        - Grace Brewster Murray Hopper shows GH
+        - Prince shows P
+  - id: not-a-control
+    level: must
+    topic: behavior
+    statement: The avatar is not focusable and does not activate.
+  - id: fixed-circle
+    level: must
+    topic: behavior
+    statement: >-
+      The avatar occupies a circle of its size whether or not the picture has loaded, so the layout
+      does not shift. The picture fills the circle and is cropped, never stretched.
+  - id: visible-in-forced-colors
+    level: must
+    topic: accessibility
+    statement: >-
+      In forced-colors mode the circle has a visible edge, and the initials and placeholder stay
+      visible.
+  - id: picture-shows-face
+    level: should
+    topic: content
+    statement: >-
+      Use a square picture centered on the person's face, so the circular crop keeps the face whole.
+accessibility:
+  role: Image when named. Otherwise hidden from assistive technology.
+  name: From the name parameter. None when decorative or when there is no name.
+tokens:
+  surface:
+    base:
+      background: semantic.color.background.muted
+      radius: semantic.radius.pill
+    size.small:
+      size: primitives.space.6
+    size.medium:
+      size: primitives.space.8
+    size.large:
+      size: primitives.space.12
+  initials:
+    base:
+      foreground: semantic.color.foreground.muted
+      font-family: semantic.typography.label.md.fontFamily
+      font-weight: semantic.typography.label.md.fontWeight
+    size.small:
+      font-size: semantic.typography.label.sm.fontSize
+    size.medium:
+      font-size: semantic.typography.label.md.fontSize
+    size.large:
+      font-size: primitives.text.lg
+  placeholder:
+    base:
+      foreground: semantic.color.foreground.muted
+rationale:
+  - decision: Sizes are named small, medium, and large, like Icon and Spinner.
+    covers: [sizes]
+    why: >-
+      The system has two size vocabularies: Button uses sm and md, while Icon and Spinner use
+      small, medium, and large. Avatar follows the larger and more recent group until the naming is
+      settled for every component. There is no inherit size, because an avatar is a picture with
+      its own size, not a symbol that matches the text around it.
+  - decision: Sizes use spacing primitives and the large initials use a text primitive.
+    why: >-
+      No semantic size role exists (tokens ADR 0003), as with Spinner. The largest semantic label
+      size is too small for a large avatar, so its initials use a text primitive.
+  - decision: The avatar has no density variant.
+    covers: [density]
+    why: The small size is for dense layouts. The layout chooses the size.
+  - decision: >-
+      Avatar is not a control and has no disabled, selected, loading, or invalid state.
+    covers: [disabled, selected, loading, invalid]
+    why: >-
+      It only shows who someone is. To act on a person, place the avatar inside a Button or a Link.
+      While the picture loads, the initials show, so there is no separate loading state.
+  - decision: The accessible name comes from the name, never from the picture.
+    covers: [icon-only]
+    why: >-
+      The avatar never shows text other than initials, which are not a name. The same name drives
+      the initials and the accessible name, so they cannot disagree. The picture has no alternative
+      text of its own, because describing a face adds nothing to the name.
+  - decision: The initials do not mirror and keep the name's order in right-to-left layouts.
+    covers: [right-to-left]
+    why: Initials follow the name as written. Nothing else in the avatar has a direction.
+  - decision: The avatar does not animate.
+    covers: [reduced-motion]
+    why: Swapping initials for the picture when it loads is instant, so there is no motion to reduce.
+  - decision: In forced-colors mode the surface draws an edge in the text color.
+    covers: [forced-colors]
+    why: >-
+      Forced colors remove the muted fill, which is what shows the circle. An edge keeps the
+      avatar's shape, and the initials and placeholder take the text color.
+  - decision: There is no presence state, status dot, or group of overlapping avatars in this version.
+    why: >-
+      Each adds public API and its own accessibility questions, such as how a status is announced.
+      Place a Badge or text beside the avatar for status, and propose a group when more than one
+      product needs it.
+  - decision: Initials take letters from the first and last words of the name.
+    why: >-
+      Two letters fit the small size and stay recognizable. Middle names are skipped because they
+      are often absent from how a person is addressed.

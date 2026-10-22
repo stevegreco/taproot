@@ -1,0 +1,87 @@
+/**
+ * <ds-avatar> styles.
+ *
+ * Built into dist/avatar.styles.js by build-styles.js — this file is the source.
+ */
+
+:host {
+  --_size: var(--ds-primitives-space-8);
+  --_initials-size: var(--ds-semantic-typography-label-md-font-size);
+
+  display: inline-block;
+  flex-shrink: 0;
+  inline-size: var(--_size);
+  block-size: var(--_size);
+  line-height: 0;
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([size="small"]) {
+  --_size: var(--ds-primitives-space-6);
+  --_initials-size: var(--ds-semantic-typography-label-sm-font-size);
+}
+
+:host([size="large"]) {
+  --_size: var(--ds-primitives-space-12);
+  --_initials-size: var(--ds-primitives-text-lg);
+}
+
+/* The surface sets the circle, so the layout keeps its size before and after
+ * the picture loads. */
+.surface {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  border-radius: var(--ds-semantic-radius-pill);
+  background: var(--ds-semantic-color-background-muted);
+  color: var(--ds-semantic-color-foreground-muted);
+}
+
+.surface > [hidden] {
+  display: none;
+}
+
+/* Cropped to fill the circle, never stretched. */
+.image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.initials {
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--_initials-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.placeholder {
+  display: block;
+  inline-size: 60%;
+  block-size: 60%;
+}
+
+.placeholder svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* Forced colors drop the muted fill that shows the circle, so draw its edge. */
+@media (forced-colors: active) {
+  .surface {
+    border: var(--ds-semantic-border-width) solid CanvasText;
+    color: CanvasText;
+  }
+}
