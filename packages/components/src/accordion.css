@@ -1,0 +1,101 @@
+:host {
+  display: block;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.section {
+  border-block-end: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-subtle);
+}
+
+/* The heading carries the outline level only; the trigger sets the type. */
+[role="heading"] {
+  margin: 0;
+  font: inherit;
+}
+
+[part="trigger"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-primitives-space-3);
+  inline-size: 100%;
+  margin: 0;
+  padding: var(--ds-primitives-space-3);
+  border: 0;
+  border-radius: var(--ds-semantic-radius-control);
+  background: transparent;
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+}
+
+[part="trigger"]:hover {
+  background: var(--ds-semantic-color-background-action-tertiary-hover);
+}
+
+[part="trigger"]:focus-visible {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: calc(-1 * var(--ds-semantic-focus-width));
+}
+
+/*
+ * A chevron drawn from two borders. Physical sides, so it points down when collapsed and up when
+ * expanded in either reading direction.
+ */
+[part="indicator"] {
+  flex: none;
+  inline-size: 0.5em;
+  block-size: 0.5em;
+  margin-block-end: 0.25em;
+  border-right: var(--ds-semantic-border-width) solid var(--ds-semantic-color-foreground-muted);
+  border-bottom: var(--ds-semantic-border-width) solid var(--ds-semantic-color-foreground-muted);
+  transform: rotate(45deg);
+}
+
+[part="trigger"]:hover [part="indicator"] {
+  border-color: var(--ds-semantic-color-foreground-default);
+}
+
+[aria-expanded="true"] [part="indicator"] {
+  margin-block: 0.25em 0;
+  transform: rotate(-135deg);
+}
+
+[part="panel"] {
+  padding: var(--ds-primitives-space-3);
+}
+
+::slotted(*) {
+  display: block;
+}
+
+/* The indicator paints a system color here, so it stays visible without the theme. */
+@media (forced-colors: active) {
+  [part="indicator"] {
+    forced-color-adjust: none;
+    border-color: ButtonText;
+  }
+
+  [part="trigger"]:hover [part="indicator"] {
+    border-color: ButtonText;
+  }
+
+  [part="trigger"]:focus-visible {
+    outline-color: Highlight;
+  }
+}

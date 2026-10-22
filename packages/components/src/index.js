@@ -6,6 +6,7 @@
  * exported `define*` helpers to register under a custom tag name.
  */
 
+import { defineAccordion } from "./accordion.js";
 import { defineAlert } from "./alert.js";
 import { defineBadge } from "./badge.js";
 import { defineButton } from "./button.js";
@@ -22,6 +23,7 @@ import { defineTextArea } from "./text-area.js";
 import { defineSpinner } from "./spinner.js";
 import { defineCard } from "./card.js";
 
+export { DsAccordion, DsAccordionSection, defineAccordion } from "./accordion.js";
 export { DsAlert, defineAlert } from "./alert.js";
 export { DsBadge, defineBadge } from "./badge.js";
 export { DsButton, defineButton } from "./button.js";
@@ -38,6 +40,7 @@ export { DsTextArea, defineTextArea } from "./text-area.js";
 export { DsSpinner, defineSpinner } from "./spinner.js";
 export { DsCard, defineCard } from "./card.js";
 
+defineAccordion();
 defineAlert();
 defineBadge();
 defineButton();

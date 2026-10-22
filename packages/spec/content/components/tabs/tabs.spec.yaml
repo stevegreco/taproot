@@ -33,7 +33,7 @@ usage:
       instead: Headings in one scrolling page
       why: Tabs hide every panel but one, so comparison means switching back and forth.
     - situation: Show or hide one section on its own, independent of the others.
-      instead: A disclosure that expands in place
+      instead: component.accordion
       why: Tabs always show exactly one panel. Independent sections need their own toggle.
 anatomy:
   tab-list:
