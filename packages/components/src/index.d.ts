@@ -1,5 +1,6 @@
 import type { DsAccordionAttributes, DsAccordionSectionAttributes } from "./accordion.js";
 import type { DsAlertAttributes } from "./alert.js";
+import type { DsAvatarAttributes } from "./avatar.js";
 import type { DsBadgeAttributes } from "./badge.js";
 import type { DsButtonAttributes } from "./button.js";
 import type { DsCheckboxAttributes } from "./checkbox.js";
@@ -18,6 +19,7 @@ import type { DsCardAttributes } from "./card.js";
 
 export * from "./accordion.js";
 export * from "./alert.js";
+export * from "./avatar.js";
 export * from "./badge.js";
 export * from "./button.js";
 export * from "./checkbox.js";
@@ -42,6 +44,7 @@ export interface ElementAttributes {
   "ds-accordion": DsAccordionAttributes;
   "ds-accordion-section": DsAccordionSectionAttributes;
   "ds-alert": DsAlertAttributes;
+  "ds-avatar": DsAvatarAttributes;
   "ds-badge": DsBadgeAttributes;
   "ds-button": DsButtonAttributes;
   "ds-checkbox": DsCheckboxAttributes;
