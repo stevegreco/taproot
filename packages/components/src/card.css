@@ -1,0 +1,119 @@
+/**
+ * <ds-card> styles.
+ *
+ * Built into dist/card.styles.js by build-styles.js — this file is the source.
+ * Visual values are published semantic tokens, with spacing primitives.
+ */
+
+:host {
+  display: block;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.surface {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-primitives-space-3);
+  box-sizing: border-box;
+  height: 100%;
+  padding: var(--ds-primitives-space-4);
+  border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-subtle);
+  border-radius: var(--ds-semantic-radius-surface);
+  background-color: var(--ds-semantic-color-background-surface);
+  box-shadow: var(--ds-semantic-elevation-sm);
+  color: var(--ds-semantic-color-foreground-default);
+}
+
+/* Hover only signals a target (component.card#no-destination-no-link). */
+.surface:has(.link[href]:hover) {
+  border-color: var(--ds-semantic-color-border-default);
+  box-shadow: var(--ds-semantic-elevation-md);
+}
+
+/* The ring surrounds the whole target (component.card#visible-focus). */
+.surface:has(.link:focus-visible) {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+.media {
+  overflow: hidden;
+  border-radius: var(--ds-semantic-radius-control);
+}
+
+::slotted([slot="media"]) {
+  display: block;
+  max-width: 100%;
+}
+
+.title {
+  margin: 0;
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-heading-sm-font-family);
+  font-size: var(--ds-semantic-typography-heading-sm-font-size);
+  font-weight: var(--ds-semantic-typography-heading-sm-font-weight);
+  line-height: var(--ds-semantic-typography-heading-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-heading-sm-letter-spacing);
+}
+
+.link {
+  color: inherit;
+  text-decoration-line: none;
+}
+
+.link[href] {
+  cursor: pointer;
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.link[href]:hover {
+  text-decoration-line: underline;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.15em;
+}
+
+/* The target covers the surface (component.card#one-destination). */
+.link[href]::after {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ds-semantic-radius-surface);
+  content: "";
+}
+
+.body {
+  color: var(--ds-semantic-color-foreground-muted);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+}
+
+/* Actions sit above the target (component.card#actions-stay-separate). */
+.actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-primitives-space-2);
+  margin-block-start: auto;
+}
+
+@media (forced-colors: active) {
+  .surface {
+    border-color: CanvasText;
+  }
+
+  .surface:has(.link:focus-visible) {
+    outline-color: Highlight;
+  }
+}

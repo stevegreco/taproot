@@ -1,0 +1,265 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.card
+type: component
+title: Card
+summary: Use Card to present one subject as a bounded summary, such as an item in a collection, that a person can scan and act on.
+tags:
+  - surface
+  - container
+  - collection
+links:
+  follows:
+    - guideline.compose-or-propose
+  composes:
+    - component.link
+  related:
+    - component.badge
+description: >-
+  A bounded surface that groups a title, optional media, supporting content, and optional actions
+  about one subject. A card can lead to a full view of its subject through one primary
+  destination.
+usage:
+  do:
+    - Show each item in a collection of peers, such as projects, articles, or plans, so they can be scanned and compared.
+    - Summarize one subject on a dashboard or overview page, with a way to open its full view.
+    - Group a short summary with the one or two actions that apply to that subject.
+  avoid:
+    - situation: Report the outcome of an action or a condition that affects the view.
+      instead: component.alert
+      why: Alert carries status color and can be announced. A card is neutral content.
+    - situation: Ask for a decision or hold a task that blocks the rest of the view.
+      instead: component.dialog
+      why: Dialog holds focus until the task ends. A card sits in the flow of the page.
+    - situation: Make a large target that only triggers one action or navigates, with no content of its own.
+      instead: component.button
+      why: >-
+        A control styled as a card hides its role. Use Button for an action, or Link for
+        navigation, and let the card hold content.
+    - situation: Label a status or category on an item.
+      instead: component.badge
+      why: Badge is a compact label. Place a Badge inside a card when the card's subject has a status.
+    - situation: Draw a box around one region of a page, such as a sidebar or a form section, that is not a subject of its own.
+      instead: product layout styled with semantic surface tokens
+      why: >-
+        The compose-or-propose guideline keeps layout chrome in product code. A card stands for a
+        subject and repeats with its peers.
+    - situation: Switch between related views of the same subject.
+      instead: component.tabs
+      why: Tabs show one view at a time in place. Cards show several subjects side by side.
+anatomy:
+  surface:
+    role: container
+    description: Bounded surface that holds every other part and sets the card apart from the page.
+  media:
+    role: container
+    description: Optional supplied image or illustration of the subject, shown before the title.
+  title:
+    role: label
+    description: Names the subject. When the card has a primary destination, the title leads to it.
+  body:
+    role: description
+    description: Optional supporting content about the subject, such as a summary, metadata, or a badge.
+  actions:
+    role: container
+    description: Optional supplied actions that apply to the subject.
+parameters:
+  label:
+    kind: string
+    description: Text of the title, which names the subject. Required.
+  href:
+    kind: string
+    description: >-
+      Optional primary destination: the subject's full view. With it, the title leads there and the
+      whole surface outside the actions follows it. Without it, nothing on the card is interactive
+      except supplied actions.
+  headingLevel:
+    kind: number
+    default: 3
+    description: >-
+      Heading level of the title, from 2 to 6, so the card fits the outline of the page around it.
+      Values outside the range use the default.
+events:
+  activate: The primary destination was followed, from the title or anywhere on the surface outside the actions.
+states:
+  - default
+  - hover
+  - focus
+rules:
+  - id: title-is-heading
+    level: must
+    topic: accessibility
+    statement: >-
+      The title is exposed as a heading at the heading level parameter, so people can move between
+      cards in a collection by heading.
+  - id: one-destination
+    level: must
+    topic: behavior
+    statement: >-
+      With a destination, the title is the card's one link. Activating the title, or pointer
+      activation anywhere on the surface outside the actions, follows the destination. The surface
+      is not a separate tab stop.
+  - id: destination-named-by-label
+    level: must
+    topic: accessibility
+    statement: >-
+      The link's accessible name is the label alone. The body, media, and actions are not part of
+      it.
+  - id: actions-stay-separate
+    level: must
+    topic: behavior
+    statement: >-
+      Supplied actions stay focusable and operable on their own. Activating an action never follows
+      the card's destination.
+  - id: no-destination-no-link
+    level: must
+    topic: behavior
+    statement: >-
+      Without a destination, the title is plain heading text, the surface does not react to hover,
+      and the card adds no tab stop.
+  - id: visible-focus
+    level: must
+    topic: accessibility
+    statement: >-
+      When the title link has keyboard focus, the focus indicator surrounds the whole surface, so
+      the extent of the target is clear.
+  - id: forced-colors
+    level: must
+    topic: accessibility
+    statement: >-
+      Under forced colors, the card boundary and the focus indicator stay visible without the
+      surface fill or the elevation.
+  - id: label-names-subject
+    level: should
+    topic: content
+    statement: >-
+      The label names the subject, not the action. It makes sense out of context, because people
+      often list a page's links or headings.
+    examples:
+      do:
+        - Quarterly revenue report
+      avoid:
+        - Read more
+  - id: interactive-content-in-actions
+    level: should
+    topic: content
+    statement: >-
+      Put any other control or link in the actions, not the body. On a card with a destination, the
+      body is part of the destination's target.
+  - id: actions-follow-hierarchy
+    level: should
+    topic: content
+    statement: >-
+      Offer at most two actions, with low emphasis, so a collection of cards does not compete with
+      the page's primary action.
+    references:
+      - pattern.action-hierarchy#assign-emphasis
+  - id: media-decorative-when-titled
+    level: should
+    topic: accessibility
+    statement: >-
+      Leave media without a text alternative when it only illustrates what the label says. Describe
+      it when it carries information the text does not.
+  - id: peers-share-structure
+    level: should
+    topic: content
+    statement: >-
+      Cards in one collection have the same parts in the same order, and either all have a
+      destination or none do, so they can be scanned and compared.
+accessibility:
+  role: >-
+    None for the card itself. The title is a heading at the heading level parameter, containing a
+    link when the card has a destination. Place peer cards in a list so their count is announced.
+  name: The link, when present, is named by the label.
+  keyboard:
+    Tab: Move to the title link, when the card has a destination, then to each action in reading order.
+    Enter: Follow the focused title link.
+tokens:
+  surface:
+    base:
+      background: semantic.color.background.surface
+      foreground: semantic.color.foreground.default
+      border: semantic.color.border.subtle
+      border-width: semantic.border.width
+      radius: semantic.radius.surface
+      shadow: semantic.elevation.sm
+      padding-horizontal: primitives.space.4
+      padding-vertical: primitives.space.4
+      gap: primitives.space.3
+    hover:
+      border: semantic.color.border.default
+      shadow: semantic.elevation.md
+    focus:
+      focus-ring: semantic.color.border.focus
+  media:
+    base:
+      radius: semantic.radius.control
+  title:
+    base:
+      foreground: semantic.color.foreground.default
+      font-family: semantic.typography.heading.sm.fontFamily
+      font-size: semantic.typography.heading.sm.fontSize
+      font-weight: semantic.typography.heading.sm.fontWeight
+      line-height: semantic.typography.heading.sm.lineHeight
+      letter-spacing: semantic.typography.heading.sm.letterSpacing
+  body:
+    base:
+      foreground: semantic.color.foreground.muted
+      font-family: semantic.typography.body.md.fontFamily
+      font-size: semantic.typography.body.md.fontSize
+      line-height: semantic.typography.body.md.lineHeight
+  actions:
+    base:
+      gap: primitives.space.2
+rationale:
+  - decision: The primary destination is the title's link, extended over the surface, not a link around the whole card.
+    why: >-
+      A link that wraps the card takes every word on it as its accessible name, and cannot hold
+      actions, because interactive content cannot nest. A link on the title has a short name, keeps
+      the heading outline, and lets the actions sit above the extended target.
+  - decision: Card renders the title from the label and heading level parameters, rather than taking supplied heading content.
+    why: >-
+      Card owns the link inside the heading, so it has to own the heading too. Label is the one
+      name for a component's visible title, as in Alert and Dialog. Unlike Alert, a card's title
+      is a heading, because a collection of cards is navigated by heading.
+  - decision: Hover and the lifted elevation apply only to a card with a destination.
+    why: >-
+      Hover signals a target. A card with nothing to follow should not invite a click. The tokens
+      map cannot name "has a destination" as a condition, because href is a string, so the hover
+      condition is written once and no-destination-no-link limits it.
+  - decision: On a card with a destination, the extended target covers the body and media, so their text cannot be selected by dragging.
+    why: >-
+      The target is the link itself, so opening in a new tab, copying the address, and the context
+      menu work everywhere on the card without script. Keeping text selectable would need a
+      scripted click handler that loses those. Text that people need to copy belongs on the
+      destination, or the card should have no destination.
+  - decision: Card has no variant.
+    covers: [sizes, density]
+    why: >-
+      A card stands for a subject. Status belongs to a Badge in the body, and emphasis between cards
+      is rare enough to stay product layout. The card fills the width its layout gives it, and the
+      layout sets the density of the collection.
+  - decision: Card has no disabled, selected, loading, or invalid state.
+    covers: [disabled, selected, loading, invalid]
+    why: >-
+      Card is content, not a control. A subject that cannot be opened has no destination. Choosing
+      cards is a selection pattern with its own control, such as a Checkbox in the actions. Pending
+      content is the consumer's to show, and the card has no value to be invalid.
+  - decision: The title is always text.
+    covers: [icon-only]
+    why: Label is required, and it names the link (destination-named-by-label).
+  - decision: Layout follows the reading direction. Nothing mirrors.
+    covers: [right-to-left]
+    why: Parts stack in reading order and actions align to the start. Supplied media is the adopter's to mirror.
+  - decision: Card does not animate between rest and hover.
+    covers: [reduced-motion]
+    why: The elevation changes at once, which satisfies a reduced motion preference without a separate treatment.
+  - decision: Forced colors keep the boundary and focus through system colors.
+    covers: [forced-colors]
+    why: >-
+      The surface fill and elevation disappear under forced colors, so the border takes the system
+      text color and focus the system highlight (forced-colors).
+  - decision: Card consumes semantic surface tokens directly, with spacing primitives.
+    why: >-
+      ADR 0003. background.surface, radius.surface, and elevation.sm are described for cards. The
+      subtle border is a quiet surface edge, not a control boundary, so it does not need 3:1. No
+      semantic spacing role exists, so spacing primitives set padding and gaps.

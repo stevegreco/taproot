@@ -39,6 +39,26 @@ const ELEMENTS = [
     properties: { label: "sample label", size: "small" },
   },
   {
+    id: "card",
+    tagName: "ds-card",
+    className: "DsCard",
+    defineExport: "defineCard",
+    events: ["click"],
+    focusPart: "title-link",
+    // The ring surrounds the whole card, not the title link.
+    focusRingPart: "surface",
+    parts: ["surface", "media", "title", "body", "actions"],
+    requiresDefaultSlot: true,
+    disabledAttribute: null,
+    fieldsetDisables: false,
+    hasFormProperty: false,
+    activationKeys: ["Enter"],
+    fixture: { href: "#fixture", label: "Sample label" },
+    textAttributes: { href: "#fixture", label: "Sample label" },
+    enums: [],
+    properties: { label: "sample label", href: "sample href", headingLevel: 4 },
+  },
+  {
     id: "text-area",
     tagName: "ds-text-area",
     className: "DsTextArea",
@@ -501,12 +521,16 @@ describe("host checks", () => {
       const host = render(element);
       const target = focusTarget(element, host);
 
+      const ring = element.focusRingPart
+        ? host.shadowRoot.querySelector(`[part="${element.focusRingPart}"]`)
+        : target;
+
       await userEvent.tab();
 
       expect(host.shadowRoot.activeElement).toBe(target);
       expect(target.matches(":focus-visible")).toBe(true);
-      expect(getComputedStyle(target).outlineStyle).not.toBe("none");
-      expect(parseFloat(getComputedStyle(target).outlineWidth)).toBeGreaterThan(0);
+      expect(getComputedStyle(ring).outlineStyle).not.toBe("none");
+      expect(parseFloat(getComputedStyle(ring).outlineWidth)).toBeGreaterThan(0);
     },
   );
 
