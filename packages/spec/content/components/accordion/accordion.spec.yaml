@@ -3,9 +3,9 @@ id: component.accordion
 type: component
 title: Accordion
 summary: Use Accordion to let people expand only the sections of a long page they need, one heading at a time.
-status: draft
 tags:
   - disclosure
+  - faq
 links:
   follows:
     - guideline.compose-or-propose
@@ -37,13 +37,197 @@ usage:
 anatomy:
   section:
     role: container
-    description: One heading and its content, stacked with the other sections.
+    description: >-
+      One heading and its content, stacked with the other sections. Each section supplies its
+      trigger's label and whether it starts expanded.
   trigger:
     role: interactive-surface
     description: The section's heading. Activating it shows or hides the section's content.
   indicator:
     role: indicator
-    description: Mark on the trigger that shows whether the section is expanded or collapsed.
+    description: Mark at the end of the trigger that shows whether the section is expanded.
   panel:
     role: container
     description: The section's content, shown below its trigger while the section is expanded.
+parameters:
+  exclusive:
+    kind: boolean
+    description: >-
+      When true, expanding a section collapses the one that was expanded, so at most one is open.
+    default: false
+  heading-level:
+    kind: number
+    description: >-
+      The heading level every trigger is exposed at, from 2 to 6, so the sections fit the outline
+      of the page around them. A value outside that range uses the default.
+    default: 3
+events:
+  toggle: A section was expanded or collapsed by user interaction.
+states:
+  - default
+  - hover
+  - focus
+  - expanded
+rules:
+  - id: sections-toggle
+    level: must
+    topic: behavior
+    statement: >-
+      Activating a trigger expands its section when collapsed and collapses it when expanded. Other
+      sections keep their state unless exclusive is true, in which case expanding a section
+      collapses the one that was expanded. Every section may be collapsed at once in either mode.
+  - id: toggle-reports
+    level: must
+    topic: behavior
+    statement: >-
+      Each section whose state changes from user interaction reports toggle, including a section
+      collapsed because exclusive is true. Changing a section's state programmatically reports
+      nothing.
+  - id: collapsed-content-hidden
+    level: must
+    topic: accessibility
+    statement: >-
+      A collapsed section's content is not shown, cannot take keyboard focus, and is not exposed to
+      assistive technology.
+  - id: accessible-triggers
+    level: must
+    topic: accessibility
+    statement: >-
+      Each trigger is a button inside a heading at the heading level. The button exposes the
+      section's label and whether the section is expanded, and the expanded panel is named by its
+      trigger.
+  - id: keyboard-accordion
+    level: must
+    topic: accessibility
+    statement: >-
+      Tab moves through the triggers and any expanded content in reading order. Enter and Space
+      toggle the focused trigger's section.
+  - id: visible-expanded-state
+    level: must
+    topic: accessibility
+    statement: >-
+      The indicator shows whether each section is expanded by its shape, not by color alone, and the
+      indicator and keyboard focus stay visible under forced colors.
+  - id: labels-describe-content
+    level: must
+    topic: content
+    statement: >-
+      Each trigger has a short label that says what its section holds and differs from the other
+      labels. In a list of questions, the label is the question.
+    examples:
+      do:
+        - "Shipping, Returns, Warranty"
+        - "How long does delivery take?"
+      avoid:
+        - "More information, Details, Other"
+  - id: expand-what-most-need
+    level: should
+    topic: content
+    statement: >-
+      Start every section collapsed unless most people arriving on the page need one of them. If
+      most people need most sections, use headings in one scrolling page instead.
+  - id: no-nesting
+    level: should
+    topic: content
+    statement: >-
+      Do not place an accordion inside another accordion's section. Nested levels hide content two
+      clicks deep and blur the page outline.
+accessibility:
+  role: A heading containing a button for each trigger, and a region for each expanded panel.
+  name: >-
+    Each trigger from its section's label. Each expanded panel from its trigger.
+  keyboard:
+    Tab: Move to the next trigger, or into an expanded section's content.
+    Enter: Expand or collapse the focused trigger's section.
+    Space: Expand or collapse the focused trigger's section.
+tokens:
+  section:
+    base:
+      border: semantic.color.border.subtle
+  trigger:
+    base:
+      foreground: semantic.color.foreground.default
+      radius: semantic.radius.control
+      gap: primitives.space.3
+      padding-horizontal: primitives.space.3
+      padding-vertical: primitives.space.3
+      font-family: semantic.typography.label.md.fontFamily
+      font-size: semantic.typography.label.md.fontSize
+      font-weight: semantic.typography.label.md.fontWeight
+      line-height: semantic.typography.label.md.lineHeight
+      letter-spacing: semantic.typography.label.md.letterSpacing
+    hover:
+      background: semantic.color.background.action.tertiary.hover
+    focus:
+      focus-ring: semantic.color.border.focus
+  indicator:
+    base:
+      foreground: semantic.color.foreground.muted
+      border-width: semantic.border.width
+    hover:
+      foreground: semantic.color.foreground.default
+  panel:
+    base:
+      padding-horizontal: primitives.space.3
+      padding-vertical: primitives.space.3
+rationale:
+  - decision: Sections open independently by default, and exclusive is opt-in.
+    why: >-
+      Independent sections let people compare two answers and never close something they are
+      reading. Exclusive mode suits a short list where only one section is useful at a time. Even
+      then every section may be collapsed, because forcing one open would make Accordion a vertical
+      Tabs.
+  - decision: Sections are ordered content, not a parameter, and each section owns its expanded state.
+    covers: [selected]
+    why: >-
+      Each section carries a label, rich content, and an expanded state. The parameter schema
+      describes scalar options of the whole component, as with Tabs' sections. Expanded is the one
+      persistent state, and it is set on each section.
+  - decision: The heading level is a parameter that applies to every trigger.
+    why: >-
+      The triggers are headings in the page outline, and only the page knows which level fits.
+      Every section in one accordion sits at the same level, so one value covers them.
+  - decision: The arrow keys do nothing. Tab moves between triggers.
+    why: >-
+      Arrow key navigation between triggers is optional in the common accordion keyboard model.
+      Leaving it out keeps every trigger and every expanded section in the ordinary tab order, so
+      there is no roving focus to learn.
+  - decision: Sections have no disabled state.
+    covers: [disabled]
+    why: >-
+      A section that cannot open hides its content and the reason. Leave the section out, or let it
+      open and explain inside what is needed, as with Tabs.
+  - decision: Accordion has no loading or invalid state.
+    covers: [loading, invalid]
+    why: >-
+      It shows content the page already has and stores nothing. A section that loads its own
+      content shows its own progress.
+  - decision: One size and one density.
+    covers: [sizes, density]
+    why: >-
+      The trigger takes the label typography and comfortable padding. A compact list that needs
+      smaller targets is better served by headings in one scrolling page.
+  - decision: Every trigger has a text label.
+    covers: [icon-only]
+    why: The label is the section's heading. A heading made only of an icon has no outline text.
+  - decision: The indicator sits at the end of the trigger in reading direction and points down or up.
+    covers: [right-to-left]
+    why: >-
+      In a right-to-left layout the indicator moves to the left edge. Its shape points along the
+      block direction, so it is not mirrored.
+  - decision: Sections expand and collapse instantly. Nothing animates.
+    covers: [reduced-motion]
+    why: >-
+      The system has no motion tokens yet, and an instant change needs no reduced motion treatment.
+      Animated height can be added with motion tokens when they exist.
+  - decision: Forced colors keep the indicator and focus through system colors.
+    covers: [forced-colors]
+    why: >-
+      The indicator is drawn in the text color and focus rings keep their outline, so expanded
+      state and focus never depend on the theme colors (visible-expanded-state).
+  - decision: Accordion consumes semantic colors and typography, with spacing primitives.
+    why: >-
+      ADR 0003. The trigger is a low-emphasis control, so hover borrows the tertiary action hover.
+      The trigger uses label typography rather than heading typography so it stays the same size
+      at every heading level. No semantic spacing role exists, so spacing primitives set padding
+      and gaps.

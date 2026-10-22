@@ -1,3 +1,4 @@
+import type { DsAccordionAttributes, DsAccordionSectionAttributes } from "./accordion.js";
 import type { DsAlertAttributes } from "./alert.js";
 import type { DsBadgeAttributes } from "./badge.js";
 import type { DsButtonAttributes } from "./button.js";
@@ -14,6 +15,7 @@ import type { DsTextAreaAttributes } from "./text-area.js";
 import type { DsSpinnerAttributes } from "./spinner.js";
 import type { DsCardAttributes } from "./card.js";
 
+export * from "./accordion.js";
 export * from "./alert.js";
 export * from "./badge.js";
 export * from "./button.js";
@@ -35,6 +37,8 @@ export * from "./card.js";
  * framework's intrinsic elements to type templates, such as JSX.
  */
 export interface ElementAttributes {
+  "ds-accordion": DsAccordionAttributes;
+  "ds-accordion-section": DsAccordionSectionAttributes;
   "ds-alert": DsAlertAttributes;
   "ds-badge": DsBadgeAttributes;
   "ds-button": DsButtonAttributes;
