@@ -1,0 +1,71 @@
+/**
+ * <ds-spinner> styles.
+ *
+ * Built into dist/spinner.styles.js by build-styles.js — this file is the source.
+ */
+
+:host {
+  --_size: 1em;
+  --_turn: var(--ds-primitives-duration-xslow);
+
+  display: inline-block;
+  flex-shrink: 0;
+  inline-size: var(--_size);
+  block-size: var(--_size);
+  color: inherit;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([size="small"]) {
+  --_size: var(--ds-primitives-space-4);
+}
+
+:host([size="medium"]) {
+  --_size: var(--ds-primitives-space-6);
+}
+
+:host([size="large"]) {
+  --_size: var(--ds-primitives-space-10);
+}
+
+/* The arc is the top border in the current text color; the rest of the ring
+ * is the track. The stroke is an eighth of the size, so it scales with it.
+ * Rotation is a transform, so it never moves the layout. */
+.indicator {
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: 100%;
+  border: calc(var(--_size) / 8) solid var(--ds-semantic-color-border-subtle);
+  border-block-start-color: currentColor;
+  border-radius: 50%;
+  animation: spin var(--_turn) linear infinite;
+}
+
+/* Motion is the message, so reduced motion slows the turn instead of stopping it. */
+@media (prefers-reduced-motion: reduce) {
+  .indicator {
+    animation-duration: calc(var(--_turn) * 3);
+  }
+}
+
+/* Forced colors would paint the arc and track the same system color, leaving a
+ * ring that looks still. Drop the track so the turning arc stays visible. */
+@media (forced-colors: active) {
+  .indicator {
+    forced-color-adjust: none;
+    border-color: transparent;
+    border-block-start-color: CanvasText;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}

@@ -1,0 +1,198 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.spinner
+type: component
+title: Spinner
+summary: Use Spinner to show that something is loading or working when you cannot say how long it will take.
+tags:
+  - loading
+  - progress
+  - busy
+  - feedback
+links:
+  follows:
+    - guideline.compose-or-propose
+  related:
+    - component.button
+sources:
+  - title: Token tier consumption (tokens ADR 0003)
+    url: packages/tokens/docs/adr/0003-token-tier-consumption.md
+description: >-
+  Shows a small animated indicator that work is in progress and its duration is unknown. It has an
+  accessible name that says what is loading, and it does not report when the work finishes.
+usage:
+  do:
+    - Show that a region of the view is loading content, such as a panel waiting on a request.
+    - Sit beside a short text status, such as Saving, while a background task runs.
+    - Fill the space of content that is about to appear when its size is not known yet.
+  avoid:
+    - situation: Show progress when you know how much of the work is done.
+      instead: a determinate progress indicator
+      why: >-
+        A known amount lets the person judge how long to wait, and a spinner hides it. The system
+        has no determinate indicator yet.
+    - situation: Report that the work finished or failed.
+      instead: component.alert
+      why: Spinner only says work is happening. Alert states the outcome and can announce it.
+    - situation: Cover a wait shorter than about a second.
+      instead: no indicator
+      why: >-
+        A spinner that appears and vanishes at once reads as a flicker, not as feedback. Show the
+        result when it arrives.
+    - situation: Stand in for content whose layout is already known, such as rows of a list.
+      instead: placeholder shapes in the final layout
+      why: Placeholders keep the layout steady and show what is coming. A spinner shows neither.
+    - situation: Add motion for decoration or to draw attention.
+      instead: component.icon
+      why: Spinner always means work in progress. Using it for anything else teaches people to ignore it.
+anatomy:
+  indicator:
+    role: indicator
+    description: >-
+      The animated graphic, painted in the current text color, that signals work in progress. It
+      has an accessible name even though no text is visible.
+parameters:
+  label:
+    kind: string
+    default: Loading
+    description: >-
+      What is loading, read as the indicator's accessible name. It is never shown.
+  size:
+    kind: enum
+    values:
+      inherit: Matches the surrounding text size. Use beside a text status or inside a label.
+      small: Fixed small size, for dense layouts.
+      medium: Fixed medium size, for a panel or card that is loading.
+      large: Fixed large size, for a region that fills most of the view.
+    default: inherit
+states:
+  - default
+preferences:
+  reducedMotion:
+    - reduce
+rules:
+  - id: always-named
+    level: must
+    topic: accessibility
+    statement: >-
+      The spinner is always exposed to assistive technology as an indeterminate progress indicator
+      with an accessible name. Without a label the name is Loading.
+  - id: label-names-work
+    level: should
+    topic: content
+    statement: Name what is loading when the view holds more than one thing that could be.
+    examples:
+      do:
+        - Loading comments
+        - Saving draft
+      avoid:
+        - Please wait
+        - Spinner
+  - id: not-announced
+    level: must
+    topic: accessibility
+    statement: >-
+      The spinner does not announce itself when it appears or disappears. Announce the outcome of
+      the work with an Alert.
+    references:
+      - component.alert#parameters.announce
+  - id: not-a-control
+    level: must
+    topic: behavior
+    statement: The spinner is not focusable and does not activate.
+  - id: follows-text-color
+    level: must
+    topic: behavior
+    statement: >-
+      The indicator paints in the current text color, so it follows the surface around it and
+      stays visible in forced-colors mode.
+  - id: square-box
+    level: must
+    topic: behavior
+    statement: >-
+      The spinner occupies a square of its size and does not shift the layout around it. Its stroke
+      is an eighth of that size.
+  - id: reduced-motion-slows
+    level: must
+    topic: accessibility
+    statement: >-
+      When the person prefers reduced motion, the indicator keeps turning at a third of its normal
+      speed, so it still shows activity without fast movement.
+  - id: delay-short-waits
+    level: should
+    topic: behavior
+    statement: >-
+      Show the spinner only once the wait has lasted about a second, and remove it as soon as the
+      work ends.
+    rationale: A spinner that flashes for a moment reads as a flicker, not as feedback.
+  - id: one-per-region
+    level: should
+    topic: content
+    statement: >-
+      Use one spinner for a region that is loading, not one per item inside it.
+accessibility:
+  role: Progress indicator with no value (indeterminate).
+  name: From the label parameter, which defaults to Loading.
+tokens:
+  indicator:
+    base:
+      foreground: inherit
+      track: semantic.color.border.subtle
+      motion-duration: primitives.duration.xslow
+      motion-easing: linear
+    size.inherit:
+      size: inherit
+    size.small:
+      size: primitives.space.4
+    size.medium:
+      size: primitives.space.6
+    size.large:
+      size: primitives.space.10
+rationale:
+  - decision: Spinner has no visible text.
+    covers: [icon-only]
+    why: >-
+      Visible status text, such as Saving, belongs to the surrounding content and can say more than
+      a fixed label. The label parameter gives the indicator its accessible name.
+  - decision: The label defaults to Loading instead of being required.
+    why: >-
+      A nameless progress indicator is an accessibility failure, and a default keeps every spinner
+      named. The label-names-work rule asks for a specific name where it helps.
+  - decision: Spinner is exposed as a progress indicator, not as a live status message.
+    why: >-
+      A live region would announce every spinner that appears, including several at once.
+      Assistive technology already reports a progress indicator as busy when a person reaches it,
+      and the outcome is announced by an Alert.
+  - decision: Spinner has no disabled, selected, loading, or invalid state.
+    covers: [disabled, selected, loading, invalid]
+    why: It is not a control and it is itself the loading state of whatever it stands in for.
+  - decision: Sizes follow Icon's inherit default, with a larger large size.
+    covers: [sizes, density]
+    why: >-
+      Inherit lets a spinner sit beside text at the text's size, like Icon. A spinner also stands
+      alone in an empty region, which needs a larger size than any icon. Spacing primitives are used
+      because no semantic size role exists (ADR 0003).
+  - decision: The indicator paints in the current text color, and its track uses the subtle border color.
+    covers: [forced-colors]
+    why: >-
+      Following text color keeps it visible on any surface. The track is decorative, since the
+      turning arc carries the meaning, so it takes the subtle border role. Forced-colors mode would paint the arc
+      and track alike, so there the track is dropped and the arc alone turns in the text color.
+  - decision: Reduced motion slows the rotation instead of stopping it.
+    covers: [reduced-motion]
+    why: >-
+      A spinner's motion is its message. A still arc looks like a static icon and stops saying that
+      work is happening. A third of the speed removes fast movement and keeps the signal. The token
+      map cannot express the slower duration, which is three times motion-duration.
+  - decision: Rotation is constant speed and uses no easing token.
+    why: The system's easing tokens accelerate and decelerate, which makes a continuous turn stutter.
+  - decision: Spinner does not mirror in right-to-left layouts.
+    covers: [right-to-left]
+    why: Clockwise rotation carries no reading direction.
+  - decision: The stroke is an eighth of the spinner's size, not a border token.
+    why: >-
+      The one semantic border width is a hairline meant for control edges, and it disappears at the
+      large size. A proportional stroke looks the same at every size, including inherit.
+  - decision: Button has no loading state in this change.
+    why: >-
+      A Button loading state changes Button's public contract, including how it blocks activation,
+      so it is its own proposal. Until then, place a Spinner beside the Button and disable it.
