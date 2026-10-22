@@ -8,6 +8,7 @@
 
 import { defineAccordion } from "./accordion.js";
 import { defineAlert } from "./alert.js";
+import { defineAvatar } from "./avatar.js";
 import { defineBadge } from "./badge.js";
 import { defineButton } from "./button.js";
 import { defineCheckbox } from "./checkbox.js";
@@ -25,6 +26,7 @@ import { defineCard } from "./card.js";
 
 export { DsAccordion, DsAccordionSection, defineAccordion } from "./accordion.js";
 export { DsAlert, defineAlert } from "./alert.js";
+export { DsAvatar, defineAvatar } from "./avatar.js";
 export { DsBadge, defineBadge } from "./badge.js";
 export { DsButton, defineButton } from "./button.js";
 export { DsCheckbox, defineCheckbox } from "./checkbox.js";
@@ -42,6 +44,7 @@ export { DsCard, defineCard } from "./card.js";
 
 defineAccordion();
 defineAlert();
+defineAvatar();
 defineBadge();
 defineButton();
 defineCheckbox();
