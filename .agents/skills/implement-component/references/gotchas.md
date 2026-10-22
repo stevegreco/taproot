@@ -55,6 +55,10 @@ document-component.
 - Events: a native `input` event is composed and reaches the host. `change` is not composed;
   re-dispatch it from the host.
 - Honor `:host([hidden]) { display: none; }`. The shared host checks test it.
+- With `slotAssignment: "manual"`, call `slot.assign()` after the slot is in the shadow root.
+  Chromium can drop an assignment made on a slot that is not connected yet, and only markup parsed
+  before registration (server-rendered pages) shows it. Accordion's test for that case is the
+  reference.
 - Put pseudo-classes (`:hover`, `:focus-visible`) on the inner control, not the host.
 
 ## Component tests

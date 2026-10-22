@@ -215,6 +215,17 @@ describe("DsAccordion", () => {
     );
   });
 
+  test("[sections-toggle] shows expanded sections in markup parsed before registration", () => {
+    document.body.innerHTML = `<late-ds-accordion>
+      <late-ds-accordion-section label="Shipping" expanded><p>Shipping content</p></late-ds-accordion-section>
+      <late-ds-accordion-section label="Returns"><p>Returns content</p></late-ds-accordion-section>
+    </late-ds-accordion>`;
+    defineAccordion("late-ds-accordion", "late-ds-accordion-section");
+    const host = document.querySelector("late-ds-accordion");
+    const visible = [...host.children].filter((section) => section.getClientRects().length > 0);
+    expect(visible.map((section) => section.label)).toEqual(["Shipping"]);
+  });
+
   test("renders sections added after connection, and relabels them", async () => {
     const host = render();
     const added = document.createElement("ds-accordion-section");

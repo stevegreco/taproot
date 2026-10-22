@@ -128,10 +128,12 @@ export class DsAccordion extends ForwardsFocus(Base) {
           <div part="panel" role="region" id="panel-${index}"
             aria-labelledby="trigger-${index}"><slot></slot></div>`;
         item.querySelector(".label").textContent = section.label;
-        item.querySelector("slot").assign(section);
         return item;
       }),
     );
+    // Assign once the slots are in the shadow root; Chromium can drop an earlier assignment.
+    const slots = this.#root.querySelectorAll("slot");
+    for (const [index, section] of this.#sections().entries()) slots[index].assign(section);
     this.#sync();
     if (focused !== -1) (this.#triggers()[focused] ?? this[focusTarget])?.focus();
   }
