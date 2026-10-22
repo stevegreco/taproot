@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.accordion
+type: component
+title: Accordion
+summary: Use Accordion to let people expand only the sections of a long page they need, one heading at a time.
+status: draft
+tags:
+  - disclosure
+links:
+  follows:
+    - guideline.compose-or-propose
+description: >-
+  A vertical stack of sections, each with a heading that shows or hides its content in place.
+  Sections open independently, so people can read several at once or none.
+usage:
+  do:
+    - Group optional detail that most people skip, such as frequently asked questions.
+    - Shorten a long settings or help page into sections people scan by heading and open as needed.
+  avoid:
+    - situation: Switch between a few peer views of the same subject, one visible at a time.
+      instead: component.tabs
+      why: >-
+        Tabs keep the choices in one row and always show one view. An accordion stacks headings
+        and can show several sections or none.
+    - situation: Content most people need, or need to read straight through or compare.
+      instead: Headings in one scrolling page
+      why: Collapsed content is easy to miss, and opening every section costs a click each.
+    - situation: A status message or error people must see.
+      instead: component.alert
+      why: An alert is shown in the flow of the page. Hiding it behind a heading hides the problem.
+    - situation: Move between separate pages or build site navigation.
+      instead: component.link
+      why: Navigation belongs to links, so the address, history, and back button work.
+    - situation: A focused task that should block the rest of the view until it is done.
+      instead: component.dialog
+      why: An accordion section opens in place and blocks nothing.
+anatomy:
+  section:
+    role: container
+    description: One heading and its content, stacked with the other sections.
+  trigger:
+    role: interactive-surface
+    description: The section's heading. Activating it shows or hides the section's content.
+  indicator:
+    role: indicator
+    description: Mark on the trigger that shows whether the section is expanded or collapsed.
+  panel:
+    role: container
+    description: The section's content, shown below its trigger while the section is expanded.
