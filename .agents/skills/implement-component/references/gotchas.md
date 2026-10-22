@@ -63,8 +63,8 @@ document-component.
 
 ## Component tests
 
-- Add the component's row to the table in `test/host-checks.test.js`. A test fails when a
-  component in `src/` has no row. `test/package-root.test.js` finds components itself.
+- Add the component's row as `test/host-checks/<name>.js`. A test fails when a component in
+  `src/` has no row. `test/package-root.test.js` finds components itself.
 - Do not repeat the shared host checks in `<name>.test.js`.
 - Token values: never set `--ds-semantic-*` inline. The setup file loads the real `tokens.css`.
   Compare with `resolvedValue(property, "var(--token)")` from `test/helpers/tokens.js`.
@@ -89,9 +89,10 @@ document-component.
 
 ## Types
 
-- `src/<name>.d.ts` and the `src/index.d.ts` entries are hand-written. Declare a property per
-  public property, an attribute per public attribute, an enum alias for enum properties, and the
-  `HTMLElementTagNameMap` entry.
+- `src/<name>.d.ts` is hand-written. Declare a property per public property, an attribute per
+  public attribute, an enum alias for enum properties, and the `HTMLElementTagNameMap` entry. The
+  build generates `src/index.js` and `src/index.d.ts` from `src/`, taking each tag name from that
+  entry and its attributes from the matching `<ClassName>Attributes` interface.
 
 ## Commands
 

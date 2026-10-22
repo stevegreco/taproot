@@ -1,0 +1,28 @@
+/** The host checks for <ds-radio-group>. test/host-checks.test.js reads every file here. */
+export default {
+  id: "radio-group",
+  tagName: "ds-radio-group",
+  className: "DsRadioGroup",
+  defineExport: "defineRadioGroup",
+  events: ["change"],
+  focusPart: "control",
+  parts: ["field", "label", "options", "choice", "control", "indicator", "hint", "error"],
+  requiresDefaultSlot: false,
+  disabledAttribute: "disabled",
+  fieldsetDisables: true,
+  hasFormProperty: true,
+  activationKeys: ["Space"],
+  fixture: {},
+  fixtureContent: '<option value="one">One</option><option value="two">Two</option>',
+  textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+  enums: [],
+  properties: {
+    label: "sample label",
+    hint: "sample hint",
+    error: "sample error",
+    name: "choice",
+    value: "two",
+    disabled: true,
+    required: true,
+  },
+};

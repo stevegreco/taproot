@@ -61,8 +61,9 @@ pnpm component:new <name> --phase implementation
 This reads the spec and writes every file this phase needs, with `TODO` comments where the work
 goes: `src/<name>.js` (property accessors from the parameters, an empty shadow root), `.css`,
 `.d.ts`, `test/<name>.test.js`, `implementation/<name>.md` (an `api` row per parameter and event),
-and `stories/<name>.stories.js`. It adds the `src/index.js`, `src/index.d.ts`, and
-`test/host-checks.test.js` entries. It never overwrites a file or entry that exists.
+`stories/<name>.stories.js`, and the host-checks row `test/host-checks/<name>.js`. It never
+overwrites a file that exists. Do not edit `src/index.js` or `src/index.d.ts`: the build generates
+them from `src/`.
 
 The test file has one failing test per MUST rule, named `[rule-id] <statement>`. Before any runtime
 code, replace each `expect.fail` with a test that proves the rule. Rename a test to say what it
@@ -84,7 +85,7 @@ In `packages/components`, fill in the scaffold:
 
 - `test/<name>.test.js`: this component's behavior only. Add tests for SHOULD rules and anything
   else the runtime does. Every test from step 2 now passes.
-- The row in `test/host-checks.test.js`. Fix its `TODO`s: `focusPart`, and `parts`, which start
+- The row in `test/host-checks/<name>.js`. Fix its `TODO`s: `focusPart`, and `parts`, which start
   as the spec's anatomy names. The shared checks cover alias registration, `hidden`, parts, the
   required slot, focus forwarding, visible focus, events while disabled, keyboard activation,
   `form`, enum properties, and properties set before registration.

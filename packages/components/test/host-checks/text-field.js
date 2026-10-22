@@ -1,0 +1,37 @@
+/** The host checks for <ds-text-field>. test/host-checks.test.js reads every file here. */
+export default {
+  id: "text-field",
+  tagName: "ds-text-field",
+  className: "DsTextField",
+  defineExport: "defineTextField",
+  events: ["change"],
+  focusPart: "control",
+  parts: ["field", "label", "control", "hint", "error"],
+  requiresDefaultSlot: false,
+  disabledAttribute: "disabled",
+  fieldsetDisables: true,
+  hasFormProperty: true,
+  activationKeys: [],
+  fixture: {},
+  textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+  enums: [
+    {
+      attribute: "type",
+      property: "type",
+      values: ["text", "email", "password", "search", "url", "tel"],
+      default: "text",
+    },
+  ],
+  properties: {
+    label: "sample label",
+    hint: "sample hint",
+    error: "sample error",
+    type: "email",
+    name: "sample name",
+    value: "sample value",
+    placeholder: "sample placeholder",
+    autocomplete: "email",
+    disabled: true,
+    required: true,
+  },
+};

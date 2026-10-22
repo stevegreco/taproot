@@ -47,8 +47,8 @@ covers those).
 
 - Mark stable handles with `data-<name>-*` attributes and query those, not text positions or
   classes.
-- `examples/custom-elements.d.ts` maps element attributes onto JSX once. Check whether the
-  component needs an entry there.
+- `examples/custom-elements.d.ts` maps every element's attributes onto JSX from the generated
+  `ElementAttributes`, so a new component needs no entry there.
 
 ## 2. Write the Verify steps
 

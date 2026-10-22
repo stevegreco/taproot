@@ -1,0 +1,27 @@
+/** The host checks for <ds-switch>. test/host-checks.test.js reads every file here. */
+export default {
+  id: "switch",
+  tagName: "ds-switch",
+  className: "DsSwitch",
+  defineExport: "defineSwitch",
+  events: ["change"],
+  focusPart: "control",
+  parts: ["field", "choice", "control", "indicator", "label", "hint", "error"],
+  requiresDefaultSlot: false,
+  disabledAttribute: "disabled",
+  fieldsetDisables: true,
+  hasFormProperty: true,
+  activationKeys: ["Space"],
+  fixture: {},
+  textAttributes: { label: "Sample label", hint: "Sample hint", error: "Sample error" },
+  enums: [],
+  properties: {
+    label: "sample label",
+    hint: "sample hint",
+    error: "sample error",
+    checked: true,
+    name: "setting",
+    value: "enabled",
+    disabled: true,
+  },
+};
