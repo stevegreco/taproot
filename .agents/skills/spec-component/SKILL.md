@@ -88,7 +88,9 @@ pnpm component:status <name> --phase spec
 
 `get` shows the draft status note. `validate` reports each mistake once, with file and line,
 including any `TODO:` left. A link or `instead` that names a record must resolve, and a section target (a heading slug, rule ID, or field path such as
-`parameters.variant.destructive`) must exist.
+`parameters.variant.destructive`) must exist. Every token reference must name a token in both
+themes, or be `transparent`, `none`, `inherit`, or `linear`. `component:status --phase spec` runs
+the same checks on the record, counts the `TODO:`s, and requires `status: draft`.
 
 ## Pull request
 

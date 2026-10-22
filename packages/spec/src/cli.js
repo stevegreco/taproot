@@ -1,7 +1,8 @@
 import { parseArgs } from "node:util";
-import { SpecError } from "./index.js";
-import { loadFromConfig, resolveConfig } from "./config.js";
+import { loadFromConfig, resolveConfig, validateFromConfig } from "./config.js";
+import { INVERSE } from "./links.js";
 import * as ops from "./operations.js";
+import { schema } from "./schema/info.js";
 
 const str = { type: "string" };
 
@@ -42,6 +43,16 @@ const COMMANDS = {
     summary: "Show which design tokens a component uses; --resolve adds values.",
     options: { part: str, condition: str, property: str, resolve: { type: "boolean" } },
   },
+};
+
+/** The values each filter flag takes. Any other value is a usage error. */
+const CHOICES = {
+  type: schema.properties.type.enum,
+  status: schema.properties.status.enum,
+  topic: schema.$defs.rule.properties.topic.enum,
+  level: schema.$defs.rule.properties.level.enum,
+  kind: Object.keys(INVERSE),
+  direction: ["out", "in", "both"],
 };
 
 const GLOBAL = {
@@ -125,13 +136,15 @@ export async function run(argv, io = {}) {
       ? { error: result.text, code: result.error.code, suggestions: result.error.suggestions }
       : result.data;
     out(`${values.json ? JSON.stringify(json, null, 2) : result.text}\n`);
-    return result.ok ? 0 : 1;
+    // An empty result exits 1 too, so "nothing found" never reads as success.
+    const empty = Array.isArray(result.data) && result.data.length === 0;
+    return result.ok && !empty ? 0 : 1;
   };
 
   try {
     if (command === "validate") {
-      const { contentDir } = resolveConfig(loadOptions);
-      return print(await ops.validate({ contentDir }));
+      const { issues, recordCount } = await validateFromConfig(loadOptions);
+      return print(ops.formatIssues(issues, recordCount));
     }
 
     // An id can be a name with spaces, such as `get text field`, so its words are joined.
@@ -143,14 +156,24 @@ export async function run(argv, io = {}) {
     if (values.limit !== undefined && !/^[1-9]\d*$/.test(values.limit)) {
       return usageError("--limit must be a positive integer.");
     }
-    if (values.direction !== undefined && !["out", "in", "both"].includes(values.direction)) {
-      return usageError("--direction must be out, in, or both.");
+    for (const [flag, choices] of Object.entries(CHOICES)) {
+      if (values[flag] !== undefined && !choices.includes(values[flag])) {
+        return usageError(`--${flag} must be one of: ${choices.join(", ")}.`);
+      }
     }
 
+    // One invalid record, such as a draft with TODOs, must not hide the rest.
     const spec = await loadFromConfig({
       ...loadOptions,
       resolveTokens: command === "tokens" && Boolean(values.resolve),
+      skipInvalid: true,
     });
+    const skipped = [...new Set(spec.issues.map((issue) => issue.file))];
+    if (skipped.length > 0) {
+      err(
+        `Warning: left out ${skipped.length} record file${skipped.length === 1 ? "" : "s"} with issues: ${skipped.join(", ")}. Run "ds-spec validate" for details.\n`,
+      );
+    }
     const first = positionals.join(" ");
     const { implementations } = resolveConfig(loadOptions);
     const args = { ...values, limit: values.limit ? Number(values.limit) : undefined };
@@ -165,6 +188,7 @@ export async function run(argv, io = {}) {
             {
               implementations,
               next: (id, impl) => `ds-spec get ${id}${impl ? ` --impl ${impl}` : ""}`,
+              browse: "`ds-spec list`",
             },
           ),
         );
@@ -198,11 +222,6 @@ export async function run(argv, io = {}) {
     return usageError(`Unknown command "${command}".`);
   } catch (error) {
     if (error instanceof ops.UsageError) return usageError(error.message);
-    if (error instanceof SpecError) {
-      const result = ops.formatIssues(error.issues, 0);
-      err(`Invalid spec content:\n${result.text.replace(/\n[^\n]*$/, "")}\n`);
-      return 1;
-    }
     err(`${error.message}\n`);
     return 2;
   }

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { createDtcgResolver } from "../src/tokens-dtcg.js";
+import { createDtcgResolver, readDtcgTokenNames } from "../src/tokens-dtcg.js";
 import { fixture } from "./helpers.js";
 
 const file = (name) => path.join(fixture("tools"), "tokens", name);
@@ -60,5 +60,17 @@ describe("createDtcgResolver", () => {
   it("does not read files until first use", () => {
     const lazy = createDtcgResolver({ light: ["/nonexistent/x.json"] });
     expect(() => lazy("a")).toThrow(/Cannot read token file/);
+  });
+});
+
+describe("readDtcgTokenNames", () => {
+  it("lists each set's token names, with later files adding to earlier ones", () => {
+    const names = readDtcgTokenNames({
+      light: [file("base.tokens.json"), file("light.tokens.json")],
+    });
+    expect([...names.keys()]).toEqual(["light"]);
+    expect(names.get("light")).toContain("space.md");
+    expect(names.get("light")).toContain("component.thing.loud.hover");
+    expect(names.get("light")).not.toContain("component.thing");
   });
 });

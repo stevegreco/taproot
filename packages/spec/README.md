@@ -101,8 +101,10 @@ directory. Paths are relative to the config file. `implementations` and `tokens`
 The content folder comes from `--content`, then the config, then the folder shipped in this package.
 Each token set lists DTCG files. Later files win, `{alias.path}` references resolve, and values are
 stringified (`{ value: 16, unit: "px" }` becomes `16px`). Token files are read only when values are
-requested. Use `createDtcgResolver` from `@stevegreco/design-system-spec/tokens-dtcg` and
-`loadFromConfig` from `.../config` to do the same in code.
+requested, or by `validate`. Use `createDtcgResolver` and `readDtcgTokenNames` from
+`@stevegreco/design-system-spec/tokens-dtcg`, and `loadFromConfig` and `validateFromConfig` from
+`.../config`, to do the same in code. `loadSpec({ skipInvalid: true })` leaves out invalid record
+files and lists their issues in `spec.issues` instead of throwing.
 
 Each implementation folder holds one `<slug>.md` file per component that a technology implements:
 front matter with the record id, package, element name, registration export, usage markup, and API
@@ -128,8 +130,17 @@ ds-spec help [command]
 ```
 
 Global flags: `--content <dir>`, `--config <path>`, `--json`. Output is Markdown, or the library's
-return values as JSON. Exit codes: 0 ok, 1 validation issues or an unknown id or section, 2 usage
-error. In this repo, run it as `pnpm spec ...`.
+return values as JSON. Exit codes: 0 ok, 1 validation issues, an empty result, or an unknown id or
+section, 2 usage error, including a filter value (`--type`, `--status`, `--kind`, `--topic`,
+`--level`) that is not one of the valid ones, which the error lists. In this repo, run it as
+`pnpm spec ...`.
+
+`validate` also checks each token reference against the token sets in the config. The other
+commands leave out any record file with issues, say so on stderr, and serve the rest, so one broken
+draft does not hide its neighbors.
+
+When the best `search` hit is weak (it matched no name, title, or tag), the output starts with "No
+strong match", each weak hit is marked, and `--json` hits carry `weak: true`.
 
 `rules` prints each rule's level, address, and statement, and the condition it applies under, if
 any, so a conditional rule never reads as unconditional. A closing line says how to read a rule's

@@ -68,6 +68,40 @@ function resolveAlias(name, index, trail) {
 }
 
 /**
+ * Read and index each set. Later files in a set win.
+ *
+ * @param {Record<string, string[]>} sets
+ * @returns {Map<string, Map<string, unknown>>}
+ */
+function indexSets(sets) {
+  const built = new Map();
+  for (const [name, files] of Object.entries(sets)) {
+    const merged = {};
+    for (const file of files) {
+      let parsed;
+      try {
+        parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+      } catch (error) {
+        throw new Error(`Cannot read token file ${file}: ${error.message}`);
+      }
+      deepMerge(merged, parsed);
+    }
+    built.set(name, indexTokens(merged, "", new Map()));
+  }
+  return built;
+}
+
+/**
+ * The token names in each set, for checking references without resolving values.
+ *
+ * @param {Record<string, string[]>} sets Set name to file paths.
+ * @returns {Map<string, Set<string>>}
+ */
+export function readDtcgTokenNames(sets) {
+  return new Map([...indexSets(sets)].map(([name, index]) => [name, new Set(index.keys())]));
+}
+
+/**
  * Create a token resolver over DTCG files. Files are read on first use, and each set is indexed
  * once.
  *
@@ -77,27 +111,9 @@ function resolveAlias(name, index, trail) {
 export function createDtcgResolver(sets) {
   /** @type {Map<string, Map<string, unknown>> | undefined} */
   let indexes;
-  // Build into a local map so a failed read leaves nothing cached and the next call retries.
-  const load = () => {
-    const built = new Map();
-    for (const [name, files] of Object.entries(sets)) {
-      const merged = {};
-      for (const file of files) {
-        let parsed;
-        try {
-          parsed = JSON.parse(fs.readFileSync(file, "utf8"));
-        } catch (error) {
-          throw new Error(`Cannot read token file ${file}: ${error.message}`);
-        }
-        deepMerge(merged, parsed);
-      }
-      built.set(name, indexTokens(merged, "", new Map()));
-    }
-    indexes = built;
-    return built;
-  };
   return (ref) => {
-    const all = indexes ?? load();
+    // Assigned only after a successful read, so a failed read leaves nothing cached.
+    const all = (indexes ??= indexSets(sets));
     /** @type {Record<string, string>} */
     const values = {};
     for (const [name, index] of all) {

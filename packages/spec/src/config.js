@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { loadSpec } from "./index.js";
-import { createDtcgResolver } from "./tokens-dtcg.js";
+import { loadSpec, validateSpec } from "./index.js";
+import { createDtcgResolver, readDtcgTokenNames } from "./tokens-dtcg.js";
 
 export const CONFIG_FILE = "spec.config.json";
 
@@ -105,7 +105,7 @@ function validateConfig(config, file) {
  * Precedence for the content folder: `contentDir` > config `content` > library default.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
- * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, implementations: Record<string, string>, configPath?: string }}
+ * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, string>, configPath?: string }}
  */
 export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = {}) {
   const found = configPath ? readConfig(path.resolve(cwd, configPath)) : findConfig(cwd);
@@ -114,8 +114,9 @@ export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = 
   if (contentDir) dir = path.resolve(cwd, contentDir);
   else if (found?.config.content) dir = path.resolve(base, found.config.content);
   let resolveToken;
+  let sets;
   if (found?.config.tokens) {
-    const sets = Object.fromEntries(
+    sets = Object.fromEntries(
       Object.entries(found.config.tokens.sets).map(([name, files]) => [
         name,
         files.map((file) => path.resolve(base, file)),
@@ -129,16 +130,41 @@ export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = 
       path.resolve(base, folder),
     ]),
   );
-  return { contentDir: dir, resolveToken, implementations, configPath: found?.path };
+  return {
+    contentDir: dir,
+    resolveToken,
+    tokenSets: sets,
+    implementations,
+    configPath: found?.path,
+  };
 }
 
 /**
  * Load the spec using flags and the nearest config. Pass `resolveTokens: false` to skip the token
- * resolver, so token files are never read.
+ * resolver, so token files are never read, and `skipInvalid: true` to leave out invalid records
+ * instead of throwing.
  *
- * @param {{ cwd?: string, contentDir?: string, configPath?: string, resolveTokens?: boolean }} [options]
+ * @param {{ cwd?: string, contentDir?: string, configPath?: string, resolveTokens?: boolean, skipInvalid?: boolean }} [options]
  */
-export async function loadFromConfig({ resolveTokens = true, ...options } = {}) {
+export async function loadFromConfig({ resolveTokens = true, skipInvalid, ...options } = {}) {
   const { contentDir, resolveToken } = resolveConfig(options);
-  return loadSpec({ contentDir, resolveToken: resolveTokens ? resolveToken : undefined });
+  return loadSpec({
+    contentDir,
+    resolveToken: resolveTokens ? resolveToken : undefined,
+    skipInvalid,
+  });
+}
+
+/**
+ * Validate the spec using flags and the nearest config. With token sets configured, every token
+ * reference must name a token in every set.
+ *
+ * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
+ */
+export async function validateFromConfig(options = {}) {
+  const { contentDir, tokenSets } = resolveConfig(options);
+  return validateSpec({
+    contentDir,
+    tokenNames: tokenSets ? readDtcgTokenNames(tokenSets) : undefined,
+  });
 }

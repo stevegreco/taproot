@@ -20,6 +20,8 @@ import { byCodeUnit, deepFreeze } from "./util.js";
  *
  * @typedef {object} Spec
  * @property {string} contentDir
+ * @property {import("./validate.js").Issue[]} issues Issues in the files left out of the index;
+ *   empty unless the spec was loaded with `skipInvalid`.
  * @property {(filter?: { type?: RecordType, tag?: string, status?: Status }) => Summary[]} list
  * @property {(id: string) => any} get
  * @property {(target: string) => Section | undefined} section
@@ -36,9 +38,10 @@ import { byCodeUnit, deepFreeze } from "./util.js";
  * @param {string} contentDir
  * @param {import("./validate.js").CheckedRecord[]} checked
  * @param {((ref: string) => Record<string, string> | undefined) | undefined} resolveToken
+ * @param {import("./validate.js").Issue[]} [issues]
  * @returns {Spec}
  */
-export function createSpec(contentDir, checked, resolveToken) {
+export function createSpec(contentDir, checked, resolveToken, issues = []) {
   const ordered = [...checked].sort((a, b) => byCodeUnit(a.data.id, b.data.id));
 
   /** @type {query.State} */
@@ -67,6 +70,7 @@ export function createSpec(contentDir, checked, resolveToken) {
 
   return Object.freeze({
     contentDir,
+    issues: deepFreeze(issues),
     list: (filter) => query.list(state, filter),
     get: (id) => state.records.get(id),
     section: (target) => query.section(state, target),

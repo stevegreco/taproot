@@ -2,7 +2,7 @@ import fs from "node:fs";
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { SpecError } from "./index.js";
-import { loadFromConfig, resolveConfig } from "./config.js";
+import { loadFromConfig, resolveConfig, validateFromConfig } from "./config.js";
 import * as ops from "./operations.js";
 
 const TYPES = ["component", "pattern", "guideline", "example"];
@@ -107,6 +107,7 @@ export async function createSpecServer(options = {}) {
       ops.search(spec, args, {
         implementations: resolveConfig(loadOptions).implementations,
         next: (id, impl) => `get ${id}${impl ? ` with implementation "${impl}"` : ""}`,
+        browse: "the `list` tool",
       }),
   );
   tool(
@@ -195,8 +196,8 @@ export async function createSpecServer(options = {}) {
     "Check every record in the content folder and list issues. Use after editing content.",
     {},
     async () => {
-      const { contentDir: dir } = resolveConfig(loadOptions);
-      return ops.validate({ contentDir: dir });
+      const { issues, recordCount } = await validateFromConfig(loadOptions);
+      return ops.formatIssues(issues, recordCount);
     },
   );
 

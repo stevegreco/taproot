@@ -172,7 +172,37 @@ describe("ds-spec CLI, failures", () => {
     expect(v.out).toMatch(/\.yaml:\d+ \S+ .+\n\d+ issues? in/);
     const g = cli(["get", "component.thing", "--content", content]);
     expect(g.code).toBe(1);
-    expect(g.err).toContain("Invalid spec content");
+    expect(g.err).toContain("Warning: left out 1 record file with issues: thing.spec.yaml.");
+  });
+
+  it("serves the valid records when one is invalid", () => {
+    const content = fixture("link-to-invalid");
+    const r = cli(["get", "pattern.guide", "--content", fixture("unknown-section")]);
+    expect(r.code).toBe(0);
+    expect(r.err).toContain("left out 1 record file with issues: thing.spec.yaml");
+    expect(cli(["list", "--content", content]).err).toContain("broken.md, thing.spec.yaml");
+  });
+
+  it("exits 1 on empty results", () => {
+    expect(cli(["list", "--tag", "nope"]).code).toBe(1);
+    expect(cli(["rules", "--id", "component.button", "--query", "zzzz"]).code).toBe(1);
+    expect(cli(["links", "component.thing", "--kind", "examples"], tools).code).toBe(1);
+    expect(cli(["tokens", "button", "--part", "nope"]).code).toBe(1);
+    expect(cli(["search", "zzzz"]).code).toBe(1);
+  });
+
+  it("rejects unknown filter values with the valid ones", () => {
+    for (const [args, valid] of [
+      [["list", "--type", "bogus"], "component, pattern, guideline, example"],
+      [["list", "--status", "old"], "draft, stable, deprecated"],
+      [["rules", "--topic", "a11y"], "content, behavior, accessibility"],
+      [["rules", "--level", "must-not"], "must, should, may"],
+      [["links", "button", "--kind", "bogus"], "alternative, alternative-to, composes"],
+    ]) {
+      const r = cli(args);
+      expect(r.code).toBe(2);
+      expect(r.err).toContain(valid);
+    }
   });
 
   it("exits 2 for a bad config", () => {
@@ -320,7 +350,7 @@ describe("ds-spec CLI, forgiving lookups", () => {
     expect(cli(["search", "chec"]).out).toMatch(/^- component\.checkbox — /);
     expect(cli(["search", "textfi"]).out).toMatch(/^- component\.text-field — /);
     // Too short, or too little of the word, to count.
-    expect(cli(["search", "che"]).out).toBe('No results for "che".\n');
+    expect(cli(["search", "che"]).out).toMatch(/^No results for "che"\. /);
     expect(cli(["search", "comp"]).out).not.toContain("component.button");
   });
 
@@ -366,12 +396,25 @@ describe("ds-spec CLI, forgiving lookups", () => {
     expect(r.out).toContain("- component.checkbox — Checkbox: ");
     expect(r.out).toContain("  → ds-spec get component.checkbox --impl web");
     // One edit is the allowance for a word this short, so two edits match nothing.
-    expect(cli(["search", "buxxon"]).out).toBe('No results for "buxxon".\n');
+    expect(cli(["search", "buxxon"]).out).toMatch(/^No results for "buxxon"\. /);
     // Four letters get no typo allowance, and words in a longer query are not corrected.
-    expect(cli(["search", "lnik"]).out).toBe('No results for "lnik".\n');
-    expect(cli(["search", "buton", "zzzz"]).out).toBe('No results for "buton zzzz".\n');
+    expect(cli(["search", "lnik"]).out).toMatch(/^No results for "lnik"\. /);
+    expect(cli(["search", "buton", "zzzz"]).out).toMatch(/^No results for "buton zzzz"\. /);
     expect(cli(["search", "destructive", "action"]).out).toContain(
       "  → ds-spec get pattern.action-hierarchy\n",
     );
+  });
+
+  it("says when nothing fits, and marks weak hits", () => {
+    const weak = cli(["search", "toast", "notification"]);
+    expect(weak.code).toBe(0);
+    expect(weak.out).toMatch(/^No strong match for "toast notification"\./);
+    expect(weak.out).toContain("`ds-spec list`, or read guideline.compose-or-propose");
+    expect(weak.out).toContain("(weak match)");
+    const strong = cli(["search", "loading"]);
+    expect(strong.out).toMatch(/^- component\.spinner — /);
+    expect(strong.out.split("\n")[0]).not.toContain("(weak match)");
+    const json = JSON.parse(cli(["search", "toast", "notification", "--json"]).out);
+    expect(json.every((hit) => hit.weak)).toBe(true);
   });
 });

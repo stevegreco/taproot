@@ -29,9 +29,11 @@ const RECORD_TYPES = schema.properties.type.enum;
  * Check every source file against the schema and against the rest of the corpus.
  *
  * @param {import("./load.js").SourceFile[]} sources
+ * @param {{ tokenNames?: Map<string, Set<string>> }} [options] The token names in each set. With
+ *   them, every token reference must name a token in every set.
  * @returns {Promise<{ issues: Issue[], records: CheckedRecord[] }>}
  */
-export async function checkSources(sources) {
+export async function checkSources(sources, { tokenNames } = {}) {
   /** @type {Issue[]} */
   const issues = [];
   const report = (source, raw) => {
@@ -74,6 +76,7 @@ export async function checkSources(sources) {
       checkRules(record.data, report_);
       checkParameters(record.data, report_);
       checkTokens(record.data, report_);
+      checkTokenReferences(record.data, tokenNames, report_);
     }
     if (record.data.type === "example") {
       checkAnnotations(record, report_);
@@ -387,6 +390,45 @@ function checkTokens(data, report) {
             message: `condition \`${condition}\`: ${problem}`,
           });
         }
+      }
+    }
+  }
+}
+
+/** Values that name no token, for a property no token applies to. */
+export const TOKEN_KEYWORDS = ["transparent", "none", "inherit", "linear"];
+
+/**
+ * The token tier rule (tokens ADR 0003), the same one `stylesheets.test.js` applies to CSS: colors,
+ * radii, and borders come from the semantic tier, never straight from a primitive.
+ */
+const TIER_VIOLATION = /^primitives\.(?:color|radius|border)\./;
+
+function checkTokenReferences(data, tokenNames, report) {
+  for (const [part, conditions] of Object.entries(data.tokens ?? {})) {
+    for (const [condition, properties] of Object.entries(conditions)) {
+      for (const [property, token] of Object.entries(properties)) {
+        if (TOKEN_KEYWORDS.includes(token)) continue;
+        const path = `/tokens/${pointerSegment(part)}/${pointerSegment(condition)}/${pointerSegment(property)}`;
+        if (TIER_VIOLATION.test(token)) {
+          report({
+            path,
+            message: `\`${token}\` is a primitive; colors, radii, and borders use a semantic token`,
+          });
+          continue;
+        }
+        if (!tokenNames) continue;
+        const missing = [...tokenNames]
+          .filter(([, names]) => !names.has(token))
+          .map(([set]) => set);
+        if (missing.length === 0) continue;
+        report({
+          path,
+          message:
+            missing.length === tokenNames.size
+              ? `\`${token}\` is not a token, and not one of ${TOKEN_KEYWORDS.join(", ")}`
+              : `\`${token}\` is not a token in the ${missing.join(", ")} set${missing.length === 1 ? "" : "s"}`,
+        });
       }
     }
   }

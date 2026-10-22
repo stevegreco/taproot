@@ -34,22 +34,38 @@ export function list(spec, { type, tag, status } = {}) {
 }
 
 /**
- * @param {{ implementations?: Record<string, string>, next?: (id: string, implementation?: string) => string }} [options]
+ * A hit below this score matched no name, title, or tag, only a word or two in the prose. It is
+ * marked weak, and when every hit is weak the result says there is no strong match.
+ */
+export const WEAK_SCORE = 5;
+
+/**
+ * @param {{ implementations?: Record<string, string>, next?: (id: string, implementation?: string) => string, browse?: string }} [options]
  *   With `next`, each result is followed by the call that reads it, with its implementation when
- *   it has one.
+ *   it has one. `browse` names the call that lists every record, for when nothing fits.
  */
 export function search(spec, { query, type, tag, limit } = {}, options = {}) {
   if (!query || !query.trim()) throw new UsageError("search needs a query");
-  const data = spec.search(query, { type, tags: tag ? [tag] : undefined, limit });
-  if (data.length === 0) return { text: `No results for "${query}".`, data, ok: true };
-  if (!options.next) return { text: summaryList(data), data, ok: true };
+  const data = spec
+    .search(query, { type, tags: tag ? [tag] : undefined, limit })
+    .map((hit) => ({ ...hit, weak: hit.score < WEAK_SCORE }));
+  const fallback = `browse with ${options.browse ?? "`list`"}, or read guideline.compose-or-propose to compose or propose one.`;
+  if (data.length === 0) {
+    return { text: `No results for "${query}". Try other words, ${fallback}`, data, ok: true };
+  }
   const implemented = implementationIndex(options.implementations ?? {});
-  const text = data
-    .map(
-      (item) =>
-        `- ${item.id} — ${item.title}: ${item.summary}\n  → ${options.next(item.id, implemented.get(item.id)?.[0])}`,
-    )
-    .join("\n");
+  const lines = data.map((item) => {
+    const line = `- ${item.id} — ${item.title}: ${item.summary}${item.weak ? " (weak match)" : ""}`;
+    if (!options.next) return line;
+    return `${line}\n  → ${options.next(item.id, implemented.get(item.id)?.[0])}`;
+  });
+  const text = data[0].weak
+    ? [
+        `No strong match for "${query}". The closest records follow. If none fits, ${fallback}`,
+        "",
+        ...lines,
+      ].join("\n")
+    : lines.join("\n");
   return { text, data, ok: true };
 }
 
