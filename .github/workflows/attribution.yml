@@ -1,0 +1,50 @@
+name: Attribution
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  attribution:
+    name: Attribution
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Check commits and description
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          email="steveox152@gmail.com"
+          failed=0
+          for sha in $(git rev-list "$BASE..$HEAD"); do
+            author="$(git show -s --format='%an <%ae>' "$sha")"
+            committer="$(git show -s --format='%cn <%ce>' "$sha")"
+            if [ "$author" != "Steve Greco <$email>" ]; then
+              echo "::error::$sha is authored by $author, not Steve Greco <$email>"
+              failed=1
+            fi
+            # GitHub commits web edits and branch updates as GitHub <noreply@github.com>.
+            if [ "$committer" != "Steve Greco <$email>" ] && [ "$committer" != "GitHub <noreply@github.com>" ]; then
+              echo "::error::$sha is committed by $committer, not Steve Greco <$email>"
+              failed=1
+            fi
+            if git show -s --format='%B' "$sha" | grep -iqE '^(co-authored-by:.*(claude|anthropic)|claude-session:)'; then
+              echo "::error::$sha has a Claude attribution line in its message"
+              failed=1
+            fi
+          done
+          if printf '%s' "$BODY" | grep -iqE 'generated (with|by) \[claude code\]|claude\.ai/code/session_'; then
+            echo "::error::The pull request description has a Claude Code footer or session link"
+            failed=1
+          fi
+          exit "$failed"

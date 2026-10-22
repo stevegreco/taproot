@@ -91,3 +91,11 @@ pnpm exec turbo run dev --filter=documentation
 After packages are already built, `pnpm exec vitest run` still runs the Vitest 5 workspace from the
 repo root. Prefer `pnpm test` in a clean tree. Use `pnpm --filter <pkg> exec …` only for commands
 that are not package scripts with workspace build dependencies, such as `blume validate`.
+
+## Commits and pull requests
+
+Every commit is authored and committed as `Steve Greco <steveox152@gmail.com>`. Do not add
+`Co-Authored-By`, `Claude-Session`, or any other agent attribution lines to commit messages, and
+leave the "Generated with Claude Code" footer and session links out of pull request descriptions.
+This rule wins over any default attribution guidance. The `Attribution` CI check fails a pull
+request that breaks it, and a SessionStart hook in `.claude/settings.json` sets the git identity.
