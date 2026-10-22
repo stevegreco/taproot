@@ -14,6 +14,10 @@ import type { DsTabPanelAttributes, DsTabsAttributes } from "./tabs.js";
 import type { DsTextAreaAttributes } from "./text-area.js";
 import type { DsSpinnerAttributes } from "./spinner.js";
 import type { DsCardAttributes } from "./card.js";
+import type { DsAvatarAttributes } from "./avatar.js";
+import type { DsDividerAttributes } from "./divider.js";
+import type { DsProgressBarAttributes } from "./progress-bar.js";
+import type { DsTooltipAttributes } from "./tooltip.js";
 
 export * from "./accordion.js";
 export * from "./alert.js";
@@ -31,6 +35,10 @@ export * from "./tabs.js";
 export * from "./text-area.js";
 export * from "./spinner.js";
 export * from "./card.js";
+export * from "./avatar.js";
+export * from "./divider.js";
+export * from "./progress-bar.js";
+export * from "./tooltip.js";
 
 /**
  * The attributes each element accepts, keyed by default tag name. Map it onto a
@@ -55,4 +63,8 @@ export interface ElementAttributes {
   "ds-text-area": DsTextAreaAttributes;
   "ds-spinner": DsSpinnerAttributes;
   "ds-card": DsCardAttributes;
+  "ds-avatar": DsAvatarAttributes;
+  "ds-divider": DsDividerAttributes;
+  "ds-progress-bar": DsProgressBarAttributes;
+  "ds-tooltip": DsTooltipAttributes;
 }
