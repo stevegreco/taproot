@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.spinner
+type: component
+title: Spinner
+summary: Use Spinner to show that something is loading or working when you cannot say how long it will take.
+status: draft
+tags:
+  - loading
+  - progress
+  - busy
+  - feedback
+links:
+  follows:
+    - guideline.compose-or-propose
+  related:
+    - component.button
+description: >-
+  Shows a small animated indicator that work is in progress and its duration is unknown. It has an
+  accessible name that says what is loading, and it does not report when the work finishes.
+usage:
+  do:
+    - Show that a region of the view is loading content, such as a panel waiting on a request.
+    - Sit beside a short text status, such as Saving, while a background task runs.
+    - Fill the space of content that is about to appear when its size is not known yet.
+  avoid:
+    - situation: Show progress when you know how much of the work is done.
+      instead: a determinate progress indicator
+      why: >-
+        A known amount lets the person judge how long to wait, and a spinner hides it. The system
+        has no determinate indicator yet.
+    - situation: Report that the work finished or failed.
+      instead: component.alert
+      why: Spinner only says work is happening. Alert states the outcome and can announce it.
+    - situation: Cover a wait shorter than about a second.
+      instead: no indicator
+      why: >-
+        A spinner that appears and vanishes at once reads as a flicker, not as feedback. Show the
+        result when it arrives.
+    - situation: Stand in for content whose layout is already known, such as rows of a list.
+      instead: placeholder shapes in the final layout
+      why: Placeholders keep the layout steady and show what is coming. A spinner shows neither.
+    - situation: Add motion for decoration or to draw attention.
+      instead: component.icon
+      why: Spinner always means work in progress. Using it for anything else teaches people to ignore it.
+anatomy:
+  indicator:
+    role: indicator
+    description: >-
+      The animated graphic, painted in the current text color, that signals work in progress. It
+      has an accessible name even though no text is visible.
