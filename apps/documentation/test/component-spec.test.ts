@@ -282,10 +282,8 @@ test("text field slice has no variant axis and publishes label, hint, and error"
     "api includes the input event",
   );
   assert.ok(
-    slice.accessibility.requirements.some((item) =>
-      /aria|accessible description|describe/i.test(item),
-    ),
-    "accessibility keeps the description rule",
+    slice.together?.patterns.some((pattern) => pattern.id === "pattern.form-field"),
+    "the shared field rules come from the form field pattern",
   );
   assert.match(slice.behaviorMarkdown, /type="email"/, "form behavior stays with usage");
   assert.ok(banner, "the text-field page has YAML frontmatter");

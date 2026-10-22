@@ -10,7 +10,7 @@ usage: |
     <ds-tab-panel label="Billing" value="billing">…</ds-tab-panel>
   </ds-tabs>
 api:
-  - { name: label, kind: attribute, parameter: label }
+  - { name: label, kind: attribute, parameter: accessibleName }
   - { name: value, kind: attribute, parameter: value }
   - { name: value, kind: property, parameter: value }
   - { name: change, kind: event, event: change }

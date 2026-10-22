@@ -212,7 +212,7 @@ describe("DsAvatar", () => {
     expect(image.getBoundingClientRect().height).toBe(box.height);
   });
 
-  test("[visible-in-forced-colors] draws an edge and keeps the initials visible", async () => {
+  test("[forced-colors] draws an edge and keeps the initials visible", async () => {
     const avatar = render(`<${tagName} name="Ada Lovelace"></${tagName}>`);
     expectRendered(avatar, "surface", "initials");
 
@@ -227,7 +227,7 @@ describe("DsAvatar", () => {
     expect(shown(avatar)).toEqual(["initials"]);
   });
 
-  test("[visible-in-forced-colors] keeps the placeholder visible", async () => {
+  test("[forced-colors] keeps the placeholder visible", async () => {
     const avatar = render(`<${tagName}></${tagName}>`);
     expectRendered(avatar, "placeholder");
 

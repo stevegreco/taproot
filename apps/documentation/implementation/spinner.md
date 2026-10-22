@@ -10,7 +10,7 @@ usage: |
   </p>
   <ds-spinner size="large" label="Loading comments"></ds-spinner>
 api:
-  - { name: label, kind: attribute, parameter: label }
+  - { name: label, kind: attribute, parameter: accessibleName }
   - { name: size, kind: attribute, parameter: size }
 ---
 

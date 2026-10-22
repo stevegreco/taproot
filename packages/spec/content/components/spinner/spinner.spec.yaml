@@ -49,7 +49,7 @@ anatomy:
       The animated graphic, painted in the current text color, that signals work in progress. It
       has an accessible name even though no text is visible.
 parameters:
-  label:
+  accessibleName:
     kind: string
     default: Loading
     description: >-
@@ -73,8 +73,8 @@ rules:
     topic: accessibility
     statement: >-
       The spinner is always exposed to assistive technology as an indeterminate progress indicator
-      with an accessible name. Without a label the name is Loading.
-  - id: label-names-work
+      with an accessible name. Without one the name is Loading.
+  - id: name-says-work
     level: should
     topic: content
     statement: Name what is loading when the view holds more than one thing that could be.
@@ -129,7 +129,7 @@ rules:
       Use one spinner for a region that is loading, not one per item inside it.
 accessibility:
   role: Progress indicator with no value (indeterminate).
-  name: From the label parameter, which defaults to Loading.
+  name: From the accessibleName parameter, which defaults to Loading.
 tokens:
   indicator:
     base:
@@ -150,11 +150,11 @@ rationale:
     covers: [icon-only]
     why: >-
       Visible status text, such as Saving, belongs to the surrounding content and can say more than
-      a fixed label. The label parameter gives the indicator its accessible name.
-  - decision: The label defaults to Loading instead of being required.
+      a fixed label. The accessibleName parameter gives the indicator its accessible name.
+  - decision: The accessible name defaults to Loading instead of being required.
     why: >-
       A nameless progress indicator is an accessibility failure, and a default keeps every spinner
-      named. The label-names-work rule asks for a specific name where it helps.
+      named. The name-says-work rule asks for a specific name where it helps.
   - decision: Spinner is exposed as a progress indicator, not as a live status message.
     why: >-
       A live region would announce every spinner that appears, including several at once.

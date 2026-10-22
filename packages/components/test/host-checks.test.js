@@ -382,7 +382,7 @@ const ELEMENTS = [
         values: ["primary", "secondary", "tertiary", "destructive"],
         default: "primary",
       },
-      { attribute: "size", property: "size", values: ["sm", "md"], default: "md" },
+      { attribute: "size", property: "size", values: ["small", "medium"], default: "medium" },
       {
         attribute: "type",
         property: "type",
@@ -390,7 +390,7 @@ const ELEMENTS = [
         default: "button",
       },
     ],
-    properties: { variant: "destructive", size: "sm", type: "submit", disabled: true },
+    properties: { variant: "destructive", size: "small", type: "submit", disabled: true },
   },
   {
     id: "checkbox",

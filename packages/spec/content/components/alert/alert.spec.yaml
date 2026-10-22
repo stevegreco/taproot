@@ -188,7 +188,7 @@ rules:
     topic: accessibility
     statement: Leave the icon unlabeled when the text already states the status.
     references:
-      - component.icon#no-label-when-repeated
+      - component.icon#no-name-when-repeated
   - id: visible-focus
     level: must
     topic: accessibility

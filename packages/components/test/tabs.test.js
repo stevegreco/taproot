@@ -151,7 +151,7 @@ describe("DsTabs", () => {
     expect(await exposedNodes()).toContainEqual({ role: "tabpanel", name: "Billing" });
   });
 
-  test("[visible-selection] marks the selected tab with an indicator", () => {
+  test("[forced-colors] marks the selected tab with an indicator", () => {
     const host = render();
     const indicators = tabs(host).map((tab) => tab.querySelector('[part="selected-indicator"]'));
     expect(indicators.map((indicator) => getComputedStyle(indicator).display !== "none")).toEqual([
@@ -167,7 +167,7 @@ describe("DsTabs", () => {
     );
   });
 
-  test("[visible-selection] keeps the indicator and focus visible under forced colors", async () => {
+  test("[forced-colors] keeps the indicator and focus visible under forced colors", async () => {
     await cdp().send("Emulation.setEmulatedMedia", {
       features: [{ name: "forced-colors", value: "active" }],
     });

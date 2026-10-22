@@ -68,7 +68,7 @@ spec.links("component.link", { kind: "alternative-to", direction: "out" });
 // Inverses are included: button lists link as an alternative, so link lists button as alternative-to.
 
 spec.rules({ topic: "accessibility", level: "must", query: "focus" });
-// [{ address: "component.button#a11y-visible-focus", ... }], must first
+// [{ address: "component.button#visible-focus", ... }], must first
 
 spec.tokens("component.button", { condition: "variant.primary + hover" });
 // [{ part, condition, property, token, values? }]

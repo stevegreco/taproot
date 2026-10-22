@@ -15,8 +15,8 @@ usage: |
 api:
   - { name: exclusive, kind: attribute, parameter: exclusive }
   - { name: exclusive, kind: property, parameter: exclusive }
-  - { name: heading-level, kind: attribute, parameter: heading-level }
-  - { name: headingLevel, kind: property, parameter: heading-level }
+  - { name: heading-level, kind: attribute, parameter: headingLevel }
+  - { name: headingLevel, kind: property, parameter: headingLevel }
   - { name: toggle, kind: event, event: toggle }
 ---
 

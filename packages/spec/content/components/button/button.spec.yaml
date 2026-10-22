@@ -53,9 +53,9 @@ parameters:
   size:
     kind: enum
     values:
-      sm: Small button.
-      md: Medium button.
-    default: md
+      small: Small button.
+      medium: Medium button.
+    default: medium
   action:
     kind: enum
     values:
@@ -124,15 +124,15 @@ rules:
     topic: behavior
     statement: Submit submits the button's form, and reset restores that form's initial values.
     applicability: The button belongs to a form.
-  - id: a11y-visible-focus
+  - id: visible-focus
     level: must
     topic: accessibility
     statement: Keyboard focus remains visibly indicated.
-  - id: a11y-icon-accessible-name
+  - id: icon-accessible-name
     level: must
     topic: accessibility
     statement: Icon-only buttons have an accessible name.
-  - id: a11y-not-color-alone
+  - id: not-color-alone
     level: must
     topic: accessibility
     statement: Meaning does not depend on color alone.
@@ -157,10 +157,10 @@ tokens:
       motion-easing: primitives.ease.out
     focus:
       focus-ring: semantic.color.border.focus
-    size.md:
+    size.medium:
       padding-horizontal: primitives.space.4
       padding-vertical: primitives.space.3
-    size.sm:
+    size.small:
       padding-horizontal: primitives.space.3
       padding-vertical: primitives.space.2
     variant.primary:

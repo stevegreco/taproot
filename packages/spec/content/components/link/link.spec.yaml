@@ -99,15 +99,15 @@ rules:
     statement: >-
       Link has no disabled state. When the destination is unavailable, render text instead of a
       link.
-  - id: a11y-link-purpose
+  - id: link-purpose
     level: must
     topic: accessibility
     statement: The purpose of the link is clear from its text, or from its text and the sentence around it.
-  - id: a11y-not-color-alone
+  - id: not-color-alone
     level: must
     topic: accessibility
     statement: An inline link does not depend on color alone to be identified.
-  - id: a11y-visible-focus
+  - id: visible-focus
     level: must
     topic: accessibility
     statement: Keyboard focus remains visibly indicated.

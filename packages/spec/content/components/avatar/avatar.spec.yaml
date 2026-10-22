@@ -126,7 +126,7 @@ rules:
     statement: >-
       The avatar occupies a circle of its size whether or not the picture has loaded, so the layout
       does not shift. The picture fills the circle and is cropped, never stretched.
-  - id: visible-in-forced-colors
+  - id: forced-colors
     level: must
     topic: accessibility
     statement: >-

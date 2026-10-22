@@ -9,6 +9,9 @@ tags:
 links:
   related:
     - component.badge
+  follows:
+    - pattern.form-field
+    - guideline.compose-or-propose
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -96,67 +99,6 @@ states:
   - hover
   - focus
   - default
-rules:
-  - id: visible-label
-    level: must
-    topic: content
-    statement: Provide a visible label that names the value. Placeholder text is not a label.
-    examples:
-      do:
-        - Email address
-        - Team name
-      avoid:
-        - Enter email
-  - id: hint-adds-guidance
-    level: should
-    topic: content
-    statement: Use a hint for format or purpose that the label does not already state.
-  - id: error-says-what-to-fix
-    level: must
-    topic: content
-    statement: Write the error as what to fix.
-    examples:
-      do:
-        - Enter an email address with an @ sign.
-      avoid:
-        - Invalid
-  - id: error-marks-invalid
-    level: must
-    topic: behavior
-    statement: A non-empty error marks the control invalid, and clearing the error removes that state.
-  - id: error-blocks-submit
-    level: must
-    topic: behavior
-    statement: While a non-empty error is set, the control blocks its form from submitting.
-  - id: disabled-blocks-editing
-    level: must
-    topic: behavior
-    statement: Disabled prevents editing.
-  - id: form-value
-    level: should
-    topic: behavior
-    statement: The value submits with its form under the name, and reset restores the initial value.
-    applicability: The field belongs to a form.
-  - id: a11y-visible-label
-    level: must
-    topic: accessibility
-    statement: The field has a visible label, and that label is the accessible name. Placeholder text is not.
-  - id: a11y-described-by
-    level: must
-    topic: accessibility
-    statement: Hint and error are associated so assistive technology can describe the field.
-  - id: a11y-invalid-message
-    level: must
-    topic: accessibility
-    statement: Invalid state includes a text message. Meaning does not depend on color alone.
-  - id: a11y-required
-    level: must
-    topic: accessibility
-    statement: Required is announced and is not conveyed by color alone.
-  - id: a11y-visible-focus
-    level: must
-    topic: accessibility
-    statement: Keyboard focus remains visibly indicated.
 accessibility:
   role: Text input
   name: Required from the visible label.

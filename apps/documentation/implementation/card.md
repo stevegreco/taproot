@@ -10,7 +10,7 @@ usage: |
         <img slot="media" src="/img/q3-chart.png" alt="" />
         Revenue grew 12% over the previous quarter.
         <ds-badge variant="success">Published</ds-badge>
-        <ds-button slot="actions" variant="tertiary" size="sm">Share</ds-button>
+        <ds-button slot="actions" variant="tertiary" size="small">Share</ds-button>
       </ds-card>
     </li>
   </ul>

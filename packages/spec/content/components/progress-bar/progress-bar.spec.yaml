@@ -115,7 +115,7 @@ rules:
     statement: >-
       When the value changes, the fill moves smoothly to its new length. When the person prefers
       reduced motion, it changes at once.
-  - id: forced-colors-visible
+  - id: forced-colors
     level: must
     topic: accessibility
     statement: >-

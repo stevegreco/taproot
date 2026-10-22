@@ -11,7 +11,7 @@ usage: |
   <ds-icon size="medium" label="Warning"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 22 21H2z"/></svg></ds-icon>
 api:
   - { name: size, kind: attribute, parameter: size }
-  - { name: label, kind: attribute, parameter: label }
+  - { name: label, kind: attribute, parameter: accessibleName }
 ---
 
 Slot one inline `<svg>` with a `viewBox`. The icon scales it to fill a square of the chosen size.

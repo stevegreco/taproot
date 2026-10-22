@@ -191,7 +191,7 @@ describe("DsProgressBar", () => {
     expect(getComputedStyle(part(bar, "fill")).transitionDuration).toBe("0s");
   });
 
-  test("[forced-colors-visible] outlines the track and paints the fill in a system color", async () => {
+  test("[forced-colors] outlines the track and paints the fill in a system color", async () => {
     const bar = render(`<${tagName} label="Uploading" value="50"></${tagName}>`);
     expectRendered(bar, "track", "fill");
 

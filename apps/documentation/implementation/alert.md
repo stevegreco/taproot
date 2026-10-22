@@ -10,7 +10,7 @@ usage: |
   <ds-alert variant="danger" label="Upload failed">
     <ds-icon slot="icon" label="Error"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg></ds-icon>
     The file is larger than 10 MB.
-    <ds-button slot="actions" variant="secondary" size="sm">Choose another file</ds-button>
+    <ds-button slot="actions" variant="secondary" size="small">Choose another file</ds-button>
   </ds-alert>
 api:
   - { name: variant, kind: attribute, parameter: variant }

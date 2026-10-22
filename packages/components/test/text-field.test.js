@@ -25,7 +25,7 @@ function controlOf(field) {
 }
 
 describe("DsTextField", () => {
-  test("[a11y-visible-label][a11y-invalid-message][a11y-required] associates the label, hint, error, and required state", () => {
+  test("[label][error][required] associates the label, hint, error, and required state", () => {
     const field = render(`
       <${tagName}
         label="Email"
@@ -50,7 +50,7 @@ describe("DsTextField", () => {
     );
   });
 
-  test("[a11y-described-by][error-marks-invalid] describes only the messages that have text", () => {
+  test("[hint][error] describes only the messages that have text", () => {
     const field = render(`<${tagName} label="Email" hint="Work email"></${tagName}>`);
     const input = controlOf(field);
 
@@ -69,7 +69,7 @@ describe("DsTextField", () => {
     expect(input.hasAttribute("aria-describedby")).toBe(false);
   });
 
-  test("[disabled-blocks-editing] follows disabled fieldset state and keeps an explicit disabled field disabled", () => {
+  test("[disabled] follows disabled fieldset state and keeps an explicit disabled field disabled", () => {
     const fieldset = render(`
       <fieldset>
         <${tagName} label="Email"></${tagName}>
@@ -107,7 +107,7 @@ describe("DsTextField", () => {
     expect(input.type).toBe("text");
   });
 
-  test("[form-value][error-blocks-submit] submits its value with a button and blocks submit while an error is set", () => {
+  test("[form-value][error] submits its value with a button and blocks submit while an error is set", () => {
     const form = render(`
       <form>
         <${tagName} label="Email" name="email" type="email"></${tagName}>
