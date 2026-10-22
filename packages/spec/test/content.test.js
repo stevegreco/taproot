@@ -1,6 +1,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { fileURLToPath } from "node:url";
+import { validateFromConfig } from "../src/config.js";
 import { DEFAULT_CONTENT_DIR, loadSpec, schema, validateSpec } from "../src/index.js";
 
 /**
@@ -27,6 +29,12 @@ describe("shipped content", () => {
     const result = await validateSpec();
     expect(result.issues).toEqual([]);
     expect(result.recordCount).toBe((await idsOnDisk()).length);
+  });
+
+  it("names only tokens that exist in every configured set", async () => {
+    const cwd = fileURLToPath(new URL("../../..", import.meta.url));
+    const { issues } = await validateFromConfig({ cwd });
+    expect(issues).toEqual([]);
   });
 
   it("finds every record on disk by its id, once", async () => {

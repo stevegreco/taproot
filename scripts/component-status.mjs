@@ -11,8 +11,9 @@
  *
  * With no phase, every phase is checked. This script is the only complete
  * list; each SKILL.md describes the steps. Exits 1 when a required file or
- * entry is missing, or when a rationale entry names an unknown checklist item.
- * `warn` rows do not fail.
+ * entry is missing, when `spec validate` reports an issue in the record
+ * (a `TODO:` placeholder is one), or when a rationale entry names an unknown
+ * checklist item. `warn` rows, such as untested MUST rules, do not fail.
  *
  * Lists that tests derive from the filesystem (content.test.js,
  * package-root.test.js) need no entry and are not checked here.
@@ -22,6 +23,7 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
+import { validateFromConfig } from "../packages/spec/src/config.js";
 
 /**
  * The "decide what it ships" checklist. A spec settles an item with a
@@ -144,16 +146,18 @@ if (inPhase("spec")) {
   console.log(`\nSpec phase: component.${slug}`);
   row(Boolean(specSource), specPath);
   const built = existsSync(path.join(root, `apps/documentation/implementation/${slug}.md`));
-  if (spec && !built) {
+  // A spec-phase commit lands a draft. With every phase checked, a built component skips this
+  // row, and the implementation phase requires the opposite.
+  if (spec && (phase === "spec" || !built)) {
     row(
       spec.status === "draft",
       "status: draft",
       spec.status === "draft"
         ? "remove it in the implementation commit"
-        : "a spec with no implementation is a draft",
+        : "the spec phase lands a draft",
     );
   }
-  console.log("  note  run `pnpm spec validate` for the schema and links");
+  if (specSource) await validation();
 }
 
 if (inPhase("implementation")) {
@@ -206,12 +210,32 @@ if (inPhase("docs")) {
       `examples/${slug}.tsx Verify header names ${slug}.verify.js`,
     );
   }
-  const prose = existsSync(path.join(root, `apps/documentation/docs/components/${slug}.mdx`));
-  row(prose ? true : "warn", `docs/components/${slug}.mdx preview prose`, prose ? "" : "optional");
+  const prose = `apps/documentation/docs/components/${slug}.mdx`;
+  if (existsSync(path.join(root, prose))) row(true, `${prose} preview prose`);
+  else console.log(`  note  ${prose} preview prose is optional`);
 }
 
 console.log(missing ? `\n${missing} required item(s) missing.` : "\nNo required items missing.");
 process.exit(missing ? 1 : 0);
+
+/** The record's `spec validate` issues, with `TODO:` placeholders counted apart. */
+async function validation() {
+  const { issues } = await validateFromConfig({ cwd: root });
+  const file = specPath.slice("packages/spec/content/".length);
+  const own = issues.filter((issue) => issue.file === file);
+  const todos = own.filter((issue) => issue.message.includes("`TODO:` placeholder")).length;
+  const detail = [
+    `${own.length} issue(s)`,
+    todos ? `${todos} TODO placeholder(s)` : "",
+    "run `pnpm spec validate`",
+  ];
+  row(own.length === 0, "spec validate", own.length ? detail.filter(Boolean).join(", ") : "");
+  for (const issue of own) {
+    console.log(
+      `        ${issue.line ? `line ${issue.line} ` : ""}${issue.path || "<record>"} ${issue.message}`,
+    );
+  }
+}
 
 /** Where each checklist item is decided: a `covers` marker first, then a keyword scan. */
 function checklist(spec) {
@@ -272,6 +296,6 @@ function ruleCoverage(spec, testSource) {
     row(true, `all ${must.length} MUST rule(s)`);
     return;
   }
-  row(true, `${must.length - untested.length} of ${must.length} MUST rule(s)`);
+  row("warn", `${must.length - untested.length} of ${must.length} MUST rule(s) tested`);
   for (const rule of untested) row("warn", `[${rule.id}] has no test`, rule.statement.trim());
 }

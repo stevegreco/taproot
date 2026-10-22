@@ -200,6 +200,14 @@ const cases = [
     path: "/usage/do/1",
     message: "is a `TODO:` placeholder; replace it",
   },
+  {
+    name: "token-tier",
+    file: "thing.spec.yaml",
+    line: 16,
+    path: "/tokens/control/base/radius",
+    message:
+      "`primitives.radius.xs` is a primitive; colors, radii, and borders use a semantic token",
+  },
   { name: "yaml-syntax", file: "thing.md", line: 3, path: "", message: "Flow sequence" },
 ];
 
@@ -231,6 +239,38 @@ describe("validation", () => {
       path: expected.path,
     });
     expect(issues[0].message).toContain(expected.message);
+  });
+
+  it("checks token references against every set, and allows the keywords", async () => {
+    const names = ["component.thing.radius", "component.thing.loud.hover"];
+    const tokenNames = new Map([
+      ["light", new Set([...names, "component.thing.disabled"])],
+      ["dark", new Set(names)],
+    ]);
+    const { issues } = await validateSpec({ contentDir: fixture("valid"), tokenNames });
+    // `motion: none` is a keyword, so the only issue is the token the dark set lacks.
+    expect(issues.map((issue) => [issue.path, issue.message])).toEqual([
+      [
+        "/tokens/control/disabled/foreground",
+        "`component.thing.disabled` is not a token in the dark set",
+      ],
+    ]);
+    const none = await validateSpec({
+      contentDir: fixture("valid"),
+      tokenNames: new Map([["light", new Set(names)]]),
+    });
+    expect(none.issues.map((issue) => issue.message)).toEqual([
+      "`component.thing.disabled` is not a token, and not one of transparent, none, inherit, linear",
+    ]);
+  });
+
+  it("leaves out invalid records with skipInvalid, and lists their issues", async () => {
+    const spec = await loadSpec({ contentDir: fixture("link-to-invalid"), skipInvalid: true });
+    expect(spec.list()).toEqual([]);
+    expect(spec.issues.map((issue) => issue.file)).toEqual(["broken.md", "thing.spec.yaml"]);
+    const valid = await loadSpec({ contentDir: fixture("valid"), skipInvalid: true });
+    expect(valid.list()).toHaveLength(4);
+    expect(valid.issues).toEqual([]);
   });
 
   it("throws a SpecError that lists every issue", async () => {

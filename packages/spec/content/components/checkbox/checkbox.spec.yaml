@@ -220,7 +220,7 @@ tokens:
     base:
       background: semantic.color.background.surface
       border: semantic.color.border.default
-      radius: primitives.radius.xs
+      radius: semantic.radius.compact
     hover:
       border: semantic.color.border.strong
     focus:

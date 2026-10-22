@@ -309,6 +309,11 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`.
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum
   value or boolean (`true` or `false`) of a declared parameter, or a declared preference value.
+- Every token reference is one of the keywords `transparent`, `none`, `inherit`, or `linear`, or
+  names a token in every set that `spec.config.json` configures. No color, radius, or border
+  reference names a primitive (`primitives.color.*`, `primitives.radius.*`,
+  `primitives.border.*`); those come from the semantic tier, as `stylesheets.test.js` requires of
+  the CSS.
 - An example's asset files exist.
 - No text value starts with `TODO`. Scaffolded drafts use `TODO:` for text the author has not
   written yet.

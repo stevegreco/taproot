@@ -21,6 +21,10 @@ export const DEFAULT_CONTENT_DIR = path.resolve(
  * @property {string} [contentDir] Absolute, or relative to the working directory.
  * @property {(ref: string) => Record<string, string> | undefined} [resolveToken]
  *   Resolves a token reference to values keyed by set name, such as `{ light, dark }`.
+ * @property {Map<string, Set<string>>} [tokenNames] The token names in each set. With them,
+ *   validation checks that every token reference names a token in every set.
+ * @property {boolean} [skipInvalid] Leave out each record file that has an issue, and list the
+ *   issues in `spec.issues`, instead of throwing.
  */
 
 export class SpecError extends Error {
@@ -42,20 +46,23 @@ export class SpecError extends Error {
 async function check(options = {}) {
   const contentDir = path.resolve(options.contentDir ?? DEFAULT_CONTENT_DIR);
   const sources = await readSourceFiles(contentDir);
-  const { issues, records } = await checkSources(sources);
+  const { issues, records } = await checkSources(sources, { tokenNames: options.tokenNames });
   return { contentDir, sources, issues, records };
 }
 
 /**
- * Read, validate, and index every record. Throws a `SpecError` naming every issue.
+ * Read, validate, and index every record. Throws a `SpecError` naming every issue, unless
+ * `skipInvalid` is set.
  *
  * @param {LoadOptions} [options]
  * @returns {Promise<Spec>}
  */
 export async function loadSpec(options = {}) {
   const { contentDir, issues, records } = await check(options);
-  if (issues.length > 0) throw new SpecError(issues);
-  return createSpec(contentDir, records, options.resolveToken);
+  if (issues.length > 0 && !options.skipInvalid) throw new SpecError(issues);
+  const invalid = new Set(issues.map((issue) => issue.file));
+  const valid = records.filter((record) => !invalid.has(record.source.file));
+  return createSpec(contentDir, valid, options.resolveToken, issues);
 }
 
 /**
