@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.divider
+type: component
+title: Divider
+summary: Use Divider to separate groups of related content within one surface or region with a thin line.
+status: draft
+tags:
+  - separator
+  - rule
+  - layout
+links:
+  follows:
+    - guideline.compose-or-propose
+description: >-
+  A thin line that marks the boundary between two groups of content that belong to the same
+  surface or region. It runs across the width of its container between stacked groups, or along
+  its height between groups placed side by side. It holds no content and takes no input.
+usage:
+  do:
+    - Separate sections inside one surface, such as the summary and the details of a Card.
+    - Separate groups of settings or links in one panel when each group is too small for its own heading.
+    - Separate a row of actions from the content above it, or one group of actions from another in the same row.
+  avoid:
+    - situation: Separate groups when the space between them already makes the boundary clear.
+      instead: space from the layout
+      why: >-
+        A line adds visual weight to every boundary it marks. Use one only where spacing alone
+        does not show that the groups are distinct.
+    - situation: Divide a page into major sections that people navigate between.
+      instead: a heading for each section
+      why: >-
+        Headings name each section and let people move between them. A line marks a boundary but
+        says nothing about what is on either side.
+    - situation: Set one subject apart from the rest of the page as a bounded group.
+      instead: component.card
+      why: A card bounds a subject on every side. A divider only marks the edge between two groups.
+    - situation: Draw a line under every row of a list or table.
+      instead: borders on the list's own rows
+      why: >-
+        Repeating rules belong to the list's layout, styled with semantic border tokens. A divider
+        is placed by hand at the few boundaries that need one.
+anatomy:
+  line:
+    role: indicator
+    description: The line itself, drawn in a quiet border color across or along its container.
