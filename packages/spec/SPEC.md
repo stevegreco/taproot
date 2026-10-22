@@ -253,6 +253,26 @@ An example record also has:
 - `annotations`: callouts, each with an `id`, a `label`, a `description`, and optional
   `references`.
 
+## Conventions
+
+Records follow these so that one idea has one name everywhere.
+
+- **Rule ids** name the requirement in plain words, with no topic prefix, because `topic` already
+  says `accessibility`. Shared requirements use shared ids: `visible-focus`, `forced-colors`,
+  `not-a-control`, and `not-color-alone`.
+- **Form fields** follow `pattern.form-field` for label, hint, error, required, disabled, form
+  value, and focus, and keep only the rules about their own control.
+- **`label`** is visible text that names the component, and it is also the accessible name. A name
+  that is not shown is **`accessibleName`**.
+- **Decorative:** a graphic with no `accessibleName` is decorative and hidden from assistive
+  technology. A component that uses its name for something else, as Avatar shows initials, takes a
+  `decorative` boolean instead.
+- **Sizes** are `small`, `medium`, and `large`, plus `inherit` to match the surrounding text.
+- **Parameter names** are camelCase, such as `fullWidth` and `headingLevel`. A destination URL is
+  `href`.
+- **States:** `checked` is for a form choice, and `selected` is for choosing what is shown, as in
+  Tabs.
+
 ## Links
 
 Links let a reader, human or agent, move from a record to the context around it. Each link has a
