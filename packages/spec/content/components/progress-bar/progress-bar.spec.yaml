@@ -3,7 +3,6 @@ id: component.progress-bar
 type: component
 title: Progress bar
 summary: Use Progress bar to show how much of a task is done when you can measure it, such as an upload or a multi-step setup.
-status: draft
 tags:
   - progress
   - loading
@@ -56,3 +55,168 @@ anatomy:
     description: >-
       The filled part of the track, measured from the start edge, that shows how much of the task
       is done.
+parameters:
+  label:
+    kind: string
+    description: >-
+      The visible text that names the task. It is also the accessible name. Required: a progress bar
+      without a label does not say what is progressing.
+  value:
+    kind: number
+    default: 0
+    description: >-
+      How much of the task is done, from 0 to max. A value below 0 shows an empty bar and a value
+      above max shows a full bar.
+  max:
+    kind: number
+    default: 100
+    description: >-
+      The amount that means done. Use the task's own unit when it has one, such as the number of
+      files or bytes. A max that is missing, zero, or negative is treated as 100.
+states:
+  - default
+preferences:
+  reducedMotion:
+    - reduce
+rules:
+  - id: named-by-label
+    level: must
+    topic: accessibility
+    statement: >-
+      The progress bar is exposed to assistive technology as a progress indicator named by its
+      visible label, with its current value and its range from 0 to max.
+  - id: value-clamped
+    level: must
+    topic: behavior
+    statement: >-
+      The fill never goes past the ends of the track. A value below 0 shows an empty bar, a value
+      above max shows a full bar, and the exposed value is clamped the same way.
+  - id: fills-from-start
+    level: must
+    topic: behavior
+    statement: >-
+      The fill grows from the start edge of the track, so it runs right to left in right-to-left
+      layouts.
+  - id: not-announced
+    level: must
+    topic: accessibility
+    statement: >-
+      The progress bar does not announce changes to its value. Announce the outcome of the task with
+      an Alert.
+    references:
+      - component.alert#parameters.announce
+  - id: not-a-control
+    level: must
+    topic: behavior
+    statement: The progress bar is not focusable and does not activate.
+  - id: reduced-motion-instant
+    level: must
+    topic: accessibility
+    statement: >-
+      When the value changes, the fill moves smoothly to its new length. When the person prefers
+      reduced motion, it changes at once.
+  - id: forced-colors-visible
+    level: must
+    topic: accessibility
+    statement: >-
+      In forced-colors mode the track keeps a visible outline and the fill a solid system color, so
+      the amount done stays readable without the theme's colors.
+  - id: label-names-task
+    level: should
+    topic: content
+    statement: Name the task in the label, not the component.
+    examples:
+      do:
+        - Uploading report.pdf
+        - Importing 3 of 12 contacts
+      avoid:
+        - Progress
+        - Loading
+  - id: only-moves-forward
+    level: should
+    topic: behavior
+    statement: >-
+      Keep the value moving toward max for one task. If the task restarts, say so in the label
+      rather than letting the bar jump back without explanation.
+  - id: one-bar-per-task
+    level: should
+    topic: content
+    statement: >-
+      Use one bar for one task. For a batch, show the batch's overall progress, not a bar per item,
+      unless people act on items one at a time.
+accessibility:
+  role: Progress indicator with a value (determinate).
+  name: From the label parameter, which is shown.
+tokens:
+  label:
+    base:
+      foreground: semantic.color.foreground.default
+      font-family: semantic.typography.body.md.fontFamily
+      font-size: semantic.typography.body.md.fontSize
+      font-weight: semantic.typography.body.md.fontWeight
+      line-height: semantic.typography.body.md.lineHeight
+      letter-spacing: semantic.typography.body.md.letterSpacing
+      gap: primitives.space.2
+  track:
+    base:
+      background: semantic.color.background.muted
+      radius: semantic.radius.pill
+      height: primitives.space.2
+  fill:
+    base:
+      background: semantic.color.background.brand.default
+      radius: semantic.radius.pill
+      motion-duration: primitives.duration.slow
+      motion-easing: primitives.ease.out
+    reducedMotion.reduce:
+      motion: none
+rationale:
+  - decision: Progress bar is determinate only. An unknown amount uses Spinner.
+    covers: [loading]
+    why: >-
+      Keeping the two apart gives each one meaning. A bar always means "this much is done", and a
+      spinner always means "working, length unknown". An indeterminate bar would be a second way to
+      say what Spinner already says.
+  - decision: The label is visible and required, and it is the accessible name.
+    covers: [icon-only]
+    why: >-
+      A bar on its own does not say what is progressing, for sighted people either. A visible label
+      also means the name people hear matches the text they see.
+  - decision: Progress bar shows no value text, such as a percentage, of its own.
+    why: >-
+      What people want to read differs by task: a percentage, "3 of 12 contacts", or time left.
+      The label can say it in the task's own words, and assistive technology reads the value from
+      the exposed range. A value text parameter can be added later if most uses need the same one.
+  - decision: Progress bar is not a live region.
+    why: >-
+      Announcing every change would talk over the person for the whole task. Assistive technology
+      reads the current value when a person reaches the bar, and an Alert announces the outcome.
+  - decision: Progress bar has no disabled, selected, or invalid state.
+    covers: [disabled, selected, invalid]
+    why: >-
+      It is not a control and has no value a person can set. A failed task is reported with an
+      Alert, not by recoloring the bar.
+  - decision: Progress bar has one size, and it fills the width of its container.
+    covers: [sizes, density]
+    why: >-
+      Its length comes from the layout around it, and one thickness reads well from a dialog to a
+      full page. Sizes can be added when a layout needs one. The thickness is a spacing primitive
+      because no semantic size role exists (tokens ADR 0003).
+  - decision: The fill uses the brand background color, not an action color.
+    why: >-
+      The bar is not a control, so action colors would suggest it can be pressed. The brand color
+      matches the system's accent and meets the 3 to 1 contrast a graphic needs against the muted
+      track.
+  - decision: The fill mirrors in right-to-left layouts.
+    covers: [right-to-left]
+    why: Progress reads in the direction of the text, from start to end.
+  - decision: Reduced motion removes the fill's transition.
+    covers: [reduced-motion]
+    why: >-
+      The motion only smooths a change that the new length already shows, so dropping it loses
+      nothing.
+  - decision: In forced colors the track draws an outline and the fill uses a system color.
+    covers: [forced-colors]
+    why: >-
+      Forced colors drop background colors, which would leave an invisible track and fill. An
+      outlined track with a solid fill keeps the amount done visible.
