@@ -1,0 +1,60 @@
+/**
+ * <ds-progress-bar> styles.
+ *
+ * Built into dist/progress-bar.styles.js by build-styles.js — this file is the source.
+ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-primitives-space-2);
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+.track {
+  display: block;
+  box-sizing: border-box;
+  block-size: var(--ds-primitives-space-2);
+  overflow: hidden;
+  border-radius: var(--ds-semantic-radius-pill);
+  background-color: var(--ds-semantic-color-background-muted);
+}
+
+/* The fill is a block in the track's inline direction, so it starts at the
+ * start edge and mirrors in right-to-left layouts with no extra rules. */
+.fill {
+  display: block;
+  inline-size: calc(var(--_fraction, 0) * 100%);
+  block-size: 100%;
+  border-radius: var(--ds-semantic-radius-pill);
+  background-color: var(--ds-semantic-color-background-brand-default);
+  transition: inline-size var(--ds-primitives-duration-slow) var(--ds-primitives-ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    transition: none;
+  }
+}
+
+/* Forced colors drop background colors, which would hide the track and fill.
+ * Outline the track and paint the fill a solid system color. */
+@media (forced-colors: active) {
+  .track {
+    border: var(--ds-semantic-border-width) solid CanvasText;
+  }
+
+  .fill {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+}

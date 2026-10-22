@@ -26,10 +26,8 @@ usage:
     - Fill the space of content that is about to appear when its size is not known yet.
   avoid:
     - situation: Show progress when you know how much of the work is done.
-      instead: a determinate progress indicator
-      why: >-
-        A known amount lets the person judge how long to wait, and a spinner hides it. The system
-        has no determinate indicator yet.
+      instead: component.progress-bar
+      why: A known amount lets the person judge how long to wait, and a spinner hides it.
     - situation: Report that the work finished or failed.
       instead: component.alert
       why: Spinner only says work is happening. Alert states the outcome and can announce it.
