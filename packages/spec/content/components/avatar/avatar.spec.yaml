@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.avatar
+type: component
+title: Avatar
+summary: Use Avatar to show a small picture of a person, so people can recognize who did, owns, or wrote something.
+status: draft
+tags:
+  - person
+  - profile
+  - user
+  - identity
+  - media
+links:
+  follows:
+    - guideline.compose-or-propose
+description: >-
+  Shows a person as a small round picture. When there is no picture, or it fails to load, it shows
+  the person's initials, and when there is no name either, a generic person symbol. It is not a
+  control.
+usage:
+  do:
+    - Show who wrote a comment or message, beside their name.
+    - Identify the signed-in person in an account area or settings header.
+    - Show who owns or is assigned to an item in a list or a card.
+  avoid:
+    - situation: Open a profile or account menu by pressing the avatar.
+      instead: component.button
+      why: >-
+        Avatar is not a control. Place it inside a Button or a Link, which give the action its
+        role, focus, and accessible name.
+    - situation: Show a symbol for a thing that is not a person, such as a file type or an app.
+      instead: component.icon
+      why: >-
+        Icon sizes and colors a symbol at text scale. Avatar's fallback to initials only makes
+        sense for a name.
+    - situation: Show a photo or illustration as content, such as a product image or a cover.
+      instead: an image in the surrounding page
+      why: Avatar crops to a small circle, which suits a face, not content imagery.
+    - situation: Show whether a person is online, busy, or away.
+      instead: component.badge
+      why: >-
+        Avatar has no presence state in this version. Place a Badge, or text, beside it that
+        states the status.
+anatomy:
+  surface:
+    role: container
+    description: The round area that crops its content and sets the avatar's size.
+  image:
+    role: container
+    description: The supplied picture of the person, cropped to fill the surface.
+  initials:
+    role: label
+    description: Up to two letters from the person's name, shown when there is no picture.
+  placeholder:
+    role: indicator
+    description: A generic person symbol, shown when there is neither a picture nor a name.
