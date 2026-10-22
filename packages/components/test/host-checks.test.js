@@ -273,6 +273,31 @@ const ELEMENTS = [
     properties: { label: "sample label", description: "sample description", dismissible: false },
   },
   {
+    id: "divider",
+    tagName: "ds-divider",
+    className: "DsDivider",
+    defineExport: "defineDivider",
+    events: [],
+    focusPart: null,
+    parts: ["line"],
+    requiresDefaultSlot: false,
+    disabledAttribute: null,
+    fieldsetDisables: false,
+    hasFormProperty: false,
+    activationKeys: [],
+    fixture: {},
+    textAttributes: {},
+    enums: [
+      {
+        attribute: "orientation",
+        property: "orientation",
+        values: ["horizontal", "vertical"],
+        default: "horizontal",
+      },
+    ],
+    properties: { orientation: "vertical" },
+  },
+  {
     // The dismiss control is optional, so dismissal and its focus have their own tests.
     id: "alert",
     tagName: "ds-alert",
