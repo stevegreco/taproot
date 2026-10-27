@@ -13,6 +13,7 @@ import { Mistake } from "./scenes/Mistake";
 import { Reach } from "./scenes/Reach";
 import { Rules } from "./scenes/Rules";
 import { Scattered } from "./scenes/Scattered";
+import { Structured } from "./scenes/Structured";
 import { SpecExplainer, TOTAL_DURATION } from "./SpecExplainer";
 import { FPS } from "./theme";
 import { SCENES } from "./timeline";
@@ -57,6 +58,14 @@ export const RemotionRoot = () => (
         id="Contract"
         component={Contract}
         durationInFrames={SCENES.contract.duration}
+        fps={FPS}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="Structured"
+        component={Structured}
+        durationInFrames={SCENES.structured.duration}
         fps={FPS}
         width={1920}
         height={1080}

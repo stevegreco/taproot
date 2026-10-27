@@ -13,13 +13,14 @@ import { Mistake } from "./scenes/Mistake";
 import { Reach } from "./scenes/Reach";
 import { Rules } from "./scenes/Rules";
 import { Scattered } from "./scenes/Scattered";
+import { Structured } from "./scenes/Structured";
 import { color } from "./theme";
 import { AUDIO_SEGMENTS, SCENES, TRANSITION } from "./timeline";
 
 export { TOTAL_DURATION } from "./timeline";
 
 // The architecture shift, in under a minute and a half: many sources of truth, an agent that
-// guesses, the rules written down once as a spec, the same request answered by an agent that cites
+// guesses, the rules written down once as a spec stored as structured data, the same request answered by an agent that cites
 // each rule, the same rules reviewing an existing screen, and every other output reading from that spec.
 // One scene per narration section. Durations come from the voiceover in timeline.ts, so they stay
 // in sync when the take is regenerated; each scene is also registered on its own in Root.tsx.
@@ -64,6 +65,14 @@ export function SpecExplainer() {
           premountFor={fps}
         >
           <Contract />
+        </TransitionSeries.Sequence>
+        {change()}
+        <TransitionSeries.Sequence
+          name="Structured"
+          durationInFrames={SCENES.structured.duration}
+          premountFor={fps}
+        >
+          <Structured />
         </TransitionSeries.Sequence>
         {change()}
         <TransitionSeries.Sequence

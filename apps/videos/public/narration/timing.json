@@ -1,83 +1,92 @@
 {
   "events": {
-    "figma": 7.77,
-    "code": 10.01,
-    "head": 13.65,
-    "parts": 33.13,
-    "options": 34.05,
-    "states": 35.29,
-    "tokens": 37.45,
-    "rules": 39.85,
-    "patterns": 44.77,
-    "guidelines": 46.21,
-    "examples": 47.85,
-    "levels": 53.69,
-    "cite": 58.17,
-    "checked": 60.33,
-    "search": 70.45,
-    "read": 71.85,
-    "emphasis": 74.49,
-    "label": 78.33,
-    "placement": 81.69,
-    "verified": 84.77,
-    "scan": 90.17,
-    "must": 94.29,
-    "should": 96.01,
-    "which": 97.69,
-    "design": 102.01,
-    "libraries": 103.05,
-    "docs": 104.57,
-    "agents": 105.01
+    "figma": 7.61,
+    "code": 9.77,
+    "head": 13.53,
+    "parts": 32.33,
+    "options": 33.17,
+    "states": 34.33,
+    "tokens": 36.41,
+    "rules": 38.65,
+    "page": 41.85,
+    "structured": 43.33,
+    "named": 45.45,
+    "lookup": 47.77,
+    "guess": 50.703,
+    "patterns": 54.89,
+    "guidelines": 56.29,
+    "examples": 57.93,
+    "levels": 63.61,
+    "cite": 67.77,
+    "checked": 69.93,
+    "search": 79.65,
+    "read": 80.97,
+    "emphasis": 83.69,
+    "label": 87.69,
+    "placement": 91.13,
+    "verified": 93.93,
+    "scan": 99.45,
+    "must": 103.45,
+    "should": 105.13,
+    "which": 106.89,
+    "design": 110.97,
+    "libraries": 112.17,
+    "docs": 113.53,
+    "agents": 113.97
   },
   "audioStart": 0.25,
-  "audioEnd": 115.37,
+  "audioEnd": 124.33,
   "sections": {
     "01-opening": {
       "start": 0.33,
-      "end": 4.89
+      "end": 4.81
     },
     "02-scattered": {
       "start": 5.53,
-      "end": 14.17
+      "end": 14.01
     },
     "03-mistake": {
-      "start": 14.65,
-      "end": 23.53
+      "start": 14.53,
+      "end": 22.89
     },
     "04-spec": {
-      "start": 24.09,
-      "end": 41.29
+      "start": 23.45,
+      "end": 40.09
     },
-    "05-links": {
-      "start": 41.85,
-      "end": 51.13
+    "05-structured": {
+      "start": 40.61,
+      "end": 51.53
     },
-    "06-rules": {
-      "start": 51.69,
-      "end": 59.29
+    "06-links": {
+      "start": 52.09,
+      "end": 61.21
     },
-    "07-validate": {
-      "start": 59.81,
-      "end": 64.00999999999999
+    "07-rules": {
+      "start": 61.69,
+      "end": 68.89
     },
-    "08-agent": {
-      "start": 64.69,
-      "end": 86.25
+    "08-validate": {
+      "start": 69.33,
+      "end": 73.61
     },
-    "09-audit": {
-      "start": 86.81,
-      "end": 101.45
+    "09-agent": {
+      "start": 74.17,
+      "end": 95.53
     },
-    "10-shared": {
-      "start": 102.01,
-      "end": 110.09
+    "10-audit": {
+      "start": 96.09,
+      "end": 110.41
     },
-    "11-close": {
-      "start": 110.69,
-      "end": 115.05
+    "11-shared": {
+      "start": 110.97,
+      "end": 118.97
+    },
+    "12-close": {
+      "start": 119.37,
+      "end": 124.01
     }
   },
-  "fingerprint": "e8a2c286581260a8481603223d54012845999859274b2dd8545c9d6e14273729",
+  "fingerprint": "589ba66ce86ef35dc15a104b300e312d5b19656dbb84f88a0681abb8946a6fc8",
   "model": "eleven_v4",
   "voice": "r1KmysJdVYZjJCm4mL3b",
   "seed": 42

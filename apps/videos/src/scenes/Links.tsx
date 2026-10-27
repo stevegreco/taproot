@@ -4,7 +4,7 @@ import { SCENES } from "../timeline";
 
 export function Links() {
   return (
-    <Chapter number="04" name="Links" title="The reasons travel with the rules.">
+    <Chapter number="05" name="Links" title="The reasons travel with the rules.">
       <LinkGraph cues={{ ...SCENES.links.cues, start: 10 }} />
     </Chapter>
   );

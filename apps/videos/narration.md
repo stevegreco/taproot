@@ -14,15 +14,16 @@ directions, not speech; cue matching skips them.
 | --- | --- | --- | --- |
 | 01-opening | 0.33s | 0.4s | [warm] Your design system has a new kind of reader... and it isn't a person. |
 | 02-scattered | 5.53s | 0.6s | Today, how a button looks lives in Figma. How it works lives in code. And why it works that way? That's usually in someone's head. |
-| 03-mistake | 14.65s | 1s | A new teammate would just ask around. An AI agent can't. So it guesses... and you get something that looks right, but isn't. |
-| 04-spec | 24.09s | 0.6s | A spec fixes that. Think of it as the instructions that come with every component, written in plain language instead of code. It spells out what a component is made of, what it can do, every state it can be in, the exact colors and sizes it uses... and the rules for using it well. |
-| 05-links | 41.85s | 0.6s | Each component also points to the bigger picture: the patterns it follows, the guidelines behind it, and real examples. So the why never gets lost. |
-| 06-rules | 51.69s | 0.5s | Every rule is labeled, too. Must, or should. So an agent can find the exact rule... and tell you which one it followed. |
-| 07-validate | 59.81s | 0.6s | And it's all checked automatically, so nothing goes stale as the system grows. |
-| 08-agent | 64.69s | 1.2s | So let's watch it work. You ask an agent to add a delete button. Instead of guessing, it looks things up first, and reads the rules for buttons. It marks the button as dangerous, because deleting can't be undone. It says Delete project, not just Remove. And it keeps it apart from the everyday buttons. Every choice is backed by a rule you can check. |
-| 09-audit | 86.81s | 0.8s | It works on what you already have, too. Point an agent at an existing screen, and it checks it against the same rules. It flags what breaks a must, notes what misses a should... and tells you exactly which rule, so a review isn't a matter of opinion. |
-| 10-shared | 102.01s | 0.6s | Design tools, component libraries, docs, and AI agents all work from the same source... so everyone builds the same thing. |
-| 11-close | 110.69s | 0s | Write the reasons down once. Then everyone, and everything, can follow them. |
+| 03-mistake | 14.53s | 1s | A new teammate would just ask around. An AI agent can't. So it guesses... and you get something that looks right, but isn't. |
+| 04-spec | 23.45s | 0.6s | A spec fixes that. Think of it as the instructions that come with every component, written in plain language instead of code. It spells out what a component is made of, what it can do, every state it can be in, the exact colors and sizes it uses... and the rules for using it well. |
+| 05-structured | 40.61s | 0.6s | And it isn't a document you scroll through. It's structured data. Every detail has a name and a place... so an agent can look up exactly what it needs, instead of guessing from a page of text. |
+| 06-links | 52.09s | 0.6s | Each component also points to the bigger picture: the patterns it follows, the guidelines behind it, and real examples. So the why never gets lost. |
+| 07-rules | 61.69s | 0.5s | Every rule is labeled, too. Must, or should. So an agent can find the exact rule... and tell you which one it followed. |
+| 08-validate | 69.33s | 0.6s | And it's all checked automatically, so nothing goes stale as the system grows. |
+| 09-agent | 74.17s | 1.2s | So let's watch it work. You ask an agent to add a delete button. Instead of guessing, it looks things up first, and reads the rules for buttons. It marks the button as dangerous, because deleting can't be undone. It says Delete project, not just Remove. And it keeps it apart from the everyday buttons. Every choice is backed by a rule you can check. |
+| 10-audit | 96.09s | 0.8s | It works on what you already have, too. Point an agent at an existing screen, and it checks it against the same rules. It flags what breaks a must, notes what misses a should... and tells you exactly which rule, so a review isn't a matter of opinion. |
+| 11-shared | 110.97s | 0.6s | Design tools, component libraries, docs, and AI agents all work from the same source... so everyone builds the same thing. |
+| 12-close | 119.37s | 0s | Write the reasons down once. Then everyone, and everything, can follow them. |
 
 ## Regeneration
 
@@ -33,7 +34,7 @@ Per-line regeneration is no longer supported because delivery depends on the com
 `public/narration/continuous.mp3` is the audio. `alignment.json` stores the character timestamps;
 `timing.json` stores the chapter and phrase cues, in take time. `src/timeline.ts` adds the holds,
 maps every cue to video time, slices the audio, and derives all scene boundaries. Changing a
-`hold` needs no new take. The scattered sources, spec sections, linked records,
+`hold` needs no new take. The scattered sources, spec sections, structured fields, linked records,
 checks, the agent's calls and decisions, and the rules reaching each output follow their phrases.
 `node --test apps/videos/scripts/narration-timing.test.mjs` validates cue extraction.
 

@@ -58,7 +58,7 @@ export function AgentReady() {
   const lift = ease(frame, 18, 24);
   const log = ease(frame, AGENT_CUES.search - 12, 10);
   return (
-    <Chapter number="07" name="In action" title="It looks things up first." align="start">
+    <Chapter number="08" name="In action" title="It looks things up first." align="start">
       <div
         style={{
           display: "grid",

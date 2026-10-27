@@ -23,8 +23,8 @@ render a composition to `out/`:
 pnpm --dir apps/videos render ComponentShowcase out/component-showcase.mp4
 ```
 
-`SpecExplainer` is a two-minute explainer of the design system spec as a general idea. Nine
-chapters move from scattered sources to a written contract, linked records, rules with addresses
+`SpecExplainer` is a two-minute explainer of the design system spec as a general idea. Ten
+chapters move from scattered sources to a written contract stored as structured data, linked records, rules with addresses
 and levels, and validation, then show an agent that asks first and cites the rule behind each
 choice, then the same rules reviewing an existing screen, and finally every output reading from
 the same spec.

@@ -36,7 +36,7 @@ export function Audit() {
   const rule = ease(frame, cues.which - 4, 14);
   const pin = (n: number) => ease(frame, (n === 3 ? cues.should : cues.must) + (n - 1) * 6, 12);
   return (
-    <Chapter number="08" name="Review" title="Check what you already have.">
+    <Chapter number="09" name="Review" title="Check what you already have.">
       <div style={{ display: "grid", gridTemplateColumns: `1fr ${CARD_WIDTH}px`, gap: 80 }}>
         <Panel style={{ padding: "34px 44px", opacity: report }}>
           <div

@@ -26,7 +26,7 @@ export function Rules() {
   const rule = (i: number) => ease(frame, 24 + i * 36);
   const levels = ease(frame, cues.levels - 4, 12);
   return (
-    <Chapter number="05" name="Labels" title="Label every rule." align="start">
+    <Chapter number="06" name="Labels" title="Label every rule." align="start">
       <div
         style={{
           display: "grid",

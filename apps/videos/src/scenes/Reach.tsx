@@ -60,7 +60,7 @@ const card = {
 export function Reach() {
   const frame = useCurrentFrame();
   return (
-    <Chapter number="09" name="One source" title="One source for every output.">
+    <Chapter number="10" name="One source" title="One source for every output.">
       <div style={{ position: "relative", height: 560 }}>
         <svg width="1680" height="560" style={{ position: "absolute", inset: 0 }}>
           {outputs.map(([title, , cue], i) => (

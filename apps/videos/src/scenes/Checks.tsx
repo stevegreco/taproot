@@ -18,7 +18,7 @@ const checks = [
 export function Checks() {
   const frame = useCurrentFrame();
   return (
-    <Chapter number="06" name="Checks" title="Checked, so it stays true.">
+    <Chapter number="07" name="Checks" title="Checked, so it stays true.">
       <Panel style={{ padding: "52px 60px", fontFamily: fonts.mono, fontSize: 33 }}>
         <div style={{ color: color.line, opacity: ease(frame, 10, 12) }}>$ ds-spec validate</div>
         {checks.map((check, i) => (
