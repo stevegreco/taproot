@@ -7,12 +7,7 @@ import { color, fonts } from "../theme";
 export function Mistake() {
   const frame = useCurrentFrame();
   return (
-    <Chapter
-      number="02"
-      name="The gap"
-      title="A good guess can still be wrong."
-      align="start"
-    >
+    <Chapter number="02" name="The gap" title="A good guess can still be wrong." align="start">
       <div
         style={{
           display: "grid",
