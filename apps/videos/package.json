@@ -1,0 +1,32 @@
+{
+  "name": "videos",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render",
+    "typecheck": "tsc --noEmit",
+    "still": "remotion still",
+    "narrate": "node --env-file-if-exists=.env scripts/narrate.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.533",
+    "@remotion/google-fonts": "4.0.533",
+    "@remotion/media": "4.0.533",
+    "@remotion/transitions": "4.0.533",
+    "@stevegreco/design-system": "link:../../packages/tokens",
+    "@stevegreco/design-system-components": "link:../../packages/components",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remotion": "4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@11.22.0"
+}

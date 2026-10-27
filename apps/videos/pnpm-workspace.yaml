@@ -1,0 +1,6 @@
+# The videos app is its own pnpm root, outside the repository workspace, so Remotion installs only
+# when someone runs `pnpm install` here. Tokens and components are linked from packages/.
+packages:
+  - "."
+allowBuilds:
+  esbuild: true

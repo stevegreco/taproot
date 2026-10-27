@@ -1,6 +1,9 @@
 packages:
   - "packages/*"
   - "apps/*"
+  # Opt in: the videos app installs on its own (see apps/videos/README.md), so a normal install
+  # and CI never download Remotion.
+  - "!apps/videos"
 allowBuilds:
   "@scarf/scarf": false
   esbuild: true
