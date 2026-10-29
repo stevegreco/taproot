@@ -6,6 +6,7 @@ summary: Use Text field to collect a single line of text with a label, hint, and
 tags:
   - form
   - input
+  - textbox
 links:
   related:
     - component.badge

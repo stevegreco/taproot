@@ -6,6 +6,9 @@ summary: Use Badge for status or metadata. It is not a control.
 tags:
   - status
   - metadata
+  - chip
+  - pill
+  - lozenge
 links:
   composes:
     - component.icon

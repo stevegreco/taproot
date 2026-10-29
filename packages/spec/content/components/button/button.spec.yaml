@@ -6,6 +6,8 @@ summary: Use Button to trigger an action or to submit or reset a form.
 tags:
   - action
   - form
+  - cta
+  - destructive
 links:
   composes:
     - component.icon

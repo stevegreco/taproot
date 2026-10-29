@@ -6,6 +6,7 @@ summary: Use Checkbox to turn one independent option on or off, with a label, hi
 tags:
   - form
   - selection
+  - tickbox
 links:
   related:
     - component.text-field

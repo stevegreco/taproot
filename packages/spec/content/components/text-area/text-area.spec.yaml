@@ -6,6 +6,8 @@ summary: Use Text area to collect multiple lines of text with a label, hint, and
 tags:
   - form
   - input
+  - textarea
+  - multiline
 links:
   related:
     - component.text-field

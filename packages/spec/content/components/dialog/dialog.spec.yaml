@@ -3,7 +3,7 @@ id: component.dialog
 type: component
 title: Dialog
 summary: Use Dialog for a focused task or confirmation that temporarily blocks the surrounding view.
-tags: [overlay, modal, focus]
+tags: [overlay, modal, focus, popup, lightbox]
 links:
   composes: [component.button]
   follows: [pattern.action-hierarchy, guideline.compose-or-propose]

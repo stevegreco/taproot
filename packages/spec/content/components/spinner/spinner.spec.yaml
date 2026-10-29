@@ -8,6 +8,8 @@ tags:
   - progress
   - busy
   - feedback
+  - loader
+  - throbber
 links:
   follows:
     - guideline.compose-or-propose

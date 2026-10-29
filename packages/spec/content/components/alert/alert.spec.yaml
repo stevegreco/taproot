@@ -7,6 +7,9 @@ tags:
   - status
   - feedback
   - live-region
+  - banner
+  - notification
+  - callout
 links:
   composes:
     - component.icon

@@ -8,6 +8,7 @@ tags:
   - icon-only
   - hover
   - overlay
+  - hint
 links:
   follows:
     - guideline.compose-or-propose
