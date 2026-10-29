@@ -32,7 +32,7 @@ Lens: how easily a designer, engineer, or AI agent can author a new spec (compon
 - Fix: When the top score is weak, say "No strong match" and point to `guideline.compose-or-propose`. Expose that in `--json` (e.g. `confidence: low`).
 
 ### 5. MEDIUM: Spec facts are restated in implementation files, unchecked
-- Evidence: apps/documentation/implementation/button.md "Map intent to variants" restates pattern.action-hierarchy; "Handle unavailable actions" restates `component.button#explain-disabled`. AGENTS.md says "Nothing checks an implementation against a spec, so keep the two consistent in review." Commit 5cbe6d9 already moved Alert to citing rule ids instead.
+- Evidence: packages/components/implementation/button.md "Map intent to variants" restates pattern.action-hierarchy; "Handle unavailable actions" restates `component.button#explain-disabled`. AGENTS.md says "Nothing checks an implementation against a spec, so keep the two consistent in review." Commit 5cbe6d9 already moved Alert to citing rule ids instead.
 - Impact: Two sources of truth for usage guidance; the docs page can disagree with the spec.
 - Fix: Apply the Alert approach to every implementation file: web-only guidance plus rule addresses. Optionally have `checkImplementation` warn on long prose sections that cite no address.
 

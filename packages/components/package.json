@@ -29,6 +29,7 @@
       "types": "./src/*.d.ts",
       "default": "./src/*.js"
     },
+    "./package.json": "./package.json",
     "./index": null,
     "./internal/*": null
   },

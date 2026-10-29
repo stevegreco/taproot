@@ -43,7 +43,7 @@ keep those consistent in review.
 - The web components are hand-written in `packages/components`, with tests in
   `packages/components/test`.
 - The docs site builds a component page from the spec record plus
-  `apps/documentation/implementation/<name>.md` (package, tag name, usage, API table mapping web
+  `packages/components/implementation/<name>.md` (package, tag name, usage, API table mapping web
   attributes, properties, and events to spec parameters and events, and web-specific guidance).
   `spec.config.json` points the CLI at the same folder, so `get --impl web` serves it.
   Examples are in `apps/documentation/examples/`.

@@ -31,8 +31,8 @@ resolver that reads its token files. A DTCG JSON resolver is included. It lives 
 format, which treats token references as opaque.
 
 **Implementation content is owned by the implementation.** The docs site builds a component page
-from the knowledge record plus a docs-owned implementation file at
-`apps/documentation/implementation/<name>.md`. That file holds the package, tag name, usage
+from the knowledge record plus an implementation file in the components package, at
+`packages/components/implementation/<name>.md`. That file holds the package, tag name, usage
 snippet, API table, and web-specific guidance. The components package holds the code and its
 behavior tests.
 

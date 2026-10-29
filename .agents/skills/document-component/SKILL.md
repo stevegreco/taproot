@@ -12,7 +12,7 @@ The last of three phases, one commit each in a single pull request:
 3. **document-component** (this skill): the docs example and its Verify steps.
 
 Start on the component's branch, after its implementation commit is reviewed: its spec is not a
-draft and `apps/documentation/implementation/<name>.md` exists. The component already has a docs
+draft and `packages/components/implementation/<name>.md` exists. The component already has a docs
 page built from the spec and that file. This phase adds a realistic example and steps that prove
 it works.
 

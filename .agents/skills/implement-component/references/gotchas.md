@@ -8,14 +8,14 @@ document-component.
 - Spec
 - Runtime
 - Component tests
-- Docs implementation file
+- Implementation file
 - Types
 - Commands
 
 ## Spec
 
 - The spec is technology-neutral. If you want to write a tag name, attribute, slot, or CSS
-  property, it belongs in `apps/documentation/implementation/<name>.md` or the runtime instead.
+  property, it belongs in `packages/components/implementation/<name>.md` or the runtime instead.
 - `states` is an unordered list. Nothing computes a combined style. If a combination needs its own
   tokens, write it as its own condition joined with ` + ` (`variant.primary + hover`), or explain
   in `rationale` why it is not styled.
@@ -80,9 +80,9 @@ document-component.
   element upgraded and rendered those parts. Then see the test fail at least once.
 - No test compares the implementation to the spec. Review them together.
 
-## Docs implementation file
+## Implementation file
 
-- `apps/documentation/implementation/<name>.md` is required for the component page. Its `api`
+- `packages/components/implementation/<name>.md` is required for the component page. Its `api`
   rows map each web attribute, property, and event to a spec parameter or event by name.
 - Keep the body to web-specific guidance. Rules, anatomy, and tokens come from the spec.
 - Copy `implementation/button.md` or `text-field.md`.

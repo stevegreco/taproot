@@ -15,7 +15,7 @@ Each run is scored on three numbers:
 
 - **Retrieval steps**: `pnpm knowledge` commands run.
 - **Invented APIs**: tag names, attributes, packages, or registration that do not match
-  `apps/documentation/implementation/<slug>.md`. Each distinct wrong name counts once.
+  `packages/components/implementation/<slug>.md`. Each distinct wrong name counts once.
 - **Rule mistakes**: MUST or SHOULD rules the output breaks when it runs, including rules the agent
   meant to follow but broke through an invented API.
 

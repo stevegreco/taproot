@@ -51,7 +51,10 @@ root for the barrel.
 Each component implements the technology-neutral contract in
 `packages/spec/content/components/<name>/<name>.spec.yaml`. The docs site
 renders it at `/components/<name>`, with the live example from
-`apps/documentation/examples/<name>.tsx`.
+`apps/documentation/examples/<name>.tsx`. `implementation/<name>.md` maps each
+web attribute, property, and event to the spec's parameters and events, and
+holds web-specific guidance. Change it in the same commit as the component's
+API. The docs site and `pnpm spec get <name> --impl web` read it.
 
 Every attribute has a matching property (`el.variant`,
 `el.disabled`, …). Programmatic `focus()` and `blur()` forward to the inner
