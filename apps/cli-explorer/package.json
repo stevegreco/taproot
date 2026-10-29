@@ -1,0 +1,12 @@
+{
+  "name": "cli-explorer",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

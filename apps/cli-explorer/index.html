@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CLI Explorer</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+      }
+      body {
+        margin: 0 auto;
+        max-width: 72rem;
+        padding: 1.5rem 1rem;
+      }
+      h1 {
+        font-size: 1.25rem;
+        margin: 0 0 1rem;
+      }
+      form {
+        display: flex;
+        gap: 0.5rem;
+      }
+      form span {
+        align-self: center;
+        font-family: ui-monospace, monospace;
+      }
+      input {
+        flex: 1;
+        font: inherit;
+        font-family: ui-monospace, monospace;
+        padding: 0.5rem;
+      }
+      button {
+        font: inherit;
+        padding: 0.5rem 1rem;
+      }
+      .examples {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin: 0.75rem 0 1rem;
+      }
+      .examples button,
+      #history button {
+        font-family: ui-monospace, monospace;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+      }
+      .meta {
+        font-size: 0.875rem;
+        margin: 0 0 0.5rem;
+        opacity: 0.8;
+      }
+      .panes {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+      }
+      h2 {
+        font-size: 0.875rem;
+        margin: 0 0 0.25rem;
+      }
+      pre {
+        border: 1px solid #8884;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin: 0;
+        max-height: 70vh;
+        overflow: auto;
+        padding: 0.75rem;
+        white-space: pre-wrap;
+      }
+      .stderr {
+        color: #c33;
+        margin-top: 0.5rem;
+      }
+      .stderr:empty {
+        display: none;
+      }
+      #history {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: 0.25rem;
+        margin-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CLI Explorer</h1>
+    <form id="form">
+      <span>ds-spec</span>
+      <input
+        id="command"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="search destructive action"
+      />
+      <button>Run</button>
+    </form>
+    <div class="examples" id="examples"></div>
+    <p class="meta" id="meta">
+      Type a command, or pick an example. Runs <code>ds-spec help</code> for every option.
+    </p>
+    <div class="panes">
+      <section>
+        <h2>Markdown (what an agent reads)</h2>
+        <pre id="text"></pre>
+        <pre class="stderr" id="text-stderr"></pre>
+      </section>
+      <section>
+        <h2>JSON (--json)</h2>
+        <pre id="json"></pre>
+        <pre class="stderr" id="json-stderr"></pre>
+      </section>
+    </div>
+    <div id="history"></div>
+
+    <script>
+      const EXAMPLES = [
+        "help",
+        "list --type component",
+        'search "destructive action"',
+        "get button",
+        "get component.button --impl web",
+        "get pattern.action-hierarchy#assign-emphasis",
+        "links component.button --direction both",
+        "rules --level must --topic accessibility",
+        'tokens component.button --condition "variant.primary + hover" --resolve',
+        "validate",
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const history = [];
+
+      /** Split a command line into arguments, keeping quoted text together. */
+      function split(line) {
+        return [...line.matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map((m) => m[1] ?? m[2] ?? m[3]);
+      }
+
+      async function run(line) {
+        $("command").value = line;
+        $("meta").textContent = "Running…";
+        const response = await fetch("/run", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ args: split(line) }),
+        });
+        if (!response.ok) {
+          $("meta").textContent = await response.text();
+          return;
+        }
+        const { text, json } = await response.json();
+        $("meta").textContent = `Exit code ${text.exitCode} · ${text.ms} ms`;
+        $("text").textContent = text.stdout;
+        $("text-stderr").textContent = text.stderr;
+        $("json").textContent = json.stdout;
+        $("json-stderr").textContent = json.stderr;
+        if (history[0] !== line) {
+          history.unshift(line);
+          renderHistory();
+        }
+      }
+
+      function button(line) {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.textContent = line;
+        el.addEventListener("click", () => run(line));
+        return el;
+      }
+
+      function renderHistory() {
+        $("history").replaceChildren(
+          ...(history.length
+            ? [Object.assign(document.createElement("h2"), { textContent: "History" })]
+            : []),
+          ...history.slice(0, 20).map(button),
+        );
+      }
+
+      $("examples").replaceChildren(...EXAMPLES.map(button));
+      $("form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        if ($("command").value.trim()) run($("command").value.trim());
+      });
+    </script>
+  </body>
+</html>
