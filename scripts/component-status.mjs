@@ -140,7 +140,7 @@ if (specSource) {
 if (inPhase("spec")) {
   console.log(`\nSpec phase: component.${slug}`);
   row(Boolean(specSource), specPath);
-  const built = existsSync(path.join(root, `apps/documentation/implementation/${slug}.md`));
+  const built = existsSync(path.join(root, `packages/components/implementation/${slug}.md`));
   // A spec-phase commit lands a draft. With every phase checked, a built component skips this
   // row, and the implementation phase requires the opposite.
   if (spec && (phase === "spec" || !built)) {
@@ -163,7 +163,7 @@ if (inPhase("implementation")) {
     `packages/components/src/${slug}.d.ts`,
     testPath,
     `packages/components/test/host-checks/${slug}.js`,
-    `apps/documentation/implementation/${slug}.md`,
+    `packages/components/implementation/${slug}.md`,
     `apps/storybook/stories/${slug}.stories.js`,
   ]) {
     row(existsSync(path.join(root, file)), file);

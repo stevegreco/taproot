@@ -1,6 +1,6 @@
 ---
 name: implement-component
-description: Build a component of the Ember & Sage design system from its draft spec. Completes the spec contract (parameters, rules, tokens, rationale), writes the failing tests, the hand-written web component in packages/components, the web API file in apps/documentation/implementation, and the Storybook stories. Use when asked to implement or build a component that has a draft spec, when finishing a partly built component, or when reviewing an implementation PR. The second of three phases, after spec-component and before document-component.
+description: Build a component of the Ember & Sage design system from its draft spec. Completes the spec contract (parameters, rules, tokens, rationale), writes the failing tests, the hand-written web component in packages/components, the web API file in packages/components/implementation, and the Storybook stories. Use when asked to implement or build a component that has a draft spec, when finishing a partly built component, or when reviewing an implementation PR. The second of three phases, after spec-component and before document-component.
 ---
 
 # Implement a component
@@ -98,7 +98,7 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 
 ## 5. Map the web API and add stories
 
-- `apps/documentation/implementation/<name>.md`: replace the `usage` placeholder, and add `api`
+- `packages/components/implementation/<name>.md`: replace the `usage` placeholder, and add `api`
   rows for anything the scaffold could not derive, such as extra properties. The body is
   web-specific guidance only, in three sections: Slots, The hidden attribute, and Framework notes.
   Behavior is in the spec's rules, so cite a rule by address (`component.<name>#<rule-id>`) rather

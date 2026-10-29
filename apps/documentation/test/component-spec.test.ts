@@ -10,6 +10,7 @@ import {
   componentSpecMarkdown,
   componentSlugs,
   DocsSpecError,
+  implementationDir,
   loadComponentSlice,
 } from "../lib/component-spec";
 import {
@@ -415,20 +416,20 @@ test("a built component has an implementation file, and a draft component has no
   const built = components
     .filter((record) => record.status !== "draft")
     .map((record) => record.id.slice("component.".length));
-  const implemented = loadImplementations(join(docsRoot, "implementation/")).map((item) =>
+  const implemented = loadImplementations(implementationDir()).map((item) =>
     item.component.slice("component.".length),
   );
 
   for (const slug of built) {
     assert.ok(
       implemented.includes(slug),
-      `component.${slug} is not a draft, so it needs implementation/${slug}.md`,
+      `component.${slug} is not a draft, so it needs packages/components/implementation/${slug}.md`,
     );
   }
   for (const slug of drafts) {
     assert.ok(
       !implemented.includes(slug),
-      `component.${slug} has implementation/${slug}.md, so remove status: draft from its spec`,
+      `component.${slug} has packages/components/implementation/${slug}.md, so remove status: draft from its spec`,
     );
   }
   assert.deepEqual([...componentSlugs()].sort(), [...implemented].sort());
@@ -490,7 +491,7 @@ test("every implementation file's api rows resolve against its record", () => {
     const slice = loadComponentSlice(slug);
     assert.ok(slice.api.length > 0, `${slug} has an api table`);
     assert.ok(
-      readdirSync(join(docsRoot, "implementation")).includes(`${slug}.md`),
+      readdirSync(implementationDir()).includes(`${slug}.md`),
       `${slug} has an implementation file`,
     );
   }
@@ -514,7 +515,7 @@ test("known issues show in the intro, after the description, linked when tracked
     section: (target: string) => spec.section(target),
     links: (id: string) => spec.links(id),
   };
-  const badge = loadImplementations(join(docsRoot, "implementation/")).filter(
+  const badge = loadImplementations(implementationDir()).filter(
     (item) => item.component === "component.badge",
   );
   const slice = assembleSlices(withIssue, badge, mkdtempSync(join(tmpdir(), "assets-"))).get(

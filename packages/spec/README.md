@@ -97,7 +97,7 @@ directory. Paths are relative to the config file. `implementations` and `tokens`
 ```json
 {
   "content": "packages/spec/content",
-  "implementations": { "web": "apps/documentation/implementation" },
+  "implementations": { "web": "packages/components/implementation" },
   "tokens": {
     "format": "dtcg",
     "sets": { "light": ["tokens/base.json", "tokens/light.json"], "dark": ["tokens/base.json", "tokens/dark.json"] }

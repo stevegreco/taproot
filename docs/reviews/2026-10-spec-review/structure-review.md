@@ -61,7 +61,7 @@ schema, duplication, and how easy the spec is to keep current. Goal is a simple 
 - **Fix:** say what is checked (API mapping coverage) and what isn't (behavior and styling).
 
 ### 6. Implementation files restate spec guidance — Medium
-- **Evidence:** `apps/documentation/implementation/button.md` § "Map intent to variants"
+- **Evidence:** `packages/components/implementation/button.md` § "Map intent to variants"
   restates the variant meanings from `button.spec.yaml` and `pattern.action-hierarchy`;
   §§ "Handle labels and icons" and "Handle unavailable actions" restate rules
   `a11y-icon-accessible-name` and `explain-disabled`. Commit `5cbe6d9` already fixed this for

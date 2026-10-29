@@ -244,7 +244,7 @@ ${must
   );
 
   write(
-    `apps/documentation/implementation/${name}.md`,
+    `packages/components/implementation/${name}.md`,
     `---
 component: component.${name}
 package: "@stevegreco/design-system-components"

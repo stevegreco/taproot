@@ -1,6 +1,6 @@
 /**
- * `/components/<slug>` pages, rendered from the spec and the docs
- * implementation files.
+ * `/components/<slug>` pages, rendered from the spec and the components
+ * package's implementation files.
  *
  * Every spec component with an `implementation/<slug>.md` file gets a page:
  * title and description from the record, the import snippet from the
@@ -112,7 +112,7 @@ export function componentPageEntries(): SourceEntry[] {
   const orphans = [...prose.keys()].filter((slug) => !slugs.includes(slug));
   if (orphans.length > 0) {
     throw new Error(
-      `docs/${PROSE_FOLDER}/ has prose for ${orphans.join(", ")}, but there is no implementation/<slug>.md file for it. Component pages render from implementation files and their spec records; that folder holds only optional preview prose.`,
+      `docs/${PROSE_FOLDER}/ has prose for ${orphans.join(", ")}, but there is no packages/components/implementation/<slug>.md file for it. Component pages render from implementation files and their spec records; that folder holds only optional preview prose.`,
     );
   }
   return slugs.map((slug) => pageEntry(slug, prose.get(slug)));

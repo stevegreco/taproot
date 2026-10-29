@@ -284,7 +284,7 @@ describe("ds-spec CLI, implementations", () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "spec-impl-"));
     fs.mkdirSync(path.join(tmp, "web"));
     const button = fs.readFileSync(
-      path.join(repoRoot, "apps/documentation/implementation/button.md"),
+      path.join(repoRoot, "packages/components/implementation/button.md"),
       "utf8",
     );
     fs.writeFileSync(

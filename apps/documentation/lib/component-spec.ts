@@ -3,7 +3,8 @@
  *
  * - The spec library (`@stevegreco/design-system-spec`) supplies usage,
  *   rules, anatomy, parameters, states, accessibility, patterns, and examples.
- * - Docs-owned implementation files (`implementation/<slug>.md`) supply everything
+ * - The components package's implementation files
+ *   (`packages/components/implementation/<slug>.md`) supply everything
  *   specific to the web component: package, tag name, usage markup, the API
  *   table's rows, and web guidance.
  *
@@ -231,7 +232,7 @@ export function loadComponentSlice(slug: string): ComponentSlice {
   if (!slice) {
     throw new DocsSpecError(
       "missing-component",
-      `No component page for "${slug}". It needs the record component.${slug} and an implementation/${slug}.md file.`,
+      `No component page for "${slug}". It needs the record component.${slug} and a packages/components/implementation/${slug}.md file.`,
     );
   }
   return slice;
@@ -752,16 +753,24 @@ export function assembleSlices(
 
 /**
  * The docs app's root. Astro bundles this module into `dist/`, where its own
- * URL no longer points into the app, so walk up to the package that owns the folder.
+ * URL no longer points into the app, so walk up to the package that owns `public/`.
  */
 function docsRoot(): string {
   let dir = dirname(fileURLToPath(import.meta.url));
-  while (!existsSync(join(dir, "implementation")) || !existsSync(join(dir, "package.json"))) {
+  while (!existsSync(join(dir, "public")) || !existsSync(join(dir, "package.json"))) {
     const parent = dirname(dir);
-    if (parent === dir) throw new Error("Could not find the docs app root (implementation/).");
+    if (parent === dir) throw new Error("Could not find the docs app root (public/).");
     dir = parent;
   }
   return dir;
+}
+
+/** The web components' implementation files, resolved the same way in source and in the bundle. */
+export function implementationDir(): string {
+  const manifest = fileURLToPath(
+    import.meta.resolve("@stevegreco/design-system-components/package.json"),
+  );
+  return join(dirname(manifest), "implementation");
 }
 
 /** The spec package's content folder, resolved the same way in source and in the bundle. */
@@ -776,6 +785,6 @@ const root = docsRoot();
 
 const slices: ReadonlyMap<string, ComponentSlice> = assembleSlices(
   await loadSpec({ contentDir: specContentDir() }),
-  loadImplementations(join(root, "implementation")),
+  loadImplementations(implementationDir()),
   join(root, "public", "spec-assets"),
 );
