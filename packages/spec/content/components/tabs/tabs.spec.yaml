@@ -6,6 +6,7 @@ summary: Use Tabs to switch between a few related views of the same subject, one
 tags:
   - navigation
   - disclosure
+  - tablist
 links:
   follows:
     - guideline.compose-or-propose

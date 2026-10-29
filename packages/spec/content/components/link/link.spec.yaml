@@ -6,6 +6,8 @@ summary: Use Link to navigate to another page, a location on the page, or a reso
 tags:
   - action
   - navigation
+  - hyperlink
+  - anchor
 links:
   composes:
     - component.icon

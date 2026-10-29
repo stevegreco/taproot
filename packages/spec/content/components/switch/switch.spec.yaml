@@ -6,6 +6,7 @@ summary: Use Switch to turn a setting on or off and apply the change immediately
 tags:
   - settings
   - selection
+  - toggle
 links:
   follows:
     - pattern.form-field

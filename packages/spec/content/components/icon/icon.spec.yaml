@@ -7,6 +7,8 @@ tags:
   - icon
   - graphic
   - media
+  - glyph
+  - symbol
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md

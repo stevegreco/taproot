@@ -135,6 +135,18 @@ describe("search", () => {
     expect(shipped.search("navigate")[0].id).toBe("component.link");
   });
 
+  it("finds a record by another name for it in its tags", () => {
+    const top = (query) => shipped.search(query)[0].id;
+    expect(top("dropdown")).toBe("component.select");
+    expect(top("toggle")).toBe("component.switch");
+    expect(top("popup")).toBe("component.dialog");
+    expect(top("banner")).toBe("component.alert");
+    expect(top("chip")).toBe("component.badge");
+    expect(top("loader")).toBe("component.spinner");
+    expect(top("collapsible")).toBe("component.accordion");
+    expect(top("hyperlink")).toBe("component.link");
+  });
+
   it("drops weak matches that score far below the top hit", () => {
     const hits = shipped.search("destructive action");
     expect(hits.map((hit) => hit.id)).toEqual([

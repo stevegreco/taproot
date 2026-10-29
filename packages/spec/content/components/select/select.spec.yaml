@@ -6,6 +6,8 @@ summary: Use Select to choose one value from a list with a label, hint, and erro
 tags:
   - form
   - input
+  - dropdown
+  - picker
 links:
   related:
     - component.text-field

@@ -6,6 +6,8 @@ summary: Use Accordion to let people expand only the sections of a long page the
 tags:
   - disclosure
   - faq
+  - collapsible
+  - expander
 links:
   follows:
     - guideline.compose-or-propose
