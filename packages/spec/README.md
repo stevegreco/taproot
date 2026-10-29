@@ -9,7 +9,7 @@ level. A small library reads, validates, and queries them.
 | To                                  | Read                                                          |
 | ----------------------------------- | ------------------------------------------------------------- |
 | Look up a field or write a record   | [SPEC.md](SPEC.md), the only field reference                  |
-| Query the spec                      | [CLI](#cli), or `pnpm spec help` from the repository root     |
+| Query the spec                      | [CLI](#cli), or `node packages/spec/bin/ds-spec.js help` from the repository root |
 | Understand the format's decisions   | ADRs 0001 through 0003 in [`docs/adr/`](../../docs/adr)       |
 
 The JSON Schema is [`src/schema/spec-record.schema.json`](src/schema/spec-record.schema.json).
@@ -140,7 +140,12 @@ Global flags: `--content <dir>`, `--config <path>`, `--json`. Output is Markdown
 return values as JSON. Exit codes: 0 ok, 1 validation issues, an empty result, or an unknown id or
 section, 2 usage error, including a filter value (`--type`, `--status`, `--kind`, `--topic`,
 `--level`) that is not one of the valid ones, which the error lists. In this repo, run it as
-`pnpm spec ...`.
+`node packages/spec/bin/ds-spec.js ...`. `pnpm spec ...` also works, but pnpm adds about a second
+to each call. Elsewhere, run the installed bin (`node_modules/.bin/ds-spec`), not an `npx` download
+per call.
+
+`ds-spec help agents` prints how an agent should use the spec. The MCP server sends the same text
+as its instructions, and AGENTS.md carries a copy that a test keeps equal.
 
 `validate` also checks each token reference against the token sets in the config. The other
 commands leave out any record file with issues, say so on stderr, and serve the rest, so one broken

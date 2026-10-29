@@ -17,7 +17,7 @@ page built from the spec and that file. This phase adds a realistic example and 
 it works.
 
 ```bash
-pnpm spec get component.<name> --impl web
+node packages/spec/bin/ds-spec.js get component.<name> --impl web
 ```
 
 Read the spec's usage and rules first. The example shows the component used the way the spec

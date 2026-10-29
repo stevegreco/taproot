@@ -8,7 +8,7 @@ the web components in [`packages/components`](packages/components/README.md), an
 documentation site in `apps/documentation`.
 
 Start with the spec's [Start here](packages/spec/README.md#start-here) table. Query the spec
-from the repository root with `pnpm spec search <query>` or `pnpm spec get <id>`. An MCP server for the same content is
+from the repository root with `node packages/spec/bin/ds-spec.js search <query>` or `node packages/spec/bin/ds-spec.js get <id>`. An MCP server for the same content is
 registered in `.mcp.json`.
 
 ## Install
