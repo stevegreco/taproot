@@ -1,4 +1,5 @@
 import { parseArgs } from "node:util";
+import { AGENT_INSTRUCTIONS } from "./agents.js";
 import { loadFromConfig, resolveConfig, validateFromConfig } from "./config.js";
 import { INVERSE } from "./links.js";
 import * as ops from "./operations.js";
@@ -74,6 +75,8 @@ function helpText(command) {
     "Commands:",
     ...lines,
     "  ds-spec help [command]",
+    "  ds-spec help agents",
+    "      How an agent should use the spec.",
     "",
     "Global flags:",
     "  --content <dir>   Content folder (overrides spec.config.json)",
@@ -102,6 +105,10 @@ export async function run(argv, io = {}) {
   const [command, ...rest] = argv;
   if (!command || command === "help" || command === "--help" || command === "-h") {
     const target = command === "help" ? rest[0] : undefined;
+    if (target === "agents") {
+      out(`${AGENT_INSTRUCTIONS}\n`);
+      return 0;
+    }
     if (target && !COMMANDS[target]) return usageError(`Unknown command "${target}".`);
     out(`${helpText(target)}\n`);
     return 0;

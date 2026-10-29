@@ -4,6 +4,7 @@ import { z } from "zod";
 import { SpecError } from "./index.js";
 import { loadFromConfig, resolveConfig, validateFromConfig } from "./config.js";
 import * as ops from "./operations.js";
+import { AGENT_INSTRUCTIONS } from "./agents.js";
 
 const TYPES = ["component", "pattern", "guideline", "example"];
 const LINK_KINDS = [
@@ -17,15 +18,6 @@ const LINK_KINDS = [
   "examples",
   "related",
 ];
-
-export const INSTRUCTIONS = [
-  "This server holds a design system spec as records: components, patterns, guidelines, and examples.",
-  "Components are technology-neutral contracts (anatomy, parameters, states, rules, tokens), not framework code; implement them in whatever technology the project uses.",
-  "Start with `search` to choose a component, then `get` it and follow its links: `alternative` for when it is the wrong choice, `follows` for the patterns and guidelines it applies, `examples` for worked usage.",
-  "Use `rules` to review work, and cite each rule by its address (for example component.button#label-describes-result) with its level (MUST, SHOULD, MAY).",
-  "Use `tokens` for the design tokens a component part uses in a variant or state; set resolve to get values.",
-  'Before writing code, call `get` with `implementation` (for example "web") for the package, element name, and the attribute that implements each parameter; never derive attribute names from parameter names.',
-].join(" ");
 
 /**
  * Create the spec MCP server and its reload watcher.
@@ -43,7 +35,7 @@ export async function createSpecServer(options = {}) {
 
   const server = new McpServer(
     { name: "design-system-spec", version: "0.0.1" },
-    { instructions: INSTRUCTIONS },
+    { instructions: AGENT_INSTRUCTIONS },
   );
 
   async function reload() {

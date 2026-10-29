@@ -6,6 +6,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { afterEach, describe, expect, it } from "vitest";
+import { AGENT_INSTRUCTIONS } from "../src/agents.js";
 import { createSpecServer } from "../src/mcp.js";
 import { fixture } from "./helpers.js";
 
@@ -44,7 +45,7 @@ describe("spec MCP server", () => {
       "validate",
     ]);
     for (const tool of tools) expect(tool.description.length).toBeGreaterThan(30);
-    expect(client.getInstructions()).toContain("technology-neutral");
+    expect(client.getInstructions()).toBe(AGENT_INSTRUCTIONS);
   });
 
   it("searches and gets", async () => {

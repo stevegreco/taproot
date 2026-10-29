@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { AGENT_INSTRUCTIONS } from "../src/agents.js";
 import { fixture } from "./helpers.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -110,6 +111,17 @@ describe("ds-spec CLI, real content", () => {
     const r = cli(["tokens", "component.button", "--part", "control"]);
     expect(r.out).toContain("| Part | Condition | Property | Token |");
     expect(r.out).not.toContain("light");
+  });
+
+  it("prints the agent instructions, and AGENTS.md carries the same text", () => {
+    const r = cli(["help", "agents"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toBe(`${AGENT_INSTRUCTIONS}\n`);
+    const agents = fs.readFileSync(path.join(repoRoot, "AGENTS.md"), "utf8");
+    const copy = agents.match(
+      /<!-- agent-instructions:start -->\n([\s\S]*?)\n<!-- agent-instructions:end -->/,
+    );
+    expect(copy?.[1], "AGENTS.md copy of `ds-spec help agents`").toBe(AGENT_INSTRUCTIONS);
   });
 
   it("prints help", () => {
