@@ -142,6 +142,14 @@ function renderSection(state, record, name, entry) {
     ];
   }
   if (FIELD_ORDER.includes(name)) return [renderField(state, record, name)];
+  // An item, or its parameters, reads like the component's own: tables, not YAML.
+  const item = name.match(/^items\.([^.]+)(?:\.(parameters))?$/);
+  if (item) {
+    const [, part, field] = item;
+    return field
+      ? [section("Parameters", renderParameters(state, entry.content))]
+      : [renderItem(state, part, entry.content).replace(/^### /, "## ")];
+  }
   if (name === "description") return [`## Description`, entry.content];
   const value = entry.content;
   return [`## ${entry.title}`, typeof value === "string" ? value : fence(value)];
