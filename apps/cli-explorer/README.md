@@ -2,7 +2,8 @@
 
 A local web page for trying `ds-spec` commands and seeing what they return. Each run calls the
 real CLI twice and shows both outputs side by side: the Markdown an agent reads and the `--json`
-data, plus the exit code and any warnings.
+data, plus the exit code and any warnings. A switcher in the corner picks the system, light, or dark
+theme and remembers the choice.
 
 The page is styled with the design system's tokens. From the repository root, Turbo builds them
 first and starts the server:

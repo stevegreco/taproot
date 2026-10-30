@@ -12,6 +12,13 @@
     />
     <!-- The design system's tokens, served by server.js from packages/tokens/dist. -->
     <link rel="stylesheet" href="/tokens.css" />
+    <script>
+      // Apply the saved theme before the page paints. No data-theme follows the system setting.
+      try {
+        const saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+      } catch {}
+    </script>
     <style>
       :root {
         --space-1: var(--ds-primitives-space-1, 4px);
@@ -45,6 +52,37 @@
       }
 
       /* Header */
+      .masthead {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: var(--space-4);
+      }
+      .theme {
+        display: flex;
+        flex: none;
+        gap: 2px;
+        padding: 2px;
+        background: var(--ds-semantic-color-background-sunken);
+        border: var(--ds-semantic-border-width, 1px) solid var(--ds-semantic-color-border-subtle);
+        border-radius: var(--ds-semantic-radius-pill, 999px);
+      }
+      .theme button {
+        padding: var(--space-1) var(--space-3);
+        background: transparent;
+        border: 0;
+        border-radius: var(--ds-semantic-radius-pill, 999px);
+        color: var(--ds-semantic-color-foreground-muted);
+        font-size: var(--ds-semantic-typography-label-sm-font-size);
+      }
+      .theme button:hover {
+        color: var(--ds-semantic-color-foreground-default);
+      }
+      .theme button[aria-checked="true"] {
+        background: var(--ds-semantic-color-background-surface);
+        box-shadow: var(--ds-semantic-elevation-xs);
+        color: var(--ds-semantic-color-foreground-default);
+      }
       .eyebrow {
         margin: 0;
         color: var(--ds-semantic-color-foreground-brand-default);
@@ -329,8 +367,17 @@
   </head>
   <body>
     <main>
-      <p class="eyebrow">Design system spec</p>
-      <h1>CLI Explorer</h1>
+      <div class="masthead">
+        <div>
+          <p class="eyebrow">Design system spec</p>
+          <h1>CLI Explorer</h1>
+        </div>
+        <div class="theme" role="radiogroup" aria-label="Theme">
+          <button type="button" role="radio" data-theme-choice="system">System</button>
+          <button type="button" role="radio" data-theme-choice="light">Light</button>
+          <button type="button" role="radio" data-theme-choice="dark">Dark</button>
+        </div>
+      </div>
       <p class="lede">
         Run any <code>ds-spec</code> command and see what comes back: the Markdown an agent reads
         and the JSON behind it. Run <code>help</code> for every command and flag.
@@ -469,6 +516,22 @@
         event.preventDefault();
         if ($("command").value.trim()) run($("command").value.trim());
       });
+      /** The tokens switch on data-theme; without it they follow prefers-color-scheme. */
+      function setTheme(choice) {
+        if (choice === "system") delete document.documentElement.dataset.theme;
+        else document.documentElement.dataset.theme = choice;
+        try {
+          localStorage.setItem("theme", choice);
+        } catch {}
+        for (const option of document.querySelectorAll("[data-theme-choice]")) {
+          option.setAttribute("aria-checked", String(option.dataset.themeChoice === choice));
+        }
+      }
+      for (const option of document.querySelectorAll("[data-theme-choice]")) {
+        option.addEventListener("click", () => setTheme(option.dataset.themeChoice));
+      }
+      setTheme(document.documentElement.dataset.theme ?? "system");
+
       for (const copy of document.querySelectorAll("[data-copy]")) {
         copy.addEventListener("click", async () => {
           await navigator.clipboard.writeText($(copy.dataset.copy).textContent);
