@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CLI Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Lora:wght@500;600&family=Source+Sans+3:wght@400;500;600&display=swap"
+    />
+    <!-- The design system's tokens, served by server.js from packages/tokens/dist. -->
+    <link rel="stylesheet" href="/tokens.css" />
+    <script>
+      // Apply the saved theme before the page paints. No data-theme follows the system setting.
+      try {
+        const saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+      } catch {}
+    </script>
+    <style>
+      :root {
+        --space-1: var(--ds-primitives-space-1, 4px);
+        --space-2: var(--ds-primitives-space-2, 8px);
+        --space-3: var(--ds-primitives-space-3, 12px);
+        --space-4: var(--ds-primitives-space-4, 16px);
+        --space-6: var(--ds-primitives-space-6, 24px);
+        --space-8: var(--ds-primitives-space-8, 32px);
+        --ease: var(--ds-primitives-duration-fast, 140ms) var(--ds-primitives-ease-out, ease-out);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--ds-semantic-color-background-default, Canvas);
+        color: var(--ds-semantic-color-foreground-default, CanvasText);
+        font-family: var(--ds-semantic-typography-body-md-font-family, system-ui, sans-serif);
+        font-size: var(--ds-semantic-typography-body-md-font-size, 16px);
+        line-height: var(--ds-semantic-typography-body-md-line-height, 1.5);
+      }
+      main {
+        margin: 0 auto;
+        max-width: var(--ds-primitives-layout-max, 1440px);
+        padding: var(--space-8) var(--space-6);
+      }
+      code,
+      pre,
+      input {
+        font-family: var(--ds-semantic-typography-code-md-font-family, ui-monospace, monospace);
+      }
+
+      /* Header */
+      .masthead {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: var(--space-4);
+      }
+      .theme {
+        display: flex;
+        flex: none;
+        gap: 2px;
+        padding: 2px;
+        background: var(--ds-semantic-color-background-sunken);
+        border: var(--ds-semantic-border-width, 1px) solid var(--ds-semantic-color-border-subtle);
+        border-radius: var(--ds-semantic-radius-pill, 999px);
+      }
+      .theme button {
+        padding: var(--space-1) var(--space-3);
+        background: transparent;
+        border: 0;
+        border-radius: var(--ds-semantic-radius-pill, 999px);
+        color: var(--ds-semantic-color-foreground-muted);
+        font-size: var(--ds-semantic-typography-label-sm-font-size);
+      }
+      .theme button:hover {
+        color: var(--ds-semantic-color-foreground-default);
+      }
+      .theme button[aria-checked="true"] {
+        background: var(--ds-semantic-color-background-surface);
+        box-shadow: var(--ds-semantic-elevation-xs);
+        color: var(--ds-semantic-color-foreground-default);
+      }
+      .eyebrow {
+        margin: 0;
+        color: var(--ds-semantic-color-foreground-brand-default);
+        font-family: var(--ds-semantic-typography-eyebrow-font-family);
+        font-size: var(--ds-semantic-typography-eyebrow-font-size);
+        font-weight: var(--ds-semantic-typography-eyebrow-font-weight);
+        letter-spacing: var(--ds-semantic-typography-eyebrow-letter-spacing);
+        line-height: var(--ds-semantic-typography-eyebrow-line-height);
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: var(--space-1) 0 var(--space-2);
+        font-family: var(--ds-semantic-typography-heading-lg-font-family);
+        font-size: var(--ds-semantic-typography-heading-lg-font-size);
+        font-weight: var(--ds-semantic-typography-heading-lg-font-weight);
+        letter-spacing: var(--ds-semantic-typography-heading-lg-letter-spacing);
+        line-height: var(--ds-semantic-typography-heading-lg-line-height);
+      }
+      .lede {
+        margin: 0 0 var(--space-6);
+        max-width: var(--ds-primitives-layout-prose, 720px);
+        color: var(--ds-semantic-color-foreground-muted);
+      }
+
+      /* Command bar */
+      .card {
+        background: var(--ds-semantic-color-background-surface);
+        border: var(--ds-semantic-border-width, 1px) solid var(--ds-semantic-color-border-subtle);
+        border-radius: var(--ds-semantic-radius-surface, 8px);
+        box-shadow: var(--ds-semantic-elevation-sm);
+      }
+      .command {
+        padding: var(--space-4);
+      }
+      form {
+        display: flex;
+        gap: var(--space-2);
+      }
+      .prompt {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+        align-items: center;
+        gap: var(--space-2);
+        padding: 0 var(--space-3);
+        background: var(--ds-semantic-color-background-sunken);
+        border: var(--ds-semantic-border-width, 1px) solid var(--ds-semantic-color-border-default);
+        border-radius: var(--ds-semantic-radius-control, 6px);
+        transition: border-color var(--ease);
+      }
+      .prompt:focus-within {
+        border-color: var(--ds-semantic-color-border-focus);
+        outline: var(--ds-semantic-focus-width, 2px) solid var(--ds-semantic-color-border-focus);
+        outline-offset: var(--ds-semantic-focus-offset, 2px);
+      }
+      .prompt span {
+        color: var(--ds-semantic-color-foreground-brand-default);
+        font-family: var(--ds-semantic-typography-code-md-font-family);
+        font-size: var(--ds-semantic-typography-code-md-font-size);
+        user-select: none;
+      }
+      input {
+        flex: 1;
+        min-width: 0;
+        padding: var(--space-3) 0;
+        background: transparent;
+        border: 0;
+        color: inherit;
+        font-size: var(--ds-semantic-typography-code-md-font-size);
+        outline: none;
+      }
+      button {
+        cursor: pointer;
+        font-family: var(--ds-semantic-typography-label-md-font-family);
+        font-size: var(--ds-semantic-typography-label-md-font-size);
+        font-weight: var(--ds-semantic-typography-label-md-font-weight);
+        line-height: var(--ds-semantic-typography-label-md-line-height);
+        transition:
+          background var(--ease),
+          border-color var(--ease);
+      }
+      button:focus-visible {
+        outline: var(--ds-semantic-focus-width, 2px) solid var(--ds-semantic-color-border-focus);
+        outline-offset: var(--ds-semantic-focus-offset, 2px);
+      }
+      .run {
+        flex: none;
+        padding: var(--space-2) var(--space-6);
+        background: var(--ds-semantic-color-background-action-primary-default);
+        border: var(--ds-semantic-border-width, 1px) solid
+          var(--ds-semantic-color-border-action-primary-default);
+        border-radius: var(--ds-semantic-radius-control, 6px);
+        color: var(--ds-semantic-color-foreground-on-action-primary);
+      }
+      .run:hover {
+        background: var(--ds-semantic-color-background-action-primary-hover);
+      }
+      .run:active {
+        background: var(--ds-semantic-color-background-action-primary-pressed);
+      }
+      .examples {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        margin-top: var(--space-3);
+      }
+      .chip {
+        padding: var(--space-1) var(--space-3);
+        background: var(--ds-semantic-color-background-action-secondary-default);
+        border: var(--ds-semantic-border-width, 1px) solid var(--ds-semantic-color-border-default);
+        border-radius: var(--ds-semantic-radius-pill, 999px);
+        color: var(--ds-semantic-color-foreground-default);
+        font-family: var(--ds-semantic-typography-code-sm-font-family);
+        font-size: var(--ds-semantic-typography-code-sm-font-size);
+        font-weight: var(--ds-semantic-typography-code-sm-font-weight);
+        text-align: left;
+      }
+      .chip:hover {
+        background: var(--ds-semantic-color-background-action-secondary-hover);
+        border-color: var(--ds-semantic-color-border-strong);
+      }
+
+      /* Status */
+      .status {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        margin: var(--space-6) 0 var(--space-3);
+        color: var(--ds-semantic-color-foreground-muted);
+        font-size: var(--ds-semantic-typography-body-sm-font-size);
+      }
+      .badge {
+        padding: 2px var(--space-2);
+        border: var(--ds-semantic-border-width, 1px) solid;
+        border-radius: var(--ds-semantic-radius-pill, 999px);
+        font-family: var(--ds-semantic-typography-label-sm-font-family);
+        font-size: var(--ds-semantic-typography-label-sm-font-size);
+        font-weight: var(--ds-semantic-typography-label-sm-font-weight);
+      }
+      .badge[data-tone="success"] {
+        background: var(--ds-semantic-color-background-status-success-default);
+        border-color: var(--ds-semantic-color-border-status-success-default);
+        color: var(--ds-semantic-color-foreground-status-success-default);
+      }
+      .badge[data-tone="warning"] {
+        background: var(--ds-semantic-color-background-status-warning-default);
+        border-color: var(--ds-semantic-color-border-status-warning-default);
+        color: var(--ds-semantic-color-foreground-status-warning-default);
+      }
+      .badge[data-tone="danger"] {
+        background: var(--ds-semantic-color-background-status-danger-default);
+        border-color: var(--ds-semantic-color-border-status-danger-default);
+        color: var(--ds-semantic-color-foreground-status-danger-default);
+      }
+      .badge:empty {
+        display: none;
+      }
+
+      /* Output */
+      .layout {
+        display: grid;
+        gap: var(--space-4);
+        grid-template-columns: minmax(0, 1fr) 16rem;
+      }
+      .panes {
+        display: grid;
+        gap: var(--space-4);
+        grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+      }
+      .pane {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        overflow: hidden;
+      }
+      .pane header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
+        border-bottom: var(--ds-semantic-border-width, 1px) solid
+          var(--ds-semantic-color-border-subtle);
+      }
+      h2 {
+        margin: 0;
+        font-family: var(--ds-semantic-typography-label-md-font-family);
+        font-size: var(--ds-semantic-typography-label-md-font-size);
+        font-weight: var(--ds-semantic-typography-label-md-font-weight);
+        line-height: var(--ds-semantic-typography-label-md-line-height);
+      }
+      h2 small {
+        color: var(--ds-semantic-color-foreground-muted);
+        font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+      }
+      .copy {
+        padding: var(--space-1) var(--space-2);
+        background: transparent;
+        border: 0;
+        border-radius: var(--ds-semantic-radius-compact, 4px);
+        color: var(--ds-semantic-color-foreground-muted);
+        font-size: var(--ds-semantic-typography-label-sm-font-size);
+      }
+      .copy:hover {
+        background: var(--ds-semantic-color-background-action-tertiary-hover);
+        color: var(--ds-semantic-color-foreground-default);
+      }
+      pre {
+        flex: 1;
+        margin: 0;
+        max-height: 68vh;
+        min-height: 12rem;
+        overflow: auto;
+        padding: var(--space-4);
+        font-size: var(--ds-semantic-typography-code-sm-font-size);
+        line-height: var(--ds-semantic-typography-code-sm-line-height);
+        white-space: pre-wrap;
+      }
+      pre.stderr {
+        flex: none;
+        min-height: 0;
+        background: var(--ds-semantic-color-background-status-warning-default);
+        border-top: var(--ds-semantic-border-width, 1px) solid
+          var(--ds-semantic-color-border-status-warning-default);
+        color: var(--ds-semantic-color-foreground-status-warning-default);
+      }
+      pre.stderr:empty {
+        display: none;
+      }
+      .empty {
+        color: var(--ds-semantic-color-foreground-muted);
+      }
+
+      /* History */
+      aside {
+        align-self: start;
+        padding: var(--space-4);
+      }
+      aside h2 {
+        margin-bottom: var(--space-3);
+      }
+      #history {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      #history button {
+        width: 100%;
+        overflow: hidden;
+        padding: var(--space-1) var(--space-2);
+        background: transparent;
+        border: 0;
+        border-radius: var(--ds-semantic-radius-compact, 4px);
+        color: var(--ds-semantic-color-foreground-default);
+        font-family: var(--ds-semantic-typography-code-sm-font-family);
+        font-size: var(--ds-semantic-typography-code-sm-font-size);
+        font-weight: var(--ds-semantic-typography-code-sm-font-weight);
+        text-align: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #history button:hover {
+        background: var(--ds-semantic-color-background-action-tertiary-hover);
+      }
+      #history:empty::before {
+        color: var(--ds-semantic-color-foreground-muted);
+        content: "Commands you run show up here.";
+        font-size: var(--ds-semantic-typography-body-sm-font-size);
+      }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        main {
+          padding: var(--space-6) var(--space-4);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="masthead">
+        <div>
+          <p class="eyebrow">Design system spec</p>
+          <h1>CLI Explorer</h1>
+        </div>
+        <div class="theme" role="radiogroup" aria-label="Theme">
+          <button type="button" role="radio" data-theme-choice="system">System</button>
+          <button type="button" role="radio" data-theme-choice="light">Light</button>
+          <button type="button" role="radio" data-theme-choice="dark">Dark</button>
+        </div>
+      </div>
+      <p class="lede">
+        Run any <code>ds-spec</code> command and see what comes back: the Markdown an agent reads
+        and the JSON behind it. Run <code>help</code> for every command and flag.
+      </p>
+
+      <section class="card command">
+        <form id="form">
+          <label class="prompt">
+            <span aria-hidden="true">$ ds-spec</span>
+            <input
+              id="command"
+              aria-label="ds-spec command"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="search destructive action"
+            />
+          </label>
+          <button class="run">Run</button>
+        </form>
+        <div class="examples" id="examples"></div>
+      </section>
+
+      <div class="status" aria-live="polite">
+        <span class="badge" id="badge"></span>
+        <span id="meta">Pick an example or type a command.</span>
+      </div>
+
+      <div class="layout">
+        <div class="panes">
+          <section class="card pane">
+            <header>
+              <h2>Markdown <small>what an agent reads</small></h2>
+              <button class="copy" type="button" data-copy="text">Copy</button>
+            </header>
+            <pre id="text"><span class="empty">No output yet.</span></pre>
+            <pre class="stderr" id="text-stderr"></pre>
+          </section>
+          <section class="card pane">
+            <header>
+              <h2>JSON <small>--json</small></h2>
+              <button class="copy" type="button" data-copy="json">Copy</button>
+            </header>
+            <pre id="json"><span class="empty">No output yet.</span></pre>
+            <pre class="stderr" id="json-stderr"></pre>
+          </section>
+        </div>
+        <aside class="card">
+          <h2>History</h2>
+          <ul id="history"></ul>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const EXAMPLES = [
+        "help",
+        "list --type component",
+        'search "destructive action"',
+        "get button",
+        "get component.button --impl web",
+        "get pattern.action-hierarchy#assign-emphasis",
+        "links component.button --direction both",
+        "rules --level must --topic accessibility",
+        'tokens component.button --condition "variant.primary + hover" --resolve',
+        "validate",
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const history = [];
+
+      /** Split a command line into arguments, keeping quoted text together. */
+      function split(line) {
+        return [...line.matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map((m) => m[1] ?? m[2] ?? m[3]);
+      }
+
+      /** Exit codes: 0 ok, 1 issues or nothing found, 2 usage error. */
+      const TONES = {
+        0: ["success", "Exit 0 · ok"],
+        1: ["warning", "Exit 1 · nothing found or issues"],
+      };
+
+      function setStatus(exitCode, text) {
+        const [tone, label] = TONES[exitCode] ?? ["danger", `Exit ${exitCode} · error`];
+        $("badge").dataset.tone = tone;
+        $("badge").textContent = exitCode === undefined ? "" : label;
+        $("meta").textContent = text;
+      }
+
+      async function run(line) {
+        $("command").value = line;
+        $("badge").textContent = "";
+        $("meta").textContent = "Running…";
+        const response = await fetch("/run", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ args: split(line) }),
+        });
+        if (!response.ok) {
+          $("meta").textContent = await response.text();
+          return;
+        }
+        const { text, json } = await response.json();
+        setStatus(text.exitCode, `${text.ms} ms`);
+        $("text").textContent = text.stdout;
+        $("text-stderr").textContent = text.stderr;
+        $("json").textContent = json.stdout;
+        $("json-stderr").textContent = json.stderr;
+        if (history[0] !== line) {
+          history.unshift(line);
+          renderHistory();
+        }
+      }
+
+      function button(line, className) {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className = className ?? "";
+        el.textContent = line;
+        el.title = line;
+        el.addEventListener("click", () => run(line));
+        return el;
+      }
+
+      function renderHistory() {
+        $("history").replaceChildren(
+          ...history.slice(0, 20).map((line) => {
+            const item = document.createElement("li");
+            item.append(button(line));
+            return item;
+          }),
+        );
+      }
+
+      $("examples").replaceChildren(...EXAMPLES.map((line) => button(line, "chip")));
+      $("form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        if ($("command").value.trim()) run($("command").value.trim());
+      });
+      /** The tokens switch on data-theme; without it they follow prefers-color-scheme. */
+      function setTheme(choice) {
+        if (choice === "system") delete document.documentElement.dataset.theme;
+        else document.documentElement.dataset.theme = choice;
+        try {
+          localStorage.setItem("theme", choice);
+        } catch {}
+        for (const option of document.querySelectorAll("[data-theme-choice]")) {
+          option.setAttribute("aria-checked", String(option.dataset.themeChoice === choice));
+        }
+      }
+      for (const option of document.querySelectorAll("[data-theme-choice]")) {
+        option.addEventListener("click", () => setTheme(option.dataset.themeChoice));
+      }
+      setTheme(document.documentElement.dataset.theme ?? "system");
+
+      for (const copy of document.querySelectorAll("[data-copy]")) {
+        copy.addEventListener("click", async () => {
+          await navigator.clipboard.writeText($(copy.dataset.copy).textContent);
+          copy.textContent = "Copied";
+          setTimeout(() => (copy.textContent = "Copy"), 1200);
+        });
+      }
+    </script>
+  </body>
+</html>
