@@ -16,4 +16,5 @@ export type {
   ApiMemberKind,
   Implementation,
   ImplementationApiRow,
+  ImplementationItem,
 } from "@stevegreco/design-system-spec/implementation";

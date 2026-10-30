@@ -39,9 +39,7 @@ usage:
 anatomy:
   section:
     role: container
-    description: >-
-      One heading and its content, stacked with the other sections. Each section supplies its
-      trigger's label and whether it starts expanded.
+    description: One heading and its content, stacked with the other sections.
   trigger:
     role: interactive-surface
     description: The section's heading. Activating it shows or hides the section's content.
@@ -65,6 +63,18 @@ parameters:
     default: 3
 events:
   toggle: A section was expanded or collapsed by user interaction.
+items:
+  section:
+    parameters:
+      label:
+        kind: string
+        description: Visible text of the section's trigger, and its accessible name.
+      expanded:
+        kind: boolean
+        description: >-
+          Whether the section's content is shown. User interaction changes it, and the section is
+          then in the expanded state.
+        default: false
 states:
   - default
   - hover
@@ -179,12 +189,12 @@ rationale:
       reading. Exclusive mode suits a short list where only one section is useful at a time. Even
       then every section may be collapsed, because forcing one open would make Accordion a vertical
       Tabs.
-  - decision: Sections are ordered content, not a parameter, and each section owns its expanded state.
+  - decision: Sections are items, and each section owns its label and expanded state.
     covers: [selected]
     why: >-
-      Each section carries a label, rich content, and an expanded state. The parameter schema
-      describes scalar options of the whole component, as with Tabs' sections. Expanded is the one
-      persistent state, and it is set on each section.
+      Each section carries a label, rich content, and an expanded state, so they are options of
+      the section, not of the whole accordion (ADR 0004). Expanded is the one persistent state, and
+      it is set on each section.
   - decision: The heading level is a parameter that applies to every trigger.
     why: >-
       The triggers are headings in the page outline, and only the page knows which level fits.
