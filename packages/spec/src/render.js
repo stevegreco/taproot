@@ -15,6 +15,7 @@ const FIELD_ORDER = [
   "anatomy",
   "parameters",
   "events",
+  "items",
   "states",
   "preferences",
   "rules",
@@ -170,6 +171,13 @@ function renderField(state, record, field) {
         "Events",
         bullets(Object.entries(value).map(([name, text]) => `\`${name}\`: ${text}`)),
       );
+    case "items":
+      return section(
+        "Items",
+        Object.entries(value)
+          .map(([part, item]) => renderItem(state, part, item))
+          .join("\n\n"),
+      );
     case "states":
       return section("States", value.map((name) => `\`${name}\``).join(", "));
     case "preferences":
@@ -211,6 +219,17 @@ function renderUsage(state, usage) {
       return [item.situation, instead, item.why].filter(Boolean).join(" ");
     });
     blocks.push(section("When not to use", bullets(items)));
+  }
+  return blocks.join("\n\n");
+}
+
+/** One repeated part: the parameters and events each copy of it carries. */
+function renderItem(state, part, item) {
+  const blocks = [`### ${part}`, `Each \`${part}\` carries these.`];
+  if (item.parameters) blocks.push(renderParameters(state, item.parameters));
+  if (item.events) {
+    const events = Object.entries(item.events).map(([name, text]) => `\`${name}\`: ${text}`);
+    blocks.push(`Events:\n\n${bullets(events)}`);
   }
   return blocks.join("\n\n");
 }

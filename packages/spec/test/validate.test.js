@@ -82,6 +82,20 @@ const cases = [
     message: "guidance `quiet` is not one of the values of `tone`",
   },
   {
+    name: "item-enum-default",
+    file: "thing.spec.yaml",
+    line: 20,
+    path: "/items/entry/parameters/tone/default",
+    message: "`default` loud is not one of the values of `tone`",
+  },
+  {
+    name: "item-part",
+    file: "thing.spec.yaml",
+    line: 14,
+    path: "/items/entry",
+    message: "item `entry` is not an anatomy part",
+  },
+  {
     name: "token-part",
     file: "thing.spec.yaml",
     line: 14,

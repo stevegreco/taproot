@@ -4,7 +4,8 @@
  * A component record says what a component is. An implementation file says how, for example, the
  * web component realizes it: package, tag name, registration function, usage markup, the API rows
  * that map web attributes, properties, and events to the record's parameters and events, and
- * optional Markdown guidance. Records stay technology-neutral; these files live wherever the
+ * optional Markdown guidance. A component with repeated items, such as Accordion's sections, lists
+ * the element and API rows that realize each item. Records stay technology-neutral; these files live wherever the
  * implementation does and are found through `implementations` in spec.config.json.
  *
  * Front matter is validated on load, and every error names the file.
@@ -31,6 +32,14 @@ import { table } from "./render.js";
  */
 
 /**
+ * How one repeated item of the record is realized.
+ *
+ * @typedef {object} ImplementationItem
+ * @property {string} tagName
+ * @property {ImplementationApiRow[]} api
+ */
+
+/**
  * @typedef {object} Implementation
  * @property {string} component Spec record id, such as `component.button`.
  * @property {string} package
@@ -38,6 +47,7 @@ import { table } from "./render.js";
  * @property {string} defineExport
  * @property {string} usage
  * @property {ImplementationApiRow[]} api
+ * @property {Record<string, ImplementationItem>} items By record item, such as `section`.
  * @property {string} body Markdown guidance; each `##` section is one topic.
  * @property {string} file File name, for error messages.
  */
@@ -57,7 +67,8 @@ const COMPONENT_ID = /^component\.[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const TAG_NAME = /^[a-z][a-z0-9]*(-[a-z0-9]+)+$/;
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
-const TOP_KEYS = ["component", "package", "tagName", "defineExport", "usage", "api"];
+const TOP_KEYS = ["component", "package", "tagName", "defineExport", "usage", "api", "items"];
+const ITEM_KEYS = ["tagName", "api"];
 const ROW_KEYS = ["name", "kind", "parameter", "values", "event", "type", "description"];
 const KINDS = ["attribute", "property", "event"];
 
@@ -120,8 +131,8 @@ function rejectUnknownKeys(file, where, source, allowed) {
  * @param {number} index
  * @returns {ImplementationApiRow}
  */
-function parseRow(file, raw, index) {
-  const where = `api[${index}] `;
+function parseRow(file, raw, index, prefix = "") {
+  const where = `${prefix}api[${index}] `;
   if (!isObject(raw)) throw new ImplementationError(file, `${where}must be a mapping.`);
   rejectUnknownKeys(file, where, raw, ROW_KEYS);
   const name = stringField(file, where, raw, "name");
@@ -134,7 +145,7 @@ function parseRow(file, raw, index) {
   }
   /** @type {ImplementationApiRow} */
   const row = { name, kind: /** @type {ApiMemberKind} */ (kind) };
-  const label = `api[${index}] (${name}) `;
+  const label = `${prefix}api[${index}] (${name}) `;
   row.parameter = optionalString(file, label, raw, "parameter");
   row.event = optionalString(file, label, raw, "event");
   row.type = optionalString(file, label, raw, "type");
@@ -221,17 +232,25 @@ export function parseImplementation(source, file) {
     regex: IDENTIFIER,
     hint: "a JavaScript identifier",
   });
-  if (!Array.isArray(data.api) || data.api.length === 0) {
-    throw new ImplementationError(file, "api must be a non-empty list of rows.");
-  }
-  const api = data.api.map((row, index) => parseRow(file, row, index));
-  const seen = new Set();
-  for (const row of api) {
-    const key = `${row.kind}:${row.name}`;
-    if (seen.has(key)) {
-      throw new ImplementationError(file, `api lists the ${row.kind} "${row.name}" twice.`);
+  const api = parseApi(file, data.api, "");
+  /** @type {Record<string, ImplementationItem>} */
+  const items = {};
+  if (data.items !== undefined) {
+    if (!isObject(data.items) || Object.keys(data.items).length === 0) {
+      throw new ImplementationError(file, "items must map each record item to its element.");
     }
-    seen.add(key);
+    for (const [part, raw] of Object.entries(data.items)) {
+      const where = `items.${part} `;
+      if (!isObject(raw)) throw new ImplementationError(file, `${where}must be a mapping.`);
+      rejectUnknownKeys(file, where, raw, ITEM_KEYS);
+      items[part] = {
+        tagName: stringField(file, where, raw, "tagName", {
+          regex: TAG_NAME,
+          hint: 'a custom element name such as "ds-tab-panel"',
+        }),
+        api: parseApi(file, raw.api, `items.${part}.`),
+      };
+    }
   }
 
   return {
@@ -241,9 +260,35 @@ export function parseImplementation(source, file) {
     defineExport,
     usage: typeof data.usage === "string" ? data.usage.trim() : "",
     api,
+    items,
     body: source.slice(match[0].length).trim(),
     file,
   };
+}
+
+/**
+ * @param {string} file
+ * @param {unknown} raw
+ * @param {string} prefix Where the rows are, such as `items.section.`, for error messages.
+ * @returns {ImplementationApiRow[]}
+ */
+function parseApi(file, raw, prefix) {
+  if (!Array.isArray(raw) || raw.length === 0) {
+    throw new ImplementationError(file, `${prefix}api must be a non-empty list of rows.`);
+  }
+  const api = raw.map((row, index) => parseRow(file, row, index, prefix));
+  const seen = new Set();
+  for (const row of api) {
+    const key = `${row.kind}:${row.name}`;
+    if (seen.has(key)) {
+      throw new ImplementationError(
+        file,
+        `${prefix}api lists the ${row.kind} "${row.name}" twice.`,
+      );
+    }
+    seen.add(key);
+  }
+  return api;
 }
 
 /**
@@ -265,7 +310,7 @@ export function loadImplementations(dir) {
  * Check an implementation against the component record it implements, so a broken mapping fails
  * instead of serving incomplete guidance. The record must be a component, the file must be named
  * after it, every parameter and event needs a row, and every row must name a parameter, value, or
- * event the record has.
+ * event the record has. The same holds for each item, and every record item needs an element.
  *
  * @param {Implementation} implementation
  * @param {Record<string, any> | undefined} record The record `implementation.component` names.
@@ -287,14 +332,43 @@ export function checkImplementation(implementation, record) {
       `the file name says "${slug}", but it implements ${record.id}. Name the file ${expected}.md.`,
     );
   }
-  const parameters = record.parameters ?? {};
-  const events = record.events ?? {};
-  for (const row of implementation.api) {
+  checkApi(file, implementation.api, record, record.id);
+  const recordItems = record.items ?? {};
+  for (const [part, item] of Object.entries(implementation.items)) {
+    if (!(part in recordItems)) {
+      throw new ImplementationError(
+        file,
+        `items.${part} implements an item ${record.id} does not have. Its items: ${Object.keys(recordItems).join(", ") || "none"}.`,
+      );
+    }
+    checkApi(file, item.api, recordItems[part], `${record.id} item "${part}"`);
+  }
+  const missingItems = Object.keys(recordItems).filter((part) => !(part in implementation.items));
+  if (missingItems.length > 0) {
+    throw new ImplementationError(
+      file,
+      `items does not cover ${record.id} item${missingItems.length === 1 ? "" : "s"} ${missingItems.map((part) => `"${part}"`).join(", ")}. Add its element and api rows.`,
+    );
+  }
+}
+
+/**
+ * Check API rows against the parameters and events they implement: a component's, or one item's.
+ *
+ * @param {string} file
+ * @param {ImplementationApiRow[]} api
+ * @param {{ parameters?: Record<string, any>, events?: Record<string, string> }} owner
+ * @param {string} name The owner in messages, such as `component.accordion item "section"`.
+ */
+function checkApi(file, api, owner, name) {
+  const parameters = owner.parameters ?? {};
+  const events = owner.events ?? {};
+  for (const row of api) {
     const where = `api row "${row.name}"`;
     if (row.event && !(row.event in events)) {
       throw new ImplementationError(
         file,
-        `${where} implements the event "${row.event}", but ${record.id} has no such event. Its events: ${Object.keys(events).join(", ") || "none"}.`,
+        `${where} implements the event "${row.event}", but ${name} has no such event. Its events: ${Object.keys(events).join(", ") || "none"}.`,
       );
     }
     if (!row.parameter) continue;
@@ -302,32 +376,32 @@ export function checkImplementation(implementation, record) {
     if (!parameter) {
       throw new ImplementationError(
         file,
-        `${where} implements the parameter "${row.parameter}", but ${record.id} has no such parameter. Its parameters: ${Object.keys(parameters).join(", ") || "none"}.`,
+        `${where} implements the parameter "${row.parameter}", but ${name} has no such parameter. Its parameters: ${Object.keys(parameters).join(", ") || "none"}.`,
       );
     }
     for (const from of Object.keys(row.values ?? {})) {
       if (!parameter.values || !(from in parameter.values)) {
         throw new ImplementationError(
           file,
-          `${where} renames the value "${from}", but ${record.id} parameter "${row.parameter}" has no such value.`,
+          `${where} renames the value "${from}", but ${name} parameter "${row.parameter}" has no such value.`,
         );
       }
     }
   }
-  const coveredParameters = new Set(implementation.api.map((row) => row.parameter));
-  const coveredEvents = new Set(implementation.api.map((row) => row.event));
+  const coveredParameters = new Set(api.map((row) => row.parameter));
+  const coveredEvents = new Set(api.map((row) => row.event));
   const missing = [
     ...Object.keys(parameters)
-      .filter((name) => !coveredParameters.has(name))
-      .map((name) => `parameter "${name}"`),
+      .filter((key) => !coveredParameters.has(key))
+      .map((key) => `parameter "${key}"`),
     ...Object.keys(events)
-      .filter((name) => !coveredEvents.has(name))
-      .map((name) => `event "${name}"`),
+      .filter((key) => !coveredEvents.has(key))
+      .map((key) => `event "${key}"`),
   ];
   if (missing.length > 0) {
     throw new ImplementationError(
       file,
-      `the api table does not cover ${record.id} ${missing.join(", ")}. Add a row with "parameter" or "event" for each.`,
+      `the api table does not cover ${name} ${missing.join(", ")}. Add a row with "parameter" or "event" for each.`,
     );
   }
 }
@@ -374,26 +448,10 @@ function valuesCell(row, parameter) {
  * @param {string} name The implementation set name, such as `web`.
  */
 export function renderImplementation(record, implementation, name) {
-  const rows = implementation.api.map((row) => {
-    const parameter = row.parameter ? record.parameters?.[row.parameter] : undefined;
-    const implementsCell = row.parameter
-      ? `parameter ${code(row.parameter)}`
-      : row.event
-        ? `event ${code(row.event)}`
-        : "";
-    const description =
-      row.description ??
-      parameter?.description ??
-      (row.event ? record.events?.[row.event] : undefined) ??
-      "";
-    return [
-      code(row.name),
-      row.kind,
-      implementsCell,
-      row.kind === "event" ? "" : valuesCell(row, parameter),
-      description,
-    ];
-  });
+  const items = Object.entries(implementation.items).map(
+    ([part, item]) =>
+      `### ${capitalize(part)} element: ${code(`<${item.tagName}>`)}\n\n${apiTable(record.items?.[part] ?? {}, item.api)}`,
+  );
   const blocks = [
     `## ${capitalize(name)} implementation`,
     [
@@ -410,8 +468,39 @@ export function renderImplementation(record, implementation, name) {
       "```",
     ].join("\n"),
     implementation.usage && `### Usage\n\n\`\`\`html\n${implementation.usage}\n\`\`\``,
-    `### API\n\n${table(["Name", "Kind", "Implements", "Values", "Description"], rows)}`,
+    `### API\n\n${apiTable(record, implementation.api)}`,
+    ...items,
     implementation.body.replace(/^(#{2,5}) /gm, "#$1 "),
   ];
   return `${blocks.filter(Boolean).join("\n\n")}\n`;
+}
+
+/**
+ * The API table for rows that implement a component's, or one item's, parameters and events.
+ *
+ * @param {{ parameters?: Record<string, any>, events?: Record<string, string> }} owner
+ * @param {ImplementationApiRow[]} api
+ */
+function apiTable(owner, api) {
+  const rows = api.map((row) => {
+    const parameter = row.parameter ? owner.parameters?.[row.parameter] : undefined;
+    const implementsCell = row.parameter
+      ? `parameter ${code(row.parameter)}`
+      : row.event
+        ? `event ${code(row.event)}`
+        : "";
+    const description =
+      row.description ??
+      parameter?.description ??
+      (row.event ? owner.events?.[row.event] : undefined) ??
+      "";
+    return [
+      code(row.name),
+      row.kind,
+      implementsCell,
+      row.kind === "event" ? "" : valuesCell(row, parameter),
+      description,
+    ];
+  });
+  return table(["Name", "Kind", "Implements", "Values", "Description"], rows);
 }

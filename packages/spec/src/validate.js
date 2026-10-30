@@ -3,7 +3,7 @@ import path from "node:path";
 import { createSpecAjv } from "./schema/ajv.js";
 import { COMMON_FIELDS, RECORD_ID, schema, typeFields } from "./schema/info.js";
 import { buildSections } from "./sections.js";
-import { byCodeUnit, pointerSegment, recordIdOf } from "./util.js";
+import { byCodeUnit, parameterLists, pointerSegment, recordIdOf } from "./util.js";
 
 const validateSchema = createSpecAjv().compile(schema);
 const RECORD_TYPES = schema.properties.type.enum;
@@ -75,6 +75,7 @@ export async function checkSources(sources, { tokenNames } = {}) {
     if (record.data.type === "component") {
       checkRules(record.data, report_);
       checkParameters(record.data, report_);
+      checkItems(record.data, report_);
       checkTokens(record.data, report_);
       checkTokenReferences(record.data, tokenNames, report_);
     }
@@ -255,10 +256,10 @@ function* targets(data) {
       yield [`/rules/${index}/references/${at}`, target];
     }
   }
-  for (const [name, parameter] of Object.entries(data.parameters ?? {})) {
+  for (const [, parameter, pointer] of parameterEntries(data)) {
     for (const [value, target] of Object.entries(parameter.guidance ?? {})) {
       yield [
-        `/parameters/${pointerSegment(name)}/guidance/${pointerSegment(value)}`,
+        `${pointer}/guidance/${pointerSegment(value)}`,
         target,
         GUIDANCE_TYPES,
         "parameter guidance",
@@ -348,13 +349,27 @@ function checkRules(data, report) {
   }
 }
 
+/**
+ * Every parameter in a component record, its own and its items', with its JSON pointer.
+ *
+ * @returns {Generator<[name: string, parameter: Record<string, any>, pointer: string]>}
+ */
+function* parameterEntries(data) {
+  for (const [path, parameters] of parameterLists(data)) {
+    const base = `/${path.split(".").map(pointerSegment).join("/")}`;
+    for (const [name, parameter] of Object.entries(parameters)) {
+      yield [name, parameter, `${base}/${pointerSegment(name)}`];
+    }
+  }
+}
+
 function checkParameters(data, report) {
-  for (const [name, parameter] of Object.entries(data.parameters ?? {})) {
+  for (const [name, parameter, pointer] of parameterEntries(data)) {
     if (parameter.kind !== "enum") continue;
     const values = parameter.values ?? {};
     if (typeof parameter.default === "string" && !Object.hasOwn(values, parameter.default)) {
       report({
-        path: `/parameters/${pointerSegment(name)}/default`,
+        path: `${pointer}/default`,
         message: `\`default\` ${parameter.default} is not one of the values of \`${name}\``,
       });
     }
@@ -362,11 +377,22 @@ function checkParameters(data, report) {
       for (const key of Object.keys(parameter[field] ?? {})) {
         if (!Object.hasOwn(values, key)) {
           report({
-            path: `/parameters/${pointerSegment(name)}/${field}/${pointerSegment(key)}`,
+            path: `${pointer}/${field}/${pointerSegment(key)}`,
             message: `${field === "examples" ? "example" : "guidance"} \`${key}\` is not one of the values of \`${name}\``,
           });
         }
       }
+    }
+  }
+}
+
+function checkItems(data, report) {
+  for (const part of Object.keys(data.items ?? {})) {
+    if (!Object.hasOwn(data.anatomy, part)) {
+      report({
+        path: `/items/${pointerSegment(part)}`,
+        message: `item \`${part}\` is not an anatomy part`,
+      });
     }
   }
 }

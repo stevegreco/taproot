@@ -99,7 +99,9 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 ## 5. Map the web API and add stories
 
 - `packages/components/implementation/<name>.md`: replace the `usage` placeholder, and add `api`
-  rows for anything the scaffold could not derive, such as extra properties. The body is
+  rows for anything the scaffold could not derive, such as extra properties. When the spec has
+  `items`, add an `items` block that names each item's child element and gives its own `api` rows,
+  as `implementation/accordion.md` does; the check fails until every item parameter has a row. The body is
   web-specific guidance only, in three sections: Slots, The hidden attribute, and Framework notes.
   Behavior is in the spec's rules, so cite a rule by address (`component.<name>#<rule-id>`) rather
   than restating it. `implementation/alert.md` is the example. This file gives the component its docs

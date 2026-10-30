@@ -100,3 +100,76 @@ describe("checkImplementation", () => {
     );
   });
 });
+
+describe("items", () => {
+  const listRecord = {
+    id: "component.list",
+    type: "component",
+    items: {
+      entry: {
+        parameters: { label: { kind: "string", description: "Visible text of the entry." } },
+        events: { pick: "The entry was picked." },
+      },
+    },
+  };
+  const source = (items) => `---
+component: component.list
+package: "@acme/ui"
+tagName: acme-list
+defineExport: defineList
+api:
+  - { name: label, kind: attribute, type: string, description: Names the list. }
+${items}---
+`;
+  const listImplementation = parseImplementation(
+    source(`items:
+  entry:
+    tagName: acme-list-entry
+    api:
+      - { name: label, kind: attribute, parameter: label }
+      - { name: pick, kind: event, event: pick }
+`),
+    "implementation/list.md",
+  );
+  const check = (edit) => () =>
+    checkImplementation({ ...listImplementation, ...edit(listImplementation) }, listRecord);
+
+  it("renders each item's element and rows from the item's parameters and events", () => {
+    const out = renderImplementation(listRecord, listImplementation, "web");
+    expect(out).toContain("### Entry element: `<acme-list-entry>`");
+    expect(out).toContain(
+      "| `label` | attribute | parameter `label` | string | Visible text of the entry. |",
+    );
+    expect(out).toContain("| `pick` | event | event `pick` |  | The entry was picked. |");
+  });
+
+  it("accepts items that match the record", () => {
+    expect(check(() => ({}))).not.toThrow();
+  });
+
+  it("rejects a missing item, an unknown item, or an item table that skips a parameter", () => {
+    expect(check(() => ({ items: {} }))).toThrow(
+      'items does not cover component.list item "entry"',
+    );
+    expect(check((impl) => ({ items: { ...impl.items, extra: impl.items.entry } }))).toThrow(
+      "items.extra implements an item component.list does not have",
+    );
+    expect(
+      check((impl) => ({
+        items: { entry: { ...impl.items.entry, api: impl.items.entry.api.slice(1) } },
+      })),
+    ).toThrow('does not cover component.list item "entry" parameter "label"');
+  });
+
+  it("needs a tag name and rows for each item", () => {
+    expect(() =>
+      parseImplementation(source("items:\n  entry:\n    api: []\n"), "implementation/list.md"),
+    ).toThrow("items.entry tagName must be a non-empty string.");
+    expect(() =>
+      parseImplementation(
+        source("items:\n  entry:\n    tagName: acme-list-entry\n    api: []\n"),
+        "implementation/list.md",
+      ),
+    ).toThrow("items.entry.api must be a non-empty list of rows.");
+  });
+});

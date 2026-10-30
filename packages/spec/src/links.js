@@ -1,5 +1,5 @@
 import { RECORD_ID } from "./schema/info.js";
-import { byCodeUnit, recordIdOf } from "./util.js";
+import { byCodeUnit, parameterLists, recordIdOf } from "./util.js";
 
 export const INVERSE = {
   alternative: "alternative-to",
@@ -60,15 +60,17 @@ function* declaredLinks(record) {
       };
     }
   }
-  for (const [name, parameter] of Object.entries(record.parameters ?? {})) {
-    for (const [value, to] of Object.entries(parameter.guidance ?? {})) {
-      yield {
-        from,
-        fromSection: `parameters.${name}.${value}`,
-        to,
-        kind: "follows",
-        source: "parameter",
-      };
+  for (const [path, parameters] of parameterLists(record)) {
+    for (const [name, parameter] of Object.entries(parameters)) {
+      for (const [value, to] of Object.entries(parameter.guidance ?? {})) {
+        yield {
+          from,
+          fromSection: `${path}.${name}.${value}`,
+          to,
+          kind: "follows",
+          source: "parameter",
+        };
+      }
     }
   }
   for (const rule of record.rules ?? []) {

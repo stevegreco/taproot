@@ -72,14 +72,24 @@ function addComponentSections(data, add) {
         add(`${key}.${name}`, { title: name, content: child, kind: "field" });
       }
     } else if (key === "parameters") {
-      for (const [name, parameter] of Object.entries(value)) {
-        add(`parameters.${name}`, { title: name, content: parameter, kind: "field" });
-        for (const [option, meaning] of Object.entries(parameter?.values ?? {})) {
-          add(`parameters.${name}.${option}`, {
-            title: option,
-            content: parameterValue(parameter, option, meaning),
-            kind: "value",
+      addParameters("parameters", value, add);
+    } else if (key === "items") {
+      for (const [part, item] of Object.entries(value)) {
+        add(`items.${part}`, { title: part, content: item, kind: "field" });
+        if (!isObject(item)) continue;
+        if (isObject(item.parameters)) {
+          add(`items.${part}.parameters`, {
+            title: "parameters",
+            content: item.parameters,
+            kind: "field",
           });
+          addParameters(`items.${part}.parameters`, item.parameters, add);
+        }
+        if (isObject(item.events)) {
+          add(`items.${part}.events`, { title: "events", content: item.events, kind: "field" });
+          for (const [name, text] of Object.entries(item.events)) {
+            add(`items.${part}.events.${name}`, { title: name, content: text, kind: "field" });
+          }
         }
       }
     }
@@ -87,6 +97,19 @@ function addComponentSections(data, add) {
   for (const rule of Array.isArray(data.rules) ? data.rules : []) {
     if (isObject(rule) && typeof rule.id === "string") {
       add(rule.id, { title: rule.id, content: rule, kind: "rule" });
+    }
+  }
+}
+
+function addParameters(path, parameters, add) {
+  for (const [name, parameter] of Object.entries(parameters)) {
+    add(`${path}.${name}`, { title: name, content: parameter, kind: "field" });
+    for (const [option, meaning] of Object.entries(parameter?.values ?? {})) {
+      add(`${path}.${name}.${option}`, {
+        title: option,
+        content: parameterValue(parameter, option, meaning),
+        kind: "value",
+      });
     }
   }
 }

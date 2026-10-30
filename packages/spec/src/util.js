@@ -53,3 +53,20 @@ export function editDistance(left, right) {
 export function typoAllowance(word) {
   return word.length >= 8 ? 2 : word.length >= 5 ? 1 : 0;
 }
+
+/**
+ * Every parameter list in a component record with the section path that names it: the
+ * component's own `parameters`, then each item's, such as `items.section.parameters`.
+ *
+ * @param {Record<string, any>} record
+ * @returns {[path: string, parameters: Record<string, any>][]}
+ */
+export function parameterLists(record) {
+  return [
+    ["parameters", record.parameters ?? {}],
+    ...Object.entries(record.items ?? {}).map(([part, item]) => [
+      `items.${part}.parameters`,
+      item?.parameters ?? {},
+    ]),
+  ];
+}
