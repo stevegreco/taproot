@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import http from "node:http";
 import { fileURLToPath } from "node:url";
@@ -12,6 +13,7 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const cli = fileURLToPath(new URL("../../packages/spec/bin/ds-spec.js", import.meta.url));
 const page = fileURLToPath(new URL("./index.html", import.meta.url));
+const tokens = fileURLToPath(new URL("../../packages/tokens/dist/css/tokens.css", import.meta.url));
 const port = Number(process.env.PORT ?? 4400);
 
 /** Run the CLI from the repository root, so it finds spec.config.json. */
@@ -42,6 +44,13 @@ const server = http.createServer(async (request, response) => {
       response.end(await readFile(page));
       return;
     }
+    if (request.method === "GET" && request.url === "/tokens.css") {
+      // Built by the tokens package. Without it the page falls back to browser defaults.
+      const css = await readFile(tokens).catch(() => "");
+      response.writeHead(200, { "content-type": "text/css; charset=utf-8" });
+      response.end(css);
+      return;
+    }
     if (request.method === "POST" && request.url === "/run") {
       const { args } = await readBody(request);
       if (!Array.isArray(args) || !args.every((arg) => typeof arg === "string")) {
@@ -65,4 +74,7 @@ const server = http.createServer(async (request, response) => {
 
 server.listen(port, "127.0.0.1", () => {
   console.log(`CLI Explorer: http://localhost:${port}`);
+  if (!existsSync(tokens)) {
+    console.log("Tokens are not built yet. Run `pnpm --filter @stevegreco/design-system build`.");
+  }
 });
