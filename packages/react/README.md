@@ -64,7 +64,7 @@ library.
 - Every component has a `@media (forced-colors: active)` block that keeps its indicators and focus
   ring visible in system colors.
 
-**Form controls** (Switch, Checkbox, Select) use `src/internal/form-field.ts`: React Aria's `aria` validation mode,
+**Form controls** (Switch, Checkbox, Select, Slider) use `src/internal/form-field.ts`: React Aria's `aria` validation mode,
 `useControllableState`, `useNativeInput` to keep the native input's checked state, `required`, and
 error message in step, and `useFormReset` so a reset restores the default without reporting a
 change. A non-empty `error` blocks submit, and the browser shows its text.

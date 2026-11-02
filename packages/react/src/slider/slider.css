@@ -1,0 +1,169 @@
+/* Slider, styled from the bindings `ds-spec tokens component.slider` lists. The root carries React
+   Aria's [data-disabled] and the component's [data-invalid]; the thumb carries [data-hovered],
+   [data-dragging], and [data-focus-visible]. */
+
+/* field: base */
+.ds-slider {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-primitives-space-2);
+}
+
+/* header: base. The value sits at the end of the line. */
+.ds-slider__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--ds-primitives-space-2);
+}
+
+/* label: base */
+.ds-slider__label {
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
+}
+
+/* value: base */
+.ds-slider__value {
+  color: var(--ds-semantic-color-foreground-muted);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-slider[data-disabled] .ds-slider__label,
+.ds-slider[data-disabled] .ds-slider__value,
+.ds-slider[data-disabled] .ds-slider__hint {
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+/* track: base. The element is as tall as the thumb, so the whole height takes a press; the line
+   the spec binds is drawn by ::before. Inline padding of half a thumb keeps the thumb inside the
+   field at min and max; the spec does not say. */
+.ds-slider__track {
+  position: relative;
+  block-size: var(--ds-primitives-space-5);
+  margin-inline: calc(var(--ds-primitives-space-5) / 2);
+}
+
+.ds-slider__track::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 50%;
+  block-size: var(--ds-primitives-space-2);
+  transform: translateY(-50%);
+  background-color: var(--ds-semantic-color-background-muted);
+  border-radius: var(--ds-semantic-radius-pill);
+}
+
+.ds-slider[data-disabled] .ds-slider__track::before {
+  background-color: var(--ds-semantic-color-background-disabled);
+}
+
+/* fill: base. React Aria sets its inline start and width. */
+.ds-slider__fill {
+  position: absolute;
+  inset-block-start: 50%;
+  block-size: var(--ds-primitives-space-2);
+  transform: translateY(-50%);
+  background-color: var(--ds-semantic-color-background-action-primary-default);
+  border-radius: var(--ds-semantic-radius-pill);
+}
+
+.ds-slider[data-invalid] .ds-slider__fill {
+  background-color: var(--ds-semantic-color-background-status-danger-default);
+}
+
+.ds-slider[data-disabled] .ds-slider__fill {
+  background-color: var(--ds-semantic-color-border-disabled);
+}
+
+/* thumb: base. React Aria sets its left and centering transform. Border width is not in the spec:
+   semantic.border-width is a guess, doubled so the surface ring reads against the fill. */
+.ds-slider__thumb {
+  inset-block-start: 50%;
+  box-sizing: border-box;
+  inline-size: var(--ds-primitives-space-5);
+  block-size: var(--ds-primitives-space-5);
+  background-color: var(--ds-semantic-color-background-action-primary-default);
+  border: calc(var(--ds-semantic-border-width) * 2) solid
+    var(--ds-semantic-color-background-surface);
+  border-radius: var(--ds-semantic-radius-pill);
+}
+
+.ds-slider__thumb[data-hovered] {
+  background-color: var(--ds-semantic-color-background-action-primary-hover);
+}
+
+.ds-slider__thumb[data-dragging] {
+  background-color: var(--ds-semantic-color-background-action-primary-pressed);
+}
+
+/* thumb: invalid wins over hover and dragging, and disabled wins over all. The spec does not say. */
+.ds-slider[data-invalid] .ds-slider__thumb {
+  background-color: var(--ds-semantic-color-background-status-danger-default);
+}
+
+.ds-slider[data-disabled] .ds-slider__thumb {
+  background-color: var(--ds-semantic-color-border-disabled);
+}
+
+/* thumb: focus. Width and offset come from the semantic focus tokens; the spec binds only color. */
+.ds-slider__thumb[data-focus-visible] {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+/* hint and error: body.sm */
+.ds-slider__hint,
+.ds-slider__error {
+  font-family: var(--ds-semantic-typography-body-sm-font-family);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
+  font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+  line-height: var(--ds-semantic-typography-body-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-sm-letter-spacing);
+}
+
+.ds-slider__hint {
+  color: var(--ds-semantic-color-foreground-muted);
+}
+
+.ds-slider__error {
+  color: var(--ds-semantic-color-foreground-status-danger-default);
+}
+
+/* forced-colors: the track draws an outline, and the fill and thumb take a system color. The error
+   message, not the fill color, carries invalid. */
+@media (forced-colors: active) {
+  .ds-slider__track::before {
+    border: var(--ds-semantic-border-width) solid CanvasText;
+  }
+
+  .ds-slider__fill,
+  .ds-slider[data-invalid] .ds-slider__fill,
+  .ds-slider__thumb,
+  .ds-slider__thumb[data-hovered],
+  .ds-slider__thumb[data-dragging],
+  .ds-slider[data-invalid] .ds-slider__thumb {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    border-color: Canvas;
+  }
+
+  .ds-slider[data-disabled] .ds-slider__fill,
+  .ds-slider[data-disabled] .ds-slider__thumb {
+    background-color: GrayText;
+  }
+
+  .ds-slider__thumb[data-focus-visible] {
+    outline-color: CanvasText;
+  }
+}

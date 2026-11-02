@@ -3,7 +3,6 @@ import {
   isValidElement,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type ReactElement,
@@ -15,9 +14,9 @@ import {
   TabList as AriaTabList,
   TabPanel as AriaTabPanel,
   Tabs as AriaTabs,
-  useLocale,
   type Key,
 } from "react-aria-components";
+import { useDirectionLocale } from "../internal/direction";
 import "./tabs.css";
 
 /**
@@ -86,24 +85,6 @@ function warnOnContent(accessibleName: string, sections: TabsSectionProps[]) {
 function resolve(requested: string | undefined, sections: TabsSectionProps[]): string | undefined {
   if (requested && sections.some((s) => s.value === requested)) return requested;
   return sections[0]?.value;
-}
-
-/**
- * React Aria takes arrow-key direction from its locale, not from the page. Read the reading
- * direction the tab list actually renders in, and give the tab list a locale with that direction
- * when the two disagree.
- */
-function useDirectionLocale(ref: React.RefObject<HTMLElement | null>): string | undefined {
-  const { direction } = useLocale();
-  const [override, setOverride] = useState<string | undefined>(undefined);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const domDirection = getComputedStyle(el).direction === "rtl" ? "rtl" : "ltr";
-    const next = domDirection === direction ? undefined : domDirection === "rtl" ? "ar" : "en-US";
-    setOverride((current) => (current === next ? current : next));
-  });
-  return override;
 }
 
 export function Tabs({

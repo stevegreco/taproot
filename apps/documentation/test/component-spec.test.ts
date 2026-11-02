@@ -5,6 +5,8 @@ import { dirname, join } from "node:path";
 import { test } from "vitest";
 import { fileURLToPath } from "node:url";
 import { loadSpec } from "@stevegreco/design-system-spec";
+import { resolveConfig } from "@stevegreco/design-system-spec/config";
+import { loadImplementations as loadAny } from "@stevegreco/design-system-spec/implementation";
 import {
   assembleSlices,
   componentSpecMarkdown,
@@ -430,21 +432,33 @@ test("a built component has an implementation file, and a draft component has no
   const built = components
     .filter((record) => record.status !== "draft")
     .map((record) => record.id.slice("component.".length));
+  // A component can be built in any configured technology. The docs site shows the web
+  // components, so only those get a page.
+  const { implementations } = resolveConfig({ cwd: docsRoot });
+  const implementedIn = Object.entries(implementations).map(([name, { folder, technology }]) => ({
+    name,
+    folder,
+    slugs: loadAny(folder, technology).map((item) => item.component.slice("component.".length)),
+  }));
   const implemented = loadImplementations(implementationDir()).map((item) =>
     item.component.slice("component.".length),
   );
 
   for (const slug of built) {
     assert.ok(
-      implemented.includes(slug),
-      `component.${slug} is not a draft, so it needs packages/components/implementation/${slug}.md`,
+      implementedIn.some(({ slugs }) => slugs.includes(slug)),
+      `component.${slug} is not a draft, so it needs an implementation file in ${implementedIn
+        .map(({ folder }) => folder)
+        .join(" or ")}`,
     );
   }
   for (const slug of drafts) {
-    assert.ok(
-      !implemented.includes(slug),
-      `component.${slug} has packages/components/implementation/${slug}.md, so remove status: draft from its spec`,
-    );
+    for (const { name, folder, slugs } of implementedIn) {
+      assert.ok(
+        !slugs.includes(slug),
+        `component.${slug} has a ${name} implementation in ${folder}, so remove status: draft from its spec`,
+      );
+    }
   }
   assert.deepEqual([...componentSlugs()].sort(), [...implemented].sort());
 });

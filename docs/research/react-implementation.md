@@ -312,8 +312,61 @@ Open questions for the build phase, each a public API decision:
   first component where the two events clearly differ.
 - Out of scope unless needed: two thumbs for a range, vertical orientation, and tick marks.
 
+### Build
+
+The spec now has nine parameters, two events, six states, ten rules, tokens for every part, and
+fourteen rationale entries. The open questions were settled as follows:
+
+- `min` 0, `max` 100, and `step` 1 by default, and `value` defaults to `min`. A value outside the
+  range or between steps shows as the nearest allowed value (`value-in-range`).
+- The value text is the number in the reader's locale. Units go in the label, and there is no
+  format parameter yet. The text is not editable: an exact number is a Text field.
+- `input` reports every new value while dragging or pressing a key. `change` reports once on
+  release, and only when the value differs from where the person started (`change-on-release`).
+- One thumb, horizontal, no ticks, each recorded in `rationale`.
+
+The React Slider wraps React Aria's Slider, Label, SliderOutput, SliderTrack, SliderFill, and
+SliderThumb. It has 46 tests named after the rules, and `get slider --impl react` serves its
+mapping. React Aria fit the contract with four adaptations:
+
+1. **Change is not React Aria's `onChangeEnd`.** `onChangeEnd` runs after every drag or key press,
+   even when the value did not move, and `onChange` can repeat a value. The component keeps the
+   value from before the interaction and filters both.
+2. **Form reset reports `onChange`.** React Aria restores the native input on reset by calling its
+   change handler. The shared `useFormReset` from the form-field helper covers it unchanged.
+3. **A value prop outside the range renders outside the track.** React Aria clamps only values a
+   person sets, so the component snaps the prop to the range and step before passing it on.
+4. **Direction comes from React Aria's locale, not the page.** A right-to-left page left the thumb
+   on the left and the fill on the right. Tabs already had a hook for this; it moved to
+   `src/internal/direction.ts`, and Slider gives the locale only to the track, so the value text
+   keeps the reader's number format.
+
 ### Findings
 
+- **The draft missed a part.** _Spec._ The label and value sit on one line, which needs a
+  container the draft did not name. The build added `header`. Draft review checks purpose and
+  boundaries, not layout, so a missing container shows up only when someone builds it.
+- **The `input` and `change` wording now has a precise version.** _Spec._ Slider is the first
+  component where the two events clearly differ, and its definitions ("every new value" and "once
+  on release, only when different") could replace the vague wording that Switch, Checkbox, Select,
+  and Text field share.
+- **Size is bound for the first time, border width still is not.** _Tokens._ The thumb's width and
+  height use `primitives.space.5` because there is no semantic size role (tokens ADR 0003). The
+  thumb ring binds a color but no width, like every component before it.
+- **Token categories cross.** _Tokens._ The thumb's border uses a background token
+  (`background.surface`), and the disabled fill and thumb use a border token
+  (`border.disabled`), because there is no disabled color for a filled indicator.
+- **The spec does not say how large the press target is.** _Spec._ `drag-or-press` lets people
+  press anywhere on the track, but the bound track height is 8 pixels. The React build makes the
+  track as tall as the thumb and draws the line inside it. The web build will have to guess the
+  same way.
+- **`component:status --phase implementation` is web-only.** _Tooling._ It reports seven missing
+  `packages/components` files and looks for rule tests in `packages/components/test`, so a
+  React-only component can never pass it. It should check each configured implementation.
+- **The docs tests required a web implementation for every built component.** _Docs._ "Not a
+  draft" meant "has a web implementation file". The test now accepts an implementation in any
+  configured folder, and the docs site still builds pages only for web components, so Slider has
+  no docs page. A React-only component has nowhere to be read except `ds-spec get`.
 - **Search hints always point at the web implementation.** _Tooling._ Every `search` result ends
   with "→ ds-spec get … --impl web", even for an agent working in React. It should list each
   implementation, or none.
