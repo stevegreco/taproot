@@ -4,25 +4,13 @@
     {
       "name": "storybook",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "exec",
-        "turbo",
-        "run",
-        "dev",
-        "--filter=storybook"
-      ],
+      "runtimeArgs": ["exec", "turbo", "run", "dev", "--filter=storybook"],
       "port": 6006
     },
     {
       "name": "documentation",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "exec",
-        "turbo",
-        "run",
-        "dev",
-        "--filter=documentation"
-      ],
+      "runtimeArgs": ["exec", "turbo", "run", "dev", "--filter=documentation"],
       "port": 4321
     }
   ]
