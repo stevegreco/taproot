@@ -1,0 +1,78 @@
+/* Tabs, wrapping Base UI Tabs. Every value comes from a binding in `ds-spec tokens component.tabs`
+   except where a comment says the spec gives no token. */
+
+.ds-tabs__list {
+  position: relative; /* Positions Base UI's indicator. */
+  display: flex;
+  gap: var(--ds-primitives-space-1);
+  /* tab-list base border: spec names the color only; the bottom edge and 1px width are guesses. */
+  border-block-end: 1px solid var(--ds-semantic-color-border-subtle);
+  overflow-x: auto; /* few-tabs: a row that overflows scrolls sideways. */
+  overflow-y: hidden;
+}
+
+.ds-tabs__tab {
+  all: unset;
+  box-sizing: border-box;
+  flex: none;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--ds-semantic-color-foreground-muted);
+  border-radius: var(--ds-semantic-radius-control);
+  padding-block: var(--ds-primitives-space-2);
+  padding-inline: var(--ds-primitives-space-3);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
+}
+
+.ds-tabs__tab:hover {
+  color: var(--ds-semantic-color-foreground-default);
+  background: var(--ds-semantic-color-background-action-tertiary-hover);
+}
+
+.ds-tabs__tab[aria-selected="true"] {
+  color: var(--ds-semantic-color-foreground-default);
+}
+
+/* Focus ring: the spec binds only the color. Width and offset come from the semantic focus
+   tokens, which the spec does not bind. Inset so the list's overflow does not clip it. */
+.ds-tabs__tab:focus-visible {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: calc(-1 * var(--ds-semantic-focus-width));
+}
+
+/* selected-indicator: Base UI positions it under the active tab with CSS variables.
+   Thickness has no token; 2px is a guess. No transition: nothing animates. */
+.ds-tabs__indicator {
+  position: absolute;
+  inset-block-end: 0;
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: 2px;
+  background: var(--ds-semantic-color-background-action-primary-default);
+  pointer-events: none;
+}
+
+.ds-tabs__panel {
+  padding-block: var(--ds-primitives-space-4);
+}
+
+.ds-tabs__panel:focus-visible {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+@media (forced-colors: active) {
+  .ds-tabs__indicator {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+
+  .ds-tabs__tab:focus-visible,
+  .ds-tabs__panel:focus-visible {
+    outline-color: Highlight;
+  }
+}

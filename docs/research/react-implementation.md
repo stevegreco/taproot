@@ -46,7 +46,94 @@ can become a labeled issue at the end.
 
 ## Bake-off: Tabs
 
-Not started.
+Three agents built Tabs from the spec alone in `packages/react/bakeoff/`, one each with native
+React, Base UI, and React Aria Components. Each kept a `NOTES.md` of its guesses.
+
+### Before the builds
+
+Reading `get component.tabs` as an implementer turned up these, before any code:
+
+- **Tabs does not model its sections as items.** _Spec._ Accordion now describes its sections as
+  repeated items (ADR 0004), but Tabs still describes them only in the panel's anatomy text ("Each
+  section supplies its tab's label and a unique value"). Every implementation has to invent the
+  section API, and the API mapping cannot check it.
+- **Token references don't say how to reach the value in code.** _Tooling._ `tokens --resolve`
+  gives `semantic.color.border.subtle` and its light and dark values, but not the CSS custom
+  property (`--ds-semantic-color-border-subtle`). The naming rule lives only in the token build.
+- **Guidance and help text name `--impl web`.** _Tooling._ The agent guidance and the `get` help
+  describe implementations as "the package, element, and attributes", which only fits web
+  components.
+- **An unlinked alternative renders mid-sentence in capitals.** _Docs._ "Use A step-by-step flow
+  with previous and next actions instead." The renderer inserts the `instead` text as written.
+
+### Results
+
+All three builds pass their own tests and `tsc`. As an independent check, each build's tests were
+also run against the other two builds. Every behavior test passed on every build: selection,
+keyboard, change reporting, the unmatched-value fallback, accessible names, and reading direction.
+Failures came only from styling guesses, warning wording, and indicator markup. The spec's behavior
+rules produced three builds that behave the same. Its visual bindings did not.
+
+| | Native | Base UI | React Aria |
+| --- | --- | --- | --- |
+| Rules met / partial / missed | 7 / 1 / 0 | 6 / 2 / 0 | 6 / 2 / 0 |
+| Own tests | 29 | 25 | 33 |
+| `Tabs.tsx` + `tabs.css` lines | 193 + 83 | 142 + 78 | 168 + 85 |
+| Workarounds for library behavior | none | 6 | 3 |
+| Bugs found by the cross-run | none | infinite render loop on a repeated section value | none |
+
+The partial ratings are mostly the same two: nobody can test "short" in `labels-short-and-unique`,
+and forced colors is hard to test in browser mode (native emulated it through Chromium's DevTools
+protocol, the others only checked the CSS).
+
+**Native React** has no dependencies and no workarounds. Tabs is small enough that hand-writing
+roving focus and the arrow keys is cheap, but Select, Dialog, and Tooltip need much more: typeahead,
+popover placement, focus trapping, and dismissal.
+
+**Base UI** fought the spec most. It selects on Enter or Space unless told otherwise, reports its
+own automatic selections, selects nothing for an unmatched value, reports one click twice in
+controlled mode, ignores the page's `dir`, and measures its indicator in JavaScript to slide it,
+which the spec's "nothing animates" rationale does not need. A repeated section value sent it into
+an infinite render loop.
+
+**React Aria Components** needed three workarounds. It selects nothing for an unmatched controlled
+value and reports its own fallback when uncontrolled, takes arrow-key direction from its locale
+instead of the page, and throws on a repeated key. Its state attributes (`data-hovered`,
+`data-focus-visible`, `data-selected`) line up with the spec's states, so the CSS reads like the
+token table. One run failed with a duplicate-React error on a cold Vite cache; it did not happen
+again in a clean rerun.
+
+### Spec findings from the builds
+
+The three agents worked separately and reported most of the same gaps. The number in brackets is
+how many of the three reported it.
+
+- **Visual bindings name a color but not a shape.** _Spec._ [3] The selected indicator binds only
+  a fill, so thickness and placement were guessed (all three chose a 2px bar under the tab). The
+  tab-list `border` names a color with no side or width. The focus ring names a color, and all three
+  borrowed the global focus width and offset tokens, which the spec does not reference.
+- **Binding property names are an unwritten vocabulary.** _Spec._ [3] `foreground`,
+  `padding-horizontal`, `focus-ring`, and `border` are not CSS properties, and nothing defines them.
+  Together with the token-to-custom-property naming, every implementer inferred the mapping.
+- **`change` has no payload.** _Spec._ [3] All three passed the new value, but the spec says only
+  that the selection changed.
+- **One `value` parameter, two React patterns.** _Spec._ [3] React needs controlled and
+  uncontrolled values. The spec does not say what happens when a product never applies a reported
+  change, or what a controlled value that matches nothing looks like after a click.
+- **Whether hidden panels keep their content is unstated.** _Spec._ [3] All three builds discard
+  hidden panels, so form fields and scroll position in them reset when the person switches tabs.
+  Nothing in the spec says whether that is allowed.
+- **Reading direction has no defined source.** _Spec._ [3] Arrow keys follow "reading direction",
+  but both libraries take it from their own context, not the page. Each build read the computed
+  CSS direction.
+- **`panel-reachable` reads two ways.** _Spec._ [2] The panel can always take a keyboard stop, or
+  only when it holds nothing focusable. The panel's focus token suggests always.
+- **Unspecified combinations.** _Spec._ [2–3] Hover on the selected tab, a repeated section value,
+  zero sections, the panel's horizontal padding, and the focus ring's system color under forced
+  colors.
+- **Content rules can't be checked in code.** _Spec._ [3] "Short" in `labels-short-and-unique` and
+  "a handful" in `few-tabs` have no measure. All three warn on repeated labels and an empty name
+  instead.
 
 ## Components
 

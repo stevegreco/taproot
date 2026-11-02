@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [react()],
   test: {
     name: "react",
-    include: ["test/**/*.test.tsx"],
+    include: ["test/**/*.test.tsx", "bakeoff/**/*.test.tsx"],
     setupFiles: ["test/setup/tokens.ts"],
-    // Process the token stylesheet the setup file imports. Vitest replaces CSS with an empty module
+    // Process the token stylesheet and component styles. Vitest replaces CSS with an empty module
     // unless it is included here.
-    css: { include: [/tokens\.css$/] },
+    css: { include: [/\.css$/] },
     browser: {
       enabled: true,
       headless: true,

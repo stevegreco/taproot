@@ -1,0 +1,85 @@
+/* Tabs, styled from the bindings `ds-spec tokens component.tabs` lists. React Aria exposes state
+   as data attributes: [data-hovered], [data-focus-visible], [data-selected]. */
+
+/* tab-list: base */
+.ds-tabs__list {
+  display: flex;
+  gap: var(--ds-primitives-space-1);
+  /* Border side and width are not in the spec: a bottom rule under the row is a guess. */
+  border-block-end: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-subtle);
+  /* few-tabs: a row that overflows scrolls sideways. */
+  overflow-x: auto;
+}
+
+/* tab: base */
+.ds-tabs__tab {
+  position: relative;
+  flex: none;
+  cursor: default;
+  white-space: nowrap;
+  color: var(--ds-semantic-color-foreground-muted);
+  border-radius: var(--ds-semantic-radius-control);
+  padding-block: var(--ds-primitives-space-2);
+  padding-inline: var(--ds-primitives-space-3);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
+  outline: none;
+}
+
+/* tab: hover */
+.ds-tabs__tab[data-hovered] {
+  color: var(--ds-semantic-color-foreground-default);
+  background: var(--ds-semantic-color-background-action-tertiary-hover);
+}
+
+/* tab: focus. Width and offset come from the semantic focus tokens; the spec binds only color.
+   The ring is drawn inside the tab because the scrolling row would clip one drawn outside. */
+.ds-tabs__tab[data-focus-visible] {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: calc(var(--ds-semantic-focus-offset) * -1);
+}
+
+/* tab: selected */
+.ds-tabs__tab[data-selected] {
+  color: var(--ds-semantic-color-foreground-default);
+}
+
+/* selected-indicator: selected. A bar along the bottom edge of the selected tab, just above the
+   tab-list border (the scrolling row clips anything drawn over its border). Its thickness is not
+   in the spec: border.thick is a guess. */
+.ds-tabs__tab[data-selected]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: var(--ds-primitives-border-thick);
+  background: var(--ds-semantic-color-background-action-primary-default);
+}
+
+/* panel: base */
+.ds-tabs__panel {
+  padding-block: var(--ds-primitives-space-4);
+  outline: none;
+}
+
+/* panel: focus */
+.ds-tabs__panel[data-focus-visible] {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+/* forced-colors: the indicator takes the system highlight; focus rings keep their outline. */
+@media (forced-colors: active) {
+  .ds-tabs__tab[data-selected]::after {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+
+  .ds-tabs__tab[data-focus-visible],
+  .ds-tabs__panel[data-focus-visible] {
+    outline-color: Highlight;
+  }
+}
