@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.slider
+type: component
+title: Slider
+summary: Use Slider to choose one number from a continuous range when the approximate value matters more than the exact one.
+status: draft
+tags:
+  - form
+  - input
+  - range
+links:
+  follows:
+    - pattern.form-field
+    - guideline.compose-or-propose
+  related:
+    - component.text-field
+    - component.select
+    - component.progress-bar
+description: >-
+  A track between a minimum and a maximum with a thumb that marks the chosen value. People drag
+  the thumb or step it with the keyboard, and the current value is shown beside the label.
+usage:
+  do:
+    - Set a level where people judge by feel and see the effect, such as volume or brightness.
+    - Narrow a range filter to an approximate amount, such as a maximum price.
+  avoid:
+    - situation: Enter an exact number, or a number from a very large range.
+      instead: component.text-field
+      why: Typing is faster and more precise than dragging to one value among hundreds.
+    - situation: Choose from a few named options, such as Small, Medium, and Large.
+      instead: component.select
+      why: Named options are choices, not points on a scale. A select names each one.
+    - situation: Show progress or a measured amount people cannot change.
+      instead: component.progress-bar
+      why: A slider is a control. A bar that only reports a value must not look adjustable.
+    - situation: Turn a single setting on or off.
+      instead: component.switch
+      why: Two states are a toggle, not a range.
+anatomy:
+  field:
+    role: container
+    description: Label, value, track, hint, and error stacked together.
+  label:
+    role: label
+    description: Visible name for the value.
+  value:
+    role: description
+    description: The current value as text, beside the label.
+  track:
+    role: container
+    description: The line from the minimum to the maximum.
+  fill:
+    role: indicator
+    description: The part of the track from the minimum to the thumb.
+  thumb:
+    role: interactive-surface
+    description: The handle people drag or step to change the value.
+  hint:
+    role: description
+    description: Optional supporting guidance.
+  error:
+    role: description
+    description: Optional message that says what to fix.

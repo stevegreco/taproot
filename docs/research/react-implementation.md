@@ -290,3 +290,30 @@ web components. What the spec could not supply was mostly visual and structural:
 
 Agents working in parallel also diverged on code conventions until the package wrote them down.
 After that, the second batch needed one fix: widening the shared form helper.
+
+## React-first component: Slider
+
+Slider is the test of the first claim: a component that starts in the spec and is built only in
+React. It follows the usual phases on this branch: a draft spec reviewed before anything is built,
+then the React build, which completes the spec.
+
+### Draft
+
+The draft names the purpose, four boundaries (Text field for exact numbers, Select for named
+options, Progress bar for read-only amounts, Switch for two states), and eight anatomy parts.
+`validate` and `component:status slider --phase spec` pass, and `get slider --impl react` says
+there is no React implementation yet.
+
+Open questions for the build phase, each a public API decision:
+
+- Parameters: `min`, `max`, and `step` as numbers, and whether `value` has a default.
+- How the value text is formatted, such as a unit or currency, and whether people can type in it.
+- What separates `input` from `change`. A slider reports continuously while dragging, which is the
+  first component where the two events clearly differ.
+- Out of scope unless needed: two thumbs for a range, vertical orientation, and tick marks.
+
+### Findings
+
+- **Search hints always point at the web implementation.** _Tooling._ Every `search` result ends
+  with "→ ds-spec get … --impl web", even for an agent working in React. It should list each
+  implementation, or none.
