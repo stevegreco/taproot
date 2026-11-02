@@ -1,0 +1,108 @@
+/* Select, styled from the bindings `ds-spec tokens component.select` lists. The control is a
+   native select, so hover and focus come from :hover and :focus-visible rather than React Aria's
+   data attributes. The root carries [data-disabled], [data-invalid], and [data-required]. The
+   platform draws the choice list and the opening indicator; the spec has no part for either. */
+
+/* field: base */
+.ds-select {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-primitives-space-1);
+}
+
+/* label: base */
+.ds-select__label {
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
+}
+
+.ds-select[data-disabled] .ds-select__label {
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+/* control: base. Border width is not in the spec: semantic.border-width is a guess. The control
+   fills the field's width; the spec does not say. */
+.ds-select__control {
+  box-sizing: border-box;
+  margin: 0;
+  min-inline-size: 0;
+  padding-block: var(--ds-primitives-space-2);
+  padding-inline: var(--ds-primitives-space-3);
+  background-color: var(--ds-semantic-color-background-surface);
+  color: var(--ds-semantic-color-foreground-default);
+  border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-default);
+  border-radius: var(--ds-semantic-radius-control);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
+}
+
+/* control: hover. A valid, enabled control only. */
+.ds-select:not([data-invalid], [data-disabled]) .ds-select__control:hover {
+  border-color: var(--ds-semantic-color-border-strong);
+}
+
+/* control: invalid (and invalid + hover). */
+.ds-select[data-invalid] .ds-select__control {
+  border-color: var(--ds-semantic-color-border-status-danger-default);
+}
+
+/* control: disabled, in every combination. Disabled wins over invalid; the spec does not say. */
+.ds-select[data-disabled] .ds-select__control {
+  background-color: var(--ds-semantic-color-background-disabled);
+  color: var(--ds-semantic-color-foreground-disabled);
+  border-color: var(--ds-semantic-color-border-disabled);
+}
+
+/* control: focus. Width and offset come from the semantic focus tokens; the spec binds only color. */
+.ds-select__control:focus-visible {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+/* hint and error: body.sm */
+.ds-select__hint,
+.ds-select__error {
+  font-family: var(--ds-semantic-typography-body-sm-font-family);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
+  font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+  line-height: var(--ds-semantic-typography-body-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-sm-letter-spacing);
+}
+
+.ds-select__hint {
+  color: var(--ds-semantic-color-foreground-muted);
+}
+
+.ds-select[data-disabled] .ds-select__hint {
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+.ds-select__error {
+  color: var(--ds-semantic-color-foreground-status-danger-default);
+}
+
+/* forced-colors: the outline stays in system colors in every state, and focus keeps its ring. The
+   error message, not the border color, carries invalid. */
+@media (forced-colors: active) {
+  .ds-select__control,
+  .ds-select[data-invalid] .ds-select__control,
+  .ds-select:not([data-invalid], [data-disabled]) .ds-select__control:hover {
+    border-color: CanvasText;
+  }
+
+  .ds-select[data-disabled] .ds-select__control {
+    border-color: GrayText;
+    color: GrayText;
+  }
+
+  .ds-select__control:focus-visible {
+    outline-color: Highlight;
+  }
+}

@@ -1,5 +1,5 @@
 /**
- * Shared behavior for form controls that wrap a React Aria field around a native input.
+ * Shared behavior for form controls built on a native input or select.
  *
  * React Aria runs with `validationBehavior="aria"`, so it marks a field invalid only when the error
  * prop says so. The native input still carries the constraints that block submit: `required`, and
@@ -10,6 +10,8 @@
  * `useFormReset` reports a reset in progress.
  */
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
+
+type NativeControl = HTMLInputElement | HTMLSelectElement;
 
 export const validationBehavior = "aria";
 
@@ -27,18 +29,20 @@ export function useControllableState<T>(
 }
 
 /**
- * Keep the native input in step with what the component renders: its checked state, `required`,
- * and the error as its validation message. A native reset can leave a controlled input stale, so
- * this runs after every render.
+ * Keep the native control in step with what the component renders: an input's checked state,
+ * `required`, and the error as its validation message. A native reset can leave a controlled input
+ * stale, so this runs after every render.
  */
 export function useNativeInput(
-  inputRef: RefObject<HTMLInputElement | null>,
+  inputRef: RefObject<NativeControl | null>,
   { checked, error, required = false }: { checked?: boolean; error?: string; required?: boolean },
 ): void {
   useLayoutEffect(() => {
     const input = inputRef.current;
     if (!input) return;
-    if (checked !== undefined && input.checked !== checked) input.checked = checked;
+    if (input instanceof HTMLInputElement && checked !== undefined && input.checked !== checked) {
+      input.checked = checked;
+    }
     input.required = required;
     input.setCustomValidity(error ?? "");
   });
@@ -50,7 +54,7 @@ export function useNativeInput(
  * controls, `onReset` runs and the component renders again, so `useNativeInput` resyncs the input.
  */
 export function useFormReset(
-  inputRef: RefObject<HTMLInputElement | null>,
+  inputRef: RefObject<NativeControl | null>,
   onReset: () => void,
 ): RefObject<boolean> {
   const resetting = useRef(false);

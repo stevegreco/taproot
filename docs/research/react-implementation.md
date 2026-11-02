@@ -226,3 +226,67 @@ Findings that also came up in Tabs are marked; they are now the clearest pattern
   suppress it to meet `programmatic-no-events`.
 - **React Aria deprecated `Switch` and `Checkbox` in 1.22.** _Implementation._ The ports use the
   newer `SwitchField` with `SwitchButton` and `CheckboxField` with `CheckboxButton`.
+
+### Batch 2: Select and Dialog
+
+Two spec-only agents ported these after the conventions were written down, and both followed them
+without being corrected. Both pass their tests, `tsc`, and `get <name> --impl react`. Screenshots
+of the default, invalid, and disabled selects and of an open dialog matched the spec.
+
+| Component | Built on | Tests | Rules met / partial / not testable |
+| --- | --- | --- | --- |
+| Select | plain React around the platform select | 40 | 3 / 0 / 0 |
+| Dialog | React Aria `ModalOverlay`, `Modal`, `Dialog` | 27 | 11 / 0 / 2 |
+
+Select is plain React because the spec rules out a custom overlay, and React Aria's Select draws
+its own popover. The shared form helper was written for checkable inputs, so the agent wrote its
+own reset and validity code; review widened `useNativeInput` and `useFormReset` to take a select,
+and Select now uses them. Dialog needed its own code for four things React Aria does differently:
+focus goes to the title on open, `aria-modal` is set, the description is linked, and Escape raises
+a cancel event the owner can prevent.
+
+#### Spec findings
+
+- **Collections still have no shape.** _Spec._ [Select, and Tabs before it] Select has no parameter
+  or anatomy part for its choices, and groups appear only inside the `form-value` rule. Every
+  implementation invents the choice structure. Choices and groups are repeated items in the ADR 0004
+  sense, as Tabs' sections are.
+- **Open and close are owner decisions the spec does not model.** _Spec._ [Dialog] `cancel` and
+  `close` follow the platform dialog, but nothing says how a dialog whose owner holds `open` asks to
+  close. The agent added `onOpenChange`, which has no spec event. The spec also says `close` fires
+  on a programmatic change, the one exception to the "events come from people" rule every other
+  component follows; it should say so on purpose.
+- **Layout values are missing.** _Spec._ [Dialog] No width, viewport gutter, or stacking order.
+  Dialog hard-codes `min(32rem, 100%)` and a z-index of 1000; the system has no layer token.
+- **`required` needs a placeholder the spec never defines.** _Spec._ [Select] A required select only
+  blocks submit when an empty choice exists, and `named-choices` says every choice has a value.
+- **Rules that conflict or read two ways.** _Spec._ [Dialog] `cancellation` mentions "only the
+  active modal", but the rationale says dialogs never nest. `content-scroll` does not say which part
+  scrolls. `visible-focus` requires a ring on initial focus, which means `:focus`, not the usual
+  `:focus-visible`.
+- **Repeated from batch 1.** Border and focus ring geometry (now seven of seven components), forced
+  colors without system colors, the required marker, `input` versus `change`, and a missing
+  indicator part (Select's chevron).
+
+#### Tooling findings
+
+- **`get` points at the web implementation first.** _Tooling._ A plain `get component.dialog` ends
+  with "run `--impl web`" and lists React only in parentheses, which nudged the agent toward the web
+  file it was told not to read.
+
+## Summary so far
+
+Seven components exist in React, each built by an agent that read only the spec, the tokens, and
+the React package. All behavior rules that code can test are met, and no agent needed to read the
+web components. What the spec could not supply was mostly visual and structural:
+
+1. **Geometry.** Every component guessed border width, focus ring width and offset, and indicator
+   size, and all of them reached for the same global tokens. This is the largest gap.
+2. **Collections.** Tabs' sections and Select's choices are lists the records describe only in prose.
+3. **Ownership of state.** Controlled values, form reset, `indeterminate`, and dialog closing all
+   need the spec to say who owns a value and when a change is reported.
+4. **Forced colors and layout.** The rules name what must stay visible, not the system colors or
+   sizes that achieve it.
+
+Agents working in parallel also diverged on code conventions until the package wrote them down.
+After that, the second batch needed one fix: widening the shared form helper.

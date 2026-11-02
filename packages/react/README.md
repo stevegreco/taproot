@@ -53,7 +53,8 @@ library.
 - The root is `ds-<name>`, and each anatomy part is `ds-<name>__<part>`, named as in the spec.
 - Parameters are data attributes on the root (`data-variant`, `data-size`). States come from React
   Aria's data attributes (`data-hovered`, `data-pressed`, `data-focus-visible`, `data-selected`,
-  `data-disabled`, `data-invalid`).
+  `data-disabled`, `data-invalid`). A plain React component sets the same attributes itself where it
+  can, and uses `:hover` and `:focus-visible` for the rest.
 - Every value is a token custom property: `--ds-` plus the token path, with dots and camel case
   turned into hyphens (`semantic.typography.label.md.fontSize` is
   `--ds-semantic-typography-label-md-font-size`).
@@ -63,7 +64,7 @@ library.
 - Every component has a `@media (forced-colors: active)` block that keeps its indicators and focus
   ring visible in system colors.
 
-**Form controls** use `src/internal/form-field.ts`: React Aria's `aria` validation mode,
+**Form controls** (Switch, Checkbox, Select) use `src/internal/form-field.ts`: React Aria's `aria` validation mode,
 `useControllableState`, `useNativeInput` to keep the native input's checked state, `required`, and
 error message in step, and `useFormReset` so a reset restores the default without reporting a
 change. A non-empty `error` blocks submit, and the browser shows its text.
