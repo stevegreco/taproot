@@ -80,6 +80,9 @@
           "events": {
             "$ref": "#/$defs/events"
           },
+          "items": {
+            "$ref": "#/$defs/items"
+          },
           "states": {
             "$ref": "#/$defs/states"
           },
@@ -410,6 +413,27 @@
       },
       "additionalProperties": {
         "$ref": "#/$defs/text"
+      }
+    },
+    "items": {
+      "description": "Parts the author repeats, by anatomy part, with the options each copy carries.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/$defs/key"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "parameters": {
+            "$ref": "#/$defs/parameters"
+          },
+          "events": {
+            "$ref": "#/$defs/events"
+          }
+        }
       }
     },
     "states": {

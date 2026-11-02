@@ -1,4 +1,4 @@
-import { byCodeUnit } from "./util.js";
+import { byCodeUnit, parameterLists } from "./util.js";
 
 const STOP_WORDS = new Set(
   "a an and as at be by do for from how in is it of on or the to with".split(" "),
@@ -75,11 +75,13 @@ const runTogether = (text) =>
  * @returns {IndexedRecord}
  */
 export function indexRecord(record) {
-  const parameters = Object.values(record.parameters ?? {}).flatMap((parameter) => [
-    ...collectText(parameter.description),
-    ...collectText(parameter.values),
-    ...collectText(parameter.examples),
-  ]);
+  const parameters = parameterLists(record)
+    .flatMap(([, list]) => Object.values(list))
+    .flatMap((parameter) => [
+      ...collectText(parameter.description),
+      ...collectText(parameter.values),
+      ...collectText(parameter.examples),
+    ]);
   const fields = {
     title: tokenize(record.title),
     tags: tokenize(record.tags.join(" ")),

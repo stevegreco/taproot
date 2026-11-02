@@ -340,6 +340,20 @@ test("link slice ties placement variants and Button to the action hierarchy", ()
   assert.equal(description, slice.summary);
 });
 
+test("accordion api lists each section's attributes under its own element", () => {
+  const slice = loadComponentSlice("accordion");
+  assert.deepEqual(
+    slice.items.map((item) => item.tagName),
+    ["ds-accordion-section"],
+  );
+  const expanded = slice.items[0]!.api.find((row) => row.name === "expanded");
+  assert.ok(expanded, "the section's expanded attribute comes from the item parameter");
+  assert.equal(expanded.typeDisplay, "boolean");
+  assert.equal(expanded.defaultDisplay, "false");
+  const markdown = componentSpecMarkdown("accordion", "api");
+  assert.match(markdown, /### `<ds-accordion-section>`\n\n\| Name/);
+});
+
 test("loadComponentSlice rejects dotted ids and unknown slugs", () => {
   assert.throws(
     () => loadComponentSlice("component.button"),

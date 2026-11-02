@@ -15,6 +15,7 @@ const FIELD_ORDER = [
   "anatomy",
   "parameters",
   "events",
+  "items",
   "states",
   "preferences",
   "rules",
@@ -141,6 +142,15 @@ function renderSection(state, record, name, entry) {
     ];
   }
   if (FIELD_ORDER.includes(name)) return [renderField(state, record, name)];
+  // An item, or its parameters or events, reads like the component's own: tables, not YAML.
+  const item = name.match(/^items\.([^.]+)(?:\.(parameters|events))?$/);
+  if (item) {
+    const [, part, field] = item;
+    if (field === "parameters")
+      return [section("Parameters", renderParameters(state, entry.content))];
+    if (field === "events") return [section("Events", renderEvents(entry.content))];
+    return [renderItem(state, part, entry.content).replace(/^### /, "## ")];
+  }
   if (name === "description") return [`## Description`, entry.content];
   const value = entry.content;
   return [`## ${entry.title}`, typeof value === "string" ? value : fence(value)];
@@ -166,9 +176,13 @@ function renderField(state, record, field) {
     case "parameters":
       return section("Parameters", renderParameters(state, value));
     case "events":
+      return section("Events", renderEvents(value));
+    case "items":
       return section(
-        "Events",
-        bullets(Object.entries(value).map(([name, text]) => `\`${name}\`: ${text}`)),
+        "Items",
+        Object.entries(value)
+          .map(([part, item]) => renderItem(state, part, item))
+          .join("\n\n"),
       );
     case "states":
       return section("States", value.map((name) => `\`${name}\``).join(", "));
@@ -213,6 +227,18 @@ function renderUsage(state, usage) {
     blocks.push(section("When not to use", bullets(items)));
   }
   return blocks.join("\n\n");
+}
+
+/** One repeated part: the parameters and events each copy of it carries. */
+function renderItem(state, part, item) {
+  const blocks = [`### ${part}`, `Each \`${part}\` carries these.`];
+  if (item.parameters) blocks.push(renderParameters(state, item.parameters));
+  if (item.events) blocks.push(`Events:\n\n${renderEvents(item.events)}`);
+  return blocks.join("\n\n");
+}
+
+function renderEvents(events) {
+  return bullets(Object.entries(events).map(([name, text]) => `\`${name}\`: ${text}`));
 }
 
 function renderParameters(state, parameters) {

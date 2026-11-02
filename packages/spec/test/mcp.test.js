@@ -130,6 +130,41 @@ describe("spec MCP server", () => {
     expect(text(validated)).toMatch(/^OK: /);
   });
 
+  it("serves items: sections, the item element, links, and search", async () => {
+    const { client } = await connect({ cwd: repoRoot });
+    const item = await client.callTool({
+      name: "get",
+      arguments: { target: "component.accordion#items.section" },
+    });
+    expect(item.isError).toBeFalsy();
+    expect(text(item)).toContain("| expanded | boolean |  | `false` |");
+
+    const web = await client.callTool({
+      name: "get",
+      arguments: { target: "component.accordion", implementation: "web" },
+    });
+    expect(text(web)).toContain("### Section element: `<ds-accordion-section>`");
+    const { record, implementation } = web.structuredContent.results;
+    expect(Object.keys(record.items.section.parameters)).toEqual(["label", "expanded"]);
+    expect(implementation.items.section.tagName).toBe("ds-accordion-section");
+
+    const fixtureClient = (await connect({ cwd: fixture("tools") })).client;
+    const value = await fixtureClient.callTool({
+      name: "get",
+      arguments: { target: "component.thing#items.entry.parameters.size.large" },
+    });
+    expect(text(value)).toContain("Guidance: [Guide](pattern.guide#second-step)");
+    const links = await fixtureClient.callTool({
+      name: "links",
+      arguments: { id: "component.thing" },
+    });
+    expect(text(links)).toContain(
+      "- items.entry.parameters.size.large → pattern.guide#second-step",
+    );
+    const found = await fixtureClient.callTool({ name: "search", arguments: { query: "zephyr" } });
+    expect(text(found)).toContain("- component.thing — Thing: ");
+  });
+
   it("reads token files only for tokens with resolve, so a broken token file cannot fail get", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ds-spec-mcp-"));
     cleanups.push(async () => fs.rmSync(dir, { recursive: true }));

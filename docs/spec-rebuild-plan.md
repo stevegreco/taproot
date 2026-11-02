@@ -25,8 +25,10 @@ commit on one branch, reviewed before the next starts. Items are in dependency o
 
 - Write `SPEC.md`: four record types (`component` as YAML, `pattern`, `guideline`, `example` as
   Markdown with front matter), common fields, component fields (usage, anatomy, parameters, events,
-  states, preferences, rules, accessibility, tokens, rationale), `status`, `known-issues`, links,
-  sections, cross-record checks, versioning.
+  items, states, preferences, rules, accessibility, tokens, rationale), `status`, `known-issues`,
+  links, sections, cross-record checks, versioning. `items` holds the parameters and events of a
+  part the author repeats, such as each section of an accordion, keyed by that anatomy part
+  (ADR 0004).
 - Include a Conventions section: plain rule ids with shared ones (`visible-focus`,
   `forced-colors`, `not-a-control`, `not-color-alone`); `label` vs `accessibleName`; decorative
   graphics; sizes `small`/`medium`/`large`/`inherit`; camelCase parameter names; `checked` vs
@@ -50,11 +52,13 @@ rule breaks a check instead of silently dropping guidance.
 - Parse YAML keeping line numbers. YAML syntax errors and duplicate keys are issues. Validate each
   record against the schema.
 - Sections: Markdown heading slugs with deduplication (`foo`, `foo-1`, `foo-1-1`); in components,
-  rule ids, top-level fields, and dotted paths into anatomy, parameters, events, and enum values;
+  rule ids, top-level fields, and dotted paths into anatomy, parameters, events, items, and enum
+  values, such as `items.section.parameters.label`;
   annotation ids in examples.
 - Cross-record checks from `SPEC.md`: unique ids; resolvable link targets, `instead` ids,
   references, and sections; rule ids unique and not equal to a top-level field name; enum
-  `default`/`examples`/`guidance` keys within `values`; token parts and conditions declared;
+  `default`/`examples`/`guidance` keys within `values`, for item parameters too; item keys are
+  anatomy parts; token parts and conditions declared;
   annotation ids unique and not equal to a heading slug; asset files exist and stay inside the
   record's folder; `known-issues` URLs are valid; no text starting with `TODO`.
 - `validateSpec()` returns `{ issues, recordCount }`. `loadSpec()` throws a `SpecError` with
@@ -72,7 +76,8 @@ message, and `skipInvalid` still serves the valid records.
 **so that** the format is proven on real records before the query layer is built on it.
 
 - Button with every field; minimal drafts of Link, Badge, and Icon, so Button's `instead` and
-  `composes` targets exist; Text field, which follows `pattern.form-field`;
+  `composes` targets exist; Text field, which follows `pattern.form-field`; Accordion, whose
+  sections carry their own label and expanded state as `items`;
   `pattern.action-hierarchy`, `pattern.form-field`, `guideline.compose-or-propose`; and one example
   with an image asset and annotations.
 - Give records `tags` with the words people search by when those differ from the title, such as
@@ -90,7 +95,8 @@ every section kind.
 
 - Explicit `links` (`composes`, `follows`, `example-of`, `related`) plus derived links:
   `usage.avoid[].instead` → `alternative` (carrying `situation` and `why`); rule `references` →
-  `follows` or `related`; enum `guidance` → `follows` from the value's section.
+  `follows` or `related`; enum `guidance` → `follows` from the value's section, for a component
+  or item parameter.
 - Add inverses automatically (`alternative-to`, `used-in`, `followed-by`, `examples`, `related`).
 - Enforce which record types each kind may go from and to.
 
@@ -156,18 +162,20 @@ parameter names.
   own tests.
 - Format: Markdown with front matter: `component` (record id), `package`, `tagName`,
   `defineExport`, `usage`, and `api` rows (`name`, `kind` of attribute, property, or event, the
-  `parameter` or `event` it implements, and `values` when value names differ), plus a body of
+  `parameter` or `event` it implements, and `values` when value names differ), `items` (for each
+  record item, the `tagName` of its child element and its own `api` rows), plus a body of
   technology-only guidance.
 - Check each file that exists against its record: the component exists; every mapped parameter,
-  value, and event exists; and every parameter and event of the record has a row. `validate` runs
+  value, and event exists; and every parameter and event of the record has a row. The same holds
+  for each item, and every record item has an entry in `items`. `validate` runs
   these checks for each configured folder, and `get` with that implementation fails with the same
   issues.
 - `get` with an implementation appends the rendered file: package, usage, and an API table whose
-  descriptions come from the record.
+  descriptions come from the record, followed by one table per item element.
 
-**Done when** a mapping to a missing parameter, or a record parameter with no row, fails `validate`,
-a component with no file passes, and `get` with `web` renders the API table from a fixture folder
-outside the spec content.
+**Done when** a mapping to a missing parameter, or a record or item parameter with no row, fails
+`validate`, a component with no file passes, and `get` with `web` renders the API tables from a
+fixture folder outside the spec content.
 
 ### 8. CLI
 

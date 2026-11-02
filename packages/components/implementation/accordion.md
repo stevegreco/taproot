@@ -18,6 +18,14 @@ api:
   - { name: heading-level, kind: attribute, parameter: headingLevel }
   - { name: headingLevel, kind: property, parameter: headingLevel }
   - { name: toggle, kind: event, event: toggle }
+items:
+  section:
+    tagName: ds-accordion-section
+    api:
+      - { name: label, kind: attribute, parameter: label }
+      - { name: label, kind: property, parameter: label }
+      - { name: expanded, kind: attribute, parameter: expanded }
+      - { name: expanded, kind: property, parameter: expanded }
 ---
 
 ## Sections

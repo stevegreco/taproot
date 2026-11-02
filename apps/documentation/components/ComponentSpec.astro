@@ -156,45 +156,54 @@ const show = (name: ComponentSpecSection) => section == null || section === name
 {
   show("api") ? (
     <div class="component-spec">
-      <table class="component-spec__table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            slice.api.map((row) => (
-              <tr>
-                <td>
-                  <code>{row.name}</code>
-                  {row.kind !== "attribute" ? <span class="component-spec__kind">{row.kind}</span> : null}
-                </td>
-                <td><code>{row.typeDisplay}</code></td>
-                <td>{row.defaultDisplay ? <code>{row.defaultDisplay}</code> : ""}</td>
-                <td>
-                  {
-                    row.values.length > 0 ? (
-                      <ul class="component-spec__values">
-                        {row.values.map((value) => (
-                          <li>
-                            <code>{value.name}</code> {value.description}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      row.description
-                    )
-                  }
-                </td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
+      {
+        [{ tagName: undefined, api: slice.api }, ...slice.items]
+          .filter((group) => group.api.length > 0)
+          .map((group) => (
+          <Fragment>
+            {group.tagName ? (
+              <h3>
+                <code>{`<${group.tagName}>`}</code>
+              </h3>
+            ) : null}
+            <table class="component-spec__table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Default</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.api.map((row) => (
+                  <tr>
+                    <td>
+                      <code>{row.name}</code>
+                      {row.kind !== "attribute" ? <span class="component-spec__kind">{row.kind}</span> : null}
+                    </td>
+                    <td><code>{row.typeDisplay}</code></td>
+                    <td>{row.defaultDisplay ? <code>{row.defaultDisplay}</code> : ""}</td>
+                    <td>
+                      {row.values.length > 0 ? (
+                        <ul class="component-spec__values">
+                          {row.values.map((value) => (
+                            <li>
+                              <code>{value.name}</code> {value.description}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        row.description
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Fragment>
+        ))
+      }
     </div>
   ) : null
 }

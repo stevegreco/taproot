@@ -14,6 +14,9 @@ anatomy:
   control:
     role: interactive-surface
     description: The control.
+  entry:
+    role: container
+    description: One entry, repeated.
 parameters:
   tone:
     kind: enum
@@ -28,6 +31,23 @@ parameters:
     default: false
 events:
   change: Reports a change.
+items:
+  entry:
+    parameters:
+      caption:
+        kind: string
+        description: Text shown in the zephyr margin.
+      size:
+        kind: enum
+        values:
+          small: Compact entry.
+          large: Roomy entry.
+        examples:
+          large: Featured
+        guidance:
+          large: pattern.guide#second-step
+    events:
+      pick: The entry was picked.
 states: [hover, disabled]
 preferences:
   reducedMotion: [reduce]

@@ -64,6 +64,14 @@ export interface ApiRow {
   readonly values: readonly ApiValue[];
 }
 
+/** The child element that realizes one repeated item, such as Accordion's sections. */
+export interface ItemApi {
+  /** The record item, such as `section`. */
+  readonly name: string;
+  readonly tagName: string;
+  readonly api: readonly ApiRow[];
+}
+
 export interface KeyboardBinding {
   readonly key: string;
   readonly action: string;
@@ -131,6 +139,7 @@ export interface ComponentSlice {
   readonly behaviorMarkdown: string;
   readonly variants: readonly Variant[];
   readonly api: readonly ApiRow[];
+  readonly items: readonly ItemApi[];
   readonly accessibility: AccessibilitySection;
   readonly together: TogetherSection | undefined;
   readonly review: ReviewSection | undefined;
@@ -191,11 +200,16 @@ interface RecordBase {
   "known-issues"?: { statement: string; issue?: string }[];
 }
 
-interface ComponentRecord extends RecordBase {
-  description: string;
-  usage?: { avoid?: { situation: string; instead?: string; why?: string }[] };
+/** What API rows implement: the component's own parameters and events, or one item's. */
+interface ApiOwner {
   parameters?: Record<string, Parameter>;
   events?: Record<string, string>;
+}
+
+interface ComponentRecord extends RecordBase, ApiOwner {
+  description: string;
+  usage?: { avoid?: { situation: string; instead?: string; why?: string }[] };
+  items?: Record<string, ApiOwner>;
   rules?: Rule[];
   accessibility?: { keyboard?: Record<string, string> };
 }
@@ -279,6 +293,19 @@ function apiDescription(row: ApiRow): string {
   return row.description;
 }
 
+function apiTable(rows: readonly ApiRow[]): string {
+  return markdownTable(
+    ["Name", "Kind", "Type", "Default", "Description"],
+    rows.map((row) => [
+      row.name,
+      row.kind,
+      row.typeDisplay,
+      row.defaultDisplay ?? "",
+      apiDescription(row),
+    ]),
+  );
+}
+
 function renderSectionMarkdown(slice: ComponentSlice, section: ComponentSpecSection): string {
   switch (section) {
     case "intro":
@@ -321,16 +348,10 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentSpecSect
       return parts.filter((part) => part.length > 0).join("\n\n");
     }
     case "api":
-      return markdownTable(
-        ["Name", "Kind", "Type", "Default", "Description"],
-        slice.api.map((row) => [
-          row.name,
-          row.kind,
-          row.typeDisplay,
-          row.defaultDisplay ?? "",
-          apiDescription(row),
-        ]),
-      );
+      return [
+        ...(slice.api.length > 0 ? [apiTable(slice.api)] : []),
+        ...slice.items.flatMap((item) => [`### \`<${item.tagName}>\``, apiTable(item.api)]),
+      ].join("\n\n");
     case "accessibility": {
       const parts: string[] = [];
       if (slice.accessibility.keyboard.length > 0) {
@@ -471,9 +492,9 @@ function defaultDisplay(value: unknown): string | undefined {
   return typeof value === "string" ? value : JSON.stringify(value);
 }
 
-function projectRow(record: ComponentRecord, row: ImplementationApiRow): ApiRow {
+function projectRow(owner: ApiOwner, row: ImplementationApiRow): ApiRow {
   if (row.kind === "event") {
-    const spec = row.event ? record.events?.[row.event] : undefined;
+    const spec = row.event ? owner.events?.[row.event] : undefined;
     return {
       name: row.name,
       kind: "event",
@@ -495,7 +516,7 @@ function projectRow(record: ComponentRecord, row: ImplementationApiRow): ApiRow 
   }
 
   // checkImplementation has confirmed the parameter and every renamed value exist.
-  const parameter = record.parameters![row.parameter]!;
+  const parameter = owner.parameters![row.parameter]!;
   const rename = row.values ?? {};
   const values: ApiValue[] = Object.entries(parameter.values ?? {}).map(([name, description]) => ({
     name: rename[name] ?? name,
@@ -620,6 +641,11 @@ function projectComponent(context: Context, implementation: Implementation): Com
   }
   const record = found as ComponentRecord;
   const api = implementation.api.map((row) => projectRow(record, row));
+  const items = Object.entries(implementation.items).map(([name, item]) => ({
+    name,
+    tagName: item.tagName,
+    api: item.api.map((row) => projectRow(record.items![name]!, row)),
+  }));
 
   // Patterns the component links to, by any link kind, and the examples of those or of the component.
   const outgoing = spec.links(record.id);
@@ -715,6 +741,7 @@ function projectComponent(context: Context, implementation: Implementation): Com
     behaviorMarkdown: behaviorParts.filter((part) => part.length > 0).join("\n\n"),
     variants: projectVariants(implementation, record, guidance),
     api,
+    items,
     accessibility: projectAccessibility(record),
     together,
     review: projectReview(record),

@@ -325,6 +325,69 @@ describe("ds-spec CLI, implementations", () => {
   });
 });
 
+describe("ds-spec CLI, items", () => {
+  it("prints each item's parameters as a table, in the record and as a section", () => {
+    const { out } = cli(["get", "component.accordion"]);
+    expect(out).toContain("## Items\n\n### section\n\nEach `section` carries these.");
+    expect(out).toContain("| expanded | boolean |  | `false` |");
+    const item = cli(["get", "component.accordion#items.section"]);
+    expect(item.code).toBe(0);
+    expect(item.out).toMatch(/^## section\n\nEach `section` carries these\./);
+    expect(item.out).toContain("| label | string |");
+    const parameters = cli(["get", "component.accordion#items.section.parameters"]);
+    expect(parameters.out).toMatch(/^## Parameters\n\n\| Name \| Kind/);
+    const one = cli(["get", "component.accordion#items.section.parameters.expanded"]);
+    expect(one.out).toMatch(/^## expanded\n/);
+    expect(one.out).toContain("default: false");
+  });
+
+  it("prints an item's events as a list, not YAML", () => {
+    const { code, out } = cli(["get", "component.thing#items.entry.events"], tools);
+    expect(code).toBe(0);
+    expect(out).toMatch(/^## Events\n\n- `pick`: The entry was picked\./);
+  });
+
+  it("names the item sections when one does not exist", () => {
+    const r = cli(["get", "component.accordion#items.section.parameters.open"]);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("component.accordion#items.section.parameters.expanded");
+  });
+
+  it("maps each item's element and attributes in the web implementation", () => {
+    const { out } = cli(["get", "component.accordion", "--impl", "web"]);
+    expect(out).toContain("### Section element: `<ds-accordion-section>`");
+    expect(out).toContain(
+      "| `expanded` | attribute | parameter `expanded` | boolean | Whether the section's content is shown.",
+    );
+    const data = JSON.parse(cli(["get", "component.accordion", "--impl", "web", "--json"]).out);
+    expect(Object.keys(data.record.items)).toEqual(["section"]);
+    expect(data.implementation.items.section.tagName).toBe("ds-accordion-section");
+    expect(data.implementation.items.section.api.map((row) => row.parameter)).toEqual([
+      "label",
+      "label",
+      "expanded",
+      "expanded",
+    ]);
+  });
+
+  it("gets an item value with its guidance, and links it both ways", () => {
+    const value = cli(["get", "component.thing#items.entry.parameters.size.large"], tools);
+    expect(value.code).toBe(0);
+    expect(value.out).toContain("Example: Featured");
+    expect(value.out).toContain("Guidance: [Guide](pattern.guide#second-step)");
+    expect(cli(["links", "component.thing"], tools).out).toContain(
+      "- items.entry.parameters.size.large → pattern.guide#second-step",
+    );
+    expect(cli(["links", "pattern.guide", "--direction", "in"], tools).out).toContain(
+      "- component.thing#items.entry.parameters.size.large → pattern.guide#second-step",
+    );
+  });
+
+  it("finds a record by its item parameters", () => {
+    expect(cli(["search", "zephyr"], tools).out).toContain("- component.thing — Thing: ");
+  });
+});
+
 describe("ds-spec CLI, short records", () => {
   it("leaves the token table out of a whole component record", () => {
     for (const args of [

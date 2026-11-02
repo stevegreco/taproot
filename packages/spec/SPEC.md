@@ -159,6 +159,7 @@ rationale:
 | `anatomy`       | yes      | Named parts in reading order, each with a `role` and a `description`.                   |
 | `parameters`    | no       | Options, each with a `kind`: `enum`, `boolean`, `string`, or `number`.                  |
 | `events`        | no       | What the component reports, by name, with a description.                                |
+| `items`         | no       | Parts the author repeats, with the parameters and events each copy has. See [Items](#items). |
 | `states`        | no       | Interaction and data states, such as `hover`, `disabled`, or `checked`. Order has no meaning. |
 | `preferences`   | no       | User preferences the component responds to, with their values.                         |
 | `rules`         | no       | Requirements, each with a stable `id`, a `level`, and a `topic`.                        |
@@ -184,6 +185,36 @@ parameters:
     guidance:
       destructive: pattern.action-hierarchy#destructive
 ```
+
+### Items
+
+Some components are built from a part the author repeats: each section of an accordion, each panel
+of a set of tabs. Each copy carries its own options, such as its label. `items` lists them, keyed
+by the anatomy part that repeats, with the `parameters` and `events` each copy has. Both take the
+same shape as the component's own, and the same checks apply.
+
+```yaml
+anatomy:
+  section:
+    role: container
+    description: One heading and its content, stacked with the other sections.
+  trigger: ...
+
+items:
+  section:
+    parameters:
+      label:
+        kind: string
+        description: Visible text of the section's trigger.
+      expanded:
+        kind: boolean
+        description: Whether the section's content is shown.
+        default: false
+```
+
+The anatomy part still says what the part is. States, rules, accessibility, and tokens describe the
+whole component. A token condition names a component parameter or state, not an item parameter, so
+an item option that changes how the item looks has a matching state, such as `expanded`.
 
 ### Rules
 
@@ -299,7 +330,7 @@ Some links come from fields rather than from `links`:
 - A rule's `references` create a `follows` link to each pattern or guideline they name, and a
   `related` link to anything else.
 - An enum parameter's `guidance` creates a `follows` link from the value, such as
-  `parameters.variant.destructive`, to the section it names. Its inverse, `followed-by`, points back at
+  `parameters.variant.destructive` or `items.section.parameters.tone.quiet`, to the section it names. Its inverse, `followed-by`, points back at
   that value: `component.button#parameters.variant.destructive`.
 - An annotation's `references` create no links. They are checked like any other link.
 
@@ -313,8 +344,9 @@ A link target is a record ID, optionally followed by `#` and a section:
   skipping any an earlier heading took, so headings `Foo`, `Foo`, and `Foo-1` are `foo`, `foo-1`,
   and `foo-1-1`.
 - In a component record, a section is a rule ID, a top-level field (`usage`, `anatomy`,
-  `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, or `events`,
-  such as `parameters.variant` or `parameters.variant.destructive`.
+  `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, `events`, or
+  `items`, such as `parameters.variant`, `parameters.variant.destructive`, or
+  `items.section.parameters.label`.
   A parameter value's section holds its meaning with the example and guidance paired with it.
 - In an example record, a section is also an annotation ID. It must not repeat another annotation
   ID or a heading's slug.
@@ -330,7 +362,9 @@ The schema checks each record alone. Tools also check the corpus as a whole:
   see [Links](#links). An enum parameter's `guidance` points at a pattern or a guideline.
 - Annotation IDs are unique within an example, and none is also a heading's slug.
 - Rule IDs are unique within a record, and do not collide with a top-level field name.
-- An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`.
+- An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`. This
+  holds for item parameters too.
+- Every `items` key is an anatomy part.
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum
   value or boolean (`true` or `false`) of a declared parameter, or a declared preference value.
 - Every token reference is one of the keywords `transparent`, `none`, `inherit`, or `linear`, or
