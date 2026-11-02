@@ -341,6 +341,12 @@ describe("ds-spec CLI, items", () => {
     expect(one.out).toContain("default: false");
   });
 
+  it("prints an item's events as a list, not YAML", () => {
+    const { code, out } = cli(["get", "component.thing#items.entry.events"], tools);
+    expect(code).toBe(0);
+    expect(out).toMatch(/^## Events\n\n- `pick`: The entry was picked\./);
+  });
+
   it("names the item sections when one does not exist", () => {
     const r = cli(["get", "component.accordion#items.section.parameters.open"]);
     expect(r.code).toBe(1);

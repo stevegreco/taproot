@@ -227,7 +227,11 @@ function checklist(spec) {
   const known = new Set(CHECKLIST.map((item) => item.id));
   const unknown = rationale.flatMap((entry) => (entry.covers ?? []).filter((id) => !known.has(id)));
 
-  const parameters = Object.keys(spec.parameters ?? {});
+  // An item's options count too, such as each accordion section's `expanded`.
+  const parameters = [
+    spec.parameters,
+    ...Object.values(spec.items ?? {}).map((item) => item.parameters),
+  ].flatMap((list) => Object.keys(list ?? {}));
   const states = spec.states ?? [];
   const preferences = Object.keys(spec.preferences ?? {});
   const rules = (spec.rules ?? []).map((rule) => `${rule.id} ${rule.statement}`);
