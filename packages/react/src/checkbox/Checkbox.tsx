@@ -1,9 +1,15 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   CheckboxButton as AriaCheckboxButton,
   CheckboxField as AriaCheckboxField,
   Text as AriaText,
 } from "react-aria-components";
+import {
+  useControllableState,
+  useFormReset,
+  useNativeInput,
+  validationBehavior,
+} from "../internal/form-field";
 import "./checkbox.css";
 
 export interface CheckboxProps {
@@ -81,10 +87,8 @@ export function Checkbox({
   onChange,
   className,
 }: CheckboxProps) {
-  const isControlled = checked !== undefined;
   const [initialChecked] = useState(() => checked ?? defaultChecked ?? false);
-  const [internal, setInternal] = useState(initialChecked);
-  const isChecked = isControlled ? checked : internal;
+  const [isChecked, setInternal, isControlled] = useControllableState(checked, initialChecked);
 
   // Indeterminate behaves like the DOM property: the parent sets it, a person's activation clears
   // it. A new prop value from the parent sets it again.
@@ -96,10 +100,11 @@ export function Checkbox({
   }
 
   const inputRef = useRef<HTMLInputElement>(null);
-  // React Aria restores its own initial value on form reset by calling onChange. Reset is not a
-  // person's interaction, so those calls are ignored while a reset is in progress.
-  const resetting = useRef(false);
-  const [resetCount, setResetCount] = useState(0);
+  const resetting = useFormReset(inputRef, () => {
+    setMixed(false);
+    setInternal(initialChecked);
+  });
+  useNativeInput(inputRef, { checked: isChecked, error, required });
 
   const handleChange = useCallback(
     (next: boolean) => {
@@ -109,40 +114,8 @@ export function Checkbox({
       onInput?.(next);
       onChange?.(next);
     },
-    [isControlled, onInput, onChange],
+    [resetting, isControlled, setInternal, onInput, onChange],
   );
-
-  useEffect(() => {
-    const form = inputRef.current?.form;
-    if (!form) return;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const onReset = () => {
-      resetting.current = true;
-      // The browser resets the controls after the reset event, so apply ours after that.
-      timer = setTimeout(() => {
-        resetting.current = false;
-        setMixed(false);
-        setInternal(initialChecked);
-        setResetCount((n) => n + 1);
-      }, 0);
-    };
-    // Capture runs before React Aria's own listener on the same form.
-    form.addEventListener("reset", onReset, true);
-    return () => {
-      form.removeEventListener("reset", onReset, true);
-      clearTimeout(timer);
-    };
-  }, [initialChecked]);
-
-  // Keep the native input in step with the rendered state (a native reset can leave a controlled
-  // input stale), and give it the constraints that block submit: required, and a non-empty error.
-  useLayoutEffect(() => {
-    const input = inputRef.current;
-    if (!input) return;
-    if (input.checked !== isChecked) input.checked = isChecked;
-    input.required = required;
-    input.setCustomValidity(error ? error : "");
-  }, [isChecked, required, error, resetCount]);
 
   const invalid = Boolean(error);
   const classes = ["ds-checkbox", className].filter(Boolean).join(" ");
@@ -156,7 +129,7 @@ export function Checkbox({
       isDisabled={disabled}
       isRequired={required}
       isInvalid={invalid}
-      validationBehavior="aria"
+      validationBehavior={validationBehavior}
       name={name}
       value={value}
       inputRef={inputRef}

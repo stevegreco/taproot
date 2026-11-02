@@ -74,16 +74,6 @@ export function Button({
     }
   }, [accessibleName, children]);
 
-  const classes = [
-    "ds-button",
-    `ds-button--${variant}`,
-    `ds-button--${size}`,
-    fullWidth && "ds-button--full-width",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   return (
     <AriaButton
       ref={mergedRef}
@@ -91,7 +81,10 @@ export function Button({
       isDisabled={disabled}
       aria-label={accessibleName?.trim() ? accessibleName : undefined}
       onPress={onActivate ? () => onActivate() : undefined}
-      className={classes}
+      className={className ? `ds-button ${className}` : "ds-button"}
+      data-variant={variant}
+      data-size={size}
+      data-full-width={fullWidth || undefined}
     >
       <span className="ds-button__content">{children}</span>
     </AriaButton>

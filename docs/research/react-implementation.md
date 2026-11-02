@@ -219,6 +219,9 @@ Findings that also came up in Tabs are marked; they are now the clearest pattern
   wrote their own form-reset handling and chose different validation modes, which caused the Switch
   bug. The package needs a short conventions section and shared helpers for form fields before the
   next batch.
+  _Resolved:_ the package README now has a conventions section, Button marks its variant, size, and
+  full width with data attributes, and Switch and Checkbox share `src/internal/form-field.ts` for
+  validation, native input sync, and form reset. Later briefs point agents at the conventions.
 - **React Aria's own form reset reports a change.** _Implementation._ Both form controls had to
   suppress it to meet `programmatic-no-events`.
 - **React Aria deprecated `Switch` and `Checkbox` in 1.22.** _Implementation._ The ports use the

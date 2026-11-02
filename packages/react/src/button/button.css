@@ -35,18 +35,18 @@
 }
 
 /* fullWidth: fills the available inline size. */
-.ds-button--full-width {
+.ds-button[data-full-width] {
   display: flex;
   inline-size: 100%;
 }
 
 /* control: size.medium / size.small */
-.ds-button--medium {
+.ds-button[data-size="medium"] {
   padding-block: var(--ds-primitives-space-3);
   padding-inline: var(--ds-primitives-space-4);
 }
 
-.ds-button--small {
+.ds-button[data-size="small"] {
   padding-block: var(--ds-primitives-space-2);
   padding-inline: var(--ds-primitives-space-3);
 }
@@ -58,65 +58,65 @@
 }
 
 /* control: variant.primary */
-.ds-button--primary {
+.ds-button[data-variant="primary"] {
   background-color: var(--ds-semantic-color-background-action-primary-default);
   color: var(--ds-semantic-color-foreground-on-action-primary);
   border-color: var(--ds-semantic-color-border-action-primary-default);
 }
 
-.ds-button--primary[data-hovered] {
+.ds-button[data-variant="primary"][data-hovered] {
   background-color: var(--ds-semantic-color-background-action-primary-hover);
   border-color: var(--ds-semantic-color-border-action-primary-hover);
 }
 
-.ds-button--primary[data-pressed] {
+.ds-button[data-variant="primary"][data-pressed] {
   background-color: var(--ds-semantic-color-background-action-primary-pressed);
   border-color: var(--ds-semantic-color-border-action-primary-pressed);
 }
 
 /* control: variant.secondary */
-.ds-button--secondary {
+.ds-button[data-variant="secondary"] {
   background-color: var(--ds-semantic-color-background-action-secondary-default);
   color: var(--ds-semantic-color-foreground-default);
   border-color: var(--ds-semantic-color-border-default);
 }
 
-.ds-button--secondary[data-hovered] {
+.ds-button[data-variant="secondary"][data-hovered] {
   background-color: var(--ds-semantic-color-background-action-secondary-hover);
 }
 
-.ds-button--secondary[data-pressed] {
+.ds-button[data-variant="secondary"][data-pressed] {
   background-color: var(--ds-semantic-color-background-action-secondary-pressed);
 }
 
 /* control: variant.tertiary */
-.ds-button--tertiary {
+.ds-button[data-variant="tertiary"] {
   background-color: transparent;
   color: var(--ds-semantic-color-foreground-default);
   border-color: transparent;
 }
 
-.ds-button--tertiary[data-hovered] {
+.ds-button[data-variant="tertiary"][data-hovered] {
   background-color: var(--ds-semantic-color-background-action-tertiary-hover);
 }
 
-.ds-button--tertiary[data-pressed] {
+.ds-button[data-variant="tertiary"][data-pressed] {
   background-color: var(--ds-semantic-color-background-action-tertiary-pressed);
 }
 
 /* control: variant.destructive */
-.ds-button--destructive {
+.ds-button[data-variant="destructive"] {
   background-color: var(--ds-semantic-color-background-action-destructive-default);
   color: var(--ds-semantic-color-foreground-on-action-destructive);
   border-color: var(--ds-semantic-color-border-action-destructive-default);
 }
 
-.ds-button--destructive[data-hovered] {
+.ds-button[data-variant="destructive"][data-hovered] {
   background-color: var(--ds-semantic-color-background-action-destructive-hover);
   border-color: var(--ds-semantic-color-border-action-destructive-hover);
 }
 
-.ds-button--destructive[data-pressed] {
+.ds-button[data-variant="destructive"][data-pressed] {
   background-color: var(--ds-semantic-color-background-action-destructive-pressed);
   border-color: var(--ds-semantic-color-border-action-destructive-pressed);
 }
@@ -127,19 +127,19 @@
   color: var(--ds-semantic-color-foreground-disabled);
 }
 
-.ds-button--primary[data-disabled],
-.ds-button--destructive[data-disabled] {
+.ds-button[data-variant="primary"][data-disabled],
+.ds-button[data-variant="destructive"][data-disabled] {
   background-color: var(--ds-semantic-color-background-disabled);
   border-color: var(--ds-semantic-color-border-disabled);
 }
 
-.ds-button--secondary[data-disabled] {
+.ds-button[data-variant="secondary"][data-disabled] {
   background-color: transparent;
   border-color: var(--ds-semantic-color-border-disabled);
 }
 
 /* tertiary + disabled binds no border: it keeps the transparent base border. */
-.ds-button--tertiary[data-disabled] {
+.ds-button[data-variant="tertiary"][data-disabled] {
   background-color: transparent;
 }
 

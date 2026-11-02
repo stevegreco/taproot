@@ -1,9 +1,15 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   SwitchButton as AriaSwitchButton,
   SwitchField as AriaSwitchField,
   Text,
 } from "react-aria-components";
+import {
+  useControllableState,
+  useFormReset,
+  useNativeInput,
+  validationBehavior,
+} from "../internal/form-field";
 import "./switch.css";
 
 export interface SwitchProps {
@@ -33,28 +39,6 @@ export interface SwitchProps {
   className?: string;
 }
 
-/**
- * A form reset makes React Aria set the initial state through its change handler. The spec treats
- * that as a programmatic change, so mark the reset (a capture listener on the form runs before
- * React Aria's own listener) and report nothing for it.
- */
-function useResetFlag(inputRef: React.RefObject<HTMLInputElement | null>) {
-  const resetting = useRef(false);
-  useEffect(() => {
-    const form = inputRef.current?.form;
-    if (!form) return;
-    const onReset = () => {
-      resetting.current = true;
-      queueMicrotask(() => {
-        resetting.current = false;
-      });
-    };
-    form.addEventListener("reset", onReset, { capture: true });
-    return () => form.removeEventListener("reset", onReset, { capture: true });
-  });
-  return resetting;
-}
-
 export function Switch({
   label,
   hint,
@@ -74,44 +58,32 @@ export function Switch({
     }
   }, [label]);
 
-  const isControlled = checked !== undefined;
-  const [internal, setInternal] = useState(defaultChecked);
-  const isSelected = isControlled ? checked : internal;
+  const [isSelected, setInternal, isControlled] = useControllableState(checked, defaultChecked);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const resetting = useResetFlag(inputRef);
+  const resetting = useFormReset(inputRef, () => setInternal(defaultChecked));
+  useNativeInput(inputRef, { checked: isSelected, error });
 
-  // React Aria stays controlled: it reports every change here and the wrapper decides which ones
-  // are the person's. Reset restores the uncontrolled default without reporting anything.
   const handleChange = useCallback(
     (next: boolean) => {
-      if (resetting.current) {
-        if (!isControlled) setInternal(defaultChecked);
-        return;
-      }
+      if (resetting.current) return;
       if (!isControlled) setInternal(next);
       onInput?.(next);
       onChange?.(next);
     },
-    [resetting, isControlled, defaultChecked, onInput, onChange],
+    [resetting, isControlled, setInternal, onInput, onChange],
   );
 
   const isInvalid = Boolean(error);
-
-  // A non-empty error blocks submit, and the browser shows the error text, not a generic message.
-  useLayoutEffect(() => {
-    inputRef.current?.setCustomValidity(error ?? "");
-  }, [error]);
 
   return (
     <AriaSwitchField
       className={className ? `ds-switch ${className}` : "ds-switch"}
       isSelected={isSelected}
-      defaultSelected={defaultChecked}
       onChange={handleChange}
       isDisabled={disabled}
       isInvalid={isInvalid}
-      validationBehavior="aria"
+      validationBehavior={validationBehavior}
       name={name}
       value={value}
       inputRef={inputRef}

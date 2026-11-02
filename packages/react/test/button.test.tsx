@@ -246,11 +246,11 @@ describe("parameters", () => {
   test("defaults: primary, medium, activate, enabled, not full width", async () => {
     await render(<Button>Save changes</Button>);
     const el = button();
-    expect(el.className).toContain("ds-button--primary");
-    expect(el.className).toContain("ds-button--medium");
+    expect(el.dataset.variant).toBe("primary");
+    expect(el.dataset.size).toBe("medium");
     expect(el.type).toBe("button");
     expect(el.disabled).toBe(false);
-    expect(el.className).not.toContain("ds-button--full-width");
+    expect(el.dataset.fullWidth).toBeUndefined();
   });
 
   test("fullWidth fills the available inline size", async () => {
