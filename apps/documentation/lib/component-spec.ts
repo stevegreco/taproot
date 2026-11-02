@@ -349,7 +349,7 @@ function renderSectionMarkdown(slice: ComponentSlice, section: ComponentSpecSect
     }
     case "api":
       return [
-        apiTable(slice.api),
+        ...(slice.api.length > 0 ? [apiTable(slice.api)] : []),
         ...slice.items.flatMap((item) => [`### \`<${item.tagName}>\``, apiTable(item.api)]),
       ].join("\n\n");
     case "accessibility": {

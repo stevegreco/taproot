@@ -161,15 +161,48 @@ ${items}---
     ).toThrow('does not cover component.list item "entry" parameter "label"');
   });
 
-  it("needs a tag name and rows for each item", () => {
+  it("needs a tag name and a row for each item parameter and event", () => {
     expect(() =>
       parseImplementation(source("items:\n  entry:\n    api: []\n"), "implementation/list.md"),
     ).toThrow("items.entry tagName must be a non-empty string.");
+    const empty = parseImplementation(
+      source("items:\n  entry:\n    tagName: acme-list-entry\n    api: []\n"),
+      "implementation/list.md",
+    );
+    expect(() => checkImplementation(empty, listRecord)).toThrow(
+      'does not cover component.list item "entry" parameter "label", event "pick"',
+    );
+  });
+
+  it("accepts an empty parent table when every option belongs to an item", () => {
+    const itemsOnly = parseImplementation(
+      `---
+component: component.list
+package: "@acme/ui"
+tagName: acme-list
+defineExport: defineList
+api: []
+items:
+  entry:
+    tagName: acme-list-entry
+    api:
+      - { name: label, kind: attribute, parameter: label }
+---
+`,
+      "implementation/list.md",
+    );
+    const record = {
+      id: "component.list",
+      type: "component",
+      items: { entry: { parameters: listRecord.items.entry.parameters } },
+    };
+    expect(() => checkImplementation(itemsOnly, record)).not.toThrow();
+    const out = renderImplementation(record, itemsOnly, "web");
+    expect(out).not.toContain("### API");
+    expect(out).toContain("### Entry element: `<acme-list-entry>`");
+    // A parent table can be empty only when the record has nothing for it to cover.
     expect(() =>
-      parseImplementation(
-        source("items:\n  entry:\n    tagName: acme-list-entry\n    api: []\n"),
-        "implementation/list.md",
-      ),
-    ).toThrow("items.entry.api must be a non-empty list of rows.");
+      checkImplementation(itemsOnly, { ...record, events: { pick: "Picked." } }),
+    ).toThrow('does not cover component.list event "pick"');
   });
 });

@@ -267,14 +267,17 @@ export function parseImplementation(source, file) {
 }
 
 /**
+ * The rows may be empty, as for a component whose options all belong to its items;
+ * `checkImplementation` requires a row for each parameter and event the record declares.
+ *
  * @param {string} file
  * @param {unknown} raw
  * @param {string} prefix Where the rows are, such as `items.section.`, for error messages.
  * @returns {ImplementationApiRow[]}
  */
 function parseApi(file, raw, prefix) {
-  if (!Array.isArray(raw) || raw.length === 0) {
-    throw new ImplementationError(file, `${prefix}api must be a non-empty list of rows.`);
+  if (!Array.isArray(raw)) {
+    throw new ImplementationError(file, `${prefix}api must be a list of rows.`);
   }
   const api = raw.map((row, index) => parseRow(file, row, index, prefix));
   const seen = new Set();
@@ -468,7 +471,7 @@ export function renderImplementation(record, implementation, name) {
       "```",
     ].join("\n"),
     implementation.usage && `### Usage\n\n\`\`\`html\n${implementation.usage}\n\`\`\``,
-    `### API\n\n${apiTable(record, implementation.api)}`,
+    implementation.api.length > 0 && `### API\n\n${apiTable(record, implementation.api)}`,
     ...items,
     implementation.body.replace(/^(#{2,5}) /gm, "#$1 "),
   ];

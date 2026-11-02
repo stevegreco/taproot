@@ -157,7 +157,9 @@ const show = (name: ComponentSpecSection) => section == null || section === name
   show("api") ? (
     <div class="component-spec">
       {
-        [{ tagName: undefined, api: slice.api }, ...slice.items].map((group) => (
+        [{ tagName: undefined, api: slice.api }, ...slice.items]
+          .filter((group) => group.api.length > 0)
+          .map((group) => (
           <Fragment>
             {group.tagName ? (
               <h3>
