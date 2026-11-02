@@ -2,7 +2,7 @@ import { useState } from "react";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { cdp, page, userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
-import { Tabs, TabsSection } from "./Tabs";
+import { Tabs, TabsSection } from "../src/tabs/Tabs";
 
 function Example(props: {
   value?: string;

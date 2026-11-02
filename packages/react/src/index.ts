@@ -1,2 +1,1 @@
-/** Components are exported here as they are built. */
-export {};
+export { Tabs, TabsSection, type TabsProps, type TabsSectionProps } from "./tabs/Tabs";

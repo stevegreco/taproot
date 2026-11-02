@@ -47,7 +47,8 @@ can become a labeled issue at the end.
 ## Bake-off: Tabs
 
 Three agents built Tabs from the spec alone in `packages/react/bakeoff/`, one each with native
-React, Base UI, and React Aria Components. Each kept a `NOTES.md` of its guesses.
+React, Base UI, and React Aria Components. Each kept a `NOTES.md` of its guesses. The three builds
+and their notes are in commit `256fd48`.
 
 ### Before the builds
 
@@ -102,6 +103,16 @@ instead of the page, and throws on a repeated key. Its state attributes (`data-h
 `data-focus-visible`, `data-selected`) line up with the spec's states, so the CSS reads like the
 token table. One run failed with a duplicate-React error on a cold Vite cache; it did not happen
 again in a clean rerun.
+
+### Decision
+
+The package wraps React Aria Components. It needed half the workarounds Base UI did, its state
+attributes map directly onto the spec's states, and it covers the behavior the harder components
+need. The tradeoff: a library supplies some behavior the spec also states, so a React Aria build
+tests those rules less hard than hand-written code. The cross-run eases that for Tabs, because the
+behavior tests come from the spec, not the library.
+
+The React Aria build became `src/tabs`. The other two builds were removed.
 
 ### Spec findings from the builds
 
