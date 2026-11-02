@@ -97,7 +97,10 @@ directory. Paths are relative to the config file. `implementations` and `tokens`
 ```json
 {
   "content": "packages/spec/content",
-  "implementations": { "web": "packages/components/implementation" },
+  "implementations": {
+    "web": { "folder": "packages/components/implementation", "technology": "web-component" },
+    "react": { "folder": "packages/react/implementation", "technology": "react" }
+  },
   "tokens": {
     "format": "dtcg",
     "sets": { "light": ["tokens/base.json", "tokens/light.json"], "dark": ["tokens/base.json", "tokens/dark.json"] }
@@ -114,9 +117,11 @@ requested, or by `validate`. Use `createDtcgResolver` and `readDtcgTokenNames` f
 files and lists their issues in `spec.issues` instead of throwing.
 
 Each implementation folder holds one `<slug>.md` file per component that a technology implements:
-front matter with the record id, package, element name, registration export, usage markup, and API
-rows that name the record parameter or event each attribute, property, or event implements, then
-Markdown guidance. Records stay technology-neutral; these files live with the implementation. The
+front matter with the record id, package, what to import, usage, and API rows that name the record
+parameter or event each member implements, then Markdown guidance. The folder's `technology` sets
+the rest. A `web-component` file names its `tagName` and `defineExport`, and its rows are
+`attribute`, `property`, or `event`. A `react` file names its `export`, and its rows are `prop` or
+`callback`. An item names its own `tagName` or `export`. Records stay technology-neutral; these files live with the implementation. The
 docs site reads the same files with `loadImplementations`, `parseImplementation`, and
 `checkImplementation` from `@stevegreco/design-system-spec/implementation`.
 `checkImplementation` confirms the file is named after a component record and that every

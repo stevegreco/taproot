@@ -26,6 +26,10 @@ Breaking. The package is now a library over the authored files, and the record f
   new `implementations` field in `knowledge.config.json`. New export: `./implementation`, the
   reader and contract check (`checkImplementation`) the docs site now imports instead of its own
   copies. A file that does not match its record fails with `ERR_INVALID_IMPLEMENTATION`.
+- Each entry in `implementations` is now `{ "folder", "technology" }`, and files are checked against
+  their technology. `web-component` files keep `tagName`, `defineExport`, and attribute, property,
+  and event rows. `react` files name an `export` and have prop and callback rows.
+  `loadImplementations` and `parseImplementation` take the technology as a new last argument.
 - `get`, `links`, `tokens`, and `rules --id` accept a name that matches one record (`button`,
   `text field`). A one-word `search` tolerates typos, a word that starts a name or title matches it, and, in
   the CLI and MCP server, `search` follows each result with

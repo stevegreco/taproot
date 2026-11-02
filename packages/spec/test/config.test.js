@@ -81,7 +81,18 @@ describe("loadFromConfig", () => {
     expect(write({ tokens: { format: "css", sets: {} } })).toThrow(/must be "dtcg"/);
     expect(write({ tokens: { format: "dtcg", sets: { a: "x" } } })).toThrow(/tokens.sets.a/);
     expect(write({ implementations: ["web"] })).toThrow(/"implementations" must be an object/);
-    expect(write({ implementations: { web: "" } })).toThrow(/implementations.web/);
+    expect(write({ implementations: { web: "web" } })).toThrow(
+      /"implementations.web" must be an object/,
+    );
+    expect(write({ implementations: { web: { folder: "", technology: "react" } } })).toThrow(
+      /implementations.web.folder/,
+    );
+    expect(write({ implementations: { web: { folder: "web", technology: "vue" } } })).toThrow(
+      /"implementations.web.technology" must be one of web-component, react/,
+    );
+    expect(
+      write({ implementations: { web: { folder: "web", technology: "react", tag: "x" } } }),
+    ).toThrow(/unknown field "tag"/);
     fs.rmSync(tmp, { recursive: true });
   });
 
@@ -89,10 +100,15 @@ describe("loadFromConfig", () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "spec-config-"));
     fs.writeFileSync(
       path.join(tmp, "spec.config.json"),
-      JSON.stringify({ implementations: { web: "impl/web" } }),
+      JSON.stringify({
+        implementations: { web: { folder: "impl/web", technology: "web-component" } },
+      }),
     );
     const { implementations } = resolveConfig({ cwd: tmp });
-    expect(implementations.web).toBe(path.join(tmp, "impl/web"));
+    expect(implementations.web).toEqual({
+      folder: path.join(tmp, "impl/web"),
+      technology: "web-component",
+    });
     expect(resolveConfig({ cwd: tools }).implementations).toEqual({});
     fs.rmSync(tmp, { recursive: true });
   });

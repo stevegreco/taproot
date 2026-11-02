@@ -28,9 +28,10 @@ Implement it in whatever technology the project uses.
   `component.button#label-describes-result`) with its level (MUST, SHOULD, MAY).
 - Use `tokens` for the design tokens a component part uses in a variant or state. Add `--resolve`
   (MCP: `resolve`) for values.
-- Before writing code, `get` the component with `--impl web` (MCP: `implementation: "web"`) for
-  the package, element name, and the attribute that implements each parameter. Never derive
-  attribute names from parameter names.
+- Before writing code, `get` the component with the implementation for your technology:
+  `--impl web` for web components, `--impl react` for React (MCP: `implementation`). It gives the
+  package, what to import, and the attribute or prop that implements each parameter. Never derive
+  those names from parameter names.
 - For several lookups on the MCP server, make the tool calls in parallel.
 <!-- agent-instructions:end -->
 
@@ -41,6 +42,7 @@ about a second to every call.
 node packages/spec/bin/ds-spec.js search "destructive action"
 node packages/spec/bin/ds-spec.js get component.button
 node packages/spec/bin/ds-spec.js get component.button --impl web
+node packages/spec/bin/ds-spec.js get component.tabs --impl react
 node packages/spec/bin/ds-spec.js get pattern.action-hierarchy#assign-emphasis
 node packages/spec/bin/ds-spec.js links component.button
 node packages/spec/bin/ds-spec.js rules --level must --topic accessibility
@@ -72,6 +74,11 @@ keep those consistent in review.
   attributes, properties, and events to spec parameters and events, and web-specific guidance).
   `spec.config.json` points the CLI at the same folder, so `get --impl web` serves it.
   Examples are in `apps/documentation/examples/`.
+- The React components in `packages/react` are a second implementation, built on React Aria
+  Components, with tests in `packages/react/test`. Their mapping files are in
+  `packages/react/implementation/<name>.md` (export name, usage, and API rows mapping props and
+  callbacks to spec parameters and events), served by `get --impl react`. The docs site and
+  Storybook show only the web components. The research log is `docs/research/react-implementation.md`.
 - Storybook in `apps/storybook` has a story file per component in `stories/`. It is a workbench
   for exploring states and themes, not a source of usage guidance. Run it with
   `pnpm exec turbo run dev --filter=storybook` (port 6006).

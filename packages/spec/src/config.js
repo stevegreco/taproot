@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { loadSpec, validateSpec } from "./index.js";
+import { TECHNOLOGY_NAMES } from "./implementation.js";
 import { createDtcgResolver, readDtcgTokenNames } from "./tokens-dtcg.js";
 
 export const CONFIG_FILE = "spec.config.json";
@@ -10,9 +11,15 @@ export const CONFIG_FILE = "spec.config.json";
  * @property {string} [content] Content folder, relative to the config file.
  * @property {{ format: "dtcg", sets: Record<string, string[]> }} [tokens]
  *   Token sets; each set lists DTCG files, relative to the config file.
- * @property {Record<string, string>} [implementations]
- *   Implementation folders by name, such as `web`, relative to the config file. Each folder holds
- *   one `<slug>.md` implementation file per component.
+ * @property {Record<string, ImplementationConfig>} [implementations]
+ *   Implementations by name, such as `web`. Each folder holds one `<slug>.md` implementation file
+ *   per component, checked against the fields of its technology.
+ */
+
+/**
+ * @typedef {object} ImplementationConfig
+ * @property {string} folder Relative to the config file; resolved to an absolute path on load.
+ * @property {import("./implementation.js").Technology} technology
  */
 
 /**
@@ -76,11 +83,22 @@ function validateConfig(config, file) {
       implementations === null ||
       Array.isArray(implementations)
     ) {
-      fail('"implementations" must be an object of name to folder path');
+      fail('"implementations" must be an object of name to { folder, technology }');
     }
-    for (const [name, dir] of Object.entries(implementations)) {
-      if (typeof dir !== "string" || !dir) {
-        fail(`"implementations.${name}" must be a non-empty string path`);
+    for (const [name, entry] of Object.entries(implementations)) {
+      if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+        fail(`"implementations.${name}" must be an object with "folder" and "technology"`);
+      }
+      for (const key of Object.keys(entry)) {
+        if (!["folder", "technology"].includes(key)) {
+          fail(`"implementations.${name}" has an unknown field "${key}"`);
+        }
+      }
+      if (typeof entry.folder !== "string" || !entry.folder) {
+        fail(`"implementations.${name}.folder" must be a non-empty string path`);
+      }
+      if (!TECHNOLOGY_NAMES.includes(entry.technology)) {
+        fail(`"implementations.${name}.technology" must be one of ${TECHNOLOGY_NAMES.join(", ")}`);
       }
     }
   }
@@ -105,7 +123,7 @@ function validateConfig(config, file) {
  * Precedence for the content folder: `contentDir` > config `content` > library default.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
- * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, string>, configPath?: string }}
+ * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, ImplementationConfig>, configPath?: string }}
  */
 export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = {}) {
   const found = configPath ? readConfig(path.resolve(cwd, configPath)) : findConfig(cwd);
@@ -125,9 +143,9 @@ export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = 
     resolveToken = createDtcgResolver(sets);
   }
   const implementations = Object.fromEntries(
-    Object.entries(found?.config.implementations ?? {}).map(([name, folder]) => [
+    Object.entries(found?.config.implementations ?? {}).map(([name, { folder, technology }]) => [
       name,
-      path.resolve(base, folder),
+      { folder: path.resolve(base, folder), technology },
     ]),
   );
   return {

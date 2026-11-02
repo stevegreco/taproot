@@ -268,7 +268,7 @@ describe("ds-spec CLI, implementations", () => {
     const { out } = cli(["get", "component.button"]);
     expect(out).not.toContain("## Web implementation");
     expect(out.trimEnd().split("\n").slice(-2)).toEqual([
-      "Implementation: run `ds-spec get component.button --impl web` for the package, element, and attribute names.",
+      "Implementation: run `ds-spec get component.button --impl web` for the package, import, and API names.",
       "Tokens: 50 bindings, left out here. Run `ds-spec tokens component.button` to filter them by part, condition, or property.",
     ]);
     expect(cli(["get", "pattern.action-hierarchy"]).out).not.toContain("Implementation:");
@@ -307,7 +307,7 @@ describe("ds-spec CLI, implementations", () => {
       path.join(tmp, "spec.config.json"),
       JSON.stringify({
         content: path.join(repoRoot, "packages/spec/content"),
-        implementations: { web: "web" },
+        implementations: { web: { folder: "web", technology: "web-component" } },
       }),
     );
     const r = cli(["get", "button", "--impl", "web", "--json"], tmp);

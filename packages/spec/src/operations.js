@@ -40,7 +40,7 @@ export function list(spec, { type, tag, status } = {}) {
 export const WEAK_SCORE = 5;
 
 /**
- * @param {{ implementations?: Record<string, string>, next?: (id: string, implementation?: string) => string, browse?: string }} [options]
+ * @param {{ implementations?: Record<string, import("./config.js").ImplementationConfig>, next?: (id: string, implementation?: string) => string, browse?: string }} [options]
  *   With `next`, each result is followed by the call that reads it, with its implementation when
  *   it has one. `browse` names the call that lists every record, for when nothing fits.
  */
@@ -106,8 +106,8 @@ function resolveTarget(spec, target) {
  * A whole component record leaves out its token table, which is most of its length and rarely
  * needed to choose or use the component. A closing line names the call that reads it.
  *
- * @param {{ implementations?: Record<string, string>, implementationHint?: (id: string, names: string[]) => string, tokensHint?: (id: string, count: number) => string }} [options]
- *   Implementation folders by name, and the lines that tell the caller how to ask for an
+ * @param {{ implementations?: Record<string, import("./config.js").ImplementationConfig>, implementationHint?: (id: string, names: string[]) => string, tokensHint?: (id: string, count: number) => string }} [options]
+ *   Implementations by name, and the lines that tell the caller how to ask for an
  *   implementation or the tokens.
  */
 export function get(spec, { target: typedTarget, implementation }, options = {}) {
@@ -163,7 +163,8 @@ function getWithImplementation(spec, record, name, folders, options) {
   // with missing values or descriptions.
   let found;
   try {
-    found = loadImplementations(folders[name]).find((item) => item.component === record.id);
+    const { folder, technology } = folders[name];
+    found = loadImplementations(folder, technology).find((item) => item.component === record.id);
     if (found) checkImplementation(found, record);
   } catch (error) {
     if (!(error instanceof ImplementationError)) throw error;
@@ -197,15 +198,15 @@ function getWithImplementation(spec, record, name, folders, options) {
  * cannot be read or parsed is skipped here, so it cannot break `get` or `search`; asking for that
  * implementation reports the error.
  *
- * @param {Record<string, string>} folders
+ * @param {Record<string, import("./config.js").ImplementationConfig>} folders
  * @returns {Map<string, string[]>}
  */
 function implementationIndex(folders) {
   const index = new Map();
-  for (const [name, dir] of Object.entries(folders)) {
+  for (const [name, { folder, technology }] of Object.entries(folders)) {
     let items;
     try {
-      items = loadImplementations(dir);
+      items = loadImplementations(folder, technology);
     } catch {
       continue;
     }

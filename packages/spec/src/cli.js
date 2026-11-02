@@ -26,7 +26,7 @@ const COMMANDS = {
   get: {
     usage: "ds-spec get <id | name | id#section> [--impl <name>]",
     summary:
-      "Print a record, or one section of it, as Markdown. --impl web adds the package, element, and attributes.",
+      "Print a record, or one section of it, as Markdown. --impl <name> adds how that technology implements it: package, import, and API names.",
     options: { impl: str },
   },
   links: {
@@ -209,7 +209,7 @@ export async function run(argv, io = {}) {
               tokensHint: (id, count) =>
                 `Tokens: ${count} bindings, left out here. Run \`ds-spec tokens ${id}\` to filter them by part, condition, or property.`,
               implementationHint: (id, names) =>
-                `Implementation: run \`ds-spec get ${id} --impl ${names[0]}\` for the package, element, and attribute names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
+                `Implementation: run \`ds-spec get ${id} --impl ${names[0]}\` for the package, import, and API names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
             },
           ),
         );

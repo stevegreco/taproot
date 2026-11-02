@@ -34,6 +34,7 @@ api:
 Keep labels short.
 `,
   "implementation/toggle.md",
+  "web-component",
 );
 
 describe("renderImplementation", () => {
@@ -130,6 +131,7 @@ ${items}---
       - { name: pick, kind: event, event: pick }
 `),
     "implementation/list.md",
+    "web-component",
   );
   const check = (edit) => () =>
     checkImplementation({ ...listImplementation, ...edit(listImplementation) }, listRecord);
@@ -163,11 +165,16 @@ ${items}---
 
   it("needs a tag name and a row for each item parameter and event", () => {
     expect(() =>
-      parseImplementation(source("items:\n  entry:\n    api: []\n"), "implementation/list.md"),
+      parseImplementation(
+        source("items:\n  entry:\n    api: []\n"),
+        "implementation/list.md",
+        "web-component",
+      ),
     ).toThrow("items.entry tagName must be a non-empty string.");
     const empty = parseImplementation(
       source("items:\n  entry:\n    tagName: acme-list-entry\n    api: []\n"),
       "implementation/list.md",
+      "web-component",
     );
     expect(() => checkImplementation(empty, listRecord)).toThrow(
       'does not cover component.list item "entry" parameter "label", event "pick"',
@@ -190,6 +197,7 @@ items:
 ---
 `,
       "implementation/list.md",
+      "web-component",
     );
     const record = {
       id: "component.list",
@@ -204,5 +212,67 @@ items:
     expect(() =>
       checkImplementation(itemsOnly, { ...record, events: { pick: "Picked." } }),
     ).toThrow('does not cover component.list event "pick"');
+  });
+});
+
+describe("technologies", () => {
+  const listRecord = {
+    id: "component.list",
+    type: "component",
+    parameters: { mode: { kind: "enum", values: { on: "On.", off: "Off." }, description: "M." } },
+    events: { change: "The mode changed." },
+    items: { entry: { parameters: { label: { kind: "string", description: "Entry text." } } } },
+  };
+  const react = `---
+component: component.list
+package: "@acme/react"
+export: List
+usage: <List mode="on" />
+api:
+  - { name: mode, kind: prop, parameter: mode }
+  - { name: onChange, kind: callback, event: change }
+items:
+  entry:
+    export: ListEntry
+    api:
+      - { name: label, kind: prop, parameter: label }
+---
+`;
+  const parsed = parseImplementation(react, "implementation/list.md", "react");
+
+  it("reads a React file with its export names and prop and callback rows", () => {
+    expect(parsed.technology).toBe("react");
+    expect(parsed.export).toBe("List");
+    expect(parsed.items.entry.export).toBe("ListEntry");
+    expect(() => checkImplementation(parsed, listRecord)).not.toThrow();
+  });
+
+  it("renders the component, its import, and tsx usage", () => {
+    const out = renderImplementation(listRecord, parsed, "react");
+    expect(out).toContain("- Package: `@acme/react`\n- Component: `List`");
+    expect(out).toContain('import { List, ListEntry } from "@acme/react";');
+    expect(out).toContain('```tsx\n<List mode="on" />\n```');
+    expect(out).toContain("| `onChange` | callback | event `change` |  | The mode changed. |");
+    expect(out).toContain("### Entry component: `ListEntry`");
+  });
+
+  it("checks a file against its technology's fields and row kinds", () => {
+    expect(() =>
+      parseImplementation(
+        react.replace("export: List\n", "tagName: acme-list\n"),
+        "implementation/list.md",
+        "react",
+      ),
+    ).toThrow('unknown field "tagName"');
+    expect(() =>
+      parseImplementation(react.replace("kind: callback", "kind: event"), "x.md", "react"),
+    ).toThrow("kind must be one of prop, callback for react");
+    expect(() =>
+      parseImplementation(react.replace("export: List", "export: list"), "x.md", "react"),
+    ).toThrow('export "list" must be a component name');
+    expect(() => parseImplementation(react, "implementation/list.md", "web-component")).toThrow(
+      'unknown field "export"',
+    );
+    expect(() => parseImplementation(react, "x.md", "vue")).toThrow('unknown technology "vue"');
   });
 });
