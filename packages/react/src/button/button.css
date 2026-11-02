@@ -1,0 +1,168 @@
+/* Button, styled from the bindings `ds-spec tokens component.button` lists. The control part is the
+   native button (.ds-button); the content part (.ds-button__content) wraps the label and icon.
+   React Aria exposes state as data attributes: [data-hovered], [data-pressed],
+   [data-focus-visible], [data-disabled]. */
+
+/* control: base */
+.ds-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-primitives-space-2);
+  border-radius: var(--ds-semantic-radius-control);
+  /* The spec binds border color only. Width and style are a guess: the semantic border width. */
+  border: var(--ds-semantic-border-width) solid transparent;
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
+  /* Not in the spec: a single-line label and no text decoration are guesses. */
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  /* The spec binds motion duration and easing, not which properties move: the color properties
+     that change between states are a guess. */
+  transition-property: background-color, border-color, color;
+  transition-duration: var(--ds-primitives-duration-fast);
+  transition-timing-function: var(--ds-primitives-ease-out);
+}
+
+/* content: icon and label sit directly in the control's flex row, so the control gap applies. */
+.ds-button__content {
+  display: contents;
+}
+
+/* fullWidth: fills the available inline size. */
+.ds-button--full-width {
+  display: flex;
+  inline-size: 100%;
+}
+
+/* control: size.medium / size.small */
+.ds-button--medium {
+  padding-block: var(--ds-primitives-space-3);
+  padding-inline: var(--ds-primitives-space-4);
+}
+
+.ds-button--small {
+  padding-block: var(--ds-primitives-space-2);
+  padding-inline: var(--ds-primitives-space-3);
+}
+
+/* control: focus. Width and offset come from the semantic focus tokens; the spec binds only color. */
+.ds-button[data-focus-visible] {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+/* control: variant.primary */
+.ds-button--primary {
+  background-color: var(--ds-semantic-color-background-action-primary-default);
+  color: var(--ds-semantic-color-foreground-on-action-primary);
+  border-color: var(--ds-semantic-color-border-action-primary-default);
+}
+
+.ds-button--primary[data-hovered] {
+  background-color: var(--ds-semantic-color-background-action-primary-hover);
+  border-color: var(--ds-semantic-color-border-action-primary-hover);
+}
+
+.ds-button--primary[data-pressed] {
+  background-color: var(--ds-semantic-color-background-action-primary-pressed);
+  border-color: var(--ds-semantic-color-border-action-primary-pressed);
+}
+
+/* control: variant.secondary */
+.ds-button--secondary {
+  background-color: var(--ds-semantic-color-background-action-secondary-default);
+  color: var(--ds-semantic-color-foreground-default);
+  border-color: var(--ds-semantic-color-border-default);
+}
+
+.ds-button--secondary[data-hovered] {
+  background-color: var(--ds-semantic-color-background-action-secondary-hover);
+}
+
+.ds-button--secondary[data-pressed] {
+  background-color: var(--ds-semantic-color-background-action-secondary-pressed);
+}
+
+/* control: variant.tertiary */
+.ds-button--tertiary {
+  background-color: transparent;
+  color: var(--ds-semantic-color-foreground-default);
+  border-color: transparent;
+}
+
+.ds-button--tertiary[data-hovered] {
+  background-color: var(--ds-semantic-color-background-action-tertiary-hover);
+}
+
+.ds-button--tertiary[data-pressed] {
+  background-color: var(--ds-semantic-color-background-action-tertiary-pressed);
+}
+
+/* control: variant.destructive */
+.ds-button--destructive {
+  background-color: var(--ds-semantic-color-background-action-destructive-default);
+  color: var(--ds-semantic-color-foreground-on-action-destructive);
+  border-color: var(--ds-semantic-color-border-action-destructive-default);
+}
+
+.ds-button--destructive[data-hovered] {
+  background-color: var(--ds-semantic-color-background-action-destructive-hover);
+  border-color: var(--ds-semantic-color-border-action-destructive-hover);
+}
+
+.ds-button--destructive[data-pressed] {
+  background-color: var(--ds-semantic-color-background-action-destructive-pressed);
+  border-color: var(--ds-semantic-color-border-action-destructive-pressed);
+}
+
+/* control: disabled. React Aria sets no hover or press state while disabled. */
+.ds-button[data-disabled] {
+  cursor: not-allowed;
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+.ds-button--primary[data-disabled],
+.ds-button--destructive[data-disabled] {
+  background-color: var(--ds-semantic-color-background-disabled);
+  border-color: var(--ds-semantic-color-border-disabled);
+}
+
+.ds-button--secondary[data-disabled] {
+  background-color: transparent;
+  border-color: var(--ds-semantic-color-border-disabled);
+}
+
+/* tertiary + disabled binds no border: it keeps the transparent base border. */
+.ds-button--tertiary[data-disabled] {
+  background-color: transparent;
+}
+
+/* control: reducedMotion.reduce */
+@media (prefers-reduced-motion: reduce) {
+  .ds-button {
+    transition: none;
+  }
+}
+
+/* forced-colors: not in the spec. Every variant shows a system border, disabled reads as GrayText,
+   and the focus ring takes the system highlight. */
+@media (forced-colors: active) {
+  .ds-button {
+    border-color: ButtonText;
+  }
+
+  .ds-button[data-disabled] {
+    color: GrayText;
+    border-color: GrayText;
+  }
+
+  .ds-button[data-focus-visible] {
+    outline-color: Highlight;
+  }
+}

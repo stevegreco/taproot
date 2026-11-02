@@ -268,7 +268,7 @@ describe("ds-spec CLI, implementations", () => {
     const { out } = cli(["get", "component.button"]);
     expect(out).not.toContain("## Web implementation");
     expect(out.trimEnd().split("\n").slice(-2)).toEqual([
-      "Implementation: run `ds-spec get component.button --impl web` for the package, import, and API names.",
+      "Implementation: run `ds-spec get component.button --impl web` for the package, import, and API names (available: web, react).",
       "Tokens: 50 bindings, left out here. Run `ds-spec tokens component.button` to filter them by part, condition, or property.",
     ]);
     expect(cli(["get", "pattern.action-hierarchy"]).out).not.toContain("Implementation:");

@@ -1,0 +1,159 @@
+/* Switch, styled from the bindings `ds-spec tokens component.switch` lists. React Aria exposes state
+   as data attributes: [data-hovered], [data-focus-visible], [data-selected], [data-disabled],
+   [data-invalid]. */
+
+/* field: base */
+.ds-switch {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ds-primitives-space-1);
+}
+
+/* choice: base. The whole row (track and label) is the click target. */
+.ds-switch__choice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-primitives-space-2);
+  cursor: default;
+}
+
+/* control: base. The 32 by 18 size comes from the spec's rationale, not a token. The border width
+   is not bound in the spec: the semantic border width is a guess. */
+.ds-switch__control {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  /* Off sits at the start of the track and on at the end, following the inline direction. */
+  justify-content: flex-start;
+  inline-size: 32px;
+  block-size: 18px;
+  padding: 2px;
+  background: var(--ds-semantic-color-background-surface);
+  border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-default);
+  border-radius: var(--ds-semantic-radius-pill);
+}
+
+/* indicator: base. The thumb fills with its foreground color. Its size is not in the spec. */
+.ds-switch__indicator {
+  display: block;
+  inline-size: 12px;
+  block-size: 12px;
+  border-radius: var(--ds-semantic-radius-pill);
+  color: var(--ds-semantic-color-foreground-default);
+  background: currentColor;
+}
+
+/* control: hover. Only the unchecked, valid, enabled track strengthens its border. */
+.ds-switch__choice[data-hovered]:not([data-selected], [data-invalid], [data-disabled])
+  .ds-switch__control {
+  border-color: var(--ds-semantic-color-border-strong);
+}
+
+/* control: checked. The thumb moves to the end, so position carries the state, not color alone. */
+.ds-switch__choice[data-selected] .ds-switch__control {
+  justify-content: flex-end;
+  background: var(--ds-semantic-color-background-action-primary-default);
+  border-color: var(--ds-semantic-color-border-action-primary-default);
+}
+
+.ds-switch__choice[data-selected] .ds-switch__indicator {
+  color: var(--ds-semantic-color-foreground-on-action-primary);
+}
+
+/* control: invalid. Checked and invalid keep the checked background with the danger border. */
+.ds-switch__choice[data-invalid] .ds-switch__control {
+  border-color: var(--ds-semantic-color-border-status-danger-default);
+}
+
+/* control: disabled. Disabled colors override checked and invalid; the thumb keeps its position. */
+.ds-switch__choice[data-disabled] .ds-switch__control {
+  background: var(--ds-semantic-color-background-disabled);
+  border-color: var(--ds-semantic-color-border-disabled);
+}
+
+.ds-switch__choice[data-disabled] .ds-switch__indicator {
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+/* control: focus. Width and offset come from the semantic focus tokens; the spec binds only color. */
+.ds-switch__choice[data-focus-visible] .ds-switch__control {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+/* label: base */
+.ds-switch__label {
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
+}
+
+/* hint and error: base */
+.ds-switch__hint,
+.ds-switch__error {
+  margin: 0;
+  font-family: var(--ds-semantic-typography-body-sm-font-family);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
+  font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+  line-height: var(--ds-semantic-typography-body-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-sm-letter-spacing);
+}
+
+.ds-switch__hint {
+  color: var(--ds-semantic-color-foreground-muted);
+}
+
+.ds-switch__error {
+  color: var(--ds-semantic-color-foreground-status-danger-default);
+}
+
+/* label and hint: disabled. The spec binds no disabled color for error, so it stays danger. */
+.ds-switch[data-disabled] .ds-switch__label,
+.ds-switch[data-disabled] .ds-switch__hint {
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+/* forced-colors: the system would drop the thumb's fill, so draw track, thumb, and focus ring with
+   system colors. */
+@media (forced-colors: active) {
+  .ds-switch__control,
+  .ds-switch__indicator {
+    forced-color-adjust: none;
+  }
+
+  .ds-switch__control {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .ds-switch__indicator {
+    background: CanvasText;
+  }
+
+  .ds-switch__choice[data-selected] .ds-switch__control {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .ds-switch__choice[data-selected] .ds-switch__indicator {
+    background: HighlightText;
+  }
+
+  .ds-switch__choice[data-disabled] .ds-switch__control {
+    background: Canvas;
+    border-color: GrayText;
+  }
+
+  .ds-switch__choice[data-disabled] .ds-switch__indicator {
+    background: GrayText;
+  }
+
+  .ds-switch__choice[data-focus-visible] .ds-switch__control {
+    outline-color: Highlight;
+  }
+}

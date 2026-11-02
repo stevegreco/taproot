@@ -160,3 +160,66 @@ how many of the three reported it.
 - **The docs site and Storybook show only the web components.** _Docs._ The React mapping is
   served by the CLI and MCP server, but no page shows it, and the docs tests only check the web
   folder.
+
+### Batch 1: Button, Badge, Switch, Checkbox
+
+Four spec-only agents ported these at the same time, following the Tabs conventions. All four
+pass their tests (146 between them), `tsc`, and `get <name> --impl react`.
+
+| Component | Built on | Tests | Rules met / partial / not testable |
+| --- | --- | --- | --- |
+| Button | React Aria `Button` | 45 | 5 / 2 / 3 |
+| Badge | plain React | 26 | 3 / 1 / 0 |
+| Switch | React Aria `SwitchField` | 29 | 5 / 1 / 0 |
+| Checkbox | React Aria `CheckboxField` | 46 | 7 / 1 / 1 |
+
+Badge is plain React because React Aria's tag can be focused, which `not-a-control` forbids. The
+"not testable" rules are content rules, such as `label-describes-result`.
+
+Review fixed two things. Switch used React Aria's native validation, so a submit blocked by an
+error showed "Invalid value." instead of the error text; it now sets the error as the input's
+validation message, as Checkbox does, and a test checks the message. Badge's empty-label warning
+ran on every render.
+
+#### Spec findings
+
+Findings that also came up in Tabs are marked; they are now the clearest pattern in the log.
+
+- **Bindings name colors but not shapes.** _Spec._ [All five components] Border width and style,
+  focus ring width and offset, and indicator geometry are unbound everywhere. Every agent borrowed
+  `semantic.border.width` and the global focus tokens, which no record references. Switch's track
+  size is only in rationale prose, and its thumb size is nowhere. Binding these once, in the records
+  or in a shared guideline, would remove most guesses in the log.
+- **Forced colors names no system colors.** _Spec._ [Tabs, Button, Badge, Switch, Checkbox] Rules
+  say what must stay visible, not which system color each part takes. Button and Badge have no
+  forced-colors rule, so their variants become indistinguishable.
+- **Form behavior lives in the pattern, not the records.** _Spec._ [Switch, Checkbox] "A non-empty
+  error blocks submit" is only in `pattern.form-field`. Neither record says what a person sees when a
+  required checkbox blocks submit with no error.
+- **Form reset contradicts `programmatic-no-events`.** _Spec._ [Switch, Checkbox] `form-value` says
+  reset restores the initial state, but a controlled React value can only be restored by reporting
+  a change, which `programmatic-no-events` forbids. Is reset a programmatic change?
+- **Optional icons have no parameter.** _Spec._ [Button, Badge] Both anatomies mention an optional
+  icon, but nothing says how it is supplied, where it sits, or what size it is.
+- **State that is also a parameter.** _Spec._ [Checkbox] `indeterminate` is a parameter, but
+  activation clears it with no event to tell the owner.
+- **Disabled focus is unstated.** _Spec._ [Button] React Aria removes a disabled button from the tab
+  order, which makes `explain-disabled` harder. The spec does not say either way.
+- **Two events, unclear difference.** _Spec._ [Switch, Checkbox] `input` and `change` are described
+  in nearly the same words. Both agents fire both on every toggle.
+- **The required marker is unspecified.** _Spec._ [Checkbox] "Conveyed by more than color" names no
+  text, marker, or token. The agent added an English " (required)".
+- **Unbound combinations.** _Spec._ Secondary hover and pressed bind no border, the error message
+  has no disabled color while the hint does, and small buttons keep medium label type.
+
+#### Implementation and process findings
+
+- **Agents chose different conventions.** _Process._ Button marks its variant with a class
+  (`ds-button--primary`), Badge with a data attribute (`data-variant`). Switch and Checkbox each
+  wrote their own form-reset handling and chose different validation modes, which caused the Switch
+  bug. The package needs a short conventions section and shared helpers for form fields before the
+  next batch.
+- **React Aria's own form reset reports a change.** _Implementation._ Both form controls had to
+  suppress it to meet `programmatic-no-events`.
+- **React Aria deprecated `Switch` and `Checkbox` in 1.22.** _Implementation._ The ports use the
+  newer `SwitchField` with `SwitchButton` and `CheckboxField` with `CheckboxButton`.
