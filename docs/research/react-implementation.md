@@ -34,6 +34,9 @@ can become a labeled issue at the end.
   callback props, and children. The generated usage section also assumes a custom element. Adding a
   second implementation to `spec.config.json` works, and `get --impl react` reports that nothing is
   implemented yet, so the gap is the file format, not the lookup.
+  _Resolved:_ each implementation in `spec.config.json` now declares its `technology`, and files are
+  checked against that technology's fields. React files name an `export` and map `prop` and
+  `callback` rows. Web files and the docs site are unchanged.
 - **`component:status` assumes web is the only implementation.** _Process._ It checks fixed
   `packages/components` paths, so it cannot report the state of a React port or of a component that
   exists only in React.
@@ -148,4 +151,12 @@ how many of the three reported it.
 
 ## Components
 
-Not started.
+### Tabs
+
+- **The import line is incomplete because Tabs has no items.** _Spec._ `get tabs --impl react`
+  imports only `Tabs`, because the record has no section item to name `TabsSection`. The section
+  API lives only in the mapping file's prose, and the coverage check cannot see it. Modeling
+  sections as items, as Accordion does, would fix both.
+- **The docs site and Storybook show only the web components.** _Docs._ The React mapping is
+  served by the CLI and MCP server, but no page shows it, and the docs tests only check the web
+  folder.
