@@ -1,0 +1,51 @@
+{
+  "name": "@stevegreco/design-system-react",
+  "version": "0.0.1",
+  "description": "React components built from the design system spec and styled with design system tokens.",
+  "keywords": [
+    "design-system",
+    "react"
+  ],
+  "license": "ISC",
+  "author": "Steve Greco",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run",
+    "typecheck": "tsc",
+    "prepack": "pnpm run build"
+  },
+  "dependencies": {
+    "@stevegreco/design-system": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "~6.1.2",
+    "@vitest/browser-playwright": "^5.0.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tsdown": "^0.23.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0",
+    "vitest-browser-react": "^2.3.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
