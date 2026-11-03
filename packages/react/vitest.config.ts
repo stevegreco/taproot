@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     name: "react",
     include: ["test/**/*.test.tsx"],
-    setupFiles: ["test/setup/tokens.ts"],
+    setupFiles: ["test/setup/tokens.ts", "test/setup/pointer.ts"],
     // Process the token stylesheet and component styles. Vitest replaces CSS with an empty module
     // unless it is included here.
     css: { include: [/\.css$/] },
