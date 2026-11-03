@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { loadSpec, validateSpec } from "./index.js";
 import { TECHNOLOGY_NAMES } from "./implementation.js";
+import { loadImplementations } from "./implementation-files.js";
 import { createDtcgResolver, readDtcgTokenNames } from "./tokens-dtcg.js";
 
 export const CONFIG_FILE = "spec.config.json";
@@ -142,7 +143,7 @@ function validateConfig(config, file) {
  * Precedence for the content folder: `contentDir` > config `content` > library default.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
- * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, ImplementationConfig>, constants: Record<string, string>, configPath?: string }}
+ * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, ImplementationConfig & import("./operations.js").ImplementationSource>, constants: Record<string, string>, configPath?: string }}
  */
 export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = {}) {
   const found = configPath ? readConfig(path.resolve(cwd, configPath)) : findConfig(cwd);
@@ -164,7 +165,11 @@ export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = 
   const implementations = Object.fromEntries(
     Object.entries(found?.config.implementations ?? {}).map(([name, { folder, technology }]) => [
       name,
-      { folder: path.resolve(base, folder), technology },
+      {
+        folder: path.resolve(base, folder),
+        technology,
+        load: () => loadImplementations(path.resolve(base, folder), technology),
+      },
     ]),
   );
   return {

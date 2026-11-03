@@ -1,13 +1,10 @@
-import { validateSpec } from "./index.js";
 import {
   ImplementationError,
   checkImplementation,
-  loadImplementations,
   renderImplementation,
 } from "./implementation.js";
-import { schema } from "./schema/info.js";
+import { TOKEN_KEYWORDS, TOKEN_PROPERTIES, schema } from "./schema/info.js";
 import { editDistance, typoAllowance } from "./util.js";
-import { TOKEN_KEYWORDS, TOKEN_PROPERTIES } from "./validate.js";
 
 /**
  * The operations behind both the CLI and the MCP server. Each returns `{ text, data, ok }`:
@@ -18,6 +15,8 @@ import { TOKEN_KEYWORDS, TOKEN_PROPERTIES } from "./validate.js";
  * @typedef {"ERR_UNKNOWN_RECORD" | "ERR_UNKNOWN_SECTION" | "ERR_UNKNOWN_IMPLEMENTATION" | "ERR_NO_IMPLEMENTATION" | "ERR_INVALID_IMPLEMENTATION"} ErrorCode
  * @typedef {{ code: ErrorCode, suggestions: string[] }} ResultError
  * @typedef {{ text: string, data: unknown, ok: boolean, error?: ResultError }} Result
+ * @typedef {{ technology: import("./implementation.js").Technology, load: () => import("./implementation.js").Implementation[] }} ImplementationSource
+ *   Where one implementation's files come from: the file system, or a snapshot.
  */
 
 const cell = (value) =>
@@ -33,7 +32,7 @@ function summaryList(items) {
 /**
  * @param {{ type?: string, tag?: string, status?: string, implementation?: string }} [args]
  *   `implementation` keeps only the components that implementation has a file for.
- * @param {{ implementations?: Record<string, import("./config.js").ImplementationConfig> }} [options]
+ * @param {{ implementations?: Record<string, ImplementationSource> }} [options]
  */
 export function list(spec, { type, tag, status, implementation } = {}, options = {}) {
   let data = spec.list({ type, tag, status });
@@ -53,7 +52,7 @@ export function list(spec, { type, tag, status, implementation } = {}, options =
 export const WEAK_SCORE = 5;
 
 /**
- * @param {{ implementations?: Record<string, import("./config.js").ImplementationConfig>, next?: (id: string, implementations: string[]) => string, browse?: string }} [options]
+ * @param {{ implementations?: Record<string, ImplementationSource>, next?: (id: string, implementations: string[]) => string, browse?: string }} [options]
  *   With `next`, each result is followed by the call that reads it, given every implementation
  *   that has a file for it, in config order, so no technology reads as the default. `browse` names
  *   the call that lists every record, for when nothing fits.
@@ -120,7 +119,7 @@ function resolveTarget(spec, target) {
  * A whole component record leaves out its token table, which is most of its length and rarely
  * needed to choose or use the component. A closing line names the call that reads it.
  *
- * @param {{ implementations?: Record<string, import("./config.js").ImplementationConfig>, implementationHint?: (id: string, names: string[]) => string, tokensHint?: (id: string, count: number) => string }} [options]
+ * @param {{ implementations?: Record<string, ImplementationSource>, implementationHint?: (id: string, names: string[]) => string, tokensHint?: (id: string, count: number) => string }} [options]
  *   Implementations by name, and the lines that tell the caller how to ask for an
  *   implementation or the tokens.
  */
@@ -193,8 +192,7 @@ function getWithImplementation(spec, record, name, folders, options) {
   // with missing values or descriptions.
   let found;
   try {
-    const { folder, technology } = folders[name];
-    found = loadImplementations(folder, technology).find((item) => item.component === record.id);
+    found = folders[name].load().find((item) => item.component === record.id);
     if (found) checkImplementation(found, record);
   } catch (error) {
     if (!(error instanceof ImplementationError)) throw error;
@@ -228,15 +226,15 @@ function getWithImplementation(spec, record, name, folders, options) {
  * cannot be read or parsed is skipped here, so it cannot break `get` or `search`; asking for that
  * implementation reports the error.
  *
- * @param {Record<string, import("./config.js").ImplementationConfig>} folders
+ * @param {Record<string, ImplementationSource>} folders
  * @returns {Map<string, string[]>}
  */
 function implementationIndex(folders) {
   const index = new Map();
-  for (const [name, { folder, technology }] of Object.entries(folders)) {
+  for (const [name, { load }] of Object.entries(folders)) {
     let items;
     try {
-      items = loadImplementations(folder, technology);
+      items = load();
     } catch {
       continue;
     }
@@ -474,12 +472,6 @@ export function format({ resolve } = {}, options = {}) {
     },
     ok: true,
   };
-}
-
-/** @param {import("./index.js").LoadOptions} options */
-export async function validate(options) {
-  const { issues, recordCount } = await validateSpec(options);
-  return formatIssues(issues, recordCount);
 }
 
 /** @param {import("./validate.js").Issue[]} issues */

@@ -105,7 +105,7 @@ describe("loadFromConfig", () => {
       }),
     );
     const { implementations } = resolveConfig({ cwd: tmp });
-    expect(implementations.web).toEqual({
+    expect(implementations.web).toMatchObject({
       folder: path.join(tmp, "impl/web"),
       technology: "web-component",
     });

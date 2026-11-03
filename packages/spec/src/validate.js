@@ -1,9 +1,11 @@
 import { stat } from "node:fs/promises";
 import path from "node:path";
 import { createSpecAjv } from "./schema/ajv.js";
-import { COMMON_FIELDS, RECORD_ID, schema, typeFields } from "./schema/info.js";
+import { COMMON_FIELDS, RECORD_ID, TOKEN_KEYWORDS, schema, typeFields } from "./schema/info.js";
 import { buildSections } from "./sections.js";
 import { byCodeUnit, parameterLists, pointerSegment, recordIdOf } from "./util.js";
+
+export { TOKEN_KEYWORDS, TOKEN_PROPERTIES } from "./schema/info.js";
 
 const validateSchema = createSpecAjv().compile(schema);
 const RECORD_TYPES = schema.properties.type.enum;
@@ -434,37 +436,6 @@ function checkTokens(data, report) {
     }
   }
 }
-
-/**
- * The neutral property names a token binding uses where they fit, as SPEC.md lists them. Other
- * lowercase, hyphenated names are allowed.
- */
-export const TOKEN_PROPERTIES = [
-  "background",
-  "foreground",
-  "border",
-  "border-width",
-  "radius",
-  "gap",
-  "padding-horizontal",
-  "padding-vertical",
-  "focus-ring",
-  "font-family",
-  "font-size",
-  "font-weight",
-  "line-height",
-  "letter-spacing",
-  "motion",
-  "motion-duration",
-  "motion-easing",
-  "shadow",
-  "size",
-  "height",
-  "track",
-];
-
-/** Values that name no token, for a property no token applies to. */
-export const TOKEN_KEYWORDS = ["transparent", "none", "inherit", "linear"];
 
 /**
  * The token tier rule (tokens ADR 0003), the same one `stylesheets.test.js` applies to CSS: colors,

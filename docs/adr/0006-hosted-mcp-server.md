@@ -21,10 +21,11 @@ in `packages/spec`. A shared HTTP connection there uses the MCP SDK's standard w
 response handler, which runs on Workers and on Vercel. `apps/mcp` holds one small entry file per host.
 `packages/spec` never depends on a host.
 
-**Ship a snapshot.** A build script loads the spec with the same library as every other consumer and
-writes one JSON file with the records, links, implementation mappings, token values, and system-wide
-constants. It is plain JSON, not a graph database or a graph format. The file is made during the
-hosted build and is not committed or published.
+**Ship a snapshot.** A build script reads and checks the spec with the same library as every other
+consumer and writes one JSON file with the records, implementation mappings, token values, and
+system-wide constants. Links are rebuilt from the records when the snapshot opens, as they are when
+the source files load. It is plain JSON, not a graph database or a graph format. The file is made
+during the hosted build and is not committed or published.
 
 **A narrow exception to "no compiled format".** The snapshot applies only to hosted deploys. The CLI,
 the local MCP server, and the docs site keep reading the source files, so an edit still shows up
