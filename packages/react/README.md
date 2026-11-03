@@ -1,4 +1,4 @@
-# @stevegreco/design-system-react
+# @stevegreco/react-components
 
 React components built from the design system spec and styled with the design system tokens. The
 package is a second implementation of the spec, and a research project: it checks that the spec is
@@ -15,8 +15,8 @@ Load the token stylesheet and the component stylesheet once, then import compone
 
 ```tsx
 import "@stevegreco/design-system/css";
-import "@stevegreco/design-system-react/style.css";
-import { Tabs, TabsSection } from "@stevegreco/design-system-react";
+import "@stevegreco/react-components/style.css";
+import { Tabs, TabsSection } from "@stevegreco/react-components";
 
 <Tabs accessibleName="Account settings" defaultValue="profile">
   <TabsSection value="profile" label="Profile">…</TabsSection>
@@ -77,14 +77,14 @@ and check a sample of the token bindings with `getComputedStyle`.
 From the repository root:
 
 ```bash
-pnpm exec turbo run build --filter=@stevegreco/design-system-react
-pnpm exec turbo run test --filter=@stevegreco/design-system-react
+pnpm exec turbo run build --filter=@stevegreco/react-components
+pnpm exec turbo run test --filter=@stevegreco/react-components
 ```
 
 `tsdown` bundles `src/index.ts` to `dist/` with type declarations, and `@tsdown/css` collects every
 component stylesheet into `dist/style.css`. Tests run in Chromium through
 Vitest browser mode, with the token stylesheet loaded. `pnpm --filter
-@stevegreco/design-system-react typecheck` checks the types.
+@stevegreco/react-components typecheck` checks the types.
 
 Each component's mapping from React props and events to spec parameters and events goes in
 `implementation/<name>.md`, which `ds-spec get <name> --impl react` serves.

@@ -1,6 +1,6 @@
 ---
 component: component.button
-package: "@stevegreco/design-system-react"
+package: "@stevegreco/react-components"
 export: Button
 usage: |
   <Button variant="primary" onActivate={save}>Save changes</Button>
@@ -63,5 +63,5 @@ Load the token stylesheet and the component stylesheet once, before rendering:
 
 ```tsx
 import "@stevegreco/design-system/css";
-import "@stevegreco/design-system-react/style.css";
+import "@stevegreco/react-components/style.css";
 ```

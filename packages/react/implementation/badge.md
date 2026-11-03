@@ -1,6 +1,6 @@
 ---
 component: component.badge
-package: "@stevegreco/design-system-react"
+package: "@stevegreco/react-components"
 export: Badge
 usage: |
   <Badge variant="success">Active</Badge>
@@ -47,7 +47,7 @@ Load the token stylesheet and the component stylesheet once, before rendering:
 
 ```tsx
 import "@stevegreco/design-system/css";
-import "@stevegreco/design-system-react/style.css";
+import "@stevegreco/react-components/style.css";
 ```
 
 ## Unknown variants
