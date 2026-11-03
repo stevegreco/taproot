@@ -11,3 +11,5 @@ dist
 .env
 
 .pnpm-store/
+
+.wrangler

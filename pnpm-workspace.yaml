@@ -9,6 +9,7 @@ allowBuilds:
   esbuild: true
   fsevents: false
   sharp: true
+  workerd: true
 minimumReleaseAgeExclude:
   - astro@6.3.7
   - blume@1.0.4
