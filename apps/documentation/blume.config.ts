@@ -46,6 +46,16 @@ const componentSpec: ComponentMarkdown = ({ props }) => {
 export default defineConfig({
   title: "Design System",
   description: "A token-first design system for consistent, themeable interfaces.",
+  deployment: {
+    site: "https://docs.stevegreco.workers.dev",
+  },
+  seo: {
+    og: {
+      // Setting a site turns on social cards, and Blume 1.7 passes the theme's
+      // "Source Sans 3" to the card renderer unquoted, which fails the build.
+      fonts: [],
+    },
+  },
   content: {
     sources: [
       // Component pages render from the catalog. Their optional prose files
