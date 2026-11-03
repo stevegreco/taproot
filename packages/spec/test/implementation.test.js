@@ -393,4 +393,40 @@ items:
     );
     expect(() => parseImplementation(react, "x.md", "vue")).toThrow('unknown technology "vue"');
   });
+
+  it("maps an item to the entries of an array prop, with a field row per key", () => {
+    const array = react.replace(
+      "    export: ListEntry\n    api:\n      - { name: label, kind: prop, parameter: label }",
+      "    prop: entries\n    api:\n      - { name: label, kind: field, parameter: label }",
+    );
+    const parsed = parseImplementation(array, "implementation/list.md", "react");
+    expect(parsed.items.entry).toEqual({
+      prop: "entries",
+      api: [{ name: "label", kind: "field", parameter: "label" }],
+    });
+    expect(() => checkImplementation(parsed, listRecord)).not.toThrow();
+    const out = renderImplementation(listRecord, parsed, "react");
+    expect(out).toContain('import { List } from "@acme/react";');
+    expect(out).toContain("### Entry: an entry of `entries`");
+    expect(out).toContain("| `label` | field | parameter `label` | string | Entry text. |");
+    expect(() =>
+      parseImplementation(array.replace("kind: field", "kind: prop"), "x.md", "react"),
+    ).toThrow("kind must be one of field for react");
+    expect(() =>
+      parseImplementation(
+        array.replace("    prop: entries\n", "    prop: entries\n    export: ListEntry\n"),
+        "x.md",
+        "react",
+      ),
+    ).toThrow("items.entry takes `export` or `prop`, not both.");
+    expect(() =>
+      parseImplementation(
+        array
+          .replace("kind: field", "kind: prop")
+          .replace("  - { name: mode, kind: prop", "  - { name: mode, kind: field"),
+        "x.md",
+        "react",
+      ),
+    ).toThrow("kind must be one of prop, callback for react");
+  });
 });

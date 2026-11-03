@@ -24,6 +24,21 @@ api:
     description: The associated form, including association across the shadow boundary.
   - { name: input, kind: event, event: input }
   - { name: change, kind: event, event: change }
+items:
+  choice:
+    tagName: option
+    api:
+      - name: label
+        kind: property
+        parameter: label
+        description: The option's label attribute, or its text when it has none.
+      - { name: value, kind: attribute, parameter: value }
+      - { name: disabled, kind: attribute, parameter: disabled }
+  group:
+    tagName: optgroup
+    api:
+      - { name: label, kind: attribute, parameter: label }
+      - { name: disabled, kind: attribute, parameter: disabled }
 ---
 
 ## Forms

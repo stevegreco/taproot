@@ -40,7 +40,13 @@ anatomy:
     description: Visible name for the value.
   control:
     role: interactive-surface
-    description: Single-choice control and its available options.
+    description: Single-choice control and its available choices, in order.
+  choice:
+    role: container
+    description: One choice the control offers, named by its visible text.
+  group:
+    role: container
+    description: A labeled run of consecutive choices. Groups do not nest.
   hint:
     role: description
     description: Optional supporting guidance.
@@ -76,6 +82,31 @@ parameters:
 events:
   input: The selection changed from user interaction.
   change: The selection was committed from user interaction.
+items:
+  choice:
+    parameters:
+      label:
+        kind: string
+        description: Visible text of the choice, and its accessible name. Required.
+      value:
+        kind: string
+        description: >-
+          Identifies the choice and is what submits. Unique within the select; the value parameter
+          selects the choice whose value it matches. An empty value on the first choice makes it a
+          prompt that a required select rejects.
+      disabled:
+        kind: boolean
+        default: false
+        description: Makes this choice unavailable, while it stays listed.
+  group:
+    parameters:
+      label:
+        kind: string
+        description: Visible name of the group, and its accessible name. Required.
+      disabled:
+        kind: boolean
+        default: false
+        description: Makes every choice in the group unavailable.
 states:
   - disabled
   - invalid
@@ -159,6 +190,12 @@ tokens:
       line-height: semantic.typography.body.sm.lineHeight
       letter-spacing: semantic.typography.body.sm.letterSpacing
 rationale:
+  - decision: Choices and groups are items, and each owns its own options.
+    why: >-
+      Each choice carries a label, a value, and whether it is unavailable, and each group a label
+      and whether all of its choices are unavailable, so they are options of the choice or group,
+      not of the whole select (ADR 0004), as with Radio group's choices. The select's disabled
+      parameter makes every choice unavailable at once.
   - decision: Select consumes semantic tokens directly.
     why: >-
       ADR 0003. Focus, invalid, disabled, surface, and text already have semantic roles. No
