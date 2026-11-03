@@ -37,6 +37,9 @@ usage:
       instead: component.accordion
       why: Tabs always show exactly one panel. Independent sections need their own toggle.
 anatomy:
+  section:
+    role: container
+    description: One tab and the content of its panel. The sections are peers in a set.
   tab-list:
     role: container
     description: The row of tabs, labeled as a set.
@@ -49,8 +52,7 @@ anatomy:
   panel:
     role: container
     description: >-
-      The content of the selected section, shown below the tab list. Each section supplies its
-      tab's label and a unique value.
+      The content of the selected section, shown below the tab list.
 parameters:
   accessibleName:
     kind: string
@@ -63,6 +65,17 @@ parameters:
       The value of the selected section. Empty or unmatched selects the first section.
 events:
   change: The selected tab changed from user interaction.
+items:
+  section:
+    parameters:
+      label:
+        kind: string
+        description: Visible text of the section's tab, and its accessible name. Required.
+      value:
+        kind: string
+        description: >-
+          Identifies the section. Unique within the set; the value parameter selects the section
+          whose value it matches.
 states:
   - default
   - hover
@@ -174,10 +187,11 @@ rationale:
       A row above the panel is the common case. A vertical list beside the panel is closer to
       navigation and can be added as a parameter when a product needs it. There is one size, set
       by the label typography.
-  - decision: Sections are ordered content, not a parameter.
+  - decision: Sections are items, and each section owns its label and value.
     why: >-
-      Each section carries a label, a value, and rich content. The parameter schema describes scalar
-      values only, as with Radio group's options.
+      Each section carries a label, a value, and rich content, so they are options of the section,
+      not of the whole set (ADR 0004), as with Accordion's sections. The order of the sections is
+      the order of the tabs.
   - decision: Tabs have no disabled state.
     covers: [disabled]
     why: >-

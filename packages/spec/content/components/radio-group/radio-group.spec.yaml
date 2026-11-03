@@ -38,7 +38,7 @@ anatomy:
   options:
     role: container
     description: >-
-      Ordered collection of labeled options with unique values and optional unavailability.
+      Ordered collection of the choices.
   choice:
     role: container
     description: One radio control and its visible option label.
@@ -84,6 +84,21 @@ parameters:
 events:
   input: Selection changed from user interaction.
   change: Selection committed from user interaction.
+items:
+  choice:
+    parameters:
+      label:
+        kind: string
+        description: Visible name of the option, and its accessible name. Required.
+      value:
+        kind: string
+        description: >-
+          Identifies the option. Nonempty and unique within the group; the value parameter checks
+          the option whose value it matches.
+      disabled:
+        kind: boolean
+        default: false
+        description: Makes this option unavailable, while the others stay available.
 states:
   - default
   - hover
@@ -214,10 +229,11 @@ tokens:
       line-height: semantic.typography.body.sm.lineHeight
       letter-spacing: semantic.typography.body.sm.letterSpacing
 rationale:
-  - decision: Options are ordered content rather than a scalar parameter.
+  - decision: Choices are items, and each choice owns its label, value, and availability.
     why: >-
-      Each option contains a label and value and disabled state. The current parameter schema
-      describes scalar values only.
+      Each choice carries a label, a value, and whether it is unavailable, so they are options of
+      the choice, not of the whole group (ADR 0004). The group's disabled parameter makes every
+      choice unavailable at once.
   - decision: One size and vertical layout with no density or icon-only option.
     why: >-
       A 16px circular control and visible label suit short lists. Layout around the group controls

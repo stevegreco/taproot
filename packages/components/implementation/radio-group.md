@@ -22,6 +22,16 @@ api:
     kind: property
     type: "HTMLFormElement | null"
     description: The associated form.
+items:
+  choice:
+    tagName: option
+    api:
+      - name: label
+        kind: property
+        parameter: label
+        description: The option's label attribute, or its text when it has none.
+      - { name: value, kind: attribute, parameter: value }
+      - { name: disabled, kind: attribute, parameter: disabled }
 ---
 
 Supply direct native `option` children with unique nonempty `value` attributes and visible text.

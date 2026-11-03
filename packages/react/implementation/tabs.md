@@ -24,6 +24,18 @@ api:
       type: string,
       description: Added to the root element's classes.,
     }
+items:
+  section:
+    export: TabsSection
+    api:
+      - { name: label, kind: prop, parameter: label }
+      - { name: value, kind: prop, parameter: value }
+      - {
+          name: children,
+          kind: prop,
+          type: ReactNode,
+          description: The section's panel content.,
+        }
 ---
 
 ## Sections
