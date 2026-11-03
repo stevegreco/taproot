@@ -136,7 +136,8 @@ records are frozen.
 **so that** it works in any repository.
 
 - `spec.config.json`, found by walking up from the working directory: `content`, `implementations`
-  (technology → folder, such as `web` → `packages/components/implementation`), and `tokens`
+  (a name → `{ folder, technology }`, such as `web` → `{ folder: "packages/components/implementation",
+  technology: "web-component" }`), and `tokens`
   (`format: dtcg`, named sets such as `light` and `dark`, later files win). Paths are relative to
   the config file.
 - The content folder comes from `--content`, then the config. With neither, fail with a message
@@ -160,11 +161,16 @@ parameter names.
   not in the spec content. The spec package only reads the folders the config names, and never
   requires a file to exist. Whether a finished component must have one is for the implementation's
   own tests.
-- Format: Markdown with front matter: `component` (record id), `package`, `tagName`,
-  `defineExport`, `usage`, and `api` rows (`name`, `kind` of attribute, property, or event, the
-  `parameter` or `event` it implements, and `values` when value names differ), `items` (for each
-  record item, the `tagName` of its child element and its own `api` rows), plus a body of
+- Format: Markdown with front matter: `component` (record id), `package`, `usage`, and `api` rows
+  (`name`, `kind`, the `parameter` or `event` it implements, and `values` when value names
+  differ), `items` (for each record item, its own name field and `api` rows), plus a body of
   technology-only guidance.
+- The `technology` in the config decides the fields that name the component and the allowed row
+  kinds. One table in the library defines each technology, so adding one is a table entry:
+  - `web-component`: `tagName` and `defineExport`; rows are `attribute`, `property`, or `event`.
+  - `react`: `export`; rows are `prop` or `callback`.
+  A file is checked against its folder's technology, and an unknown technology fails config
+  validation.
 - Check each file that exists against its record: the component exists; every mapped parameter,
   value, and event exists; and every parameter and event of the record has a row. The same holds
   for each item, and every record item has an entry in `items`. `validate` runs
@@ -173,9 +179,12 @@ parameter names.
 - `get` with an implementation appends the rendered file: package, usage, and an API table whose
   descriptions come from the record, followed by one table per item element.
 
+- A configured folder that does not exist means nothing is implemented in it, not an error.
+
 **Done when** a mapping to a missing parameter, or a record or item parameter with no row, fails
-`validate`, a component with no file passes, and `get` with `web` renders the API tables from a
-fixture folder outside the spec content.
+`validate`, a component with no file passes, a missing folder passes, a field or row kind from the
+wrong technology fails, and `get` renders the API tables for a fixture folder of each technology
+outside the spec content.
 
 ### 8. CLI
 
@@ -189,7 +198,12 @@ fixture folder outside the spec content.
   `ERR_UNKNOWN_SECTION`, `ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, and
   `ERR_INVALID_IMPLEMENTATION`.
 - `ds-spec`: `list`, `search`, `get [--impl <name>]`, `links`, `rules`,
-  `tokens [--part] [--condition] [--property] [--resolve]`, `batch`, `validate`, `help [command]`.
+  `tokens [--part] [--condition] [--property] [--resolve]`, `batch`, `validate`,
+  `help [command]`, and `help format`.
+- `help format` prints what an implementer needs from `SPEC.md` and cannot get from a record: the
+  binding property names and the rule that border width and focus-ring width and offset are
+  system-wide constants a record does not list. Agents read the spec only through the tools, so
+  format decisions they cannot reach get guessed.
   Global flags `--content`, `--config`, and `--json`.
 - `batch` runs several commands in one call and loads the corpus once, such as
   `ds-spec batch --command "get button --impl web" --command "tokens button --resolve"`. Each
@@ -201,12 +215,14 @@ fixture folder outside the spec content.
 - Output details: each search result names the command that reads it; a weak search starts with
   "No strong match" and marks weak hits; `get` on a component ends with lines naming its
   implementations and its token count instead of printing the token table; `rules` prints each
-  rule's applicability.
+  rule's applicability. Hints name every configured implementation equally, never one first.
 - Exit codes: 0 ok, 1 issues, empty result, or unknown id or section, 2 usage error. Commands other
   than `validate` skip broken records and say so on stderr.
 
 - A benchmark script (`pnpm bench`, not part of `pnpm test`) reports how long `ds-spec get button`
   takes on the seed. The target is under 300 ms on a developer machine.
+
+- CLI tests use their own fixture config, never the repository's `spec.config.json`.
 
 **Done when** each command and error code has a test, `batch` returns the same results as the
 separate commands and the exit code of its worst one, `ds-spec get button` finishes in under 1 s in
@@ -220,7 +236,7 @@ a test, and `ds-spec validate` passes on the seed.
 - `ds-spec-mcp` (stdio): one tool per CLI command except `batch` (MCP clients already call
   several tools in one turn), each calling the shared operations layer. A tool's `structuredContent` is the CLI's `--json` output, and a failure puts
   `{ code, suggestions }` in `structuredContent.error`.
-- Each record as a `spec://<id>` resource.
+- Each record as a `spec://<id>` resource, and the `help format` text as `spec://format`.
 - Agent instructions live once in the library: search, get, follow links, cite rules by address,
   read the implementation before writing code, and use `batch` (CLI) or parallel tool calls (MCP)
   for several lookups. They tell agents to use the CLI when they have a terminal and the MCP server

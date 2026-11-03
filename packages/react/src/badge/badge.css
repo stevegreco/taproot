@@ -1,0 +1,80 @@
+/* Badge, styled from the bindings `ds-spec tokens component.badge` lists. One part, surface, with
+   a color set per variant. Badge is not interactive, so it has no state selectors. */
+
+/* surface: base */
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-primitives-space-1);
+  padding-block: var(--ds-primitives-space-1);
+  padding-inline: var(--ds-primitives-space-2);
+  border-radius: var(--ds-semantic-radius-pill);
+  /* The spec binds the border color only. Width and style are a guess: the semantic border width. */
+  border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-subtle);
+  background: var(--ds-semantic-color-background-muted);
+  color: var(--ds-semantic-color-foreground-muted);
+  font-family: var(--ds-semantic-typography-label-sm-font-family);
+  font-size: var(--ds-semantic-typography-label-sm-font-size);
+  font-weight: var(--ds-semantic-typography-label-sm-font-weight);
+  line-height: var(--ds-semantic-typography-label-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-sm-letter-spacing);
+  /* keep-label-short: a badge stays on one line. Not in the spec; a guess. */
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* content: the leading icon matches the label's text size and color (Icon's size.inherit). */
+.ds-badge__icon {
+  display: inline-flex;
+  flex: none;
+  inline-size: 1em;
+  block-size: 1em;
+  color: inherit;
+}
+
+.ds-badge__icon > svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* surface: variant.accent */
+.ds-badge[data-variant="accent"] {
+  background: var(--ds-semantic-color-background-brand-muted);
+  color: var(--ds-semantic-color-foreground-brand-default);
+  border-color: var(--ds-semantic-color-border-brand-muted);
+}
+
+/* surface: variant.success */
+.ds-badge[data-variant="success"] {
+  background: var(--ds-semantic-color-background-status-success-default);
+  color: var(--ds-semantic-color-foreground-status-success-default);
+  border-color: var(--ds-semantic-color-border-status-success-default);
+}
+
+/* surface: variant.danger */
+.ds-badge[data-variant="danger"] {
+  background: var(--ds-semantic-color-background-status-danger-default);
+  color: var(--ds-semantic-color-foreground-status-danger-default);
+  border-color: var(--ds-semantic-color-border-status-danger-default);
+}
+
+/* surface: variant.warning */
+.ds-badge[data-variant="warning"] {
+  background: var(--ds-semantic-color-background-status-warning-default);
+  color: var(--ds-semantic-color-foreground-status-warning-default);
+  border-color: var(--ds-semantic-color-border-status-warning-default);
+}
+
+/* surface: variant.info */
+.ds-badge[data-variant="info"] {
+  background: var(--ds-semantic-color-background-status-info-default);
+  color: var(--ds-semantic-color-foreground-status-info-default);
+  border-color: var(--ds-semantic-color-border-status-info-default);
+}
+
+/* forced-colors: backgrounds are dropped, so the border keeps the badge's outline visible. */
+@media (forced-colors: active) {
+  .ds-badge {
+    border-color: CanvasText;
+  }
+}

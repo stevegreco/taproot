@@ -104,7 +104,7 @@ export async function createSpecServer(options = {}) {
   );
   tool(
     "get",
-    "Read a record as Markdown: a component's contract, or a pattern, guideline, or example. Pass `id#section` to read one section or one rule. Set `implementation` to also get how a technology realizes a component: package, element, and the attribute, property, or event for each parameter and event. Use after `search` to read the top result.",
+    "Read a record as Markdown: a component's contract, or a pattern, guideline, or example. Pass `id#section` to read one section or one rule. Set `implementation` to also get how a technology realizes a component: package, what to import, and the member (attribute, prop, event, or callback) that implements each parameter and event. Use after `search` to read the top result.",
     {
       target: z
         .string()
@@ -125,7 +125,7 @@ export async function createSpecServer(options = {}) {
           tokensHint: (_id, count) =>
             `Tokens: ${count} bindings, left out here. Call \`tokens\` to filter them by part, condition, or property.`,
           implementationHint: (_id, names) =>
-            `Implementation: call \`get\` with implementation "${names[0]}" for the package, element, and attribute names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
+            `Implementation: call \`get\` with implementation "${names[0]}" for the package, import, and API names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
         },
       ),
   );

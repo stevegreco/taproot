@@ -17,7 +17,8 @@ Implement it in whatever technology the project uses.
   \`component.button#label-describes-result\`) with its level (MUST, SHOULD, MAY).
 - Use \`tokens\` for the design tokens a component part uses in a variant or state. Add \`--resolve\`
   (MCP: \`resolve\`) for values.
-- Before writing code, \`get\` the component with \`--impl web\` (MCP: \`implementation: "web"\`) for
-  the package, element name, and the attribute that implements each parameter. Never derive
-  attribute names from parameter names.
+- Before writing code, \`get\` the component with the implementation for your technology:
+  \`--impl web\` for web components, \`--impl react\` for React (MCP: \`implementation\`). It gives the
+  package, what to import, and the attribute or prop that implements each parameter. Never derive
+  those names from parameter names.
 - For several lookups on the MCP server, make the tool calls in parallel.`;

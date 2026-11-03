@@ -1,7 +1,14 @@
 {
   "content": "packages/spec/content",
   "implementations": {
-    "web": "packages/components/implementation"
+    "web": {
+      "folder": "packages/components/implementation",
+      "technology": "web-component"
+    },
+    "react": {
+      "folder": "packages/react/implementation",
+      "technology": "react"
+    }
   },
   "tokens": {
     "format": "dtcg",

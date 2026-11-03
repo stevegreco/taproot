@@ -244,17 +244,18 @@ describe("spec MCP server", () => {
     fs.cpSync(fixture("valid"), tmp, { recursive: true });
     const { client } = await connect({ cwd: tmp, contentDir: tmp, watch: true, debounceMs: 20 });
     const file = path.join(tmp, "thing.spec.yaml");
-    fs.writeFileSync(
-      file,
-      fs.readFileSync(file, "utf8").replace("Use Thing for testing.", "Use Thing for changing."),
-    );
+    const changed = fs
+      .readFileSync(file, "utf8")
+      .replace("Use Thing for testing.", "Use Thing for changing.");
+    // The watcher may not be listening yet when the server starts (recursive watching on Linux is
+    // set up in the background), so write again on each poll until the server sees a change.
     await expect
       .poll(
-        async () =>
-          text(await client.callTool({ name: "search", arguments: { query: "changing" } })),
-        {
-          timeout: 3000,
+        async () => {
+          fs.writeFileSync(file, changed);
+          return text(await client.callTool({ name: "search", arguments: { query: "changing" } }));
         },
+        { timeout: 10000, interval: 200 },
       )
       .toContain("component.thing");
   });

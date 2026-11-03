@@ -1,0 +1,141 @@
+/* Checkbox, styled from the bindings `ds-spec tokens component.checkbox` lists. React Aria exposes
+   state as data attributes on the field and the choice row: [data-selected], [data-indeterminate],
+   [data-hovered], [data-focus-visible], [data-disabled], [data-invalid]. Indeterminate wins over
+   checked: both paint the box the same, and the component renders the dash instead of the mark. */
+
+/* field: base */
+.ds-checkbox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-primitives-space-1);
+}
+
+/* choice: base. The whole row is the click target. */
+.ds-checkbox__choice {
+  display: inline-flex;
+  align-items: flex-start;
+  align-self: flex-start;
+  gap: var(--ds-primitives-space-2);
+  cursor: default;
+}
+
+/* control: base. A fixed 16px square aligned to the first line of the label (rationale). Border
+   width is not in the spec: semantic.border-width is a guess. */
+.ds-checkbox__control {
+  box-sizing: border-box;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 16px;
+  block-size: 16px;
+  margin-block-start: calc(
+    (var(--ds-semantic-typography-body-md-line-height) *
+        var(--ds-semantic-typography-body-md-font-size) - 16px) /
+      2
+  );
+  background: var(--ds-semantic-color-background-surface);
+  border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-default);
+  border-radius: var(--ds-semantic-radius-compact);
+  color: var(--ds-semantic-color-foreground-on-action-primary);
+}
+
+/* control: hover. Only an unchecked, valid box changes on hover. */
+.ds-checkbox__choice[data-hovered]:not([data-selected], [data-indeterminate], [data-invalid])
+  .ds-checkbox__control {
+  border-color: var(--ds-semantic-color-border-strong);
+}
+
+/* control: checked, indeterminate (and their hover). */
+.ds-checkbox__choice:is([data-selected], [data-indeterminate]) .ds-checkbox__control {
+  background: var(--ds-semantic-color-background-action-primary-default);
+  border-color: var(--ds-semantic-color-border-action-primary-default);
+}
+
+/* control: invalid (and invalid + hover, checked + invalid, indeterminate + invalid). */
+.ds-checkbox__choice[data-invalid] .ds-checkbox__control {
+  border-color: var(--ds-semantic-color-border-status-danger-default);
+}
+
+/* control: disabled, in every combination. */
+.ds-checkbox__choice[data-disabled] .ds-checkbox__control {
+  background: var(--ds-semantic-color-background-disabled);
+  border-color: var(--ds-semantic-color-border-disabled);
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+/* control: focus. Width and offset come from the semantic focus tokens; the spec binds only color. */
+.ds-checkbox__choice[data-focus-visible] .ds-checkbox__control {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+/* indicator: base takes the control's color (on-action-primary, or disabled foreground). */
+.ds-checkbox__indicator {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* label: base */
+.ds-checkbox__label {
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
+}
+
+.ds-checkbox__choice[data-disabled] .ds-checkbox__label {
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+/* hint and error: body.sm. Indented to start under the label text; the spec does not say. */
+.ds-checkbox__hint,
+.ds-checkbox__error {
+  padding-inline-start: calc(16px + var(--ds-primitives-space-2));
+  font-family: var(--ds-semantic-typography-body-sm-font-family);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
+  font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+  line-height: var(--ds-semantic-typography-body-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-sm-letter-spacing);
+}
+
+.ds-checkbox__hint {
+  color: var(--ds-semantic-color-foreground-muted);
+}
+
+.ds-checkbox[data-disabled] .ds-checkbox__hint {
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+.ds-checkbox__error {
+  color: var(--ds-semantic-color-foreground-status-danger-default);
+}
+
+/* forced-colors: draw the box, the fill, and the indicator with system colors so every state
+   keeps a visible outline and mark; focus keeps its outline. */
+@media (forced-colors: active) {
+  .ds-checkbox__control,
+  .ds-checkbox__choice[data-invalid] .ds-checkbox__control {
+    forced-color-adjust: none;
+    background: Canvas;
+    border-color: CanvasText;
+    color: HighlightText;
+  }
+
+  .ds-checkbox__choice:is([data-selected], [data-indeterminate]) .ds-checkbox__control {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .ds-checkbox__choice[data-disabled] .ds-checkbox__control {
+    background: Canvas;
+    border-color: GrayText;
+    color: GrayText;
+  }
+
+  .ds-checkbox__choice[data-focus-visible] .ds-checkbox__control {
+    outline-color: Highlight;
+  }
+}

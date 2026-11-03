@@ -1,27 +1,30 @@
 /**
  * Implementation files: how one technology realizes a component record.
  *
- * A component record says what a component is. An implementation file says how, for example, the
- * web component realizes it: package, tag name, registration function, usage markup, the API rows
- * that map web attributes, properties, and events to the record's parameters and events, and
- * optional Markdown guidance. A component with repeated items, such as Accordion's sections, lists
- * the element and API rows that realize each item. Records stay technology-neutral; these files live wherever the
- * implementation does and are found through `implementations` in spec.config.json.
+ * A component record says what a component is. An implementation file says how one technology
+ * realizes it: package, what to import, usage, the API rows that map the technology's members
+ * (web attributes and properties, React props and callbacks) to the record's parameters and events,
+ * and optional Markdown guidance. A component with repeated items, such as Accordion's sections,
+ * lists what realizes each item and its API rows. Records stay technology-neutral; these files live
+ * wherever the implementation does and are found through `implementations` in spec.config.json,
+ * which names each folder's technology.
  *
- * Front matter is validated on load, and every error names the file.
+ * Front matter is validated on load against the technology's fields, and every error names the file.
  */
 import { readFileSync, readdirSync } from "node:fs";
 import { basename, join } from "node:path";
 import { parse } from "yaml";
 import { table } from "./render.js";
 
-/** @typedef {"attribute" | "property" | "event"} ApiMemberKind */
+/** @typedef {"web-component" | "react"} Technology */
+
+/** @typedef {"attribute" | "property" | "event" | "prop" | "callback"} ApiMemberKind */
 
 /**
  * One row of the API table. Spec-backed rows take their text from the component record.
  *
  * @typedef {object} ImplementationApiRow
- * @property {string} name The name in the technology: an attribute, property, or event name.
+ * @property {string} name The name in the technology, such as an attribute, prop, or event name.
  * @property {ApiMemberKind} kind
  * @property {string} [parameter] The record parameter this attribute or property implements.
  * @property {Record<string, string>} [values] Spec value name -> implementation value name, for
@@ -32,19 +35,23 @@ import { table } from "./render.js";
  */
 
 /**
- * How one repeated item of the record is realized.
+ * How one repeated item of the record is realized: by an element for a web component, by an
+ * exported component for React.
  *
  * @typedef {object} ImplementationItem
- * @property {string} tagName
+ * @property {string} [tagName] Web components.
+ * @property {string} [export] React.
  * @property {ImplementationApiRow[]} api
  */
 
 /**
  * @typedef {object} Implementation
+ * @property {Technology} technology
  * @property {string} component Spec record id, such as `component.button`.
  * @property {string} package
- * @property {string} tagName
- * @property {string} defineExport
+ * @property {string} [tagName] Web components: the custom element name.
+ * @property {string} [defineExport] Web components: the function that registers the element.
+ * @property {string} [export] React: the exported component name.
  * @property {string} usage
  * @property {ImplementationApiRow[]} api
  * @property {Record<string, ImplementationItem>} items By record item, such as `section`.
@@ -67,10 +74,66 @@ const COMPONENT_ID = /^component\.[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const TAG_NAME = /^[a-z][a-z0-9]*(-[a-z0-9]+)+$/;
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
-const TOP_KEYS = ["component", "package", "tagName", "defineExport", "usage", "api", "items"];
-const ITEM_KEYS = ["tagName", "api"];
+const COMPONENT_NAME = /^[A-Z][A-Za-z0-9]*$/;
 const ROW_KEYS = ["name", "kind", "parameter", "values", "event", "type", "description"];
-const KINDS = ["attribute", "property", "event"];
+
+/**
+ * What each technology's files hold beyond the shared fields: the fields that say what to import,
+ * the fields that say what realizes an item, the row kinds, and which kind implements an event.
+ * The rest renders the file: what the component is, how to import it, the usage code language, and
+ * the heading for each item.
+ */
+const TECHNOLOGIES = {
+  "web-component": {
+    fields: {
+      tagName: { regex: TAG_NAME, hint: 'a custom element name such as "ds-button"' },
+      defineExport: { regex: IDENTIFIER, hint: "a JavaScript identifier" },
+    },
+    itemFields: {
+      tagName: { regex: TAG_NAME, hint: 'a custom element name such as "ds-tab-panel"' },
+    },
+    kinds: ["attribute", "property", "event"],
+    eventKind: "event",
+    identity: (implementation) => `- Element: ${code(`<${implementation.tagName}>`)}`,
+    importCode: (implementation) =>
+      [
+        "```js",
+        `import { ${implementation.defineExport} } from "${implementation.package}/${implementationSlug(implementation)}";`,
+        "",
+        `${implementation.defineExport}();`,
+        "```",
+      ].join("\n"),
+    language: "html",
+    itemHeading: (part, item) => `${capitalize(part)} element: ${code(`<${item.tagName}>`)}`,
+  },
+  react: {
+    fields: {
+      export: { regex: COMPONENT_NAME, hint: 'a component name such as "Button"' },
+    },
+    itemFields: {
+      export: { regex: COMPONENT_NAME, hint: 'a component name such as "TabsSection"' },
+    },
+    kinds: ["prop", "callback"],
+    eventKind: "callback",
+    identity: (implementation) => `- Component: ${code(implementation.export)}`,
+    importCode: (implementation) => {
+      const names = [
+        implementation.export,
+        ...Object.values(implementation.items).map((item) => item.export),
+      ];
+      return [
+        "```tsx",
+        `import { ${names.join(", ")} } from "${implementation.package}";`,
+        "```",
+      ].join("\n");
+    },
+    language: "tsx",
+    itemHeading: (part, item) => `${capitalize(part)} component: ${code(item.export)}`,
+  },
+};
+
+/** The technologies an implementation folder can declare in spec.config.json. */
+export const TECHNOLOGY_NAMES = Object.keys(TECHNOLOGIES);
 
 /** @returns {value is Record<string, unknown>} */
 function isObject(value) {
@@ -131,16 +194,17 @@ function rejectUnknownKeys(file, where, source, allowed) {
  * @param {number} index
  * @returns {ImplementationApiRow}
  */
-function parseRow(file, raw, index, prefix = "") {
+function parseRow(file, raw, index, technology, prefix = "") {
+  const { kinds, eventKind } = TECHNOLOGIES[technology];
   const where = `${prefix}api[${index}] `;
   if (!isObject(raw)) throw new ImplementationError(file, `${where}must be a mapping.`);
   rejectUnknownKeys(file, where, raw, ROW_KEYS);
   const name = stringField(file, where, raw, "name");
   const kind = raw.kind;
-  if (typeof kind !== "string" || !KINDS.includes(kind)) {
+  if (typeof kind !== "string" || !kinds.includes(kind)) {
     throw new ImplementationError(
       file,
-      `${where}(${name}) kind must be one of ${KINDS.join(", ")}.`,
+      `${where}(${name}) kind must be one of ${kinds.join(", ")} for ${technology}.`,
     );
   }
   /** @type {ImplementationApiRow} */
@@ -155,7 +219,7 @@ function parseRow(file, raw, index, prefix = "") {
     if (!isObject(raw.values) || Object.keys(raw.values).length === 0) {
       throw new ImplementationError(
         file,
-        `${label}values must map spec value names to web value names.`,
+        `${label}values must map spec value names to implementation value names.`,
       );
     }
     for (const [spec, web] of Object.entries(raw.values)) {
@@ -166,11 +230,11 @@ function parseRow(file, raw, index, prefix = "") {
     row.values = /** @type {Record<string, string>} */ (raw.values);
   }
 
-  if (row.kind === "event") {
+  if (row.kind === eventKind) {
     if (row.parameter || row.values || row.type) {
       throw new ImplementationError(
         file,
-        `${label}is an event; it takes "event" and "description", not parameter, values, or type.`,
+        `${label}is ${article(eventKind)}; it takes "event" and "description", not parameter, values, or type.`,
       );
     }
     if (!row.event && !row.description) {
@@ -181,7 +245,10 @@ function parseRow(file, raw, index, prefix = "") {
     }
   } else {
     if (row.event) {
-      throw new ImplementationError(file, `${label}is ${row.kind}; only event rows take "event".`);
+      throw new ImplementationError(
+        file,
+        `${label}is ${article(row.kind)}; only ${eventKind} rows take "event".`,
+      );
     }
     if (!row.parameter && !(row.type && row.description)) {
       throw new ImplementationError(
@@ -197,13 +264,22 @@ function parseRow(file, raw, index, prefix = "") {
 }
 
 /**
- * Parse and validate one implementation file. `file` is used in error messages.
+ * Parse and validate one implementation file against its technology's fields. `file` is used in
+ * error messages.
  *
  * @param {string} source
  * @param {string} file
+ * @param {Technology} technology
  * @returns {Implementation}
  */
-export function parseImplementation(source, file) {
+export function parseImplementation(source, file, technology) {
+  const profile = TECHNOLOGIES[technology];
+  if (!profile) {
+    throw new ImplementationError(
+      file,
+      `unknown technology "${technology}". Known: ${TECHNOLOGY_NAMES.join(", ")}.`,
+    );
+  }
   const match = source.match(FRONT_MATTER);
   if (!match) {
     throw new ImplementationError(file, "must start with YAML front matter between --- lines.");
@@ -218,46 +294,53 @@ export function parseImplementation(source, file) {
     );
   }
   if (!isObject(data)) throw new ImplementationError(file, "front matter must be a mapping.");
-  rejectUnknownKeys(file, "front matter ", data, TOP_KEYS);
+  rejectUnknownKeys(file, "front matter ", data, [
+    "component",
+    "package",
+    ...Object.keys(profile.fields),
+    "usage",
+    "api",
+    "items",
+  ]);
 
   const component = stringField(file, "", data, "component", {
     regex: COMPONENT_ID,
     hint: 'a component record id such as "component.button"',
   });
-  const tagName = stringField(file, "", data, "tagName", {
-    regex: TAG_NAME,
-    hint: 'a custom element name such as "ds-button"',
-  });
-  const defineExport = stringField(file, "", data, "defineExport", {
-    regex: IDENTIFIER,
-    hint: "a JavaScript identifier",
-  });
-  const api = parseApi(file, data.api, "");
+  const own = Object.fromEntries(
+    Object.entries(profile.fields).map(([key, pattern]) => [
+      key,
+      stringField(file, "", data, key, pattern),
+    ]),
+  );
+  const api = parseApi(file, data.api, technology, "");
   /** @type {Record<string, ImplementationItem>} */
   const items = {};
   if (data.items !== undefined) {
     if (!isObject(data.items) || Object.keys(data.items).length === 0) {
-      throw new ImplementationError(file, "items must map each record item to its element.");
+      throw new ImplementationError(file, "items must map each record item to what realizes it.");
     }
     for (const [part, raw] of Object.entries(data.items)) {
       const where = `items.${part} `;
       if (!isObject(raw)) throw new ImplementationError(file, `${where}must be a mapping.`);
-      rejectUnknownKeys(file, where, raw, ITEM_KEYS);
+      rejectUnknownKeys(file, where, raw, [...Object.keys(profile.itemFields), "api"]);
       items[part] = {
-        tagName: stringField(file, where, raw, "tagName", {
-          regex: TAG_NAME,
-          hint: 'a custom element name such as "ds-tab-panel"',
-        }),
-        api: parseApi(file, raw.api, `items.${part}.`),
+        ...Object.fromEntries(
+          Object.entries(profile.itemFields).map(([key, pattern]) => [
+            key,
+            stringField(file, where, raw, key, pattern),
+          ]),
+        ),
+        api: parseApi(file, raw.api, technology, `items.${part}.`),
       };
     }
   }
 
   return {
+    technology,
     component,
     package: stringField(file, "", data, "package"),
-    tagName,
-    defineExport,
+    ...own,
     usage: typeof data.usage === "string" ? data.usage.trim() : "",
     api,
     items,
@@ -272,14 +355,15 @@ export function parseImplementation(source, file) {
  *
  * @param {string} file
  * @param {unknown} raw
+ * @param {Technology} technology
  * @param {string} prefix Where the rows are, such as `items.section.`, for error messages.
  * @returns {ImplementationApiRow[]}
  */
-function parseApi(file, raw, prefix) {
+function parseApi(file, raw, technology, prefix) {
   if (!Array.isArray(raw)) {
     throw new ImplementationError(file, `${prefix}api must be a list of rows.`);
   }
-  const api = raw.map((row, index) => parseRow(file, row, index, prefix));
+  const api = raw.map((row, index) => parseRow(file, row, index, technology, prefix));
   const seen = new Set();
   for (const row of api) {
     const key = `${row.kind}:${row.name}`;
@@ -295,17 +379,22 @@ function parseApi(file, raw, prefix) {
 }
 
 /**
- * Every `*.md` file in `dir`, parsed, in file-name order.
+ * Every `*.md` file in `dir`, parsed as files of `technology`, in file-name order.
  *
  * @param {string} dir
+ * @param {Technology} technology
  * @returns {Implementation[]}
  */
-export function loadImplementations(dir) {
+export function loadImplementations(dir, technology) {
   return readdirSync(dir)
     .filter((name) => name.endsWith(".md"))
     .sort()
     .map((name) =>
-      parseImplementation(readFileSync(join(dir, name), "utf8"), `implementation/${name}`),
+      parseImplementation(
+        readFileSync(join(dir, name), "utf8"),
+        `implementation/${name}`,
+        technology,
+      ),
     );
 }
 
@@ -420,6 +509,7 @@ export function implementationSlug(implementation) {
 
 const code = (value) => `\`${value}\``;
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+const article = (word) => `${/^[aeiou]/.test(word) ? "an" : "a"} ${word}`;
 
 /**
  * One API row's "Values" cell: the record's enum values, renamed where the implementation spells
@@ -442,36 +532,28 @@ function valuesCell(row, parameter) {
 }
 
 /**
- * Render an implementation as a Markdown section to follow its record: package, element and
- * registration, usage, an API table that names the record parameter or event each row implements,
- * and the guidance body with its headings one level down.
+ * Render an implementation as a Markdown section to follow its record: package, what to import,
+ * usage, an API table that names the record parameter or event each row implements, and the
+ * guidance body with its headings one level down.
  *
  * @param {Record<string, any>} record The component record the implementation realizes.
  * @param {Implementation} implementation
  * @param {string} name The implementation set name, such as `web`.
  */
 export function renderImplementation(record, implementation, name) {
+  const profile = TECHNOLOGIES[implementation.technology];
+  const table = (owner, api) => apiTable(owner, api, profile.eventKind);
   const items = Object.entries(implementation.items).map(
     ([part, item]) =>
-      `### ${capitalize(part)} element: ${code(`<${item.tagName}>`)}\n\n${apiTable(record.items?.[part] ?? {}, item.api)}`,
+      `### ${profile.itemHeading(part, item)}\n\n${table(record.items?.[part] ?? {}, item.api)}`,
   );
   const blocks = [
     `## ${capitalize(name)} implementation`,
-    [
-      `- Package: ${code(implementation.package)}`,
-      `- Element: ${code(`<${implementation.tagName}>`)}`,
-    ].join("\n"),
-    [
-      "### Import",
-      "",
-      "```js",
-      `import { ${implementation.defineExport} } from "${implementation.package}/${implementationSlug(implementation)}";`,
-      "",
-      `${implementation.defineExport}();`,
-      "```",
-    ].join("\n"),
-    implementation.usage && `### Usage\n\n\`\`\`html\n${implementation.usage}\n\`\`\``,
-    implementation.api.length > 0 && `### API\n\n${apiTable(record, implementation.api)}`,
+    [`- Package: ${code(implementation.package)}`, profile.identity(implementation)].join("\n"),
+    `### Import\n\n${profile.importCode(implementation)}`,
+    implementation.usage &&
+      `### Usage\n\n\`\`\`${profile.language}\n${implementation.usage}\n\`\`\``,
+    implementation.api.length > 0 && `### API\n\n${table(record, implementation.api)}`,
     ...items,
     implementation.body.replace(/^(#{2,5}) /gm, "#$1 "),
   ];
@@ -483,8 +565,9 @@ export function renderImplementation(record, implementation, name) {
  *
  * @param {{ parameters?: Record<string, any>, events?: Record<string, string> }} owner
  * @param {ImplementationApiRow[]} api
+ * @param {string} eventKind The row kind that implements an event, which has no values.
  */
-function apiTable(owner, api) {
+function apiTable(owner, api, eventKind) {
   const rows = api.map((row) => {
     const parameter = row.parameter ? owner.parameters?.[row.parameter] : undefined;
     const implementsCell = row.parameter
@@ -501,7 +584,7 @@ function apiTable(owner, api) {
       code(row.name),
       row.kind,
       implementsCell,
-      row.kind === "event" ? "" : valuesCell(row, parameter),
+      row.kind === eventKind ? "" : valuesCell(row, parameter),
       description,
     ];
   });

@@ -1,0 +1,102 @@
+/* Dialog, styled from the bindings `ds-spec tokens component.dialog` lists. There is no opening or
+   closing animation (the spec's rationale), so reduced motion needs no separate treatment. */
+
+/* backdrop: base. The root covers the viewport and centers the dialog. The gutter between the
+   dialog and the viewport edge is not in the spec: primitives.space.4 is a guess. The stacking
+   order is not in the spec either. */
+.ds-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: var(--ds-primitives-space-4);
+  background: var(--ds-semantic-color-background-overlay);
+}
+
+/* React Aria's modal element. Not an anatomy part, so it adds no box of its own. */
+.ds-dialog__modal {
+  display: contents;
+}
+
+/* dialog: base. The spec bounds the width by the viewport but names no width: 32rem is a guess.
+   The border width is not bound in the spec: the semantic border width is a guess. */
+.ds-dialog__dialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-primitives-space-4);
+  inline-size: min(32rem, 100%);
+  max-block-size: 100%;
+  overflow: hidden;
+  padding-block: var(--ds-primitives-space-6);
+  padding-inline: var(--ds-primitives-space-6);
+  color: var(--ds-semantic-color-foreground-default);
+  background: var(--ds-semantic-color-background-surface);
+  border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-default);
+  border-radius: var(--ds-semantic-radius-surface);
+  box-shadow: var(--ds-semantic-elevation-lg);
+  outline: none;
+}
+
+/* title: base */
+.ds-dialog__title {
+  flex: none;
+  margin: 0;
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-title-font-family);
+  font-size: var(--ds-semantic-typography-title-font-size);
+  font-weight: var(--ds-semantic-typography-title-font-weight);
+  line-height: var(--ds-semantic-typography-title-line-height);
+  letter-spacing: var(--ds-semantic-typography-title-letter-spacing);
+}
+
+/* title: focus. The title only takes focus programmatically, on opening, and the spec requires the
+   ring then too, so this uses :focus, not :focus-visible. Width and offset come from the semantic
+   focus tokens; the spec binds only the color. */
+.ds-dialog__title:focus {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+/* description: base. The spec binds no font weight or letter spacing; body.md's are used. */
+.ds-dialog__description {
+  flex: none;
+  margin: 0;
+  color: var(--ds-semantic-color-foreground-muted);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
+}
+
+/* content: base. It takes the remaining height and scrolls when the task overflows, so the title
+   and actions stay in view. The spec binds no tokens for content. */
+.ds-dialog__content {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow: auto;
+}
+
+/* actions: base. Alignment at the inline end is not in the spec: it is a guess. */
+.ds-dialog__actions {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--ds-primitives-space-2);
+}
+
+/* forced-colors: the system drops the shadow, so draw the boundary and focus ring in system
+   colors. */
+@media (forced-colors: active) {
+  .ds-dialog__dialog {
+    border-color: CanvasText;
+  }
+
+  .ds-dialog__title:focus {
+    outline-color: Highlight;
+  }
+}

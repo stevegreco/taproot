@@ -268,7 +268,7 @@ describe("ds-spec CLI, implementations", () => {
     const { out } = cli(["get", "component.button"]);
     expect(out).not.toContain("## Web implementation");
     expect(out.trimEnd().split("\n").slice(-2)).toEqual([
-      "Implementation: run `ds-spec get component.button --impl web` for the package, element, and attribute names.",
+      "Implementation: run `ds-spec get component.button --impl web` for the package, import, and API names (available: web, react).",
       "Tokens: 50 bindings, left out here. Run `ds-spec tokens component.button` to filter them by part, condition, or property.",
     ]);
     expect(cli(["get", "pattern.action-hierarchy"]).out).not.toContain("Implementation:");
@@ -286,7 +286,7 @@ describe("ds-spec CLI, implementations", () => {
     expect(pattern.out).toContain("No web implementation for pattern.action-hierarchy.");
     const unknown = cli(["get", "component.button", "--impl", "ios"]);
     expect(unknown.code).toBe(1);
-    expect(unknown.out).toContain('No implementation named "ios". Configured: web.');
+    expect(unknown.out).toContain('No implementation named "ios". Configured: web, react.');
     const section = cli(["get", "component.button#rules", "--impl", "web"]);
     expect(section.code).toBe(2);
     expect(section.err).toContain("not a section");
@@ -307,7 +307,7 @@ describe("ds-spec CLI, implementations", () => {
       path.join(tmp, "spec.config.json"),
       JSON.stringify({
         content: path.join(repoRoot, "packages/spec/content"),
-        implementations: { web: "web" },
+        implementations: { web: { folder: "web", technology: "web-component" } },
       }),
     );
     const r = cli(["get", "button", "--impl", "web", "--json"], tmp);
@@ -459,7 +459,10 @@ describe("ds-spec CLI, forgiving lookups", () => {
     expect(section.code).toBe("ERR_UNKNOWN_SECTION");
     expect(section.suggestions).toContain("component.button#rules");
     const impl = JSON.parse(cli(["get", "button", "--impl", "ios", "--json"]).out);
-    expect(impl).toMatchObject({ code: "ERR_UNKNOWN_IMPLEMENTATION", suggestions: ["web"] });
+    expect(impl).toMatchObject({
+      code: "ERR_UNKNOWN_IMPLEMENTATION",
+      suggestions: ["web", "react"],
+    });
     const none = JSON.parse(
       cli(["get", "pattern.action-hierarchy", "--impl", "web", "--json"]).out,
     );
