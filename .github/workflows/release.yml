@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+
+jobs:
+  release:
+    name: Version or publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      # npm trusted publishing signs in with this instead of a stored token.
+      id-token: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # With changesets pending, this opens or updates the Version Packages pull request. Without
+      # any, it publishes each package whose version is not on npm yet.
+      - name: Open the release pull request or publish
+        uses: changesets/action@v2.1.2
+        with:
+          publish-script: pnpm changeset publish
