@@ -128,6 +128,14 @@ rules:
         - "Profile, Notifications, Billing"
       avoid:
         - "Profile settings, Notification settings, Billing settings"
+  - id: unique-values
+    level: must
+    topic: content
+    statement: >-
+      Each section has a value that differs from the others, so the value parameter selects exactly
+      one section.
+    references:
+      - component.tabs#items.section.parameters.value
   - id: few-tabs
     level: should
     topic: content
@@ -190,8 +198,8 @@ rationale:
   - decision: Sections are items, and each section owns its label and value.
     why: >-
       Each section carries a label, a value, and rich content, so they are options of the section,
-      not of the whole set (ADR 0004), as with Accordion's sections. The order of the sections is
-      the order of the tabs.
+      not of the whole set (ADR 0004). Accordion's sections are items the same way. The order of
+      the sections is the order of the tabs.
   - decision: Tabs have no disabled state.
     covers: [disabled]
     why: >-

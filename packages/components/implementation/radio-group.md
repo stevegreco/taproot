@@ -29,7 +29,8 @@ items:
       - name: label
         kind: property
         parameter: label
-        description: The option's label attribute, or its text when it has none.
+        description: >-
+          The option's text. A label attribute, when present, replaces the text as the label.
       - { name: value, kind: attribute, parameter: value }
       - { name: disabled, kind: attribute, parameter: disabled }
 ---
