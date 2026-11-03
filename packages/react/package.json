@@ -1,6 +1,7 @@
 {
   "name": "@stevegreco/react-components",
   "version": "0.0.1",
+  "private": true,
   "description": "React components built from the design system spec and styled with design system tokens.",
   "keywords": [
     "design-system",
@@ -26,9 +27,6 @@
     ".": "./dist/index.js",
     "./style.css": "./dist/style.css",
     "./package.json": "./package.json"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "scripts": {
     "clean": "rm -rf dist",

@@ -5,6 +5,7 @@ import { SpecError } from "./index.js";
 import { loadFromConfig, resolveConfig, validateFromConfig } from "./config.js";
 import * as ops from "./operations.js";
 import { AGENT_INSTRUCTIONS } from "./agents.js";
+import packageJson from "../package.json" with { type: "json" };
 
 const TYPES = ["component", "pattern", "guideline", "example"];
 const LINK_KINDS = [
@@ -42,7 +43,7 @@ export async function createSpecServer(options = {}) {
   let warning;
 
   const server = new McpServer(
-    { name: "design-system-spec", version: "0.0.1" },
+    { name: "design-system-spec", version: packageJson.version },
     { instructions: AGENT_INSTRUCTIONS },
   );
 

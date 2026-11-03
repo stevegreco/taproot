@@ -128,3 +128,10 @@ pnpm exec turbo run dev --filter=documentation
 After packages are already built, `pnpm exec vitest run` still runs the Vitest 5 workspace from the
 repo root. Prefer `pnpm test` in a clean tree. Use `pnpm --filter <pkg> exec …` only for commands
 that are not package scripts with workspace build dependencies, such as `blume validate`.
+
+## Releases
+
+`@stevegreco/design-system`, `@stevegreco/web-components`, and `@stevegreco/design-system-spec` are
+published to npm with Changesets. A change to one of them adds a changeset with `pnpm changeset`, in
+the same pull request. Merging to `main` opens or updates a Version Packages pull request, and
+merging that one publishes. `@stevegreco/react-components` is private and is not published.
