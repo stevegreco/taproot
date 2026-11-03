@@ -4,8 +4,10 @@
  * A component record says what a component is. An implementation file says how one technology
  * realizes it: package, what to import, usage, the API rows that map the technology's members
  * (web attributes and properties, React props and callbacks) to the record's parameters and events,
- * and optional Markdown guidance. A component with repeated items, such as Accordion's sections,
- * lists what realizes each item and its API rows. Records stay technology-neutral; these files live
+ * and optional Markdown guidance. A component with options on one part, such as Card's title, lists
+ * the API rows for each part and, when the part is its own element or component, what realizes it.
+ * A component with repeated items, such as Accordion's sections, lists what realizes each item and
+ * its API rows. Records stay technology-neutral; these files live
  * wherever the implementation does and are found through `implementations` in spec.config.json,
  * which names each folder's technology.
  *
@@ -35,6 +37,16 @@ import { table } from "./render.js";
  */
 
 /**
+ * How one part of the record that appears once is realized. Without a tag name or export, its rows
+ * are members of the component itself; with one, the part is its own element or component.
+ *
+ * @typedef {object} ImplementationPart
+ * @property {string} [tagName] Web components.
+ * @property {string} [export] React.
+ * @property {ImplementationApiRow[]} api
+ */
+
+/**
  * How one repeated item of the record is realized: by an element for a web component, by an
  * exported component for React.
  *
@@ -54,6 +66,7 @@ import { table } from "./render.js";
  * @property {string} [export] React: the exported component name.
  * @property {string} usage
  * @property {ImplementationApiRow[]} api
+ * @property {Record<string, ImplementationPart>} parts By record part, such as `title`.
  * @property {Record<string, ImplementationItem>} items By record item, such as `section`.
  * @property {string} body Markdown guidance; each `##` section is one topic.
  * @property {string} file File name, for error messages.
@@ -105,6 +118,10 @@ const TECHNOLOGIES = {
       ].join("\n"),
     language: "html",
     itemHeading: (part, item) => `${capitalize(part)} element: ${code(`<${item.tagName}>`)}`,
+    partHeading: (part, owner, implementation) =>
+      owner.tagName
+        ? `${capitalize(part)} element: ${code(`<${owner.tagName}>`)}`
+        : `${capitalize(part)} part, on ${code(`<${implementation.tagName}>`)}`,
   },
   react: {
     fields: {
@@ -119,6 +136,7 @@ const TECHNOLOGIES = {
     importCode: (implementation) => {
       const names = [
         implementation.export,
+        ...Object.values(implementation.parts).flatMap((part) => part.export ?? []),
         ...Object.values(implementation.items).map((item) => item.export),
       ];
       return [
@@ -129,6 +147,10 @@ const TECHNOLOGIES = {
     },
     language: "tsx",
     itemHeading: (part, item) => `${capitalize(part)} component: ${code(item.export)}`,
+    partHeading: (part, owner, implementation) =>
+      owner.export
+        ? `${capitalize(part)} component: ${code(owner.export)}`
+        : `${capitalize(part)} part, on ${code(implementation.export)}`,
   },
 };
 
@@ -300,6 +322,7 @@ export function parseImplementation(source, file, technology) {
     ...Object.keys(profile.fields),
     "usage",
     "api",
+    "parts",
     "items",
   ]);
 
@@ -314,6 +337,26 @@ export function parseImplementation(source, file, technology) {
     ]),
   );
   const api = parseApi(file, data.api, technology, "");
+  /** @type {Record<string, ImplementationPart>} */
+  const parts = {};
+  if (data.parts !== undefined) {
+    if (!isObject(data.parts) || Object.keys(data.parts).length === 0) {
+      throw new ImplementationError(file, "parts must map each record part to its api rows.");
+    }
+    for (const [part, raw] of Object.entries(data.parts)) {
+      const where = `parts.${part} `;
+      if (!isObject(raw)) throw new ImplementationError(file, `${where}must be a mapping.`);
+      rejectUnknownKeys(file, where, raw, [...Object.keys(profile.itemFields), "api"]);
+      parts[part] = {
+        ...Object.fromEntries(
+          Object.entries(profile.itemFields)
+            .filter(([key]) => raw[key] !== undefined)
+            .map(([key, pattern]) => [key, stringField(file, where, raw, key, pattern)]),
+        ),
+        api: parseApi(file, raw.api, technology, `parts.${part}.`),
+      };
+    }
+  }
   /** @type {Record<string, ImplementationItem>} */
   const items = {};
   if (data.items !== undefined) {
@@ -343,6 +386,7 @@ export function parseImplementation(source, file, technology) {
     ...own,
     usage: typeof data.usage === "string" ? data.usage.trim() : "",
     api,
+    parts,
     items,
     body: source.slice(match[0].length).trim(),
     file,
@@ -350,7 +394,7 @@ export function parseImplementation(source, file, technology) {
 }
 
 /**
- * The rows may be empty, as for a component whose options all belong to its items;
+ * The rows may be empty, as for a component whose options all belong to its parts or items;
  * `checkImplementation` requires a row for each parameter and event the record declares.
  *
  * @param {string} file
@@ -410,7 +454,8 @@ export function loadImplementations(dir, technology) {
  * Check an implementation against the component record it implements, so a broken mapping fails
  * instead of serving incomplete guidance. The record must be a component, the file must be named
  * after it, every parameter and event needs a row, and every row must name a parameter, value, or
- * event the record has. The same holds for each item, and every record item needs an element.
+ * event the record has. The same holds for each part and item, and every record part and item
+ * needs an entry.
  *
  * @param {Implementation} implementation
  * @param {Record<string, any> | undefined} record The record `implementation.component` names.
@@ -433,27 +478,33 @@ export function checkImplementation(implementation, record) {
     );
   }
   checkApi(file, implementation.api, record, record.id);
-  const recordItems = record.items ?? {};
-  for (const [part, item] of Object.entries(implementation.items)) {
-    if (!(part in recordItems)) {
+  for (const [field, noun, hint] of [
+    ["parts", "part", "Add its api rows."],
+    ["items", "item", "Add its element and api rows."],
+  ]) {
+    const recordOwners = record[field] ?? {};
+    for (const [part, owner] of Object.entries(implementation[field])) {
+      if (!(part in recordOwners)) {
+        throw new ImplementationError(
+          file,
+          `${field}.${part} implements ${article(noun)} ${record.id} does not have. Its ${field}: ${Object.keys(recordOwners).join(", ") || "none"}.`,
+        );
+      }
+      checkApi(file, owner.api, recordOwners[part], `${record.id} ${noun} "${part}"`);
+    }
+    const missing = Object.keys(recordOwners).filter((part) => !(part in implementation[field]));
+    if (missing.length > 0) {
       throw new ImplementationError(
         file,
-        `items.${part} implements an item ${record.id} does not have. Its items: ${Object.keys(recordItems).join(", ") || "none"}.`,
+        `${field} does not cover ${record.id} ${noun}${missing.length === 1 ? "" : "s"} ${missing.map((part) => `"${part}"`).join(", ")}. ${hint}`,
       );
     }
-    checkApi(file, item.api, recordItems[part], `${record.id} item "${part}"`);
-  }
-  const missingItems = Object.keys(recordItems).filter((part) => !(part in implementation.items));
-  if (missingItems.length > 0) {
-    throw new ImplementationError(
-      file,
-      `items does not cover ${record.id} item${missingItems.length === 1 ? "" : "s"} ${missingItems.map((part) => `"${part}"`).join(", ")}. Add its element and api rows.`,
-    );
   }
 }
 
 /**
- * Check API rows against the parameters and events they implement: a component's, or one item's.
+ * Check API rows against the parameters and events they implement: a component's, or one part's or
+ * item's.
  *
  * @param {string} file
  * @param {ImplementationApiRow[]} api
@@ -551,6 +602,10 @@ function valuesCell(row, parameter) {
 export function renderImplementation(record, implementation, name) {
   const profile = TECHNOLOGIES[implementation.technology];
   const table = (owner, api) => apiTable(owner, api, profile.eventKind);
+  const parts = Object.entries(implementation.parts).map(
+    ([part, owner]) =>
+      `### ${profile.partHeading(part, owner, implementation)}\n\n${table(record.parts?.[part] ?? {}, owner.api)}`,
+  );
   const items = Object.entries(implementation.items).map(
     ([part, item]) =>
       `### ${profile.itemHeading(part, item)}\n\n${table(record.items?.[part] ?? {}, item.api)}`,
@@ -562,6 +617,7 @@ export function renderImplementation(record, implementation, name) {
     implementation.usage &&
       `### Usage\n\n\`\`\`${profile.language}\n${implementation.usage}\n\`\`\``,
     implementation.api.length > 0 && `### API\n\n${table(record, implementation.api)}`,
+    ...parts,
     ...items,
     implementation.body.replace(/^(#{2,5}) /gm, "#$1 "),
   ];
@@ -569,7 +625,8 @@ export function renderImplementation(record, implementation, name) {
 }
 
 /**
- * The API table for rows that implement a component's, or one item's, parameters and events.
+ * The API table for rows that implement a component's, or one part's or item's, parameters and
+ * events.
  *
  * @param {{ parameters?: Record<string, any>, events?: Record<string, string> }} owner
  * @param {ImplementationApiRow[]} api

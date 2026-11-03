@@ -159,6 +159,7 @@ rationale:
 | `anatomy`       | yes      | Named parts in reading order, each with a `role` and a `description`.                   |
 | `parameters`    | no       | Options, each with a `kind`: `enum`, `boolean`, `string`, or `number`.                  |
 | `events`        | no       | What the component reports, by name, with a description.                                |
+| `parts`         | no       | Parts that appear once and have options of their own, with those parameters and events. See [Parts](#parts). |
 | `items`         | no       | Parts the author repeats, with the parameters and events each copy has. See [Items](#items). |
 | `states`        | no       | Interaction and data states, such as `hover`, `disabled`, or `checked`. Order has no meaning. |
 | `preferences`   | no       | User preferences the component responds to, with their values.                         |
@@ -189,6 +190,33 @@ parameters:
       destructive: pattern.action-hierarchy#destructive
 ```
 
+### Parts
+
+Some options shape one part that appears at most once, such as a card's title. `parts` lists them,
+keyed by that anatomy part, with its `parameters` and `events`. They take the same shape as the
+component's own, and the same checks apply. Options that shape the whole component, or more than
+one part, stay in the component's `parameters`.
+
+```yaml
+anatomy:
+  title:
+    role: label
+    description: Names the subject.
+
+parts:
+  title:
+    parameters:
+      label:
+        kind: string
+        description: Text of the title.
+      headingLevel:
+        kind: number
+        default: 3
+```
+
+`parts` says which part an option belongs to, not how an implementation exposes it. One
+implementation may set it on the component, another on a separate child for the part.
+
 ### Items
 
 Some components are built from a part the author repeats: each section of an accordion, each panel
@@ -215,9 +243,10 @@ items:
         default: false
 ```
 
-The anatomy part still says what the part is. States, rules, accessibility, and tokens describe the
-whole component. A token condition names a component parameter or state, not an item parameter, so
-an item option that changes how the item looks has a matching state, such as `expanded`.
+For both `parts` and `items`, the anatomy part still says what the part is. A part is in one or the
+other, never both. States, rules, accessibility, and tokens describe the whole component. A token
+condition names a component parameter or state, not a part or item parameter, so a part or item
+option that changes how it looks has a matching state, such as `expanded`.
 
 ### Rules
 
@@ -349,9 +378,9 @@ A link target is a record ID, optionally followed by `#` and a section:
   skipping any an earlier heading took, so headings `Foo`, `Foo`, and `Foo-1` are `foo`, `foo-1`,
   and `foo-1-1`.
 - In a component record, a section is a rule ID, a top-level field (`usage`, `anatomy`,
-  `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, `events`, or
-  `items`, such as `parameters.variant`, `parameters.variant.destructive`, or
-  `items.section.parameters.label`.
+  `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, `events`,
+  `parts`, or `items`, such as `parameters.variant`, `parameters.variant.destructive`,
+  `parts.title.parameters.label`, or `items.section.parameters.label`.
   A parameter value's section holds its meaning with the example and guidance paired with it.
 - In an example record, a section is also an annotation ID. It must not repeat another annotation
   ID or a heading's slug.
@@ -368,8 +397,8 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Annotation IDs are unique within an example, and none is also a heading's slug.
 - Rule IDs are unique within a record, and do not collide with a top-level field name.
 - An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`. This
-  holds for item parameters too.
-- Every `items` key is an anatomy part.
+  holds for part and item parameters too.
+- Every `parts` and `items` key is an anatomy part, and no part is in both.
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum
   value or boolean (`true` or `false`) of a declared parameter, or a declared preference value.
 - Every token reference is one of the keywords `transparent`, `none`, `inherit`, or `linear`, or

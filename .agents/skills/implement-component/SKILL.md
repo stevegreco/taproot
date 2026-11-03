@@ -100,8 +100,10 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
 
 - `packages/components/implementation/<name>.md`: replace the `usage` placeholder, and add `api`
   rows for anything the scaffold could not derive, such as extra properties. When the spec has
-  `items`, add an `items` block that names each item's child element and gives its own `api` rows,
-  as `implementation/accordion.md` does; the check fails until every item parameter has a row. The body is
+  `parts`, add a `parts` block with each part's `api` rows, as `implementation/card.md` does, and a
+  `tagName` only when the part is its own child element. When the spec has `items`, add an `items`
+  block that names each item's child element and gives its own `api` rows, as
+  `implementation/accordion.md` does. The check fails until every part and item parameter has a row. The body is
   web-specific guidance only, in three sections: Slots, The hidden attribute, and Framework notes.
   Behavior is in the spec's rules, so cite a rule by address (`component.<name>#<rule-id>`) rather
   than restating it. `implementation/alert.md` is the example. This file gives the component its docs

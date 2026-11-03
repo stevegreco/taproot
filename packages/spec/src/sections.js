@@ -73,22 +73,23 @@ function addComponentSections(data, add) {
       }
     } else if (key === "parameters") {
       addParameters("parameters", value, add);
-    } else if (key === "items") {
-      for (const [part, item] of Object.entries(value)) {
-        add(`items.${part}`, { title: part, content: item, kind: "field" });
-        if (!isObject(item)) continue;
-        if (isObject(item.parameters)) {
-          add(`items.${part}.parameters`, {
+    } else if (key === "parts" || key === "items") {
+      for (const [part, options] of Object.entries(value)) {
+        const base = `${key}.${part}`;
+        add(base, { title: part, content: options, kind: "field" });
+        if (!isObject(options)) continue;
+        if (isObject(options.parameters)) {
+          add(`${base}.parameters`, {
             title: "parameters",
-            content: item.parameters,
+            content: options.parameters,
             kind: "field",
           });
-          addParameters(`items.${part}.parameters`, item.parameters, add);
+          addParameters(`${base}.parameters`, options.parameters, add);
         }
-        if (isObject(item.events)) {
-          add(`items.${part}.events`, { title: "events", content: item.events, kind: "field" });
-          for (const [name, text] of Object.entries(item.events)) {
-            add(`items.${part}.events.${name}`, { title: name, content: text, kind: "field" });
+        if (isObject(options.events)) {
+          add(`${base}.events`, { title: "events", content: options.events, kind: "field" });
+          for (const [name, text] of Object.entries(options.events)) {
+            add(`${base}.events.${name}`, { title: name, content: text, kind: "field" });
           }
         }
       }

@@ -484,6 +484,22 @@ describe("ds-spec CLI, items", () => {
   });
 });
 
+describe("ds-spec CLI, parts", () => {
+  it("prints a part's parameters as a table, in the record and as a section", () => {
+    const { out } = cli(["get", "component.card"]);
+    expect(out).toContain("## Parts\n\n### title\n\nThe `title` carries these.");
+    const part = cli(["get", "component.card#parts.title.parameters.headingLevel"]);
+    expect(part.code).toBe(0);
+    expect(part.out).toMatch(/^## headingLevel\n/);
+  });
+
+  it("maps a part's attributes on the element in the web implementation", () => {
+    const { out } = cli(["get", "component.card", "--impl", "web"], impls);
+    expect(out).toContain("### Title part, on `<ds-card>`");
+    expect(out).toContain("| `heading-level` | attribute | parameter `headingLevel` | number |");
+  });
+});
+
 describe("ds-spec CLI, short records", () => {
   it("leaves the token table out of a whole component record", () => {
     for (const args of [

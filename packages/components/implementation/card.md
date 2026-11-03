@@ -15,11 +15,14 @@ usage: |
     </li>
   </ul>
 api:
-  - { name: label, kind: attribute, parameter: label }
   - { name: href, kind: attribute, parameter: href }
-  - { name: heading-level, kind: attribute, parameter: headingLevel }
-  - { name: headingLevel, kind: property, parameter: headingLevel }
   - { name: click, kind: event, event: activate }
+parts:
+  title:
+    api:
+      - { name: label, kind: attribute, parameter: label }
+      - { name: heading-level, kind: attribute, parameter: headingLevel }
+      - { name: headingLevel, kind: property, parameter: headingLevel }
 ---
 
 ## Slots

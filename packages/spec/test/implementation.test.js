@@ -215,6 +215,102 @@ items:
   });
 });
 
+describe("parts", () => {
+  const cardRecord = {
+    id: "component.card",
+    type: "component",
+    parameters: { href: { kind: "string", description: "Where the card leads." } },
+    parts: {
+      title: {
+        parameters: { label: { kind: "string", description: "Text of the title." } },
+      },
+    },
+  };
+  const source = (parts) => `---
+component: component.card
+package: "@acme/ui"
+tagName: acme-card
+defineExport: defineCard
+api:
+  - { name: href, kind: attribute, parameter: href }
+${parts}---
+`;
+  const onComponent = parseImplementation(
+    source(`parts:
+  title:
+    api:
+      - { name: label, kind: attribute, parameter: label }
+`),
+    "implementation/card.md",
+    "web-component",
+  );
+
+  it("sets a part's rows on the component when the part has no element", () => {
+    expect(onComponent.parts.title.tagName).toBeUndefined();
+    expect(() => checkImplementation(onComponent, cardRecord)).not.toThrow();
+    const out = renderImplementation(cardRecord, onComponent, "web");
+    expect(out).toContain("### Title part, on `<acme-card>`");
+    expect(out).toContain(
+      "| `label` | attribute | parameter `label` | string | Text of the title. |",
+    );
+  });
+
+  it("names the element when the part is its own", () => {
+    const child = parseImplementation(
+      source(`parts:
+  title:
+    tagName: acme-card-title
+    api:
+      - { name: label, kind: attribute, parameter: label }
+`),
+      "implementation/card.md",
+      "web-component",
+    );
+    expect(() => checkImplementation(child, cardRecord)).not.toThrow();
+    expect(renderImplementation(cardRecord, child, "web")).toContain(
+      "### Title element: `<acme-card-title>`",
+    );
+  });
+
+  it("imports a React part's own component", () => {
+    const react = parseImplementation(
+      `---
+component: component.card
+package: "@acme/react"
+export: Card
+api:
+  - { name: href, kind: prop, parameter: href }
+parts:
+  title:
+    export: CardTitle
+    api:
+      - { name: label, kind: prop, parameter: label }
+---
+`,
+      "implementation/card.md",
+      "react",
+    );
+    expect(() => checkImplementation(react, cardRecord)).not.toThrow();
+    const out = renderImplementation(cardRecord, react, "react");
+    expect(out).toContain('import { Card, CardTitle } from "@acme/react";');
+    expect(out).toContain("### Title component: `CardTitle`");
+  });
+
+  it("rejects a missing part, an unknown part, or a part table that skips a parameter", () => {
+    const check = (edit) => () =>
+      checkImplementation({ ...onComponent, ...edit(onComponent) }, cardRecord);
+    expect(check(() => ({ parts: {} }))).toThrow(
+      'parts does not cover component.card part "title". Add its api rows.',
+    );
+    expect(check((impl) => ({ parts: { ...impl.parts, media: impl.parts.title } }))).toThrow(
+      "parts.media implements a part component.card does not have",
+    );
+    expect(check(() => ({ parts: { title: { api: [] } } }))).toThrow(
+      'does not cover component.card part "title" parameter "label"',
+    );
+  });
+});
+
 describe("technologies", () => {
   const listRecord = {
     id: "component.list",

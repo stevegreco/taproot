@@ -227,9 +227,10 @@ function checklist(spec) {
   const known = new Set(CHECKLIST.map((item) => item.id));
   const unknown = rationale.flatMap((entry) => (entry.covers ?? []).filter((id) => !known.has(id)));
 
-  // An item's options count too, such as each accordion section's `expanded`.
+  // A part's or an item's options count too, such as each accordion section's `expanded`.
   const parameters = [
     spec.parameters,
+    ...Object.values(spec.parts ?? {}).map((part) => part.parameters),
     ...Object.values(spec.items ?? {}).map((item) => item.parameters),
   ].flatMap((list) => Object.keys(list ?? {}));
   const states = spec.states ?? [];

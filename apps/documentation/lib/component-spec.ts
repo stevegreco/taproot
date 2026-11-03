@@ -64,9 +64,9 @@ export interface ApiRow {
   readonly values: readonly ApiValue[];
 }
 
-/** The child element that realizes one repeated item, such as Accordion's sections. */
+/** The child element that realizes one item or part, such as Accordion's sections. */
 export interface ItemApi {
-  /** The record item, such as `section`. */
+  /** The record item or part, such as `section`. */
   readonly name: string;
   readonly tagName: string;
   readonly api: readonly ApiRow[];
@@ -200,7 +200,7 @@ interface RecordBase {
   "known-issues"?: { statement: string; issue?: string }[];
 }
 
-/** What API rows implement: the component's own parameters and events, or one item's. */
+/** What API rows implement: the component's own parameters and events, or one part's or item's. */
 interface ApiOwner {
   parameters?: Record<string, Parameter>;
   events?: Record<string, string>;
@@ -209,6 +209,7 @@ interface ApiOwner {
 interface ComponentRecord extends RecordBase, ApiOwner {
   description: string;
   usage?: { avoid?: { situation: string; instead?: string; why?: string }[] };
+  parts?: Record<string, ApiOwner>;
   items?: Record<string, ApiOwner>;
   rules?: Rule[];
   accessibility?: { keyboard?: Record<string, string> };
@@ -640,12 +641,24 @@ function projectComponent(context: Context, implementation: Implementation): Com
     throw error;
   }
   const record = found as ComponentRecord;
-  const api = implementation.api.map((row) => projectRow(record, row));
-  const items = Object.entries(implementation.items).map(([name, item]) => ({
+  // A part without its own element is set on the component, so its rows join the component's table.
+  const parts = Object.entries(implementation.parts).map(([name, part]) => ({
     name,
-    tagName: item.tagName,
-    api: item.api.map((row) => projectRow(record.items![name]!, row)),
+    tagName: part.tagName,
+    api: part.api.map((row) => projectRow(record.parts![name]!, row)),
   }));
+  const api = [
+    ...implementation.api.map((row) => projectRow(record, row)),
+    ...parts.filter((part) => !part.tagName).flatMap((part) => part.api),
+  ];
+  const items = [
+    ...parts.flatMap((part) => (part.tagName ? [{ ...part, tagName: part.tagName }] : [])),
+    ...Object.entries(implementation.items).map(([name, item]) => ({
+      name,
+      tagName: item.tagName,
+      api: item.api.map((row) => projectRow(record.items![name]!, row)),
+    })),
+  ];
 
   // Patterns the component links to, by any link kind, and the examples of those or of the component.
   const outgoing = spec.links(record.id);
