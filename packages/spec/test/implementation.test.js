@@ -181,6 +181,22 @@ ${items}---
     );
   });
 
+  it("accepts a native element for an item, but not an invalid name", () => {
+    const native = parseImplementation(
+      source("items:\n  entry:\n    tagName: option\n    api: []\n"),
+      "implementation/list.md",
+      "web-component",
+    );
+    expect(native.items.entry.tagName).toBe("option");
+    expect(() =>
+      parseImplementation(
+        source("items:\n  entry:\n    tagName: Option\n    api: []\n"),
+        "implementation/list.md",
+        "web-component",
+      ),
+    ).toThrow('items.entry tagName "Option" must be an element name');
+  });
+
   it("accepts an empty parent table when every option belongs to an item", () => {
     const itemsOnly = parseImplementation(
       `---

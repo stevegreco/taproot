@@ -85,6 +85,8 @@ export class ImplementationError extends Error {
 
 const COMPONENT_ID = /^component\.[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const TAG_NAME = /^[a-z][a-z0-9]*(-[a-z0-9]+)+$/;
+/** An item or part element may be a native one, such as Radio group's `option`. */
+const ELEMENT_NAME = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
 const COMPONENT_NAME = /^[A-Z][A-Za-z0-9]*$/;
@@ -103,7 +105,10 @@ const TECHNOLOGIES = {
       defineExport: { regex: IDENTIFIER, hint: "a JavaScript identifier" },
     },
     itemFields: {
-      tagName: { regex: TAG_NAME, hint: 'a custom element name such as "ds-tab-panel"' },
+      tagName: {
+        regex: ELEMENT_NAME,
+        hint: 'an element name such as "ds-tab-panel" or "option"',
+      },
     },
     kinds: ["attribute", "property", "event"],
     eventKind: "event",
