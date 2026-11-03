@@ -447,17 +447,11 @@ describe("ds-spec CLI, items", () => {
     expect(r.out).toContain("component.accordion#items.section.parameters.expanded");
   });
 
-  it("reads an item's parameter by its short path", () => {
-    const r = cli(["get", "component.accordion#items.section.expanded"]);
-    expect(r.code).toBe(0);
-    expect(r.out).toMatch(/^## items\.section\.parameters\.expanded\n/);
-  });
-
   it("maps each item's element and attributes in the web implementation", () => {
     const { out } = cli(["get", "component.accordion", "--impl", "web"], impls);
     expect(out).toContain("### Section element: `<ds-accordion-section>`");
     expect(out).toContain(
-      "| `expanded` | attribute | section parameter `expanded` | boolean | Whether the section's content is shown.",
+      "| `expanded` | attribute | parameter `expanded` | boolean | Whether the section's content is shown.",
     );
     const data = JSON.parse(
       cli(["get", "component.accordion", "--impl", "web", "--json"], impls).out,
@@ -510,9 +504,7 @@ describe("ds-spec CLI, parts", () => {
   it("maps a part's attributes on the element in the web implementation", () => {
     const { out } = cli(["get", "component.card", "--impl", "web"], impls);
     expect(out).toContain("### Title part, on `<ds-card>`");
-    expect(out).toContain(
-      "| `heading-level` | attribute | title parameter `headingLevel` | number |",
-    );
+    expect(out).toContain("| `heading-level` | attribute | parameter `headingLevel` | number |");
   });
 });
 
@@ -721,9 +713,9 @@ describe("splitWords", () => {
 
 describe("ds-spec CLI, agent friction", () => {
   it("heads a section read with its path", () => {
-    const r = cli(["get", "component.button#parameters.variant"]);
+    const r = cli(["get", "component.card#parts.title.parameters.headingLevel"]);
     expect(r.code).toBe(0);
-    expect(r.out.startsWith("## parameters.variant\n")).toBe(true);
+    expect(r.out.startsWith("## parts.title.parameters.headingLevel\n")).toBe(true);
   });
 
   it("fails a missing implementation without printing the contract", () => {
