@@ -19,7 +19,8 @@
     "oxlint": "^1.82.0",
     "playwright": "^1.62.1",
     "turbo": "latest",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "wrangler": "^4.156.2"
   },
   "packageManager": "pnpm@11.22.0"
 }
