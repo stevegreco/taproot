@@ -58,6 +58,12 @@ describe("renderImplementation", () => {
     expect(out).toContain("| `toggle` | event | event `change` |  | The mode changed. |");
   });
 
+  it("says a row with no Implements entry is specific to the implementation", () => {
+    expect(out).toContain(
+      "| `toggle` | event | event `change` |  | The mode changed. |\n\nA row with no Implements entry is specific to this implementation, not part of the spec.",
+    );
+  });
+
   it("puts the guidance one heading level down", () => {
     expect(out).toContain("### Labels\n\nKeep labels short.");
   });
@@ -140,9 +146,9 @@ ${items}---
     const out = renderImplementation(listRecord, listImplementation, "web");
     expect(out).toContain("### Entry element: `<acme-list-entry>`");
     expect(out).toContain(
-      "| `label` | attribute | parameter `label` | string | Visible text of the entry. |",
+      "| `label` | attribute | entry parameter `label` | string | Visible text of the entry. |",
     );
-    expect(out).toContain("| `pick` | event | event `pick` |  | The entry was picked. |");
+    expect(out).toContain("| `pick` | event | entry event `pick` |  | The entry was picked. |");
   });
 
   it("accepts items that match the record", () => {
@@ -251,7 +257,7 @@ ${parts}---
     const out = renderImplementation(cardRecord, onComponent, "web");
     expect(out).toContain("### Title part, on `<acme-card>`");
     expect(out).toContain(
-      "| `label` | attribute | parameter `label` | string | Text of the title. |",
+      "| `label` | attribute | title parameter `label` | string | Text of the title. |",
     );
   });
 
