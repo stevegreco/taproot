@@ -431,7 +431,7 @@ describe("ds-spec CLI, items", () => {
     const parameters = cli(["get", "component.accordion#items.section.parameters"]);
     expect(parameters.out).toMatch(/^## Parameters\n\n\| Name \| Kind/);
     const one = cli(["get", "component.accordion#items.section.parameters.expanded"]);
-    expect(one.out).toMatch(/^## expanded\n/);
+    expect(one.out).toMatch(/^## items.section.parameters.expanded\n/);
     expect(one.out).toContain("default: false");
   });
 
@@ -708,5 +708,49 @@ describe("splitWords", () => {
     expect(() => splitWords(`get "button`)).toThrow("unclosed double quote");
     expect(() => splitWords("get 'button")).toThrow("unclosed single quote");
     expect(() => splitWords("get button\\")).toThrow("trailing backslash");
+  });
+});
+
+describe("ds-spec CLI, agent friction", () => {
+  it("heads a section read with its path", () => {
+    const r = cli(["get", "component.card#parameters.headingLevel"]);
+    expect(r.code).toBe(0);
+    expect(r.out.startsWith("## parameters.headingLevel\n")).toBe(true);
+  });
+
+  it("fails a missing implementation without printing the contract", () => {
+    const r = cli(["get", "card", "--impl", "react"], impls);
+    expect(r.code).toBe(1);
+    expect(r.out).toBe("No react implementation for component.card.\n");
+  });
+
+  it("lists the components an implementation has", () => {
+    const r = cli(["list", "--impl", "web"], impls);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("- component.button — Button: ");
+    expect(r.out).not.toContain("pattern.");
+    const react = cli(["list", "--impl", "react"], impls).out;
+    expect(react).toContain("- component.button — Button: ");
+    expect(react).not.toContain("component.card ");
+    const unknown = cli(["list", "--impl", "ios"], impls);
+    expect(unknown.code).toBe(1);
+    expect(unknown.out).toContain('No implementation named "ios". Configured: web, react.');
+  });
+
+  it("says the base tokens still apply under a condition", () => {
+    const note =
+      "Only the bindings for this condition are shown. The `base` bindings still apply where these do not override them.";
+    expect(cli(["tokens", "card", "--condition", "hover"]).out).toContain(note);
+    expect(cli(["tokens", "card", "--condition", "base"]).out).not.toContain(note);
+    expect(cli(["tokens", "card"]).out).not.toContain(note);
+  });
+
+  it("tells a batch command to quote a value of several words", () => {
+    const r = cli(["batch", "--command", "rules --query dismiss label"]);
+    expect(r.code).toBe(2);
+    expect(r.err).toContain(
+      "rules takes no positional arguments. Quote a value of several words, such as --query 'dismiss label'.",
+    );
+    expect(cli(["batch", "--command", "rules --query 'dismiss label'"]).code).toBe(0);
   });
 });

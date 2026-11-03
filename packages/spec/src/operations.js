@@ -30,8 +30,19 @@ function summaryList(items) {
   return items.map((item) => `- ${item.id} — ${item.title}: ${item.summary}`).join("\n");
 }
 
-export function list(spec, { type, tag, status } = {}) {
-  const data = spec.list({ type, tag, status });
+/**
+ * @param {{ type?: string, tag?: string, status?: string, implementation?: string }} [args]
+ *   `implementation` keeps only the components that implementation has a file for.
+ * @param {{ implementations?: Record<string, import("./config.js").ImplementationConfig> }} [options]
+ */
+export function list(spec, { type, tag, status, implementation } = {}, options = {}) {
+  let data = spec.list({ type, tag, status });
+  if (implementation !== undefined) {
+    const folders = options.implementations ?? {};
+    if (!folders[implementation]) return unknownImplementation(implementation, folders);
+    const index = implementationIndex(folders);
+    data = data.filter((record) => index.get(record.id)?.includes(implementation));
+  }
   return { text: data.length ? summaryList(data) : "No records match.", data, ok: true };
 }
 
@@ -164,13 +175,7 @@ function tokensLine(spec, record, options) {
 }
 
 function getWithImplementation(spec, record, name, folders, options) {
-  const configured = Object.keys(folders);
-  if (!folders[name]) {
-    const text = configured.length
-      ? `No implementation named "${name}". Configured: ${configured.join(", ")}.`
-      : "No implementations are configured. Add `implementations` to spec.config.json.";
-    return failure(text, "ERR_UNKNOWN_IMPLEMENTATION", configured);
-  }
+  if (!folders[name]) return unknownImplementation(name, folders);
   // A broken file or a mapping that does not match the record fails, rather than serving guidance
   // with missing values or descriptions.
   let found;
@@ -228,6 +233,14 @@ function implementationIndex(folders) {
     }
   }
   return index;
+}
+
+function unknownImplementation(name, folders) {
+  const configured = Object.keys(folders);
+  const text = configured.length
+    ? `No implementation named "${name}". Configured: ${configured.join(", ")}.`
+    : "No implementations are configured. Add `implementations` to spec.config.json.";
+  return failure(text, "ERR_UNKNOWN_IMPLEMENTATION", configured);
 }
 
 /** @param {string} text @param {ErrorCode} code @param {string[]} suggestions @returns {Result} */
@@ -355,11 +368,16 @@ export function tokens(spec, { id: typed, part, condition, property, resolve } =
   const table = [header, header.map(() => "---"), ...rows]
     .map((cells) => `| ${cells.map(cell).join(" | ")} |`)
     .join("\n");
-  const note =
-    resolve && sets.length === 0
-      ? "\n\nNo values resolved. Configure `tokens` in spec.config.json to resolve values."
-      : "";
-  return { text: table + note, data, ok: true };
+  const notes = [
+    // A condition's bindings override the base ones, so they are not the whole style.
+    condition &&
+      condition !== "base" &&
+      "Only the bindings for this condition are shown. The `base` bindings still apply where these do not override them.",
+    resolve &&
+      sets.length === 0 &&
+      "No values resolved. Configure `tokens` in spec.config.json to resolve values.",
+  ].filter(Boolean);
+  return { text: [table, ...notes].join("\n\n"), data, ok: true };
 }
 
 const KEYWORD_NOTES = {
