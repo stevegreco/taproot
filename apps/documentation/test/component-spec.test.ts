@@ -32,6 +32,13 @@ function pageSource(slug: string): string {
   return source;
 }
 
+test("prose alternatives read as their own phrase", () => {
+  assert.match(
+    loadComponentSlice("tabs").introMarkdown,
+    /Walk through steps that must be completed in order\. Instead: A step-by-step flow with previous and next actions\. /,
+  );
+});
+
 test("button slice variants and api come from the spec record and the implementation file", () => {
   const slice = loadComponentSlice("button");
 

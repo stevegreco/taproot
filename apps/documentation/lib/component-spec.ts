@@ -425,9 +425,13 @@ function formatAvoid(
   let line = `- ${item.situation}`;
   if (item.instead) {
     const target = recordOf<RecordBase>(spec, item.instead);
-    const href = target ? docsHref(target, pages) : undefined;
-    const name = target ? target.title : item.instead;
-    line += ` Use ${href ? `[${name}](${href})` : name} instead.`;
+    if (target) {
+      const href = docsHref(target, pages);
+      line += ` Use ${href ? `[${target.title}](${href})` : target.title} instead.`;
+    } else {
+      // Prose, such as "no indicator" or "A step-by-step flow", reads as its own phrase.
+      line += ` Instead: ${item.instead.charAt(0).toUpperCase()}${item.instead.slice(1)}.`;
+    }
   }
   if (item.why) line += ` ${item.why}`;
   return line;
