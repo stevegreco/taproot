@@ -24,6 +24,7 @@
   "exports": {
     ".": "./src/index.js",
     "./config": "./src/config.js",
+    "./http": "./src/http.js",
     "./tokens-dtcg": "./src/tokens-dtcg.js",
     "./implementation": "./src/implementation-files.js",
     "./schema/spec-record.json": "./src/schema/spec-record.schema.json",

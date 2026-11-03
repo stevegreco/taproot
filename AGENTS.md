@@ -84,6 +84,8 @@ keep those consistent in review.
   `packages/react/implementation/<name>.md` (export name, usage, and API rows mapping props and
   callbacks to spec parameters and events), served by `get --impl react`. The docs site and
   Storybook show only the web components. The research log is `docs/research/react-implementation.md`.
+- The hosted MCP server in `apps/mcp` serves the spec from a snapshot built at deploy time, with one
+  small entry file per host. The tools are in `packages/spec/src/server.js`. See ADR 0006.
 - Storybook in `apps/storybook` has a story file per component in `stories/`. It is a workbench
   for exploring states and themes, not a source of usage guidance. Run it with
   `pnpm exec turbo run dev --filter=storybook` (port 6006).

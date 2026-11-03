@@ -88,6 +88,19 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(@types/node@26.2.0)(@vitest/browser-playwright@5.0.0)(@vitest/ui@5.0.0)(vite@8.3.1(@types/node@26.2.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))
 
+  apps/mcp:
+    dependencies:
+      '@stevegreco/design-system-spec':
+        specifier: workspace:*
+        version: link:../../packages/spec
+    devDependencies:
+      '@stevegreco/design-system':
+        specifier: workspace:*
+        version: link:../../packages/tokens
+      '@stevegreco/web-components':
+        specifier: workspace:*
+        version: link:../../packages/components
+
   apps/storybook:
     dependencies:
       '@stevegreco/design-system':

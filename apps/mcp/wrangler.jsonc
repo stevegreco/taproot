@@ -1,0 +1,7 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "mcp",
+  "main": "src/cloudflare.js",
+  "compatibility_date": "2026-11-03",
+  "previews": {},
+}
