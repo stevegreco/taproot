@@ -35,6 +35,7 @@ export function narrow(element: HTMLElementTagNameMap["ds-link"]) {
 }
 `;
 
+// Type-checking takes 3 to 4 seconds in CI, too close to the default 5-second limit.
 test("examples type-check against the generated element types", () => {
   const configPath = ts.findConfigFile(docsRoot, ts.sys.fileExists, "tsconfig.json");
   assert.ok(configPath, "the docs app has a tsconfig.json");
@@ -78,4 +79,4 @@ test("examples type-check against the generated element types", () => {
       return `${file}:${line + 1} ${ts.flattenDiagnosticMessageText(diagnostic.messageText, " ")}`;
     });
   assert.deepEqual(problems, []);
-});
+}, 20_000);
