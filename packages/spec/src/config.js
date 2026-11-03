@@ -6,6 +6,8 @@ import { createDtcgResolver, readDtcgTokenNames } from "./tokens-dtcg.js";
 
 export const CONFIG_FILE = "spec.config.json";
 
+const NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 /**
  * @typedef {object} SpecConfig
  * @property {string} [content] Content folder, relative to the config file.
@@ -14,6 +16,9 @@ export const CONFIG_FILE = "spec.config.json";
  * @property {Record<string, ImplementationConfig>} [implementations]
  *   Implementations by name, such as `web`. Each folder holds one `<slug>.md` implementation file
  *   per component, checked against the fields of its technology.
+ * @property {Record<string, string>} [constants] System-wide constants, such as border width, by
+ *   name, each with the token that holds it. Every component uses them, so component records do
+ *   not bind them. With token sets configured, each token must exist in every set.
  */
 
 /**
@@ -71,7 +76,21 @@ function validateConfig(config, file) {
     fail("expected an object");
   }
   for (const key of Object.keys(config)) {
-    if (!["content", "tokens", "implementations"].includes(key)) fail(`unknown field "${key}"`);
+    if (!["content", "tokens", "implementations", "constants"].includes(key)) {
+      fail(`unknown field "${key}"`);
+    }
+  }
+  const { constants } = config;
+  if (constants !== undefined) {
+    if (typeof constants !== "object" || constants === null || Array.isArray(constants)) {
+      fail('"constants" must be an object of name to token reference');
+    }
+    for (const [name, token] of Object.entries(constants)) {
+      if (!NAME.test(name)) fail(`"constants.${name}" must be a lowercase, hyphenated name`);
+      if (typeof token !== "string" || !token) {
+        fail(`"constants.${name}" must be a non-empty token reference`);
+      }
+    }
   }
   if (config.content !== undefined && (typeof config.content !== "string" || !config.content)) {
     fail('"content" must be a non-empty string path');
@@ -123,7 +142,7 @@ function validateConfig(config, file) {
  * Precedence for the content folder: `contentDir` > config `content` > library default.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
- * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, ImplementationConfig>, configPath?: string }}
+ * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, ImplementationConfig>, constants: Record<string, string>, configPath?: string }}
  */
 export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = {}) {
   const found = configPath ? readConfig(path.resolve(cwd, configPath)) : findConfig(cwd);
@@ -153,6 +172,7 @@ export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = 
     resolveToken,
     tokenSets: sets,
     implementations,
+    constants: { ...found?.config.constants },
     configPath: found?.path,
   };
 }
@@ -175,14 +195,30 @@ export async function loadFromConfig({ resolveTokens = true, skipInvalid, ...opt
 
 /**
  * Validate the spec using flags and the nearest config. With token sets configured, every token
- * reference must name a token in every set.
+ * reference, and every constant's token, must name a token in every set.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
  */
 export async function validateFromConfig(options = {}) {
-  const { contentDir, tokenSets } = resolveConfig(options);
-  return validateSpec({
-    contentDir,
-    tokenNames: tokenSets ? readDtcgTokenNames(tokenSets) : undefined,
+  const { contentDir, tokenSets, constants, configPath } = resolveConfig(options);
+  const tokenNames = tokenSets ? readDtcgTokenNames(tokenSets) : undefined;
+  const result = await validateSpec({ contentDir, tokenNames });
+  if (!tokenNames) return result;
+  const file = path.relative(options.cwd ?? process.cwd(), configPath);
+  const issues = Object.entries(constants).flatMap(([name, token]) => {
+    const missing = [...tokenNames].filter(([, names]) => !names.has(token)).map(([set]) => set);
+    return missing.length
+      ? [
+          {
+            file,
+            path: `/constants/${name}`,
+            message:
+              missing.length === tokenNames.size
+                ? `\`${token}\` is not a token`
+                : `\`${token}\` is not a token in the ${missing.join(", ")} set${missing.length === 1 ? "" : "s"}`,
+          },
+        ]
+      : [];
   });
+  return { ...result, issues: [...result.issues, ...issues] };
 }

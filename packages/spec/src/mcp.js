@@ -19,6 +19,14 @@ const LINK_KINDS = [
   "related",
 ];
 
+/** The next call for a record, naming each implementation that has a file for it. */
+function nextCall(id, names) {
+  if (names.length === 0) return `get ${id}`;
+  const which =
+    names.length === 1 ? `"${names[0]}"` : `one of ${names.map((name) => `"${name}"`).join(", ")}`;
+  return `get ${id} with implementation ${which}`;
+}
+
 /**
  * Create the spec MCP server and its reload watcher.
  *
@@ -98,7 +106,7 @@ export async function createSpecServer(options = {}) {
     (args) =>
       ops.search(spec, args, {
         implementations: resolveConfig(loadOptions).implementations,
-        next: (id, impl) => `get ${id}${impl ? ` with implementation "${impl}"` : ""}`,
+        next: nextCall,
         browse: "the `list` tool",
       }),
   );
@@ -124,8 +132,8 @@ export async function createSpecServer(options = {}) {
           implementations: resolveConfig(loadOptions).implementations,
           tokensHint: (_id, count) =>
             `Tokens: ${count} bindings, left out here. Call \`tokens\` to filter them by part, condition, or property.`,
-          implementationHint: (_id, names) =>
-            `Implementation: call \`get\` with implementation "${names[0]}" for the package, import, and API names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
+          implementationHint: (id, names) =>
+            `Implementations: ${names.join(", ")}. Call ${nextCall(id, names)} for the package, import, and API names.`,
         },
       ),
   );
@@ -182,6 +190,21 @@ export async function createSpecServer(options = {}) {
       ops.tokens(spec, args, {
         resolveToken: args.resolve ? resolveConfig(loadOptions).resolveToken : undefined,
       }),
+  );
+  tool(
+    "format",
+    "Read the format reference that records do not repeat: the property names token bindings use, token keywords, condition syntax, anatomy roles, and the system-wide constants (such as border width and focus-ring width and offset) with the tokens that hold them. Use before styling a part a record does not bind.",
+    {
+      resolve: z.boolean().optional().describe("Include each constant's value in each token set."),
+    },
+    (args) => {
+      const { constants, resolveToken } = resolveConfig(loadOptions);
+      return ops.format(args, {
+        constants,
+        resolveToken: args.resolve ? resolveToken : undefined,
+        resolveHint: "Call `format` with resolve for values.",
+      });
+    },
   );
   tool(
     "validate",

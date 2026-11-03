@@ -1,0 +1,7 @@
+{
+  "content": "../../../content",
+  "implementations": {
+    "web": { "folder": "../../../../components/implementation", "technology": "web-component" },
+    "react": { "folder": "not-built-yet", "technology": "react" }
+  }
+}

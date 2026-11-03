@@ -16,9 +16,12 @@ Implement it in whatever technology the project uses.
 - Use \`rules\` to review work, and cite each rule by its address (for example
   \`component.button#label-describes-result\`) with its level (MUST, SHOULD, MAY).
 - Use \`tokens\` for the design tokens a component part uses in a variant or state. Add \`--resolve\`
-  (MCP: \`resolve\`) for values.
+  (MCP: \`resolve\`) for values. Use \`format\` for what records do not repeat: the system-wide
+  constants, such as border width and focus-ring width and offset, with their tokens.
 - Before writing code, \`get\` the component with the implementation for your technology:
   \`--impl web\` for web components, \`--impl react\` for React (MCP: \`implementation\`). It gives the
   package, what to import, and the attribute or prop that implements each parameter. Never derive
   those names from parameter names.
-- For several lookups on the MCP server, make the tool calls in parallel.`;
+- For several lookups, run them in one \`batch\` with the CLI (for example
+  \`ds-spec batch --command "get button --impl web" --command "tokens button"\`), or make the
+  tool calls in parallel on the MCP server.`;

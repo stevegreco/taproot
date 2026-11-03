@@ -5,12 +5,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { AGENT_INSTRUCTIONS } from "../src/agents.js";
+import { splitWords } from "../src/util.js";
 import { fixture } from "./helpers.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const bin = path.resolve(here, "../bin/ds-spec.js");
 const repoRoot = path.resolve(here, "../../..");
 const tools = fixture("tools");
+// Implementations come from a fixture config, so adding one to the repository changes no output.
+const impls = fixture("implementations");
 
 function cli(args, cwd = repoRoot) {
   const result = spawnSync(process.execPath, [bin, ...args], { cwd, encoding: "utf8" });
@@ -224,6 +227,20 @@ describe("ds-spec CLI, failures", () => {
   });
 });
 
+describe("ds-spec CLI, startup", () => {
+  // A loose limit that catches a large regression, such as loading a dependency per call, without
+  // failing on a slow machine. The best of three runs ignores a call slowed by parallel tests.
+  // `pnpm bench` measures against the real target.
+  it("gets a record in under a second", () => {
+    const times = Array.from({ length: 3 }, () => {
+      const started = performance.now();
+      expect(cli(["get", "button"]).code).toBe(0);
+      return performance.now() - started;
+    });
+    expect(Math.min(...times)).toBeLessThan(1000);
+  });
+});
+
 describe("ds-spec CLI, fixture config", () => {
   it("finds the config from the working directory", () => {
     const r = cli(["list"], tools);
@@ -248,7 +265,7 @@ describe("ds-spec CLI, fixture config", () => {
 
 describe("ds-spec CLI, implementations", () => {
   it("gets a component with its web implementation", () => {
-    const r = cli(["get", "component.button", "--impl", "web"]);
+    const r = cli(["get", "component.button", "--impl", "web"], impls);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/^# Button/);
     expect(r.out).toContain("## Web implementation");
@@ -265,29 +282,29 @@ describe("ds-spec CLI, implementations", () => {
   });
 
   it("points a plain get at the implementation", () => {
-    const { out } = cli(["get", "component.button"]);
+    const { out } = cli(["get", "component.button"], impls);
     expect(out).not.toContain("## Web implementation");
     expect(out.trimEnd().split("\n").slice(-2)).toEqual([
-      "Implementation: run `ds-spec get component.button --impl web` for the package, import, and API names (available: web, react).",
+      "Implementations: web, react. Run `ds-spec get component.button --impl <web | react>` for the package, import, and API names.",
       "Tokens: 50 bindings, left out here. Run `ds-spec tokens component.button` to filter them by part, condition, or property.",
     ]);
-    expect(cli(["get", "pattern.action-hierarchy"]).out).not.toContain("Implementation:");
+    expect(cli(["get", "pattern.action-hierarchy"], impls).out).not.toContain("Implementations:");
   });
 
   it("returns the record and implementation as JSON", () => {
-    const data = JSON.parse(cli(["get", "component.link", "--impl", "web", "--json"]).out);
+    const data = JSON.parse(cli(["get", "component.link", "--impl", "web", "--json"], impls).out);
     expect(data.record.id).toBe("component.link");
     expect(data.implementation.tagName).toBe("ds-link");
   });
 
   it("explains a missing or unknown implementation", () => {
-    const pattern = cli(["get", "pattern.action-hierarchy", "--impl", "web"]);
+    const pattern = cli(["get", "pattern.action-hierarchy", "--impl", "web"], impls);
     expect(pattern.code).toBe(1);
     expect(pattern.out).toContain("No web implementation for pattern.action-hierarchy.");
-    const unknown = cli(["get", "component.button", "--impl", "ios"]);
+    const unknown = cli(["get", "component.button", "--impl", "ios"], impls);
     expect(unknown.code).toBe(1);
     expect(unknown.out).toContain('No implementation named "ios". Configured: web, react.');
-    const section = cli(["get", "component.button#rules", "--impl", "web"]);
+    const section = cli(["get", "component.button#rules", "--impl", "web"], impls);
     expect(section.code).toBe(2);
     expect(section.err).toContain("not a section");
   });
@@ -323,6 +340,83 @@ describe("ds-spec CLI, implementations", () => {
     expect(r.code).toBe(1);
     expect(r.out).toContain("No implementations are configured.");
   });
+
+  it("reads a missing implementation folder as nothing implemented", () => {
+    const config = ["--config", path.join(impls, "missing-folder.config.json")];
+    const r = cli(["get", "component.button", "--impl", "react", ...config]);
+    expect(r.code).toBe(1);
+    expect(r.err).toBe("");
+    expect(r.out).toContain("No react implementation for component.button.");
+    // The folder that exists still counts, and the missing one is not offered.
+    expect(cli(["get", "component.button", ...config]).out).toContain(
+      "Implementations: web. Run `ds-spec get component.button --impl web` for",
+    );
+    expect(cli(["search", "chekbox", ...config]).out).toContain(
+      "  → ds-spec get component.checkbox --impl web\n",
+    );
+  });
+});
+
+describe("ds-spec CLI, format reference", () => {
+  it("prints the token properties, keywords, roles, and constants", () => {
+    const r = cli(["format"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toMatch(/^# Spec format\n\nFormat version 1\./);
+    expect(r.out).toContain("`border-width`, `radius`");
+    expect(r.out).toContain("`inherit` (the value comes from the surrounding content)");
+    expect(r.out).toContain("`interactive-surface`, `label`");
+    expect(r.out).toContain("| focus-ring-width | `semantic.focus.width` |");
+    expect(r.out).toContain("Run `ds-spec format --resolve` for values.");
+  });
+
+  it("resolves each constant in each token set", () => {
+    const r = cli(["format", "--resolve"]);
+    expect(r.out).toContain("| Constant | Token | light | dark |");
+    expect(r.out).toContain("| border-width | `semantic.border.width` | `1px` | `1px` |");
+    const data = JSON.parse(cli(["format", "--resolve", "--json"]).out);
+    expect(data.constants.map((row) => row.name)).toEqual([
+      "border-width",
+      "focus-ring-width",
+      "focus-ring-offset",
+    ]);
+    expect(data.constants[0].values).toEqual({ light: "1px", dark: "1px" });
+    expect(data.properties).toContain("track");
+  });
+
+  it("says when no constants are configured", () => {
+    const r = cli(["format"], tools);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("None are configured. Add `constants` to spec.config.json.");
+    expect(cli(["format", "extra"]).code).toBe(2);
+  });
+
+  it("fails validation for a constant that names no token", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "spec-constants-"));
+    const config = JSON.parse(fs.readFileSync(path.join(tools, "spec.config.json"), "utf8"));
+    fs.writeFileSync(
+      path.join(tmp, "spec.config.json"),
+      JSON.stringify({
+        ...config,
+        content: path.join(tools, config.content),
+        tokens: {
+          ...config.tokens,
+          sets: Object.fromEntries(
+            Object.entries(config.tokens.sets).map(([set, files]) => [
+              set,
+              files.map((file) => path.join(tools, file)),
+            ]),
+          ),
+        },
+        constants: { "border-width": "semantic.nope" },
+      }),
+    );
+    const r = cli(["validate"], tmp);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain(
+      "spec.config.json /constants/border-width `semantic.nope` is not a token",
+    );
+    fs.rmSync(tmp, { recursive: true });
+  });
 });
 
 describe("ds-spec CLI, items", () => {
@@ -354,12 +448,14 @@ describe("ds-spec CLI, items", () => {
   });
 
   it("maps each item's element and attributes in the web implementation", () => {
-    const { out } = cli(["get", "component.accordion", "--impl", "web"]);
+    const { out } = cli(["get", "component.accordion", "--impl", "web"], impls);
     expect(out).toContain("### Section element: `<ds-accordion-section>`");
     expect(out).toContain(
       "| `expanded` | attribute | parameter `expanded` | boolean | Whether the section's content is shown.",
     );
-    const data = JSON.parse(cli(["get", "component.accordion", "--impl", "web", "--json"]).out);
+    const data = JSON.parse(
+      cli(["get", "component.accordion", "--impl", "web", "--json"], impls).out,
+    );
     expect(Object.keys(data.record.items)).toEqual(["section"]);
     expect(data.implementation.items.section.tagName).toBe("ds-accordion-section");
     expect(data.implementation.items.section.api.map((row) => row.parameter)).toEqual([
@@ -432,7 +528,7 @@ describe("ds-spec CLI, forgiving lookups", () => {
   it("finds a record by name", () => {
     expect(cli(["get", "button"]).out).toMatch(/^# Button/);
     expect(cli(["get", "Text", "field"]).out).toMatch(/^# Text field/);
-    expect(cli(["get", "textfield", "--impl", "web"]).out).toContain("`<ds-text-field>`");
+    expect(cli(["get", "textfield", "--impl", "web"], impls).out).toContain("`<ds-text-field>`");
     expect(cli(["get", "button#rules"]).out).toContain("## Rules");
     expect(cli(["tokens", "button", "--part", "control"]).code).toBe(0);
     expect(cli(["links", "link"]).out).toContain("component.button");
@@ -458,27 +554,27 @@ describe("ds-spec CLI, forgiving lookups", () => {
     const section = JSON.parse(cli(["get", "component.button#rule", "--json"]).out);
     expect(section.code).toBe("ERR_UNKNOWN_SECTION");
     expect(section.suggestions).toContain("component.button#rules");
-    const impl = JSON.parse(cli(["get", "button", "--impl", "ios", "--json"]).out);
+    const impl = JSON.parse(cli(["get", "button", "--impl", "ios", "--json"], impls).out);
     expect(impl).toMatchObject({
       code: "ERR_UNKNOWN_IMPLEMENTATION",
       suggestions: ["web", "react"],
     });
     const none = JSON.parse(
-      cli(["get", "pattern.action-hierarchy", "--impl", "web", "--json"]).out,
+      cli(["get", "pattern.action-hierarchy", "--impl", "web", "--json"], impls).out,
     );
     expect(none.code).toBe("ERR_NO_IMPLEMENTATION");
   });
 
   it("searches through typos and names the next command", () => {
-    const r = cli(["search", "chekbox"]);
+    const r = cli(["search", "chekbox"], impls);
     expect(r.out).toContain("- component.checkbox — Checkbox: ");
-    expect(r.out).toContain("  → ds-spec get component.checkbox --impl web");
+    expect(r.out).toContain("  → ds-spec get component.checkbox --impl <web | react>\n");
     // One edit is the allowance for a word this short, so two edits match nothing.
     expect(cli(["search", "buxxon"]).out).toMatch(/^No results for "buxxon"\. /);
     // Four letters get no typo allowance, and words in a longer query are not corrected.
     expect(cli(["search", "lnik"]).out).toMatch(/^No results for "lnik"\. /);
     expect(cli(["search", "buton", "zzzz"]).out).toMatch(/^No results for "buton zzzz"\. /);
-    expect(cli(["search", "destructive", "action"]).out).toContain(
+    expect(cli(["search", "destructive", "action"], impls).out).toContain(
       "  → ds-spec get pattern.action-hierarchy\n",
     );
   });
@@ -494,5 +590,99 @@ describe("ds-spec CLI, forgiving lookups", () => {
     expect(strong.out.split("\n")[0]).not.toContain("(weak match)");
     const json = JSON.parse(cli(["search", "toast", "notification", "--json"]).out);
     expect(json.every((hit) => hit.weak)).toBe(true);
+  });
+});
+
+describe("ds-spec CLI, batch", () => {
+  const commands = [
+    "get button --impl web",
+    "tokens button --part control --condition 'variant.primary + hover' --resolve",
+    "rules --id button --level must",
+    "get buton",
+  ];
+  const batchArgs = commands.flatMap((command) => ["--command", command]);
+
+  it("prints what each command prints alone, in order", () => {
+    const batch = cli(["batch", ...batchArgs], impls);
+    const alone = commands.map((command) => cli(splitWords(command), impls));
+    expect(batch.out).toBe(
+      commands.map((command, i) => `$ ds-spec ${command}\n${alone[i].out}`).join("\n"),
+    );
+    // The worst exit code wins: `get buton` finds nothing.
+    expect(batch.code).toBe(1);
+  });
+
+  it("returns an array of each command's JSON", () => {
+    const batch = JSON.parse(cli(["batch", "--json", ...batchArgs], impls).out);
+    expect(batch.map((entry) => entry.command)).toEqual(commands);
+    expect(batch.map((entry) => entry.exitCode)).toEqual([0, 0, 0, 1]);
+    commands.forEach((command, i) => {
+      expect(batch[i].result).toEqual(
+        JSON.parse(cli([...splitWords(command), "--json"], impls).out),
+      );
+    });
+  });
+
+  it("keeps going after a failed command and exits with the worst code", () => {
+    const r = cli([
+      "batch",
+      "--command",
+      "list --type nope",
+      "--command",
+      "get button --json",
+      "--command",
+      "batch --command list",
+      "--command",
+      "get 'button",
+      "--command",
+      "list --type component",
+    ]);
+    expect(r.code).toBe(2);
+    expect(r.out).toContain("$ ds-spec list --type component\n- component.accordion — ");
+    expect(r.err).toContain("$ ds-spec list --type nope\n--type must be one of:");
+    expect(r.err).toContain("Put --json on batch, not on its commands.");
+    expect(r.err).toContain("A batch cannot run batch.");
+    expect(r.err).toContain(`Cannot read "get 'button": unclosed single quote.`);
+  });
+
+  it("passes the batch's global flags to every command", () => {
+    const r = cli(["batch", "--content", path.join(tools, "content"), "--command", "list"]);
+    expect(r.out).toContain("component.thing");
+    expect(r.out).not.toContain("component.button");
+  });
+
+  it("needs a command", () => {
+    expect(cli(["batch"]).code).toBe(2);
+    expect(cli(["batch", "get", "button"]).err).toContain(
+      "batch takes its commands with --command.",
+    );
+  });
+});
+
+describe("splitWords", () => {
+  it("splits like a shell, without expansion", () => {
+    expect(splitWords("  get  button --impl web ")).toEqual(["get", "button", "--impl", "web"]);
+    expect(splitWords(`tokens button --condition "variant.primary + hover"`)).toEqual([
+      "tokens",
+      "button",
+      "--condition",
+      "variant.primary + hover",
+    ]);
+    expect(splitWords(`search 'it''s' a\\ b "say \\"hi\\"" $HOME *`)).toEqual([
+      "search",
+      "its",
+      "a b",
+      'say "hi"',
+      "$HOME",
+      "*",
+    ]);
+    expect(splitWords(`get ""`)).toEqual(["get", ""]);
+    expect(splitWords("")).toEqual([]);
+  });
+
+  it("rejects an unclosed quote or a trailing backslash", () => {
+    expect(() => splitWords(`get "button`)).toThrow("unclosed double quote");
+    expect(() => splitWords("get 'button")).toThrow("unclosed single quote");
+    expect(() => splitWords("get button\\")).toThrow("trailing backslash");
   });
 });

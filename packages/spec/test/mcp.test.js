@@ -12,6 +12,8 @@ import { fixture } from "./helpers.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "../../..");
+// Implementations come from a fixture config, so adding one to the repository changes no output.
+const impls = fixture("implementations");
 const cleanups = [];
 afterEach(async () => {
   while (cleanups.length) await cleanups.pop()();
@@ -36,6 +38,7 @@ describe("spec MCP server", () => {
     const { client } = await connect({ cwd: repoRoot });
     const { tools } = await client.listTools();
     expect(tools.map((t) => t.name).sort()).toEqual([
+      "format",
       "get",
       "links",
       "list",
@@ -65,9 +68,11 @@ describe("spec MCP server", () => {
   });
 
   it("gets a component with its implementation", async () => {
-    const { client } = await connect({ cwd: repoRoot });
+    const { client } = await connect({ cwd: impls });
     const plain = await client.callTool({ name: "get", arguments: { target: "component.button" } });
-    expect(text(plain)).toContain('call `get` with implementation "web"');
+    expect(text(plain)).toContain(
+      'Implementations: web, react. Call get component.button with implementation one of "web", "react" for',
+    );
 
     const got = await client.callTool({
       name: "get",
@@ -84,7 +89,7 @@ describe("spec MCP server", () => {
   });
 
   it("resolves names, suggests typos, and names the next call", async () => {
-    const { client } = await connect({ cwd: repoRoot });
+    const { client } = await connect({ cwd: impls });
     const named = await client.callTool({ name: "get", arguments: { target: "text field" } });
     expect(text(named)).toMatch(/^# Text field/);
 
@@ -96,7 +101,22 @@ describe("spec MCP server", () => {
     });
 
     const found = await client.callTool({ name: "search", arguments: { query: "buton" } });
-    expect(text(found)).toContain('  → get component.button with implementation "web"');
+    expect(text(found)).toContain(
+      '  → get component.button with implementation one of "web", "react"\n',
+    );
+  });
+
+  it("serves the format reference with the constant tokens", async () => {
+    const { client } = await connect({ cwd: repoRoot });
+    const plain = await client.callTool({ name: "format", arguments: {} });
+    expect(text(plain)).toContain("| focus-ring-offset | `semantic.focus.offset` |");
+    expect(text(plain)).toContain("Call `format` with resolve for values.");
+    const resolved = await client.callTool({ name: "format", arguments: { resolve: true } });
+    expect(resolved.structuredContent.results.constants[1]).toEqual({
+      name: "focus-ring-width",
+      token: "semantic.focus.width",
+      values: { light: "2px", dark: "2px" },
+    });
   });
 
   it("resolves tokens, and lists rules and links", async () => {
@@ -270,6 +290,6 @@ describe("spec MCP server", () => {
     cleanups.push(() => client.close());
     await client.connect(transport);
     const { tools } = await client.listTools();
-    expect(tools).toHaveLength(7);
+    expect(tools).toHaveLength(8);
   });
 });

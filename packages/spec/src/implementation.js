@@ -379,14 +379,22 @@ function parseApi(file, raw, technology, prefix) {
 }
 
 /**
- * Every `*.md` file in `dir`, parsed as files of `technology`, in file-name order.
+ * Every `*.md` file in `dir`, parsed as files of `technology`, in file-name order. A folder that
+ * does not exist yet holds no implementations, so it reads as nothing implemented.
  *
  * @param {string} dir
  * @param {Technology} technology
  * @returns {Implementation[]}
  */
 export function loadImplementations(dir, technology) {
-  return readdirSync(dir)
+  let names;
+  try {
+    names = readdirSync(dir);
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+  return names
     .filter((name) => name.endsWith(".md"))
     .sort()
     .map((name) =>

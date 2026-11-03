@@ -29,7 +29,8 @@
     "access": "public"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "bench": "node scripts/bench.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.1",

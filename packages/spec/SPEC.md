@@ -169,6 +169,9 @@ rationale:
 
 Anatomy roles are `interactive-surface`, `label`, `description`, `indicator`, and `container`.
 
+An event that reports a changed value, such as `input`, `change`, or a section's `toggle`, carries
+the new value, so whoever owns the value can update it without reading it back from the component.
+
 An enum parameter lists its `values` with a meaning for each, and may give `examples`: sample
 content, such as a label, for each value. A `default` must be one of the values.
 
@@ -252,7 +255,9 @@ tokens:
   are allowed: `transparent`, `none`, `inherit` (the value comes from the surrounding content), and
   `linear` (for `motion-easing`).
 - System-wide constants, such as border width and focus-ring width and offset, are the same for
-  every component, so a component map does not have to list them.
+  every component, so a component map does not have to list them. The adopter names each constant
+  and the token that holds it in `constants` in `spec.config.json`, and `ds-spec format` serves
+  them with the property names and keywords above.
 
 The map is reference data. It answers "which token does primary hover use for its background?" It
 defines no rule for combining conditions, so it does not compute the final style of a combination.

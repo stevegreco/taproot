@@ -10,6 +10,11 @@
       "technology": "react"
     }
   },
+  "constants": {
+    "border-width": "semantic.border.width",
+    "focus-ring-width": "semantic.focus.width",
+    "focus-ring-offset": "semantic.focus.offset"
+  },
   "tokens": {
     "format": "dtcg",
     "sets": {
