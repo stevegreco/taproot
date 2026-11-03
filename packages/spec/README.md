@@ -158,7 +158,8 @@ section, 2 usage error, including a filter value (`--type`, `--status`, `--kind`
 `--level`) that is not one of the valid ones, which the error lists. In this repo, run it as
 `node packages/spec/bin/ds-spec.js ...`. `pnpm spec ...` also works, but pnpm adds about a second
 to each call. Elsewhere, run the installed bin (`node_modules/.bin/ds-spec`), not an `npx` download
-per call.
+per call. `pnpm bench` times `ds-spec get button` against a 300 ms target, and a test in
+`pnpm test` fails if it takes over a second.
 
 `ds-spec help agents` prints how an agent should use the spec. The MCP server sends the same text
 as its instructions, and AGENTS.md carries a copy that a test keeps equal.
