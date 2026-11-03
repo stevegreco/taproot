@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { AGENT_INSTRUCTIONS } from "../src/agents.js";
+import { splitWords } from "../src/util.js";
 import { fixture } from "./helpers.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -589,5 +590,99 @@ describe("ds-spec CLI, forgiving lookups", () => {
     expect(strong.out.split("\n")[0]).not.toContain("(weak match)");
     const json = JSON.parse(cli(["search", "toast", "notification", "--json"]).out);
     expect(json.every((hit) => hit.weak)).toBe(true);
+  });
+});
+
+describe("ds-spec CLI, batch", () => {
+  const commands = [
+    "get button --impl web",
+    "tokens button --part control --condition 'variant.primary + hover' --resolve",
+    "rules --id button --level must",
+    "get buton",
+  ];
+  const batchArgs = commands.flatMap((command) => ["--command", command]);
+
+  it("prints what each command prints alone, in order", () => {
+    const batch = cli(["batch", ...batchArgs], impls);
+    const alone = commands.map((command) => cli(splitWords(command), impls));
+    expect(batch.out).toBe(
+      commands.map((command, i) => `$ ds-spec ${command}\n${alone[i].out}`).join("\n"),
+    );
+    // The worst exit code wins: `get buton` finds nothing.
+    expect(batch.code).toBe(1);
+  });
+
+  it("returns an array of each command's JSON", () => {
+    const batch = JSON.parse(cli(["batch", "--json", ...batchArgs], impls).out);
+    expect(batch.map((entry) => entry.command)).toEqual(commands);
+    expect(batch.map((entry) => entry.exitCode)).toEqual([0, 0, 0, 1]);
+    commands.forEach((command, i) => {
+      expect(batch[i].result).toEqual(
+        JSON.parse(cli([...splitWords(command), "--json"], impls).out),
+      );
+    });
+  });
+
+  it("keeps going after a failed command and exits with the worst code", () => {
+    const r = cli([
+      "batch",
+      "--command",
+      "list --type nope",
+      "--command",
+      "get button --json",
+      "--command",
+      "batch --command list",
+      "--command",
+      "get 'button",
+      "--command",
+      "list --type component",
+    ]);
+    expect(r.code).toBe(2);
+    expect(r.out).toContain("$ ds-spec list --type component\n- component.accordion — ");
+    expect(r.err).toContain("$ ds-spec list --type nope\n--type must be one of:");
+    expect(r.err).toContain("Put --json on batch, not on its commands.");
+    expect(r.err).toContain("A batch cannot run batch.");
+    expect(r.err).toContain(`Cannot read "get 'button": unclosed single quote.`);
+  });
+
+  it("passes the batch's global flags to every command", () => {
+    const r = cli(["batch", "--content", path.join(tools, "content"), "--command", "list"]);
+    expect(r.out).toContain("component.thing");
+    expect(r.out).not.toContain("component.button");
+  });
+
+  it("needs a command", () => {
+    expect(cli(["batch"]).code).toBe(2);
+    expect(cli(["batch", "get", "button"]).err).toContain(
+      "batch takes its commands with --command.",
+    );
+  });
+});
+
+describe("splitWords", () => {
+  it("splits like a shell, without expansion", () => {
+    expect(splitWords("  get  button --impl web ")).toEqual(["get", "button", "--impl", "web"]);
+    expect(splitWords(`tokens button --condition "variant.primary + hover"`)).toEqual([
+      "tokens",
+      "button",
+      "--condition",
+      "variant.primary + hover",
+    ]);
+    expect(splitWords(`search 'it''s' a\\ b "say \\"hi\\"" $HOME *`)).toEqual([
+      "search",
+      "its",
+      "a b",
+      'say "hi"',
+      "$HOME",
+      "*",
+    ]);
+    expect(splitWords(`get ""`)).toEqual(["get", ""]);
+    expect(splitWords("")).toEqual([]);
+  });
+
+  it("rejects an unclosed quote or a trailing backslash", () => {
+    expect(() => splitWords(`get "button`)).toThrow("unclosed double quote");
+    expect(() => splitWords("get 'button")).toThrow("unclosed single quote");
+    expect(() => splitWords("get button\\")).toThrow("trailing backslash");
   });
 });

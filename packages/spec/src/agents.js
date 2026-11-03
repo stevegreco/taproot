@@ -22,4 +22,6 @@ Implement it in whatever technology the project uses.
   \`--impl web\` for web components, \`--impl react\` for React (MCP: \`implementation\`). It gives the
   package, what to import, and the attribute or prop that implements each parameter. Never derive
   those names from parameter names.
-- For several lookups on the MCP server, make the tool calls in parallel.`;
+- For several lookups, run them in one \`batch\` with the CLI (for example
+  \`ds-spec batch --command "get button --impl web" --command "tokens button"\`), or make the
+  tool calls in parallel on the MCP server.`;

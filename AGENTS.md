@@ -33,7 +33,9 @@ Implement it in whatever technology the project uses.
   `--impl web` for web components, `--impl react` for React (MCP: `implementation`). It gives the
   package, what to import, and the attribute or prop that implements each parameter. Never derive
   those names from parameter names.
-- For several lookups on the MCP server, make the tool calls in parallel.
+- For several lookups, run them in one `batch` with the CLI (for example
+  `ds-spec batch --command "get button --impl web" --command "tokens button"`), or make the
+  tool calls in parallel on the MCP server.
 <!-- agent-instructions:end -->
 
 From the repository root, call the CLI with `node` directly. `pnpm spec` works too, but pnpm adds
@@ -49,6 +51,7 @@ node packages/spec/bin/ds-spec.js links component.button
 node packages/spec/bin/ds-spec.js rules --level must --topic accessibility
 node packages/spec/bin/ds-spec.js tokens component.button --condition "variant.primary + hover" --resolve
 node packages/spec/bin/ds-spec.js format --resolve
+node packages/spec/bin/ds-spec.js batch --command "get button --impl web" --command "tokens button"
 ```
 
 Ids or plain names work (`get button`), a one-word search tolerates typos, the start of a name

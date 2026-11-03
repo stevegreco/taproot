@@ -70,3 +70,49 @@ export function parameterLists(record) {
     ]),
   ];
 }
+
+/**
+ * Split a command line into words the way a shell would, without variables, globs, or other
+ * expansion: whitespace separates words, single quotes keep everything literally, double quotes
+ * group words and honor `\"` and `\\`, and a backslash outside quotes keeps the next character.
+ *
+ * @param {string} line
+ * @returns {string[]}
+ * @throws {Error} When a quote is not closed or the line ends in a backslash.
+ */
+export function splitWords(line) {
+  const words = [];
+  let word = "";
+  let inWord = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === "'") {
+      const end = line.indexOf("'", i + 1);
+      if (end === -1) throw new Error("unclosed single quote");
+      word += line.slice(i + 1, end);
+      inWord = true;
+      i = end;
+    } else if (char === '"') {
+      inWord = true;
+      for (i++; ; i++) {
+        if (i >= line.length) throw new Error("unclosed double quote");
+        if (line[i] === '"') break;
+        if (line[i] === "\\" && (line[i + 1] === '"' || line[i + 1] === "\\")) i++;
+        word += line[i];
+      }
+    } else if (char === "\\") {
+      if (i + 1 >= line.length) throw new Error("trailing backslash");
+      word += line[++i];
+      inWord = true;
+    } else if (/\s/.test(char)) {
+      if (inWord) words.push(word);
+      word = "";
+      inWord = false;
+    } else {
+      word += char;
+      inWord = true;
+    }
+  }
+  if (inWord) words.push(word);
+  return words;
+}

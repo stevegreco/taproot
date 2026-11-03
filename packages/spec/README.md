@@ -149,6 +149,7 @@ ds-spec links <id> [--kind <k>] [--direction out|in|both]
 ds-spec rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
 ds-spec tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
 ds-spec format [--resolve]
+ds-spec batch --command "<command>" [--command "<command>" ...]
 ds-spec help [command]
 ```
 
@@ -184,6 +185,14 @@ import, usage, an API table mapping each attribute to the parameter it implement
 With `--json` it returns `{ record, implementation }`. A plain `get` of an implemented component ends
 with a line naming every configured implementation that has a file for it, and each `search` result
 does the same, so no technology reads as the default.
+
+`batch` runs several commands in one process and loads the spec once, which takes about half the
+time of separate calls. Each `--command` is split into words the way a shell would (quotes group
+words, with no variables or globs), and takes the batch's `--json`, `--content`, and `--config`
+instead of its own. Text output gives each command's output under a `$ ds-spec <command>` line;
+`--json` prints an array of `{ command, exitCode, result }`, where `result` is that command's own
+JSON. A failed command does not stop the others, and the batch exits with the highest exit code.
+The MCP server has no `batch` tool, since MCP clients already call several tools in one turn.
 
 `format` prints the parts of [SPEC.md](SPEC.md) an implementer needs and records do not repeat: the
 property names token bindings use, the token keywords, condition syntax, anatomy roles, and the
