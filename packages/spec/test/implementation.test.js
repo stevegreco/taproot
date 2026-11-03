@@ -408,7 +408,7 @@ items:
     const out = renderImplementation(listRecord, parsed, "react");
     expect(out).toContain('import { List } from "@acme/react";');
     expect(out).toContain("### Entry: an entry of `entries`");
-    expect(out).toContain("| `label` | field | parameter `label` | string | Entry text. |");
+    expect(out).toContain("| `label` | field | entry parameter `label` | string | Entry text. |");
     expect(() =>
       parseImplementation(array.replace("kind: field", "kind: prop"), "x.md", "react"),
     ).toThrow("kind must be one of field for react");
