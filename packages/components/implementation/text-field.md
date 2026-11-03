@@ -1,6 +1,6 @@
 ---
 component: component.text-field
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-text-field
 defineExport: defineTextField
 usage: |

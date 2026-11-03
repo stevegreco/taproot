@@ -807,9 +807,7 @@ function docsRoot(): string {
 
 /** The web components' implementation files, resolved the same way in source and in the bundle. */
 export function implementationDir(): string {
-  const manifest = fileURLToPath(
-    import.meta.resolve("@stevegreco/design-system-components/package.json"),
-  );
+  const manifest = fileURLToPath(import.meta.resolve("@stevegreco/web-components/package.json"));
   return join(dirname(manifest), "implementation");
 }
 

@@ -1,6 +1,6 @@
 ---
 component: component.accordion
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-accordion
 defineExport: defineAccordion
 usage: |

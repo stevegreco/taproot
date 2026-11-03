@@ -54,7 +54,7 @@ await writeFile(
   `${SRC}/index.js`,
   `${header}
 /**
- * @stevegreco/design-system-components
+ * @stevegreco/web-components
  *
  * Importing this module registers every element with its default tag name.
  * Import from a subpath (e.g. "…/button") to register selectively, or use the

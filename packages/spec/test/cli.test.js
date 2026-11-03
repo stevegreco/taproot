@@ -270,9 +270,7 @@ describe("ds-spec CLI, implementations", () => {
     expect(r.out).toMatch(/^# Button/);
     expect(r.out).toContain("## Web implementation");
     expect(r.out).toContain("- Element: `<ds-button>`");
-    expect(r.out).toContain(
-      'import { defineButton } from "@stevegreco/design-system-components/button";',
-    );
+    expect(r.out).toContain('import { defineButton } from "@stevegreco/web-components/button";');
     expect(r.out).toContain(
       "| `type` | attribute | parameter `action` | `activate` → `button`, `submit`, `reset` |",
     );

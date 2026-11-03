@@ -2,7 +2,7 @@
  * Verify: run the steps in `progress-bar.verify.js`. The docs tests run them against the built site.
  */
 import { useEffect, useState } from "react";
-import "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
 
 const FILES = ["beach.jpg", "harbor.jpg", "market.jpg", "sunset.jpg"];
 // Stands in for the time each file takes to upload.

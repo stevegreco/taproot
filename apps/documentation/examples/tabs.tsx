@@ -1,7 +1,7 @@
 /**
  * Verify: run the steps in `tabs.verify.js`. The docs tests run them against the built site.
  */
-import "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
 
 export default function TabsExample() {
   return (

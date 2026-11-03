@@ -2,18 +2,15 @@
  * Verify: run the steps in `tooltip.verify.js`. The docs tests run them against the built site.
  */
 import { useState } from "react";
-import "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
 // The package root does not register ds-tooltip yet, so register it here.
-import {
-  defineTooltip,
-  type DsTooltipAttributes,
-} from "@stevegreco/design-system-components/tooltip";
+import { defineTooltip, type DsTooltipAttributes } from "@stevegreco/web-components/tooltip";
 
 defineTooltip();
 
 // The package root does not list ds-tooltip's attributes yet either. Identical declarations merge,
 // so this keeps compiling once it does.
-declare module "@stevegreco/design-system-components" {
+declare module "@stevegreco/web-components" {
   interface ElementAttributes {
     "ds-tooltip": DsTooltipAttributes;
   }

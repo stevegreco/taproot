@@ -2,8 +2,8 @@
  * Verify: run the steps in `dialog.verify.js`. The docs tests run them against the built site.
  */
 import { useRef, useState } from "react";
-import "@stevegreco/design-system-components";
-import type { DsDialog } from "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
+import type { DsDialog } from "@stevegreco/web-components";
 
 export default function DialogExample() {
   const dialog = useRef<DsDialog>(null);

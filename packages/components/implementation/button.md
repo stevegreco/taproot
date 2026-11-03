@@ -1,6 +1,6 @@
 ---
 component: component.button
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-button
 defineExport: defineButton
 usage: |

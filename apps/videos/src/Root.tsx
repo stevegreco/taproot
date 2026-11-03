@@ -1,5 +1,5 @@
 import "@stevegreco/design-system/css";
-import "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
 import { Composition, Folder } from "remotion";
 import { ComponentShowcase } from "./ComponentShowcase";
 import { AgentReady } from "./scenes/AgentReady";

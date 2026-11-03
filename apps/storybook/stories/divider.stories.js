@@ -1,7 +1,7 @@
 import { html } from "lit";
 // The package root registers every component. Divider is registered here until
 // it joins the package root's index.
-import { defineDivider } from "@stevegreco/design-system-components/divider";
+import { defineDivider } from "@stevegreco/web-components/divider";
 
 defineDivider();
 

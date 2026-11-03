@@ -1,6 +1,6 @@
 ---
 component: component.link
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-link
 defineExport: defineLink
 usage: |

@@ -1,6 +1,6 @@
 ---
 component: component.radio-group
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-radio-group
 defineExport: defineRadioGroup
 usage: |

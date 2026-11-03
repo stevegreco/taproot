@@ -1,6 +1,6 @@
 ---
 component: component.dialog
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-dialog
 defineExport: defineDialog
 usage: |

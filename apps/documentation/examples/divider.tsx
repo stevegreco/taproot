@@ -1,8 +1,8 @@
 /**
  * Verify: run the steps in `divider.verify.js`. The docs tests run them against the built site.
  */
-import "@stevegreco/design-system-components";
-import { defineDivider } from "@stevegreco/design-system-components/divider";
+import "@stevegreco/web-components";
+import { defineDivider } from "@stevegreco/web-components/divider";
 
 // The package root registers every component. Divider is registered here until it joins the
 // package root's index.

@@ -44,12 +44,12 @@ importers:
       '@stevegreco/design-system':
         specifier: workspace:*
         version: link:../../packages/tokens
-      '@stevegreco/design-system-components':
-        specifier: workspace:*
-        version: link:../../packages/components
       '@stevegreco/design-system-spec':
         specifier: workspace:*
         version: link:../../packages/spec
+      '@stevegreco/web-components':
+        specifier: workspace:*
+        version: link:../../packages/components
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@26.2.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))
@@ -87,7 +87,7 @@ importers:
       '@stevegreco/design-system':
         specifier: workspace:*
         version: link:../../packages/tokens
-      '@stevegreco/design-system-components':
+      '@stevegreco/web-components':
         specifier: workspace:*
         version: link:../../packages/components
     devDependencies:

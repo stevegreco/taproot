@@ -1,6 +1,6 @@
 ---
 component: component.tabs
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-tabs
 defineExport: defineTabs
 usage: |

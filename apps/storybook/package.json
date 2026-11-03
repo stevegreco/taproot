@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@stevegreco/design-system": "workspace:*",
-    "@stevegreco/design-system-components": "workspace:*"
+    "@stevegreco/web-components": "workspace:*"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.6.1",

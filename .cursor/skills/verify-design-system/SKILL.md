@@ -78,7 +78,7 @@ Package gates:
 ```bash
 pnpm build
 pnpm exec turbo run test --filter=@stevegreco/design-system
-pnpm exec turbo run test --filter=@stevegreco/design-system-components
+pnpm exec turbo run test --filter=@stevegreco/web-components
 pnpm exec turbo run test --filter=@stevegreco/design-system-spec
 pnpm exec turbo run test --filter=documentation
 pnpm --filter documentation exec blume validate --strict

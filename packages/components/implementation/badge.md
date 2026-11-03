@@ -1,6 +1,6 @@
 ---
 component: component.badge
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-badge
 defineExport: defineBadge
 usage: |
