@@ -75,7 +75,7 @@ export async function checkSources(sources, { tokenNames } = {}) {
     if (record.data.type === "component") {
       checkRules(record.data, report_);
       checkParameters(record.data, report_);
-      checkItems(record.data, report_);
+      checkPartOptions(record.data, report_);
       checkTokens(record.data, report_);
       checkTokenReferences(record.data, tokenNames, report_);
     }
@@ -350,7 +350,7 @@ function checkRules(data, report) {
 }
 
 /**
- * Every parameter in a component record, its own and its items', with its JSON pointer.
+ * Every parameter in a component record, its own and its parts' and items', with its JSON pointer.
  *
  * @returns {Generator<[name: string, parameter: Record<string, any>, pointer: string]>}
  */
@@ -386,12 +386,26 @@ function checkParameters(data, report) {
   }
 }
 
-function checkItems(data, report) {
-  for (const part of Object.keys(data.items ?? {})) {
-    if (!Object.hasOwn(data.anatomy, part)) {
+function checkPartOptions(data, report) {
+  for (const [field, noun] of [
+    ["parts", "part"],
+    ["items", "item"],
+  ]) {
+    for (const part of Object.keys(data[field] ?? {})) {
+      if (!Object.hasOwn(data.anatomy, part)) {
+        report({
+          path: `/${field}/${pointerSegment(part)}`,
+          message: `${noun} \`${part}\` is not an anatomy part`,
+        });
+      }
+    }
+  }
+  // A part either repeats or appears once, so its options live in one place.
+  for (const part of Object.keys(data.parts ?? {})) {
+    if (Object.hasOwn(data.items ?? {}, part)) {
       report({
-        path: `/items/${pointerSegment(part)}`,
-        message: `item \`${part}\` is not an anatomy part`,
+        path: `/parts/${pointerSegment(part)}`,
+        message: `\`${part}\` is in both parts and items; a part either repeats or appears once`,
       });
     }
   }

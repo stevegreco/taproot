@@ -138,10 +138,19 @@ export function get(spec, { target: typedTarget, implementation }, options = {})
   const found = spec.section(target);
   if (!found) {
     const known = record.sections.map((name) => `${id}#${name}`);
+    // A bare name, such as `title`, usually means a section whose path ends in it, such as
+    // `anatomy.title` or `parts.title`.
+    const meant = [
+      ...new Set([
+        ...record.sections.filter((name) => name.endsWith(`.${section}`)),
+        ...nearest(section, record.sections),
+      ]),
+    ].map((name) => `${id}#${name}`);
+    const didYouMean = meant.length ? ` Did you mean ${meant.join(", ")}?` : "";
     return failure(
-      `Unknown section "${target}". Sections: ${known.join(", ") || "none"}.`,
+      `Unknown section "${target}".${didYouMean} Sections: ${known.join(", ") || "none"}.`,
       "ERR_UNKNOWN_SECTION",
-      nearest(section, record.sections).map((name) => `${id}#${name}`),
+      meant,
     );
   }
   return { text: spec.render(target), data: found, ok: true };

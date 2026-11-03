@@ -15,6 +15,7 @@ const FIELD_ORDER = [
   "anatomy",
   "parameters",
   "events",
+  "parts",
   "items",
   "states",
   "preferences",
@@ -142,14 +143,14 @@ function renderSection(state, record, name, entry) {
     ];
   }
   if (FIELD_ORDER.includes(name)) return [renderField(state, record, name)];
-  // An item, or its parameters or events, reads like the component's own: tables, not YAML.
-  const item = name.match(/^items\.([^.]+)(?:\.(parameters|events))?$/);
-  if (item) {
-    const [, part, field] = item;
+  // A part or an item, or its parameters or events, reads like the component's own: tables, not YAML.
+  const owner = name.match(/^(parts|items)\.([^.]+)(?:\.(parameters|events))?$/);
+  if (owner) {
+    const [, kind, part, field] = owner;
     if (field === "parameters")
       return [section("Parameters", renderParameters(state, entry.content))];
     if (field === "events") return [section("Events", renderEvents(entry.content))];
-    return [renderItem(state, part, entry.content).replace(/^### /, "## ")];
+    return [renderPartOptions(state, kind, part, entry.content).replace(/^### /, "## ")];
   }
   if (name === "description") return [`## Description`, entry.content];
   const value = entry.content;
@@ -177,11 +178,12 @@ function renderField(state, record, field) {
       return section("Parameters", renderParameters(state, value));
     case "events":
       return section("Events", renderEvents(value));
+    case "parts":
     case "items":
       return section(
-        "Items",
+        field === "parts" ? "Parts" : "Items",
         Object.entries(value)
-          .map(([part, item]) => renderItem(state, part, item))
+          .map(([part, options]) => renderPartOptions(state, field, part, options))
           .join("\n\n"),
       );
     case "states":
@@ -230,10 +232,13 @@ function renderUsage(state, usage) {
 }
 
 /** One repeated part: the parameters and events each copy of it carries. */
-function renderItem(state, part, item) {
-  const blocks = [`### ${part}`, `Each \`${part}\` carries these.`];
-  if (item.parameters) blocks.push(renderParameters(state, item.parameters));
-  if (item.events) blocks.push(`Events:\n\n${renderEvents(item.events)}`);
+/** One part's or one item's options. `kind` is `parts` or `items`. */
+function renderPartOptions(state, kind, part, options) {
+  const lead =
+    kind === "items" ? `Options of each \`${part}\`.` : `Options of the \`${part}\` part.`;
+  const blocks = [`### ${part}`, lead];
+  if (options.parameters) blocks.push(renderParameters(state, options.parameters));
+  if (options.events) blocks.push(`Events:\n\n${renderEvents(options.events)}`);
   return blocks.join("\n\n");
 }
 

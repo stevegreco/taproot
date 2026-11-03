@@ -80,6 +80,9 @@
           "events": {
             "$ref": "#/$defs/events"
           },
+          "parts": {
+            "$ref": "#/$defs/parts"
+          },
           "items": {
             "$ref": "#/$defs/items"
           },
@@ -415,8 +418,16 @@
         "$ref": "#/$defs/text"
       }
     },
+    "parts": {
+      "description": "Parts that appear at most once and carry options of their own, by anatomy part.",
+      "$ref": "#/$defs/partOptions"
+    },
     "items": {
       "description": "Parts the author repeats, by anatomy part, with the options each copy carries.",
+      "$ref": "#/$defs/partOptions"
+    },
+    "partOptions": {
+      "description": "Parameters and events by anatomy part.",
       "type": "object",
       "minProperties": 1,
       "propertyNames": {

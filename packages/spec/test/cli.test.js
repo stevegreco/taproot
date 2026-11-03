@@ -422,11 +422,11 @@ describe("ds-spec CLI, format reference", () => {
 describe("ds-spec CLI, items", () => {
   it("prints each item's parameters as a table, in the record and as a section", () => {
     const { out } = cli(["get", "component.accordion"]);
-    expect(out).toContain("## Items\n\n### section\n\nEach `section` carries these.");
+    expect(out).toContain("## Items\n\n### section\n\nOptions of each `section`.");
     expect(out).toContain("| expanded | boolean |  | `false` |");
     const item = cli(["get", "component.accordion#items.section"]);
     expect(item.code).toBe(0);
-    expect(item.out).toMatch(/^## section\n\nEach `section` carries these\./);
+    expect(item.out).toMatch(/^## section\n\nOptions of each `section`\./);
     expect(item.out).toContain("| label | string |");
     const parameters = cli(["get", "component.accordion#items.section.parameters"]);
     expect(parameters.out).toMatch(/^## Parameters\n\n\| Name \| Kind/);
@@ -481,6 +481,30 @@ describe("ds-spec CLI, items", () => {
 
   it("finds a record by its item parameters", () => {
     expect(cli(["search", "zephyr"], tools).out).toContain("- component.thing — Thing: ");
+  });
+});
+
+describe("ds-spec CLI, parts", () => {
+  it("prints a part's parameters as a table, in the record and as a section", () => {
+    const { out } = cli(["get", "component.card"]);
+    expect(out).toContain("## Parts\n\n### title\n\nOptions of the `title` part.");
+    const part = cli(["get", "component.card#parts.title.parameters.headingLevel"]);
+    expect(part.code).toBe(0);
+    expect(part.out).toMatch(/^## headingLevel\n/);
+  });
+
+  it("suggests the sections a bare part name probably means", () => {
+    const r = cli(["get", "component.dialog#title"]);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain(
+      'Unknown section "component.dialog#title". Did you mean component.dialog#anatomy.title, component.dialog#parts.title?',
+    );
+  });
+
+  it("maps a part's attributes on the element in the web implementation", () => {
+    const { out } = cli(["get", "component.card", "--impl", "web"], impls);
+    expect(out).toContain("### Title part, on `<ds-card>`");
+    expect(out).toContain("| `heading-level` | attribute | parameter `headingLevel` | number |");
   });
 });
 

@@ -56,7 +56,8 @@ export function typoAllowance(word) {
 
 /**
  * Every parameter list in a component record with the section path that names it: the
- * component's own `parameters`, then each item's, such as `items.section.parameters`.
+ * component's own `parameters`, then each part's, such as `parts.title.parameters`, then each
+ * item's, such as `items.section.parameters`.
  *
  * @param {Record<string, any>} record
  * @returns {[path: string, parameters: Record<string, any>][]}
@@ -64,10 +65,12 @@ export function typoAllowance(word) {
 export function parameterLists(record) {
   return [
     ["parameters", record.parameters ?? {}],
-    ...Object.entries(record.items ?? {}).map(([part, item]) => [
-      `items.${part}.parameters`,
-      item?.parameters ?? {},
-    ]),
+    ...["parts", "items"].flatMap((field) =>
+      Object.entries(record[field] ?? {}).map(([part, options]) => [
+        `${field}.${part}.parameters`,
+        options?.parameters ?? {},
+      ]),
+    ),
   ];
 }
 

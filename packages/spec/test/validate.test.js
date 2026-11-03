@@ -96,6 +96,20 @@ const cases = [
     message: "item `entry` is not an anatomy part",
   },
   {
+    name: "part-part",
+    file: "thing.spec.yaml",
+    line: 14,
+    path: "/parts/title",
+    message: "part `title` is not an anatomy part",
+  },
+  {
+    name: "part-and-item",
+    file: "thing.spec.yaml",
+    line: 14,
+    path: "/parts/entry",
+    message: "`entry` is in both parts and items; a part either repeats or appears once",
+  },
+  {
     name: "token-part",
     file: "thing.spec.yaml",
     line: 14,

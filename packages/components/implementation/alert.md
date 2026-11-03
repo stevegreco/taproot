@@ -14,12 +14,17 @@ usage: |
   </ds-alert>
 api:
   - { name: variant, kind: attribute, parameter: variant }
-  - { name: label, kind: attribute, parameter: label }
   - { name: announce, kind: attribute, parameter: announce }
-  - { name: dismissible, kind: attribute, parameter: dismissible }
-  - { name: dismiss-label, kind: attribute, parameter: dismissLabel }
-  - { name: dismissLabel, kind: property, parameter: dismissLabel }
   - { name: dismiss, kind: event, event: dismiss }
+parts:
+  title:
+    api:
+      - { name: label, kind: attribute, parameter: label }
+  dismiss:
+    api:
+      - { name: dismissible, kind: attribute, parameter: dismissible }
+      - { name: dismiss-label, kind: attribute, parameter: dismissLabel }
+      - { name: dismissLabel, kind: property, parameter: dismissLabel }
 ---
 
 ## Slots

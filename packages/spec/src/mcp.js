@@ -117,7 +117,7 @@ export async function createSpecServer(options = {}) {
       target: z
         .string()
         .describe(
-          'A record id, a name such as "button", or "id#section", such as component.button#rules.',
+          'A record id, a name such as "button", or "id#section", such as component.button#rules or component.card#parts.title.',
         ),
       implementation: z
         .string()

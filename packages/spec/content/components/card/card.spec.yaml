@@ -64,21 +64,24 @@ anatomy:
     role: container
     description: Optional supplied actions that apply to the subject.
 parameters:
-  label:
-    kind: string
-    description: Text of the title, which names the subject. Required.
   href:
     kind: string
     description: >-
       Optional primary destination: the subject's full view. With it, the title leads there and the
       whole surface outside the actions follows it. Without it, nothing on the card is interactive
       except supplied actions.
-  headingLevel:
-    kind: number
-    default: 3
-    description: >-
-      Heading level of the title, from 2 to 6, so the card fits the outline of the page around it.
-      Values outside the range use the default.
+parts:
+  title:
+    parameters:
+      label:
+        kind: string
+        description: Text of the title, which names the subject. Required.
+      headingLevel:
+        kind: number
+        default: 3
+        description: >-
+          Heading level of the title, from 2 to 6, so the card fits the outline of the page around
+          it. Values outside the range use the default.
 events:
   activate: The primary destination was followed, from the title or anywhere on the surface outside the actions.
 states:
@@ -217,11 +220,15 @@ rationale:
       A link that wraps the card takes every word on it as its accessible name, and cannot hold
       actions, because interactive content cannot nest. A link on the title has a short name, keeps
       the heading outline, and lets the actions sit above the extended target.
-  - decision: Card renders the title from the label and heading level parameters, rather than taking supplied heading content.
+  - decision: Card renders the title from the title's label and heading level parameters, rather than taking supplied heading content.
     why: >-
       Card owns the link inside the heading, so it has to own the heading too. Label is the one
       name for a component's visible title, as in Alert and Dialog. Unlike Alert, a card's title
       is a heading, because a collection of cards is navigated by heading.
+  - decision: The label and heading level are options of the title part. The destination stays an option of the card.
+    why: >-
+      Both shape only the title, so they sit under parts (ADR 0005). The destination makes the
+      whole surface outside the actions a target, so it belongs to the card.
   - decision: Hover and the lifted elevation apply only to a card with a destination.
     why: >-
       Hover signals a target. A card with nothing to follow should not invite a click. The tokens

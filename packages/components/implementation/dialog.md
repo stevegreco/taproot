@@ -13,12 +13,6 @@ api:
   - name: open
     kind: attribute
     parameter: open
-  - name: label
-    kind: attribute
-    parameter: label
-  - name: description
-    kind: attribute
-    parameter: description
   - name: dismissible
     kind: attribute
     parameter: dismissible
@@ -36,6 +30,17 @@ api:
   - name: close
     kind: event
     event: close
+parts:
+  title:
+    api:
+      - name: label
+        kind: attribute
+        parameter: label
+  description:
+    api:
+      - name: description
+        kind: attribute
+        parameter: description
 ---
 
 ## Open and close

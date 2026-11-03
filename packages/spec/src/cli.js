@@ -27,7 +27,7 @@ const COMMANDS = {
   get: {
     usage: "ds-spec get <id | name | id#section> [--impl <name>]",
     summary:
-      "Print a record, or one section of it, as Markdown. --impl <name> adds how that technology implements it: package, import, and API names.",
+      "Print a record, or one section of it, as Markdown. A section is a rule id, a field such as parameters, or a dotted path such as anatomy.title, parts.title.parameters.label, or items.section. --impl <name> adds how that technology implements it: package, import, and API names.",
     options: { impl: str },
   },
   links: {
