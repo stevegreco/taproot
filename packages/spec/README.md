@@ -142,7 +142,7 @@ parameter, value, and event a row names exists and every one the record has is c
 
 ```sh
 ds-spec validate
-ds-spec list [--type <t>] [--tag <tag>] [--status <s>]
+ds-spec list [--type <t>] [--tag <tag>] [--status <s>] [--impl <name>]
 ds-spec search <query...> [--type <t>] [--tag <tag>] [--limit <n>]
 ds-spec get <id | name | id#section> [--impl <name>]
 ds-spec links <id> [--kind <k>] [--direction out|in|both]

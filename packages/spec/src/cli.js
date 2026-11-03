@@ -15,9 +15,10 @@ const COMMANDS = {
     options: {},
   },
   list: {
-    usage: "ds-spec list [--type <t>] [--tag <tag>] [--status <s>]",
-    summary: "List records, optionally filtered.",
-    options: { type: str, tag: str, status: str },
+    usage: "ds-spec list [--type <t>] [--tag <tag>] [--status <s>] [--impl <name>]",
+    summary:
+      "List records, optionally filtered. --impl <name> lists the components that implementation has.",
+    options: { type: str, tag: str, status: str, impl: str },
   },
   search: {
     usage: "ds-spec search <query...> [--type <t>] [--tag <tag>] [--limit <n>]",
@@ -228,7 +229,9 @@ export async function run(argv, io = {}) {
     const takesId = ["get", "links", "tokens"].includes(command);
     if (takesId && positionals.length === 0) return usageError(`${command} needs an id.`);
     if (!takesId && command !== "search" && positionals.length > 0) {
-      return usageError(`${command} takes no positional arguments.`);
+      return usageError(
+        `${command} takes no positional arguments. Quote a value of several words, such as --query 'dismiss label'.`,
+      );
     }
     if (values.limit !== undefined && !/^[1-9]\d*$/.test(values.limit)) {
       return usageError("--limit must be a positive integer.");
@@ -253,7 +256,7 @@ export async function run(argv, io = {}) {
     const args = { ...values, limit: values.limit ? Number(values.limit) : undefined };
     switch (command) {
       case "list":
-        return print(ops.list(spec, args));
+        return print(ops.list(spec, { ...args, implementation: values.impl }, { implementations }));
       case "search":
         return print(
           ops.search(

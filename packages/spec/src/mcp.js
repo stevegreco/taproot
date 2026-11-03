@@ -144,8 +144,12 @@ export async function createSpecServer(options = {}) {
       type,
       tag,
       status: z.enum(["draft", "stable", "deprecated"]).optional(),
+      implementation: z
+        .string()
+        .optional()
+        .describe('Only components this implementation has, such as "react".'),
     },
-    (args) => ops.list(spec, args),
+    (args) => ops.list(spec, args, { implementations: resolveConfig(loadOptions).implementations }),
   );
   tool(
     "links",

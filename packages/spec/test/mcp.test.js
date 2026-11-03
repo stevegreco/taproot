@@ -67,6 +67,14 @@ describe("spec MCP server", () => {
     expect(missing.isError).toBe(true);
   });
 
+  it("lists the components an implementation has", async () => {
+    const { client } = await connect({ cwd: impls });
+    const listed = await client.callTool({ name: "list", arguments: { implementation: "react" } });
+    const ids = listed.structuredContent.results.map((record) => record.id);
+    expect(ids).toContain("component.button");
+    expect(ids).not.toContain("component.card");
+  });
+
   it("gets a component with its implementation", async () => {
     const { client } = await connect({ cwd: impls });
     const plain = await client.callTool({ name: "get", arguments: { target: "component.button" } });

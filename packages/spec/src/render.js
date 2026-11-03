@@ -126,8 +126,9 @@ function renderSection(state, record, name, entry) {
   if (entry.kind === "rule") return [ruleLine(entry.content)];
   if (entry.kind === "value") {
     const { meaning, example, guidance } = entry.content;
+    // A section is headed by its path, such as `parameters.variant.primary`, so it says where it is.
     return [
-      `## ${entry.title}`,
+      `## ${name}`,
       meaning,
       example && `Example: ${example}`,
       guidance && `Guidance: ${referenceText(state, guidance)}`,
@@ -153,7 +154,7 @@ function renderSection(state, record, name, entry) {
   }
   if (name === "description") return [`## Description`, entry.content];
   const value = entry.content;
-  return [`## ${entry.title}`, typeof value === "string" ? value : fence(value)];
+  return [`## ${name}`, typeof value === "string" ? value : fence(value)];
 }
 
 const fence = (value) => `\`\`\`yaml\n${stringify(value).trimEnd()}\n\`\`\``;
