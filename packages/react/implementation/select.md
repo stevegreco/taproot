@@ -32,7 +32,7 @@ api:
       name: options,
       kind: prop,
       type: "Array<SelectOption | SelectGroup>",
-      description: "The choices in order. A choice is { value, label, disabled? }; a group is { label, options, disabled? }.",
+      description: The choices and groups in order. Their fields are listed under each item.,
     }
   - { name: onInput, kind: callback, event: input }
   - { name: onChange, kind: callback, event: change }
@@ -42,6 +42,24 @@ api:
       type: string,
       description: Added to the root element's classes.,
     }
+items:
+  choice:
+    prop: options
+    api:
+      - { name: label, kind: field, parameter: label }
+      - { name: value, kind: field, parameter: value }
+      - { name: disabled, kind: field, parameter: disabled }
+  group:
+    prop: options
+    api:
+      - { name: label, kind: field, parameter: label }
+      - { name: disabled, kind: field, parameter: disabled }
+      - {
+          name: options,
+          kind: field,
+          type: "SelectOption[]",
+          description: The group's choices in order. Groups do not nest.,
+        }
 ---
 
 ## Platform control
@@ -53,9 +71,8 @@ indicator.
 
 ## Choices
 
-Pass `options`. Each choice has a `value` and visible `label`; `disabled` keeps it listed but
-unavailable. A group (`{ label, options, disabled? }`) names a run of choices, and a disabled group
-makes all of them unavailable. An empty label or a repeated value logs a console warning.
+Pass `options`, an array of choices (`SelectOption`) and groups (`SelectGroup`). An entry with
+its own `options` is a group. An empty label or a repeated value logs a console warning.
 
 ## Value
 

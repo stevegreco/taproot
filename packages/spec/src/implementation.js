@@ -20,7 +20,7 @@ import { table } from "./render.js";
 
 /** @typedef {"web-component" | "react"} Technology */
 
-/** @typedef {"attribute" | "property" | "event" | "prop" | "callback"} ApiMemberKind */
+/** @typedef {"attribute" | "property" | "event" | "prop" | "callback" | "field"} ApiMemberKind */
 
 /**
  * One row of the API table. Spec-backed rows take their text from the component record.
@@ -47,12 +47,14 @@ import { table } from "./render.js";
  */
 
 /**
- * How one repeated item of the record is realized: by an element for a web component, by an
- * exported component for React.
+ * How one repeated item of the record is realized: by an element for a web component; for React,
+ * by an exported component, or by an entry of an array prop such as Select's `options`, whose rows
+ * are the entry's fields.
  *
  * @typedef {object} ImplementationItem
  * @property {string} [tagName] Web components.
- * @property {string} [export] React.
+ * @property {string} [export] React: the item's component.
+ * @property {string} [prop] React: the array prop whose entries are the items.
  * @property {ImplementationApiRow[]} api
  */
 
@@ -135,6 +137,12 @@ const TECHNOLOGIES = {
     itemFields: {
       export: { regex: COMPONENT_NAME, hint: 'a component name such as "TabsSection"' },
     },
+    /** An item may instead be an entry of an array prop, with a row of kind `field` per key. */
+    arrayItem: {
+      field: "prop",
+      pattern: { regex: IDENTIFIER, hint: 'a prop name such as "options"' },
+      kind: "field",
+    },
     kinds: ["prop", "callback"],
     eventKind: "callback",
     identity: (implementation) => `- Component: ${code(implementation.export)}`,
@@ -142,7 +150,7 @@ const TECHNOLOGIES = {
       const names = [
         implementation.export,
         ...Object.values(implementation.parts).flatMap((part) => part.export ?? []),
-        ...Object.values(implementation.items).map((item) => item.export),
+        ...Object.values(implementation.items).flatMap((item) => item.export ?? []),
       ];
       return [
         "```tsx",
@@ -151,7 +159,10 @@ const TECHNOLOGIES = {
       ].join("\n");
     },
     language: "tsx",
-    itemHeading: (part, item) => `${capitalize(part)} component: ${code(item.export)}`,
+    itemHeading: (part, item) =>
+      item.export
+        ? `${capitalize(part)} component: ${code(item.export)}`
+        : `${capitalize(part)}: an entry of ${code(item.prop)}`,
     partHeading: (part, owner, implementation) =>
       owner.export
         ? `${capitalize(part)} component: ${code(owner.export)}`
@@ -221,8 +232,15 @@ function rejectUnknownKeys(file, where, source, allowed) {
  * @param {number} index
  * @returns {ImplementationApiRow}
  */
-function parseRow(file, raw, index, technology, prefix = "") {
-  const { kinds, eventKind } = TECHNOLOGIES[technology];
+function parseRow(
+  file,
+  raw,
+  index,
+  technology,
+  prefix = "",
+  kinds = TECHNOLOGIES[technology].kinds,
+) {
+  const { eventKind } = TECHNOLOGIES[technology];
   const where = `${prefix}api[${index}] `;
   if (!isObject(raw)) throw new ImplementationError(file, `${where}must be a mapping.`);
   rejectUnknownKeys(file, where, raw, ROW_KEYS);
@@ -371,7 +389,26 @@ export function parseImplementation(source, file, technology) {
     for (const [part, raw] of Object.entries(data.items)) {
       const where = `items.${part} `;
       if (!isObject(raw)) throw new ImplementationError(file, `${where}must be a mapping.`);
-      rejectUnknownKeys(file, where, raw, [...Object.keys(profile.itemFields), "api"]);
+      const array = profile.arrayItem;
+      rejectUnknownKeys(file, where, raw, [
+        ...Object.keys(profile.itemFields),
+        ...(array ? [array.field] : []),
+        "api",
+      ]);
+      if (array && raw[array.field] !== undefined) {
+        const others = Object.keys(profile.itemFields).filter((key) => raw[key] !== undefined);
+        if (others.length > 0) {
+          throw new ImplementationError(
+            file,
+            `${where}takes ${others.map(code).join(", ")} or ${code(array.field)}, not both.`,
+          );
+        }
+        items[part] = {
+          [array.field]: stringField(file, where, raw, array.field, array.pattern),
+          api: parseApi(file, raw.api, technology, `items.${part}.`, [array.kind]),
+        };
+        continue;
+      }
       items[part] = {
         ...Object.fromEntries(
           Object.entries(profile.itemFields).map(([key, pattern]) => [
@@ -406,13 +443,14 @@ export function parseImplementation(source, file, technology) {
  * @param {unknown} raw
  * @param {Technology} technology
  * @param {string} prefix Where the rows are, such as `items.section.`, for error messages.
+ * @param {readonly string[]} [kinds] The row kinds allowed, when not the technology's own.
  * @returns {ImplementationApiRow[]}
  */
-function parseApi(file, raw, technology, prefix) {
+function parseApi(file, raw, technology, prefix, kinds) {
   if (!Array.isArray(raw)) {
     throw new ImplementationError(file, `${prefix}api must be a list of rows.`);
   }
-  const api = raw.map((row, index) => parseRow(file, row, index, technology, prefix));
+  const api = raw.map((row, index) => parseRow(file, row, index, technology, prefix, kinds));
   const seen = new Set();
   for (const row of api) {
     const key = `${row.kind}:${row.name}`;
