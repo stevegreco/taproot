@@ -1,9 +1,14 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { describe, expect, it } from "vitest";
 import { buildSnapshot } from "../src/build-snapshot.js";
 import { loadFromConfig, resolveConfig } from "../src/config.js";
+import { createSpecServer } from "../src/mcp.js";
 import * as ops from "../src/operations.js";
+import { createSnapshotServer } from "../src/server.js";
 import { openSnapshot } from "../src/snapshot.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -104,5 +109,69 @@ describe("spec snapshot", () => {
 
   it("holds no absolute paths from the machine that built it", async () => {
     expect(JSON.stringify(await build())).not.toContain(repoRoot);
+  });
+
+  it("runs on a host with no Node APIs", () => {
+    const seen = new Set();
+    const visit = (file) => {
+      if (seen.has(file)) return;
+      seen.add(file);
+      const source = fs.readFileSync(file, "utf8");
+      for (const [, name] of source.matchAll(/(?:from|import) "([^"]+)"/g)) {
+        expect(name, `${file} imports ${name}`).not.toMatch(/^node:/);
+        if (name.startsWith(".") && name.endsWith(".js")) {
+          visit(path.resolve(path.dirname(file), name));
+        }
+      }
+    };
+    visit(fileURLToPath(new URL("../src/server.js", import.meta.url)));
+    expect(seen.size).toBeGreaterThan(5);
+  });
+});
+
+describe("snapshot MCP server", () => {
+  const connect = async (server) => {
+    const client = new Client({ name: "test", version: "0.0.0" });
+    const [a, b] = InMemoryTransport.createLinkedPair();
+    await Promise.all([server.connect(a), client.connect(b)]);
+    return client;
+  };
+
+  it("answers tools and resources as the local server does, without validate", async () => {
+    const local = await createSpecServer({ cwd: repoRoot, watch: false });
+    const fromFiles = await connect(local.server);
+    const fromSnapshot = await connect(createSnapshotServer(await build()));
+
+    const names = (await fromSnapshot.listTools()).tools.map((tool) => tool.name);
+    expect(names).toEqual(
+      (await fromFiles.listTools()).tools
+        .map((tool) => tool.name)
+        .filter((name) => name !== "validate"),
+    );
+    expect(names).not.toContain("validate");
+    expect(await fromSnapshot.listResources()).toEqual(await fromFiles.listResources());
+    expect(fromSnapshot.getInstructions()).toEqual(fromFiles.getInstructions());
+
+    const calls = [
+      ["search", { query: "destructive action" }],
+      ["get", { target: "button", implementation: "web" }],
+      ["get", { target: "component.button#rules" }],
+      ["get", { target: "buton" }],
+      ["list", { type: "pattern" }],
+      ["links", { id: "component.button", direction: "both" }],
+      ["rules", { level: "must" }],
+      ["tokens", { id: "component.button", resolve: true }],
+      ["format", { resolve: true }],
+    ];
+    for (const [name, args] of calls) {
+      const call = { name, arguments: args };
+      expect(await fromSnapshot.callTool(call), name).toEqual(await fromFiles.callTool(call));
+    }
+    const uri = "spec://component.button";
+    expect(await fromSnapshot.readResource({ uri })).toEqual(await fromFiles.readResource({ uri }));
+
+    await fromSnapshot.close();
+    await fromFiles.close();
+    local.close();
   });
 });
