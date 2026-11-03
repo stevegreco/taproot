@@ -26,8 +26,6 @@ api:
       type: boolean,
       description: Whether the dialog starts shown when the parent does not control open.,
     }
-  - { name: label, kind: prop, parameter: label }
-  - { name: description, kind: prop, parameter: description }
   - { name: dismissible, kind: prop, parameter: dismissible }
   - {
       name: initialFocus,
@@ -60,6 +58,13 @@ api:
       type: string,
       description: Added to the root (backdrop) element's classes.,
     }
+parts:
+  title:
+    api:
+      - { name: label, kind: prop, parameter: label }
+  description:
+    api:
+      - { name: description, kind: prop, parameter: description }
 ---
 
 ## Open state

@@ -77,9 +77,6 @@ parameters:
       warning: Your session expires in 5 minutes.
       danger: The upload failed. Check your connection and try again.
     default: info
-  label:
-    kind: string
-    description: Optional text shown as the title part, read before the message.
   announce:
     kind: enum
     values:
@@ -91,14 +88,22 @@ parameters:
       polite: Your changes were saved.
       urgent: Your session expires in 1 minute.
     default: "off"
-  dismissible:
-    kind: boolean
-    default: false
-    description: Whether the alert shows a control that dismisses it.
-  dismissLabel:
-    kind: string
-    default: Dismiss
-    description: Accessible name of the dismiss control. Translate it with the rest of the interface.
+parts:
+  title:
+    parameters:
+      label:
+        kind: string
+        description: Optional text shown as the title part, read before the message.
+  dismiss:
+    parameters:
+      dismissible:
+        kind: boolean
+        default: false
+        description: Whether the alert shows a control that dismisses it.
+      dismissLabel:
+        kind: string
+        default: Dismiss
+        description: Accessible name of the dismiss control. Translate it with the rest of the interface.
 events:
   dismiss: The dismiss control was activated. Preventing the event keeps the alert shown.
 states:
@@ -271,6 +276,11 @@ tokens:
     focus:
       focus-ring: semantic.color.border.focus
 rationale:
+  - decision: The label is an option of the title part, and dismissible and the dismiss label are options of the dismiss part. Variant and announce stay options of the alert.
+    why: >-
+      Each of the first three shapes one part (ADR 0005). Variant colors the surface and icon, and
+      announce governs how the whole alert reaches assistive technology. The dismiss options keep
+      their names, so the web and React APIs do not change.
   - decision: Announcement is its own parameter, off by default, and independent of the variant.
     why: >-
       A danger alert present when a view loads should be found by reading, not announced, while a

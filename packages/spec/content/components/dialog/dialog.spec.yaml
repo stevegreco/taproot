@@ -45,16 +45,21 @@ parameters:
     kind: boolean
     default: false
     description: Whether the modal dialog is shown.
-  label:
-    kind: string
-    description: Visible title and accessible name for the dialog.
-  description:
-    kind: string
-    description: Optional short accessible description of the conversation.
   dismissible:
     kind: boolean
     default: true
     description: Whether the standard cancel gesture can request dismissal.
+parts:
+  title:
+    parameters:
+      label:
+        kind: string
+        description: Visible title and accessible name for the dialog.
+  description:
+    parameters:
+      description:
+        kind: string
+        description: Optional short accessible description of the conversation.
 events:
   cancel: A cancel gesture requests dismissal; the consumer may prevent it to protect unfinished work.
   close: The dialog has closed, through an explicit action, dismissal, or programmatic change.
@@ -166,6 +171,10 @@ tokens:
     base:
       gap: primitives.space.2
 rationale:
+  - decision: The label and description are options of the title and description parts. Open and dismissible stay options of the dialog.
+    why: >-
+      Each of the first two fills one part (ADR 0005). The dialog takes its accessible name and
+      description from those parts. Open and dismissible govern the whole modal conversation.
   - decision: Modal only, one responsive size, no density variant, and no nested dialogs.
     why: >-
       This first contract serves short focused tasks. Dialog width is bounded by the viewport;
