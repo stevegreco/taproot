@@ -225,8 +225,7 @@ tokens:
       background: semantic.color.background.action.primary.default
       border: semantic.color.background.surface
       radius: semantic.radius.pill
-      width: primitives.space.5
-      height: primitives.space.5
+      size: primitives.space.5
     hover:
       background: semantic.color.background.action.primary.hover
     dragging:
@@ -308,6 +307,10 @@ rationale:
     why: >-
       A slider is a control, and action colors say it can be changed. Progress bar uses brand
       color because it cannot.
+  - decision: The disabled fill and thumb use the disabled border color.
+    why: >-
+      No color token covers a disabled filled part. The disabled border color is visible against
+      the disabled track and reads as unavailable, so a new token for one component is not needed.
   - decision: The thumb border uses the surface color.
     why: >-
       A ring in the surface color separates the thumb from the fill behind it, so the thumb edge

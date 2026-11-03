@@ -350,12 +350,17 @@ mapping. React Aria fit the contract with four adaptations:
   component where the two events clearly differ, and its definitions ("every new value" and "once
   on release, only when different") could replace the vague wording that Switch, Checkbox, Select,
   and Text field share.
-- **Size is bound for the first time, border width still is not.** _Tokens._ The thumb's width and
-  height use `primitives.space.5` because there is no semantic size role (tokens ADR 0003). The
-  thumb ring binds a color but no width, like every component before it.
+- **Size is bound for the first time.** _Tokens._ The thumb's `size` uses `primitives.space.5`
+  because there is no semantic size role (tokens ADR 0003).
 - **Token categories cross.** _Tokens._ The thumb's border uses a background token
   (`background.surface`), and the disabled fill and thumb use a border token
-  (`border.disabled`), because there is no disabled color for a filled indicator.
+  (`border.disabled`), because there is no disabled color for a filled indicator. The borrowed
+  color works, so the rationale records it instead of a new token.
+- **SPEC.md already answers several "gaps", but agents never see it.** _Tooling._ It lists the
+  binding property names (including `size`) and decides that border width and focus-ring width and
+  offset are system-wide constants a component does not list. Agents read the spec only through
+  the CLI, which does not serve SPEC.md or name those constant tokens, so every port guessed them.
+  Much of the geometry finding is a reachability problem, not missing content.
 - **The spec does not say how large the press target is.** _Spec._ `drag-or-press` lets people
   press anywhere on the track, but the bound track height is 8 pixels. The React build makes the
   track as tall as the thumb and draws the line inside it. The web build will have to guess the
