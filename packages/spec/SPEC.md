@@ -169,6 +169,9 @@ rationale:
 
 Anatomy roles are `interactive-surface`, `label`, `description`, `indicator`, and `container`.
 
+An event that reports a changed value, such as `input`, `change`, or a section's `toggle`, carries
+the new value, so whoever owns the value can update it without reading it back from the component.
+
 An enum parameter lists its `values` with a meaning for each, and may give `examples`: sample
 content, such as a label, for each value. A `default` must be one of the values.
 
