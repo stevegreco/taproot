@@ -496,7 +496,7 @@ describe("ds-spec CLI, parts", () => {
     expect(out).toContain("## Parts\n\n### title\n\nOptions of the `title` part.");
     const part = cli(["get", "component.card#parts.title.parameters.headingLevel"]);
     expect(part.code).toBe(0);
-    expect(part.out).toMatch(/^## headingLevel\n/);
+    expect(part.out).toMatch(/^## parts\.title\.parameters\.headingLevel\n/);
   });
 
   it("suggests the sections a bare part name probably means", () => {
@@ -721,9 +721,9 @@ describe("splitWords", () => {
 
 describe("ds-spec CLI, agent friction", () => {
   it("heads a section read with its path", () => {
-    const r = cli(["get", "component.card#parameters.headingLevel"]);
+    const r = cli(["get", "component.button#parameters.variant"]);
     expect(r.code).toBe(0);
-    expect(r.out.startsWith("## parameters.headingLevel\n")).toBe(true);
+    expect(r.out.startsWith("## parameters.variant\n")).toBe(true);
   });
 
   it("fails a missing implementation without printing the contract", () => {
