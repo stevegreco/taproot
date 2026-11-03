@@ -92,7 +92,8 @@ Button means Badge is the alternative to Button.
 ## Config
 
 Both tools find their content with a `spec.config.json`, found by walking up from the working
-directory. Paths are relative to the config file. `implementations` and `tokens` are optional.
+directory. Paths are relative to the config file. `implementations`, `constants`, and `tokens` are
+optional.
 
 ```json
 {
@@ -100,6 +101,11 @@ directory. Paths are relative to the config file. `implementations` and `tokens`
   "implementations": {
     "web": { "folder": "packages/components/implementation", "technology": "web-component" },
     "react": { "folder": "packages/react/implementation", "technology": "react" }
+  },
+  "constants": {
+    "border-width": "semantic.border.width",
+    "focus-ring-width": "semantic.focus.width",
+    "focus-ring-offset": "semantic.focus.offset"
   },
   "tokens": {
     "format": "dtcg",
@@ -116,10 +122,14 @@ requested, or by `validate`. Use `createDtcgResolver` and `readDtcgTokenNames` f
 `.../config`, to do the same in code. `loadSpec({ skipInvalid: true })` leaves out invalid record
 files and lists their issues in `spec.issues` instead of throwing.
 
+`constants` names the system-wide constants, such as border width, that every component uses and
+component records do not have to bind, each with the token that holds it. `format` serves them, and
+`validate` checks that each token is in every token set.
+
 Each implementation folder holds one `<slug>.md` file per component that a technology implements:
 front matter with the record id, package, what to import, usage, and API rows that name the record
 parameter or event each member implements, then Markdown guidance. The folder's `technology` sets
-the rest. A `web-component` file names its `tagName` and `defineExport`, and its rows are
+the rest. A folder that does not exist yet reads as nothing implemented. A `web-component` file names its `tagName` and `defineExport`, and its rows are
 `attribute`, `property`, or `event`. A `react` file names its `export`, and its rows are `prop` or
 `callback`. An item names its own `tagName` or `export`. Records stay technology-neutral; these files live with the implementation. The
 docs site reads the same files with `loadImplementations`, `parseImplementation`, and
@@ -138,6 +148,7 @@ ds-spec get <id | name | id#section> [--impl <name>]
 ds-spec links <id> [--kind <k>] [--direction out|in|both]
 ds-spec rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
 ds-spec tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
+ds-spec format [--resolve]
 ds-spec help [command]
 ```
 
@@ -170,7 +181,12 @@ JSON output and `spec://` resources keep the full record.
 `get <id> --impl web` prints the record followed by its web implementation: package, element,
 import, usage, an API table mapping each attribute to the parameter it implements, and the guidance.
 With `--json` it returns `{ record, implementation }`. A plain `get` of an implemented component ends
-with a line naming the command.
+with a line naming every configured implementation that has a file for it, and each `search` result
+does the same, so no technology reads as the default.
+
+`format` prints the parts of [SPEC.md](SPEC.md) an implementer needs and records do not repeat: the
+property names token bindings use, the token keywords, condition syntax, anatomy roles, and the
+system-wide constants with their tokens. `--resolve` adds each constant's value in each token set.
 
 `get`, `links`, `tokens`, and `rules --id` take a record id or a name that matches one record, such
 as `button` or `text field`. A one-word `search` tolerates typos, the start of a
@@ -181,7 +197,7 @@ name or title matches (`chec`, `textfi`), and each result is followed by the com
 ## MCP server
 
 `ds-spec-mcp` is a local stdio server (`--content` and `--config` work as in the CLI). Tools:
-`search`, `get`, `list`, `links`, `rules`, `tokens`, and `validate`. `get` takes an optional
+`search`, `get`, `list`, `links`, `rules`, `tokens`, `format`, and `validate`. `get` takes an optional
 `implementation`, such as `"web"`, that works like `--impl`. Names, typo suggestions, and next-step
 lines work as in the CLI, and a failed call's `structuredContent.error` holds `{ code, suggestions }`. Every record is also a resource
 at `spec://<id>`. The server reloads when the content folder changes, and if the new content has

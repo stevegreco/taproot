@@ -5,7 +5,9 @@ import {
   loadImplementations,
   renderImplementation,
 } from "./implementation.js";
+import { schema } from "./schema/info.js";
 import { editDistance, typoAllowance } from "./util.js";
+import { TOKEN_KEYWORDS, TOKEN_PROPERTIES } from "./validate.js";
 
 /**
  * The operations behind both the CLI and the MCP server. Each returns `{ text, data, ok }`:
@@ -40,9 +42,10 @@ export function list(spec, { type, tag, status } = {}) {
 export const WEAK_SCORE = 5;
 
 /**
- * @param {{ implementations?: Record<string, import("./config.js").ImplementationConfig>, next?: (id: string, implementation?: string) => string, browse?: string }} [options]
- *   With `next`, each result is followed by the call that reads it, with its implementation when
- *   it has one. `browse` names the call that lists every record, for when nothing fits.
+ * @param {{ implementations?: Record<string, import("./config.js").ImplementationConfig>, next?: (id: string, implementations: string[]) => string, browse?: string }} [options]
+ *   With `next`, each result is followed by the call that reads it, given every implementation
+ *   that has a file for it, in config order, so no technology reads as the default. `browse` names
+ *   the call that lists every record, for when nothing fits.
  */
 export function search(spec, { query, type, tag, limit } = {}, options = {}) {
   if (!query || !query.trim()) throw new UsageError("search needs a query");
@@ -57,7 +60,7 @@ export function search(spec, { query, type, tag, limit } = {}, options = {}) {
   const lines = data.map((item) => {
     const line = `- ${item.id} — ${item.title}: ${item.summary}${item.weak ? " (weak match)" : ""}`;
     if (!options.next) return line;
-    return `${line}\n  → ${options.next(item.id, implemented.get(item.id)?.[0])}`;
+    return `${line}\n  → ${options.next(item.id, implemented.get(item.id) ?? [])}`;
   });
   const text = data[0].weak
     ? [
@@ -348,6 +351,89 @@ export function tokens(spec, { id: typed, part, condition, property, resolve } =
       ? "\n\nNo values resolved. Configure `tokens` in spec.config.json to resolve values."
       : "";
   return { text: table + note, data, ok: true };
+}
+
+const KEYWORD_NOTES = {
+  inherit: "the value comes from the surrounding content",
+  linear: "for `motion-easing`",
+};
+
+/**
+ * The parts of the format an implementer needs and records do not repeat: the token binding
+ * property names and keywords, condition syntax, anatomy roles, and the system-wide constants with
+ * the tokens that hold them. SPEC.md is the full reference.
+ *
+ * @param {{ resolve?: boolean }} [args]
+ * @param {{ constants?: Record<string, string>, resolveToken?: (ref: string) => Record<string, string> | undefined, resolveHint?: string }} [options]
+ *   The configured constants, a resolver for their values, and the line that tells the caller how
+ *   to ask for values.
+ */
+export function format({ resolve } = {}, options = {}) {
+  const version = Number(schema.$id.slice(schema.$id.lastIndexOf(":") + 1));
+  const anatomyRoles = schema.$defs.anatomy.additionalProperties.properties.role.enum;
+  const constants = Object.entries(options.constants ?? {}).map(([name, token]) => {
+    const values = resolve ? options.resolveToken?.(token) : undefined;
+    return values ? { name, token, values } : { name, token };
+  });
+  const code = (names) => names.map((name) => `\`${name}\``).join(", ");
+  const keywords = TOKEN_KEYWORDS.map((word) =>
+    KEYWORD_NOTES[word] ? `\`${word}\` (${KEYWORD_NOTES[word]})` : `\`${word}\``,
+  ).join(", ");
+  const lines = [
+    "# Spec format",
+    "",
+    `Format version ${version}. SPEC.md in the spec package is the full reference.`,
+    "",
+    "## Token bindings",
+    "",
+    "A component record's `tokens` maps each anatomy part to conditions, and each condition to properties and token references.",
+    "",
+    "- **Conditions:** `base`, a parameter value (`variant.primary`), a state (`hover`), a preference value (`reducedMotion.reduce`), or several of those joined with ` + `.",
+    `- **Properties:** ${code(TOKEN_PROPERTIES)}. \`track\` is the unfilled path behind an indicator. Other lowercase, hyphenated names are allowed.`,
+    `- **Keywords,** where no token applies: ${keywords}.`,
+    "",
+    "## System-wide constants",
+    "",
+  ];
+  if (constants.length === 0) {
+    lines.push("None are configured. Add `constants` to spec.config.json.");
+  } else {
+    lines.push(
+      "Every component uses these, so a component record does not have to bind them. Use these tokens wherever a part needs one.",
+      "",
+    );
+    const sets = [...new Set(constants.flatMap((row) => Object.keys(row.values ?? {})))];
+    const header = ["Constant", "Token", ...sets];
+    const rows = constants.map((row) => [
+      row.name,
+      `\`${row.token}\``,
+      ...sets.map((set) => (row.values?.[set] ? `\`${row.values[set]}\`` : "")),
+    ]);
+    lines.push(
+      ...[header, header.map(() => "---"), ...rows].map(
+        (cells) => `| ${cells.map(cell).join(" | ")} |`,
+      ),
+    );
+    if (!resolve && options.resolveHint) lines.push("", options.resolveHint);
+    if (resolve && sets.length === 0) {
+      lines.push(
+        "",
+        "No values resolved. Configure `tokens` in spec.config.json to resolve values.",
+      );
+    }
+  }
+  lines.push("", "## Anatomy roles", "", `${code(anatomyRoles)}.`);
+  return {
+    text: lines.join("\n"),
+    data: {
+      version,
+      properties: TOKEN_PROPERTIES,
+      keywords: TOKEN_KEYWORDS,
+      anatomyRoles,
+      constants,
+    },
+    ok: true,
+  };
 }
 
 /** @param {import("./index.js").LoadOptions} options */

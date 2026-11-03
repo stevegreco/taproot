@@ -252,7 +252,9 @@ tokens:
   are allowed: `transparent`, `none`, `inherit` (the value comes from the surrounding content), and
   `linear` (for `motion-easing`).
 - System-wide constants, such as border width and focus-ring width and offset, are the same for
-  every component, so a component map does not have to list them.
+  every component, so a component map does not have to list them. The adopter names each constant
+  and the token that holds it in `constants` in `spec.config.json`, and `ds-spec format` serves
+  them with the property names and keywords above.
 
 The map is reference data. It answers "which token does primary hover use for its background?" It
 defines no rule for combining conditions, so it does not compute the final style of a combination.

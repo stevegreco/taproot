@@ -113,3 +113,32 @@ describe("loadFromConfig", () => {
     fs.rmSync(tmp, { recursive: true });
   });
 });
+
+describe("constants", () => {
+  const write = (config) => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "spec-config-"));
+    fs.writeFileSync(path.join(tmp, "spec.config.json"), JSON.stringify(config));
+    return tmp;
+  };
+
+  it("returns the configured constants, or none", () => {
+    const tmp = write({ constants: { "border-width": "semantic.border.width" } });
+    expect(resolveConfig({ cwd: tmp }).constants).toEqual({
+      "border-width": "semantic.border.width",
+    });
+    expect(resolveConfig({ cwd: tools }).constants).toEqual({});
+    fs.rmSync(tmp, { recursive: true });
+  });
+
+  it("rejects a constant that is not a hyphenated name and a token reference", () => {
+    for (const [constants, message] of [
+      [["semantic.border.width"], '"constants" must be an object'],
+      [{ borderWidth: "semantic.border.width" }, '"constants.borderWidth" must be a lowercase'],
+      [{ "border-width": "" }, '"constants.border-width" must be a non-empty token reference'],
+    ]) {
+      const tmp = write({ constants });
+      expect(() => resolveConfig({ cwd: tmp })).toThrow(message);
+      fs.rmSync(tmp, { recursive: true });
+    }
+  });
+});

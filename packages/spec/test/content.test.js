@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { validateFromConfig } from "../src/config.js";
 import { DEFAULT_CONTENT_DIR, loadSpec, schema, validateSpec } from "../src/index.js";
+import { TOKEN_KEYWORDS, TOKEN_PROPERTIES } from "../src/validate.js";
 
 /**
  * The `id` of every record file under the content folder, read with a plain
@@ -48,5 +49,18 @@ describe("shipped content", () => {
 
   it("exposes the parsed schema", () => {
     expect(schema.$id).toBe("urn:design-system-spec:record:1");
+  });
+});
+
+describe("SPEC.md", () => {
+  it("lists the token properties the format command serves", async () => {
+    const text = await readFile(fileURLToPath(new URL("../SPEC.md", import.meta.url)), "utf8");
+    const bullet =
+      /- A \*\*property\*\* is a neutral visual name\. Use these where they fit: ([\s\S]*?)\. Other/.exec(
+        text,
+      )?.[1];
+    expect(bullet).toBeDefined();
+    expect([...bullet.matchAll(/`([a-z-]+)`/g)].map((match) => match[1])).toEqual(TOKEN_PROPERTIES);
+    for (const keyword of TOKEN_KEYWORDS) expect(text).toContain(`\`${keyword}\``);
   });
 });

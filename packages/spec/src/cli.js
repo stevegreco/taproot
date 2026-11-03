@@ -44,7 +44,19 @@ const COMMANDS = {
     summary: "Show which design tokens a component uses; --resolve adds values.",
     options: { part: str, condition: str, property: str, resolve: { type: "boolean" } },
   },
+  format: {
+    usage: "ds-spec format [--resolve]",
+    summary:
+      "Print the format reference: token binding properties, keywords, anatomy roles, and the system-wide constant tokens; --resolve adds values.",
+    options: { resolve: { type: "boolean" } },
+  },
 };
+
+/** The next call for a record, naming each implementation that has a file for it. */
+function nextCall(id, names) {
+  if (names.length === 0) return `ds-spec get ${id}`;
+  return `ds-spec get ${id} --impl ${names.length === 1 ? names[0] : `<${names.join(" | ")}>`}`;
+}
 
 /** The values each filter flag takes. Any other value is a usage error. */
 const CHOICES = {
@@ -153,6 +165,20 @@ export async function run(argv, io = {}) {
       const { issues, recordCount } = await validateFromConfig(loadOptions);
       return print(ops.formatIssues(issues, recordCount));
     }
+    if (command === "format") {
+      if (positionals.length > 0) return usageError("format takes no positional arguments.");
+      const { constants, resolveToken } = resolveConfig(loadOptions);
+      return print(
+        ops.format(
+          { resolve: values.resolve },
+          {
+            constants,
+            resolveToken,
+            resolveHint: "Run `ds-spec format --resolve` for values.",
+          },
+        ),
+      );
+    }
 
     // An id can be a name with spaces, such as `get text field`, so its words are joined.
     const takesId = ["get", "links", "tokens"].includes(command);
@@ -194,7 +220,7 @@ export async function run(argv, io = {}) {
             { ...args, query: positionals.join(" ") },
             {
               implementations,
-              next: (id, impl) => `ds-spec get ${id}${impl ? ` --impl ${impl}` : ""}`,
+              next: nextCall,
               browse: "`ds-spec list`",
             },
           ),
@@ -209,7 +235,7 @@ export async function run(argv, io = {}) {
               tokensHint: (id, count) =>
                 `Tokens: ${count} bindings, left out here. Run \`ds-spec tokens ${id}\` to filter them by part, condition, or property.`,
               implementationHint: (id, names) =>
-                `Implementation: run \`ds-spec get ${id} --impl ${names[0]}\` for the package, import, and API names${names.length > 1 ? ` (available: ${names.join(", ")})` : ""}.`,
+                `Implementations: ${names.join(", ")}. Run \`${nextCall(id, names)}\` for the package, import, and API names.`,
             },
           ),
         );
