@@ -1,6 +1,6 @@
 ---
 component: component.spinner
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-spinner
 defineExport: defineSpinner
 usage: |

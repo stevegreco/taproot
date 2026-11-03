@@ -1,5 +1,5 @@
 {
-  "name": "@stevegreco/design-system-components",
+  "name": "@stevegreco/web-components",
   "version": "0.0.1",
   "description": "Framework-agnostic web components styled entirely with design system tokens.",
   "keywords": [

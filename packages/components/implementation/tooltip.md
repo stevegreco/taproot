@@ -1,6 +1,6 @@
 ---
 component: component.tooltip
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-tooltip
 defineExport: defineTooltip
 usage: |

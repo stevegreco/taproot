@@ -247,7 +247,7 @@ ${must
     `packages/components/implementation/${name}.md`,
     `---
 component: component.${name}
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ${tagName}
 defineExport: ${defineExport}
 usage: |
@@ -352,7 +352,7 @@ function scaffoldDocs() {
     `/**
  * Verify: run the steps in \`${name}.verify.js\`. The docs tests run them against the built site.
  */
-import "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
 
 export default function ${pascal}Example() {
   // TODO: one realistic use, not a gallery of variants (Storybook covers those).

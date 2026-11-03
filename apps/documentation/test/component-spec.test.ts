@@ -409,10 +409,10 @@ test("every implemented component has a page, and every prose file has one", () 
 test("a page imports, registers, and shows usage from the binding", () => {
   const source = pageSource("checkbox");
 
-  assert.match(source, /pnpm add @stevegreco\/design-system @stevegreco\/design-system-components/);
+  assert.match(source, /pnpm add @stevegreco\/design-system @stevegreco\/web-components/);
   assert.match(
     source,
-    /import \{ defineCheckbox \} from "@stevegreco\/design-system-components\/checkbox";\n\ndefineCheckbox\(\);/,
+    /import \{ defineCheckbox \} from "@stevegreco\/web-components\/checkbox";\n\ndefineCheckbox\(\);/,
   );
   assert.match(
     source,

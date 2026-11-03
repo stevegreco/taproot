@@ -94,7 +94,7 @@ In `packages/components`, fill in the scaffold:
 on disk, so they need no edits. Nothing checks the implementation against the spec. When you
 change one, read the other.
 
-Check: `pnpm exec turbo run test --filter=@stevegreco/design-system-components`.
+Check: `pnpm exec turbo run test --filter=@stevegreco/web-components`.
 
 ## 5. Map the web API and add stories
 

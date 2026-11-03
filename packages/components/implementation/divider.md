@@ -1,6 +1,6 @@
 ---
 component: component.divider
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-divider
 defineExport: defineDivider
 usage: |

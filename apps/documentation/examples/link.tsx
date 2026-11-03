@@ -2,7 +2,7 @@
  * Verify: run the steps in `link.verify.js`. The docs tests run them against the built site.
  */
 import { useEffect, useState } from "react";
-import "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
 
 export default function LinkExample() {
   const [followed, setFollowed] = useState("");

@@ -33,19 +33,13 @@ export function assertSpecifier(specifier: string, packageName: string): string 
 
 /** Every `src/*.css` must have the `dist/*.styles.js` that build-styles.js emits for it. */
 function assertComponentStyles(): void {
-  const indexSrc = assertSpecifier(
-    "@stevegreco/design-system-components",
-    "@stevegreco/design-system-components",
-  );
+  const indexSrc = assertSpecifier("@stevegreco/web-components", "@stevegreco/web-components");
   const src = dirname(indexSrc);
   const dist = join(src, "../dist");
   for (const file of readdirSync(src).filter((name) => name.endsWith(".css"))) {
     const styles = file.replace(/\.css$/, ".styles.js");
     if (!existsSync(join(dist, styles))) {
-      throw new MissingWorkspaceBuildError(
-        "@stevegreco/design-system-components",
-        `dist/${styles}`,
-      );
+      throw new MissingWorkspaceBuildError("@stevegreco/web-components", `dist/${styles}`);
     }
   }
 }

@@ -1,6 +1,6 @@
 ---
 component: component.progress-bar
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-progress-bar
 defineExport: defineProgressBar
 usage: |

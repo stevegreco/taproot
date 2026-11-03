@@ -1,4 +1,4 @@
-# @stevegreco/design-system-components
+# @stevegreco/web-components
 
 Framework-agnostic web components styled entirely with the design tokens from
 [`@stevegreco/design-system`](../tokens). No runtime dependencies and no bundler
@@ -7,7 +7,7 @@ required — just standard ES modules and custom elements.
 ## Install
 
 ```bash
-pnpm add @stevegreco/design-system-components @stevegreco/design-system
+pnpm add @stevegreco/web-components @stevegreco/design-system
 ```
 
 ## Use
@@ -17,7 +17,7 @@ Load the token stylesheet once, then import the components.
 ```html
 <link rel="stylesheet" href="/node_modules/@stevegreco/design-system/dist/css/tokens.css" />
 <script type="module">
-  import "@stevegreco/design-system-components";
+  import "@stevegreco/web-components";
 </script>
 
 <ds-button variant="primary">Save changes</ds-button>
@@ -32,7 +32,7 @@ properties are inherited, they cross the shadow boundary on their own. With no
 To register selectively, or under a different tag name:
 
 ```js
-import { defineButton } from "@stevegreco/design-system-components/button";
+import { defineButton } from "@stevegreco/web-components/button";
 
 defineButton(); // <ds-button>
 defineButton("acme-button"); // <acme-button>
@@ -118,7 +118,7 @@ on save.
 Tests run in real Chromium through Vitest Browser Mode. From the repository root:
 
 ```bash
-pnpm exec turbo run test --filter=@stevegreco/design-system-components
+pnpm exec turbo run test --filter=@stevegreco/web-components
 ```
 
 Browser tests load the published token stylesheet (`test/setup/tokens.js`), so
@@ -132,9 +132,9 @@ component also has its own `test/<name>.test.js` for behavior.
 ## Local development
 
 ```bash
-pnpm exec turbo run build --filter=@stevegreco/design-system-components
-pnpm exec turbo run test --filter=@stevegreco/design-system-components
-pnpm exec turbo run dev --filter=documentation --filter=@stevegreco/design-system-components
+pnpm exec turbo run build --filter=@stevegreco/web-components
+pnpm exec turbo run test --filter=@stevegreco/web-components
+pnpm exec turbo run dev --filter=documentation --filter=@stevegreco/web-components
 ```
 
 Turbo builds the token package before the component styles. `pnpm --filter`

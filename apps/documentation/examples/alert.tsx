@@ -2,8 +2,8 @@
  * Verify: run the steps in `alert.verify.js`. The docs tests run them against the built site.
  */
 import { useState } from "react";
-import "@stevegreco/design-system-components";
-import type { DsAlert } from "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
+import type { DsAlert } from "@stevegreco/web-components";
 
 const warning = (
   <svg viewBox="0 0 24 24" fill="currentColor">

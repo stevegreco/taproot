@@ -1,6 +1,6 @@
 ---
 component: component.text-area
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-text-area
 defineExport: defineTextArea
 usage: |

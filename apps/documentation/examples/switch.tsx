@@ -2,7 +2,7 @@
  * Verify: run the steps in `switch.verify.js`. The docs tests run them against the built site.
  */
 import { useState } from "react";
-import "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
 export default function SwitchExample() {
   const [on, setOn] = useState(false);
   return (

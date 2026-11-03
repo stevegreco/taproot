@@ -2,7 +2,7 @@
  * JSX types for every design system element, built from the components package's
  * generated `ElementAttributes`. A new component needs no entry here.
  */
-import type { ElementAttributes } from "@stevegreco/design-system-components";
+import type { ElementAttributes } from "@stevegreco/web-components";
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
 
 type ElementFor<Tag> = Tag extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[Tag] : never;

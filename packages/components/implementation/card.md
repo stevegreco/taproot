@@ -1,6 +1,6 @@
 ---
 component: component.card
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-card
 defineExport: defineCard
 usage: |

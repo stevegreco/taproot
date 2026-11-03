@@ -1,6 +1,6 @@
 ---
 component: component.avatar
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-avatar
 defineExport: defineAvatar
 usage: |

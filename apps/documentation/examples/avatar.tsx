@@ -1,8 +1,8 @@
 /**
  * Verify: run the steps in `avatar.verify.js`. The docs tests run them against the built site.
  */
-import "@stevegreco/design-system-components";
-import { defineAvatar } from "@stevegreco/design-system-components/avatar";
+import "@stevegreco/web-components";
+import { defineAvatar } from "@stevegreco/web-components/avatar";
 
 // The package root registers every component; Avatar is registered here until it joins the root.
 defineAvatar();

@@ -1,6 +1,6 @@
 ---
 component: component.switch
-package: "@stevegreco/design-system-components"
+package: "@stevegreco/web-components"
 tagName: ds-switch
 defineExport: defineSwitch
 usage: |

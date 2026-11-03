@@ -2,7 +2,7 @@
  * Verify: run the steps in `spinner.verify.js`. The docs tests run them against the built site.
  */
 import { useEffect, useState } from "react";
-import "@stevegreco/design-system-components";
+import "@stevegreco/web-components";
 
 // The spinner waits this long before it shows, so quick responses show nothing.
 const SHOW_AFTER_MS = 1000;
