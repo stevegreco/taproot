@@ -8,8 +8,14 @@
   ],
   "license": "ISC",
   "author": "Steve Greco",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevegreco/design-system.git",
+    "directory": "packages/react"
+  },
   "files": [
     "dist",
+    "implementation",
     "README.md"
   ],
   "type": "module",

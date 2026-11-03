@@ -4,6 +4,11 @@
   "description": "Technology-neutral, validated specs for the Ember & Sage design system.",
   "license": "ISC",
   "author": "Steve Greco",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevegreco/design-system.git",
+    "directory": "packages/spec"
+  },
   "bin": {
     "ds-spec": "./bin/ds-spec.js",
     "ds-spec-mcp": "./bin/ds-spec-mcp.js"
