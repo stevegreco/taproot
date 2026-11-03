@@ -644,14 +644,14 @@ function valuesCell(row, parameter) {
  */
 export function renderImplementation(record, implementation, name) {
   const profile = TECHNOLOGIES[implementation.technology];
-  const table = (owner, api) => apiTable(owner, api, profile.eventKind);
+  const table = (owner, api, ownerName) => apiTable(owner, api, profile.eventKind, ownerName);
   const parts = Object.entries(implementation.parts).map(
     ([part, owner]) =>
-      `### ${profile.partHeading(part, owner, implementation)}\n\n${table(record.parts?.[part] ?? {}, owner.api)}`,
+      `### ${profile.partHeading(part, owner, implementation)}\n\n${table(record.parts?.[part] ?? {}, owner.api, part)}`,
   );
   const items = Object.entries(implementation.items).map(
     ([part, item]) =>
-      `### ${profile.itemHeading(part, item)}\n\n${table(record.items?.[part] ?? {}, item.api)}`,
+      `### ${profile.itemHeading(part, item)}\n\n${table(record.items?.[part] ?? {}, item.api, part)}`,
   );
   const blocks = [
     `## ${capitalize(name)} implementation`,
@@ -669,19 +669,21 @@ export function renderImplementation(record, implementation, name) {
 
 /**
  * The API table for rows that implement a component's, or one part's or item's, parameters and
- * events.
+ * events. A part's or item's cells name it, so its `value` reads apart from the component's.
  *
  * @param {{ parameters?: Record<string, any>, events?: Record<string, string> }} owner
  * @param {ImplementationApiRow[]} api
  * @param {string} eventKind The row kind that implements an event, which has no values.
+ * @param {string} [ownerName] The part or item the rows belong to; none for the component.
  */
-function apiTable(owner, api, eventKind) {
+function apiTable(owner, api, eventKind, ownerName) {
+  const of = ownerName ? `${ownerName} ` : "";
   const rows = api.map((row) => {
     const parameter = row.parameter ? owner.parameters?.[row.parameter] : undefined;
     const implementsCell = row.parameter
-      ? `parameter ${code(row.parameter)}`
+      ? `${of}parameter ${code(row.parameter)}`
       : row.event
-        ? `event ${code(row.event)}`
+        ? `${of}event ${code(row.event)}`
         : "";
     const description =
       row.description ??
@@ -696,5 +698,8 @@ function apiTable(owner, api, eventKind) {
       description,
     ];
   });
-  return table(["Name", "Kind", "Implements", "Values", "Description"], rows);
+  const own = api.some((row) => !row.parameter && !row.event)
+    ? "\n\nA row with no Implements entry is specific to this implementation, not part of the spec."
+    : "";
+  return table(["Name", "Kind", "Implements", "Values", "Description"], rows) + own;
 }

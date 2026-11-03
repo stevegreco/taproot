@@ -223,7 +223,8 @@ function renderUsage(state, usage) {
       const instead = item.instead
         ? state.records.has(item.instead)
           ? `Use ${referenceText(state, item.instead)} instead.`
-          : `Use ${item.instead} instead.`
+          : // Prose, such as "no indicator" or "A step-by-step flow", reads as its own phrase.
+            `Instead: ${item.instead.charAt(0).toUpperCase()}${item.instead.slice(1)}.`
         : "";
       return [item.situation, instead, item.why].filter(Boolean).join(" ");
     });

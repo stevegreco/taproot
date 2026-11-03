@@ -73,7 +73,7 @@ describe("render", () => {
     expect(text).toContain(
       "Do a thing Other cannot. Use [Thing](component.thing) instead. Thing can.",
     );
-    expect(text).toContain("Do something not built yet. Use a future component instead.");
+    expect(text).toContain("Do something not built yet. Instead: A future component.");
   });
 
   it("adds a column per resolved token value set", () => {

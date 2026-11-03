@@ -147,12 +147,25 @@ export function get(spec, { target: typedTarget, implementation }, options = {})
     return { text: renderWithoutTokens(spec, id) + more, data: record, ok: true };
   }
   const found = spec.section(target);
+  // A part's or item's parameter or event can be named without its group, as in
+  // `items.section.value` for `items.section.parameters.value`.
+  const short = /^((?:parts|items)\.[^.]+)\.(.+)$/.exec(section);
+  const full = short
+    ? ["parameters", "events"]
+        .map((group) => `${short[1]}.${group}.${short[2]}`)
+        .filter((name) => record.sections.includes(name))
+    : [];
+  if (!found && full.length === 1) {
+    const resolved = `${id}#${full[0]}`;
+    return { text: spec.render(resolved), data: spec.section(resolved), ok: true };
+  }
   if (!found) {
     const known = record.sections.map((name) => `${id}#${name}`);
     // A bare name, such as `title`, usually means a section whose path ends in it, such as
     // `anatomy.title` or `parts.title`.
     const meant = [
       ...new Set([
+        ...full,
         ...record.sections.filter((name) => name.endsWith(`.${section}`)),
         ...nearest(section, record.sections),
       ]),
