@@ -1,0 +1,53 @@
+---
+title: Use from a CDN
+description: Load the tokens and web components from jsDelivr, with no install or build step.
+---
+
+import tokens from "../../../../packages/tokens/package.json";
+import components from "../../../../packages/components/package.json";
+
+export const tokensUrl = `https://cdn.jsdelivr.net/npm/${tokens.name}@${tokens.version}/dist/css/tokens.css`;
+export const componentsBase = `https://cdn.jsdelivr.net/npm/${components.name}@${components.version}/src`;
+
+Add these two lines to a page to use every component. npm publishes the files, and jsDelivr serves
+them. The versions below are the current release.
+
+<CodeBlock
+  lang="html"
+  code={`<link rel="stylesheet" href="${tokensUrl}" />
+<script type="module" src="${componentsBase}/index.js"></script>
+
+<ds-button variant="primary">Save changes</ds-button>`}
+/>
+
+The stylesheet is required, because components take every color, space, and radius from it. It names
+the system's fonts but does not load them, so load those yourself or the page uses the fallback fonts.
+
+## Load one component
+
+Each component has its own file. Loading only the ones you use means fewer requests.
+
+<CodeBlock
+  lang="html"
+  code={`<script type="module" src="${componentsBase}/button.js"></script>`}
+/>
+
+To use your own tag name, import the component's `define` function. It takes the tag name.
+
+<CodeBlock
+  lang="html"
+  code={`<script type="module">
+  import { defineButton } from "${componentsBase}/button.js";
+  defineButton("acme-button");
+</script>`}
+/>
+
+## Keep the version in the URL
+
+Always use an exact version, as these URLs do. A URL with no version, or with a range, can change
+what your page loads at any time. To upgrade, change the version and test the page. Use a tokens
+version and a components version from the same release, because components depend on token names.
+
+:::note
+React components are not published, so they are not available from the CDN.
+:::
