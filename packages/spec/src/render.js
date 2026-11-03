@@ -235,7 +235,7 @@ function renderUsage(state, usage) {
 /** One part's or one item's options. `kind` is `parts` or `items`. */
 function renderPartOptions(state, kind, part, options) {
   const lead =
-    kind === "items" ? `Each \`${part}\` carries these.` : `The \`${part}\` carries these.`;
+    kind === "items" ? `Options of each \`${part}\`.` : `Options of the \`${part}\` part.`;
   const blocks = [`### ${part}`, lead];
   if (options.parameters) blocks.push(renderParameters(state, options.parameters));
   if (options.events) blocks.push(`Events:\n\n${renderEvents(options.events)}`);
