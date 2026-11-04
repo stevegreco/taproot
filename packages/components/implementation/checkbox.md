@@ -33,6 +33,10 @@ The `checked` attribute sets the initial state. Setting the `checked` property c
 state, and form reset restores the attribute's state. Without `value`, a checked checkbox submits
 `on`, as a native checkbox does.
 
+To validate in your own code, set `novalidate` on the form so the submit reaches your listener.
+Read the values there, and set `error` on a checkbox that needs a correction. Clear `error` on its
+`change` event and when the form resets, because a reset leaves it set.
+
 ## Groups
 
 Group related checkboxes in a native `fieldset` with a `legend` that names the set:
@@ -46,3 +50,21 @@ Group related checkboxes in a native `fieldset` with a `legend` that names the s
 ```
 
 Every checkbox shows its `label`, including one in a table row. Do not hide the label with CSS.
+
+## Select all
+
+Give the parent checkbox no `name`, so it submits nothing. Set its `checked` property when every
+option is on and its `indeterminate` property when only some are. On its `change` event, set the
+`checked` property of each option. Setting these from script fires no events
+(`component.checkbox#programmatic-no-events`), so update the parent yourself when an option changes.
+
+## Styles
+
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.

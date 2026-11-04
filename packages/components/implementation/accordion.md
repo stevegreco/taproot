@@ -63,3 +63,14 @@ section instead.
 - Keep each section's open state in your own state if it must survive a re-render, and update it
   from the `toggle` event.
 - Render `expanded` as a boolean attribute: present means open, whatever its value.
+
+## Styles
+
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.

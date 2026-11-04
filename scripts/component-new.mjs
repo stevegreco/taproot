@@ -278,6 +278,17 @@ TODO: what the component does with \`hidden\`, and anything that sets it.
 ## Framework notes
 
 TODO: what a framework author has to know, such as when to render it or which event to clear state from.
+
+## Styles
+
+Install \`@stevegreco/design-system\` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+\`\`\`js
+import "@stevegreco/design-system/css";
+\`\`\`
+
+Without a bundler, link the package's \`dist/css/tokens.css\` instead.
 `,
   );
 

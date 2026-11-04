@@ -40,8 +40,22 @@ Pair it with Button to submit:
 ```
 
 A non-empty `error` marks the field invalid, associates that message with the control, and blocks
-submit until the message is cleared. Clear `error` when the person edits the value. Use `hint` for
-guidance that is not an error.
+submit until the message is cleared. Use `hint` for guidance that is not an error.
+
+To validate in your own code, set `novalidate` on the form so the submit reaches your listener.
+Read the values there, and set `error` on each field that needs a correction. Clear `error` on the
+field's `input` event and when the form resets, because a reset leaves it set.
 
 The `value` attribute sets the initial value, which form reset restores. `autocomplete` takes the
 HTML autofill tokens, such as `email` or `current-password`, so the browser can offer saved values.
+
+## Styles
+
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.

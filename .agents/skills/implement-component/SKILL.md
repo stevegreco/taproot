@@ -104,7 +104,8 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/web-components`.
   `tagName` only when the part is its own child element. When the spec has `items`, add an `items`
   block that names each item's child element and gives its own `api` rows, as
   `implementation/accordion.md` does. The check fails until every part and item parameter has a row. The body is
-  web-specific guidance only, in three sections: Slots, The hidden attribute, and Framework notes.
+  web-specific guidance only, in the scaffold's sections: Slots, The hidden attribute, Framework
+  notes, and Styles, which every file keeps as written.
   Behavior is in the spec's rules, so cite a rule by address (`component.<name>#<rule-id>`) rather
   than restating it. `implementation/alert.md` is the example. This file gives the component its docs
   page and serves `node packages/spec/bin/ds-spec.js get component.<name> --impl web`.
