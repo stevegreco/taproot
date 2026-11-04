@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- 2f27473: `get --impl web` now tells agents to install the tokens package and load its stylesheet, for every
+  component. The web implementation files also cover validating a form in your own code and building
+  a select-all checkbox, and the form field pattern says a reset leaves an error set.
+- cbf6aa3: The docs site no longer has a page per component, so the format reference and READMEs no longer
+  mention those pages.
+- 1d6f517: `validate` no longer rejects a token reference for naming a color, radius, or border primitive. The
+  format leaves token tiers to the adopter, so this system's rule moved to its own content test. Button's
+  implementation guidance now leaves variant and disabled guidance to the spec.
+
 ## 0.1.0
 
 ### Minor Changes

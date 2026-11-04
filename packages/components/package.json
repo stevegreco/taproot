@@ -1,6 +1,6 @@
 {
   "name": "@stevegreco/web-components",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Framework-agnostic web components styled entirely with design system tokens.",
   "keywords": [
     "custom-elements",
