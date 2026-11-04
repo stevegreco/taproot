@@ -97,5 +97,5 @@ Grouped by the file you are in.
 
 ## Commands
 
-- `node packages/spec/bin/ds-spec.js validate` reports each spec mistake once, with file and line.
+- `node packages/spec/bin/taproot.js validate` reports each spec mistake once, with file and line.
 - Several filters can run in one turbo command; each package builds once before its tests.

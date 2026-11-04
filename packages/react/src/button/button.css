@@ -1,4 +1,4 @@
-/* Button, styled from the bindings `ds-spec tokens component.button` lists. The control part is the
+/* Button, styled from the bindings `taproot tokens component.button` lists. The control part is the
    native button (.ds-button); the content part (.ds-button__content) wraps the label and icon.
    React Aria exposes state as data attributes: [data-hovered], [data-pressed],
    [data-focus-visible], [data-disabled]. */

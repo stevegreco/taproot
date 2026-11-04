@@ -14,7 +14,7 @@ Start on the component's branch, after its draft commit is reviewed. If there is
 spec-component first.
 
 ```bash
-node packages/spec/bin/ds-spec.js get component.<name>
+node packages/spec/bin/taproot.js get component.<name>
 ```
 
 Design system facts go in the spec, never only in code or this skill (see `AGENTS.md`). Read
@@ -49,7 +49,7 @@ decisions that change public API.
 `tokens` maps each anatomy part to conditions (`base`, `variant.primary`, `hover`,
 `variant.primary + hover`) and each condition to properties and token references.
 
-Check: `node packages/spec/bin/ds-spec.js validate`.
+Check: `node packages/spec/bin/taproot.js validate`.
 
 ## 2. Scaffold the files and write the failing tests
 
@@ -107,7 +107,7 @@ Check: `pnpm exec turbo run test --filter=@taproot-ds/web-components`.
   notes, and Styles, which every file keeps as written.
   Behavior is in the spec's rules, so cite a rule by address (`component.<name>#<rule-id>`) rather
   than restating it. `implementation/alert.md` is the example. This file gives the component its row in
-  the docs catalog and serves `node packages/spec/bin/ds-spec.js get component.<name> --impl web`.
+  the docs catalog and serves `node packages/spec/bin/taproot.js get component.<name> --impl web`.
 - `apps/storybook/stories/<name>.stories.js`: the scaffold has a control for every parameter. Add
   one story per notable state, as `stories/checkbox.stories.js` does. Check that the Accessibility panel reports no
   violations in both themes: `pnpm exec turbo run dev --filter=storybook`.
@@ -120,7 +120,7 @@ Check: `pnpm exec turbo run test --filter=@taproot-ds/web-components`.
   plain text, such as "an inline status message", and set their `instead` to `component.<name>`:
 
   ```bash
-  node packages/spec/bin/ds-spec.js search "<what the component does>"
+  node packages/spec/bin/taproot.js search "<what the component does>"
   ```
 
 ## 7. Confirm completeness

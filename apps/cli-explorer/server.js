@@ -5,13 +5,13 @@ import http from "node:http";
 import { fileURLToPath } from "node:url";
 
 /**
- * A local web page for trying `ds-spec` commands. Each run calls the real CLI twice, once for
+ * A local web page for trying `taproot` commands. Each run calls the real CLI twice, once for
  * the Markdown an agent reads and once with `--json`, so the page shows exactly what the CLI
  * returns. It listens on localhost only.
  */
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
-const cli = fileURLToPath(new URL("../../packages/spec/bin/ds-spec.js", import.meta.url));
+const cli = fileURLToPath(new URL("../../packages/spec/bin/taproot.js", import.meta.url));
 const page = fileURLToPath(new URL("./index.html", import.meta.url));
 const tokens = fileURLToPath(new URL("../../packages/tokens/dist/css/tokens.css", import.meta.url));
 const port = Number(process.env.PORT ?? 4400);

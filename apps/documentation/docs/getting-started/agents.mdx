@@ -20,7 +20,7 @@ The server is at `https://mcp.stevegreco.workers.dev/mcp`. It needs no sign-in a
 In Claude Code, run:
 
 ```bash
-claude mcp add --transport http design-system https://mcp.stevegreco.workers.dev/mcp
+claude mcp add --transport http taproot https://mcp.stevegreco.workers.dev/mcp
 ```
 
 In Cursor, add it to `.cursor/mcp.json`:
@@ -28,7 +28,7 @@ In Cursor, add it to `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "design-system": {
+    "taproot": {
       "url": "https://mcp.stevegreco.workers.dev/mcp"
     }
   }
@@ -85,30 +85,30 @@ root, which points at the other two packages:
 
 ## Command line
 
-The command is `ds-spec`. Run it through pnpm, which uses the copy installed in your project.
+The command is `taproot`. Run it through pnpm, which uses the copy installed in your project.
 
 ```bash
-pnpm exec ds-spec search "destructive action"
-pnpm exec ds-spec get button --impl web
-pnpm exec ds-spec rules --level must --topic accessibility
-pnpm exec ds-spec tokens button --condition "variant.primary + hover" --resolve
+pnpm exec taproot search "destructive action"
+pnpm exec taproot get button --impl web
+pnpm exec taproot rules --level must --topic accessibility
+pnpm exec taproot tokens button --condition "variant.primary + hover" --resolve
 ```
 
 To see every command, run:
 
 ```bash
-pnpm exec ds-spec help
+pnpm exec taproot help
 ```
 
 To see the instructions written for agents, run:
 
 ```bash
-pnpm exec ds-spec help agents
+pnpm exec taproot help agents
 ```
 
 :::tip[For agents]
 Going through pnpm adds about a second to each call. An agent making many calls should run
-`node_modules/.bin/ds-spec` directly, which is the same command without that delay.
+`node_modules/.bin/taproot` directly, which is the same command without that delay.
 :::
 
 ## Local MCP server
@@ -118,8 +118,8 @@ Add the installed server to your agent's MCP config. In Claude Code, that is `.m
 ```json
 {
   "mcpServers": {
-    "design-system": {
-      "command": "node_modules/.bin/ds-spec-mcp"
+    "taproot": {
+      "command": "node_modules/.bin/taproot-mcp"
     }
   }
 }

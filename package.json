@@ -9,7 +9,7 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
-    "spec": "node packages/spec/bin/ds-spec.js",
+    "spec": "node packages/spec/bin/taproot.js",
     "bench": "node packages/spec/scripts/bench.js",
     "component:new": "node scripts/component-new.mjs",
     "component:status": "node scripts/component-status.mjs",

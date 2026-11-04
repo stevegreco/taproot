@@ -21,8 +21,8 @@ implementation phase, when there is something to decide them against.
 ## 1. Confirm the need
 
 ```bash
-node packages/spec/bin/ds-spec.js get guideline.compose-or-propose
-node packages/spec/bin/ds-spec.js search "<what the component does>"
+node packages/spec/bin/taproot.js get guideline.compose-or-propose
+node packages/spec/bin/taproot.js search "<what the component does>"
 ```
 
 Compose existing components where you can. Propose a new one only when the guideline says so. If a
@@ -36,7 +36,7 @@ pnpm component:new <name> --phase spec
 
 This writes `packages/spec/content/components/<name>/<name>.spec.yaml` with the schema header,
 `status: draft`, and a `TODO:` placeholder for each field a draft needs. It refuses to overwrite a
-record that exists. Replace every placeholder; `node packages/spec/bin/ds-spec.js validate` reports each one left. The
+record that exists. Replace every placeholder; `node packages/spec/bin/taproot.js validate` reports each one left. The
 format is in `packages/spec/SPEC.md`. A filled-in draft looks like this:
 
 ```yaml
@@ -80,8 +80,8 @@ reading order.
 ## 3. Check
 
 ```bash
-node packages/spec/bin/ds-spec.js validate
-node packages/spec/bin/ds-spec.js get component.<name>
+node packages/spec/bin/taproot.js validate
+node packages/spec/bin/taproot.js get component.<name>
 pnpm component:status <name> --phase spec
 ```
 

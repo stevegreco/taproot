@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "design-system-spec": {
+    "taproot": {
       "command": "node",
-      "args": ["packages/spec/bin/ds-spec-mcp.js"]
+      "args": ["packages/spec/bin/taproot-mcp.js"]
     }
   }
 }

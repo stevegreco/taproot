@@ -10,8 +10,8 @@
     "directory": "packages/spec"
   },
   "bin": {
-    "ds-spec": "./bin/ds-spec.js",
-    "ds-spec-mcp": "./bin/ds-spec-mcp.js"
+    "taproot": "./bin/taproot.js",
+    "taproot-mcp": "./bin/taproot-mcp.js"
   },
   "files": [
     "bin",

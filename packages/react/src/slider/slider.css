@@ -1,4 +1,4 @@
-/* Slider, styled from the bindings `ds-spec tokens component.slider` lists. The root carries React
+/* Slider, styled from the bindings `taproot tokens component.slider` lists. The root carries React
    Aria's [data-disabled] and the component's [data-invalid]; the thumb carries [data-hovered],
    [data-dragging], and [data-focus-visible]. */
 

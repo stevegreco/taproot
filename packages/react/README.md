@@ -87,4 +87,4 @@ Vitest browser mode, with the token stylesheet loaded. `pnpm --filter
 @taproot-ds/react-components typecheck` checks the types.
 
 Each component's mapping from React props and events to spec parameters and events goes in
-`implementation/<name>.md`, which `ds-spec get <name> --impl react` serves.
+`implementation/<name>.md`, which `taproot get <name> --impl react` serves.

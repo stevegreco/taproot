@@ -1,4 +1,4 @@
-/* Dialog, styled from the bindings `ds-spec tokens component.dialog` lists. There is no opening or
+/* Dialog, styled from the bindings `taproot tokens component.dialog` lists. There is no opening or
    closing animation (the spec's rationale), so reduced motion needs no separate treatment. */
 
 /* backdrop: base. The root covers the viewport and centers the dialog. The gutter between the

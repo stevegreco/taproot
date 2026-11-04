@@ -10,50 +10,50 @@ const str = { type: "string" };
 
 const COMMANDS = {
   validate: {
-    usage: "ds-spec validate",
+    usage: "taproot validate",
     summary: "Check every record; list issues.",
     options: {},
   },
   list: {
-    usage: "ds-spec list [--type <t>] [--tag <tag>] [--status <s>] [--impl <name>]",
+    usage: "taproot list [--type <t>] [--tag <tag>] [--status <s>] [--impl <name>]",
     summary:
       "List records, optionally filtered. --impl <name> lists the components that implementation has.",
     options: { type: str, tag: str, status: str, impl: str },
   },
   search: {
-    usage: "ds-spec search <query...> [--type <t>] [--tag <tag>] [--limit <n>]",
+    usage: "taproot search <query...> [--type <t>] [--tag <tag>] [--limit <n>]",
     summary: "Find the component, pattern, or guideline that fits a need.",
     options: { type: str, tag: str, limit: str },
   },
   get: {
-    usage: "ds-spec get <id | name | id#section> [--impl <name>]",
+    usage: "taproot get <id | name | id#section> [--impl <name>]",
     summary:
       "Print a record, or one section of it, as Markdown. A section is a rule id, a field such as parameters, or a dotted path such as anatomy.title, parts.title.parameters.label, or items.section. --impl <name> adds how that technology implements it: package, import, and API names.",
     options: { impl: str },
   },
   links: {
-    usage: "ds-spec links <id> [--kind <k>] [--direction out|in|both]",
+    usage: "taproot links <id> [--kind <k>] [--direction out|in|both]",
     summary: "Show alternatives, patterns followed, examples, and other neighbors.",
     options: { kind: str, direction: str },
   },
   rules: {
-    usage: "ds-spec rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]",
+    usage: "taproot rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]",
     summary: "List must/should/may rules to review against.",
     options: { id: str, topic: str, level: str, query: str },
   },
   tokens: {
-    usage: "ds-spec tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]",
+    usage: "taproot tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]",
     summary: "Show which design tokens a component uses; --resolve adds values.",
     options: { part: str, condition: str, property: str, resolve: { type: "boolean" } },
   },
   format: {
-    usage: "ds-spec format [--resolve]",
+    usage: "taproot format [--resolve]",
     summary:
       "Print the format reference: token binding properties, keywords, anatomy roles, and the system-wide constant tokens; --resolve adds values.",
     options: { resolve: { type: "boolean" } },
   },
   batch: {
-    usage: 'ds-spec batch --command "<command>" [--command "<command>" ...]',
+    usage: 'taproot batch --command "<command>" [--command "<command>" ...]',
     summary:
       "Run several commands in one process, loading the spec once. Prints one result per command, in order, or a JSON array with --json. The exit code is the worst command's.",
     options: { command: { type: "string", multiple: true } },
@@ -78,7 +78,7 @@ function createLoader() {
           const skipped = [...new Set(spec.issues.map((issue) => issue.file))];
           if (skipped.length > 0) {
             err(
-              `Warning: left out ${skipped.length} record file${skipped.length === 1 ? "" : "s"} with issues: ${skipped.join(", ")}. Run "ds-spec validate" for details.\n`,
+              `Warning: left out ${skipped.length} record file${skipped.length === 1 ? "" : "s"} with issues: ${skipped.join(", ")}. Run "taproot validate" for details.\n`,
             );
           }
           return spec;
@@ -91,8 +91,8 @@ function createLoader() {
 
 /** The next call for a record, naming each implementation that has a file for it. */
 function nextCall(id, names) {
-  if (names.length === 0) return `ds-spec get ${id}`;
-  return `ds-spec get ${id} --impl ${names.length === 1 ? names[0] : `<${names.join(" | ")}>`}`;
+  if (names.length === 0) return `taproot get ${id}`;
+  return `taproot get ${id} --impl ${names.length === 1 ? names[0] : `<${names.join(" | ")}>`}`;
 }
 
 /** The values each filter flag takes. Any other value is a usage error. */
@@ -119,12 +119,12 @@ function helpText(command) {
   }
   const lines = Object.values(COMMANDS).map((c) => `  ${c.usage}\n      ${c.summary}`);
   return [
-    "ds-spec: read the design system spec.",
+    "taproot: read the design system spec.",
     "",
     "Commands:",
     ...lines,
-    "  ds-spec help [command]",
-    "  ds-spec help agents",
+    "  taproot help [command]",
+    "  taproot help agents",
     "      How an agent should use the spec.",
     "",
     "Global flags:",
@@ -149,7 +149,7 @@ export async function run(argv, io = {}) {
   const out = io.stdout ?? ((text) => process.stdout.write(text));
   const err = io.stderr ?? ((text) => process.stderr.write(text));
   const usageError = (message) => {
-    err(`${message}\nRun "ds-spec help" for usage.\n`);
+    err(`${message}\nRun "taproot help" for usage.\n`);
     return 2;
   };
 
@@ -219,7 +219,7 @@ export async function run(argv, io = {}) {
           {
             constants,
             resolveToken,
-            resolveHint: "Run `ds-spec format --resolve` for values.",
+            resolveHint: "Run `taproot format --resolve` for values.",
           },
         ),
       );
@@ -265,7 +265,7 @@ export async function run(argv, io = {}) {
             {
               implementations,
               next: nextCall,
-              browse: "`ds-spec list`",
+              browse: "`taproot list`",
             },
           ),
         );
@@ -277,7 +277,7 @@ export async function run(argv, io = {}) {
             {
               implementations,
               tokensHint: (id, count) =>
-                `Tokens: ${count} bindings, left out here. Run \`ds-spec tokens ${id}\` to filter them by part, condition, or property.`,
+                `Tokens: ${count} bindings, left out here. Run \`taproot tokens ${id}\` to filter them by part, condition, or property.`,
               implementationHint: (id, names) =>
                 `Implementations: ${names.join(", ")}. Run \`${nextCall(id, names)}\` for the package, import, and API names.`,
             },
@@ -290,7 +290,7 @@ export async function run(argv, io = {}) {
         return print(
           ops.rules(spec, args, {
             detailHint: (address) =>
-              `Rationale, references, and examples are left out. Run \`ds-spec get <address>\`, such as \`ds-spec get ${address}\`, to read a rule in full.`,
+              `Rationale, references, and examples are left out. Run \`taproot get <address>\`, such as \`taproot get ${address}\`, to read a rule in full.`,
           }),
         );
       case "tokens":
@@ -306,7 +306,7 @@ export async function run(argv, io = {}) {
 
 /**
  * Run each `--command` in this process with the batch's global flags, sharing one loaded spec.
- * Each command's output is exactly what it prints alone, under a `$ ds-spec <command>` line; with
+ * Each command's output is exactly what it prints alone, under a `$ taproot <command>` line; with
  * `--json`, the batch prints an array of `{ command, exitCode, result }`, where `result` is the
  * command's own JSON, and `stderr` when the command wrote any. A failed command does not stop the
  * others, and the batch exits with the highest exit code.
@@ -370,9 +370,9 @@ async function runBatch(values, { cwd, out, err, load }) {
     }));
     out(`${JSON.stringify(json, null, 2)}\n`);
   } else {
-    out(results.map(({ command, stdout }) => `$ ds-spec ${command}\n${stdout}`).join("\n"));
+    out(results.map(({ command, stdout }) => `$ taproot ${command}\n${stdout}`).join("\n"));
     for (const { command, stderr } of results) {
-      if (stderr) err(`$ ds-spec ${command}\n${stderr}`);
+      if (stderr) err(`$ taproot ${command}\n${stderr}`);
     }
   }
   return Math.max(...results.map((result) => result.exitCode));
