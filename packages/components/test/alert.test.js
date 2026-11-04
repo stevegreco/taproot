@@ -212,6 +212,20 @@ describe("DsAlert", () => {
     expect(document.activeElement.textContent).toBe("Before");
   });
 
+  test("[focus-after-dismiss] moves focus when a framework removes the alert after dismiss", async () => {
+    render(`<${tagName} dismissible>Message</${tagName}><button>After</button>`);
+    const alert = document.querySelector(tagName);
+    const after = document.querySelector("button");
+    // A framework state update removes the element just after the event, not during it.
+    alert.addEventListener("dismiss", () => queueMicrotask(() => alert.remove()));
+
+    dismissOf(alert).focus();
+    await userEvent.keyboard("{Enter}");
+
+    expect(alert.isConnected).toBe(false);
+    expect(document.activeElement).toBe(after);
+  });
+
   test("[focus-after-dismiss] moves focus from a slotted action", async () => {
     render(
       `<${tagName} dismissible>Message<button slot="actions">Retry</button></${tagName}><button>After</button>`,

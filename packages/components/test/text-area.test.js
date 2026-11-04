@@ -49,6 +49,7 @@ test("required and custom errors block submission, hint/error descriptions stay 
   field.error = "";
   expect(form.checkValidity()).toBe(true);
   expect(control.getAttribute("aria-describedby")).toBe("hint");
+  expect(control.hasAttribute("aria-invalid")).toBe(false);
 });
 test("fieldset disabled state excludes and restores current value, restore respects reset default", () => {
   const { form, field, control } = render('value="Default"');

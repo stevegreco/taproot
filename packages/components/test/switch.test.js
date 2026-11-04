@@ -49,6 +49,13 @@ describe("DsSwitch", () => {
     host.disabled = true;
     expect(control(host).disabled).toBe(true);
   });
+  test("a disabled switch that is on stays on", async () => {
+    const host = render("checked disabled");
+    expect(control(host).disabled).toBe(true);
+    expect(control(host).checked).toBe(true);
+    await userEvent.click(host.shadowRoot.querySelector("label"), { force: true });
+    expect(host.checked).toBe(true);
+  });
   test("input listener sees updated form state before change and preserves dirty checked state", async () => {
     const host = render("checked");
     const seen = [];

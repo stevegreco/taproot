@@ -45,8 +45,17 @@ test("required empty selection and custom errors block submission", () => {
   field.error = "Choose a supported method.";
   expect(form.checkValidity()).toBe(false);
   expect(control.getAttribute("aria-describedby")).toBe("hint error");
+  expect(control.getAttribute("aria-invalid")).toBe("true");
   field.error = "";
   expect(form.checkValidity()).toBe(true);
+  expect(control.hasAttribute("aria-invalid")).toBe(false);
+});
+test("reset restores the empty first choice when no value was set", () => {
+  const { form, field, control } = render();
+  field.value = "express";
+  form.reset();
+  expect(field.value).toBe("");
+  expect(control.value).toBe("");
 });
 test("choice content mutations preserve current selection and refresh content", async () => {
   const { field, control } = render();
