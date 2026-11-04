@@ -2,7 +2,6 @@ import { defineMeta } from "blume";
 
 export default defineMeta({
   title: "Components",
-  // Order only. Blume lists every docs/components/*.mdx page; pages left out
-  // of this array still appear, after these, alphabetically.
-  pages: ["index", "button", "link", "badge"],
+  // The one page here, the catalog, comes from lib/component-catalog.ts.
+  pages: ["index"],
 });

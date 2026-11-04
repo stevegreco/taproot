@@ -429,4 +429,27 @@ items:
       ),
     ).toThrow("kind must be one of prop, callback for react");
   });
+
+  it("names the file in every front matter error", () => {
+    const parse = (frontMatter) =>
+      parseImplementation(`---\n${frontMatter}\n---\n`, "implementation/x.md", "web-component");
+    const valid =
+      "component: component.x\npackage: pkg\ntagName: ds-x\ndefineExport: defineX\napi:\n  - { name: a, kind: attribute, parameter: a }";
+
+    expect(() => parse(valid)).not.toThrow();
+    expect(() =>
+      parseImplementation("no front matter", "implementation/x.md", "web-component"),
+    ).toThrow(/x\.md: must start with YAML/);
+    expect(() => parse(valid.replace("component.x", "button"))).toThrow(
+      /x\.md: component "button"/,
+    );
+    expect(() => parse(valid.replace("ds-x", "dsx"))).toThrow(/tagName "dsx"/);
+    expect(() => parse(`${valid}\nextra: 1`)).toThrow(/unknown field "extra"/);
+    expect(() => parse(valid.replace("parameter: a", "type: string"))).toThrow(
+      /needs "parameter".*or both "type" and "description"/,
+    );
+    expect(() => parse(`${valid}\n  - { name: a, kind: attribute, parameter: b }`)).toThrow(
+      /lists the attribute "a" twice/,
+    );
+  });
 });

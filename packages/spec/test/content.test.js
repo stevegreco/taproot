@@ -2,7 +2,9 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
-import { validateFromConfig } from "../src/config.js";
+import { resolveConfig, validateFromConfig } from "../src/config.js";
+import { checkImplementation } from "../src/implementation.js";
+import { loadImplementations } from "../src/implementation-files.js";
 import { DEFAULT_CONTENT_DIR, loadSpec, schema, validateSpec } from "../src/index.js";
 import { TOKEN_KEYWORDS, TOKEN_PROPERTIES } from "../src/validate.js";
 
@@ -58,6 +60,56 @@ describe("shipped content", () => {
       .flatMap(({ id }) => spec.tokens(id).map((binding) => `${id}: ${binding.token}`))
       .filter((entry) => /: primitives\.(?:color|radius|border)\./.test(entry));
     expect(primitives).toEqual([]);
+  });
+});
+
+describe("shipped implementations", () => {
+  const cwd = fileURLToPath(new URL("../../..", import.meta.url));
+  const implementations = () =>
+    Object.entries(resolveConfig({ cwd }).implementations).map(
+      ([name, { folder, technology }]) => ({
+        name,
+        folder,
+        items: loadImplementations(folder, technology),
+      }),
+    );
+  const slug = (id) => id.slice("component.".length);
+
+  it("covers every parameter, value, and event of its record", async () => {
+    const spec = await loadSpec();
+    for (const { items } of implementations()) {
+      for (const item of items) {
+        const record = spec.get(item.component);
+        expect(record, `${item.file}: ${item.component} is a record`).toBeDefined();
+        checkImplementation(item, record);
+      }
+    }
+  });
+
+  it("exists for every built component, and for no draft", async () => {
+    const spec = await loadSpec();
+    const components = spec.list({ type: "component" });
+    const sets = implementations().map(({ name, folder, items }) => ({
+      name,
+      folder,
+      slugs: items.map((item) => slug(item.component)),
+    }));
+
+    for (const { id, status } of components) {
+      if (status === "draft") {
+        for (const { name, folder, slugs } of sets) {
+          expect(
+            slugs,
+            `${id} has a ${name} implementation in ${folder}, so remove status: draft from its spec`,
+          ).not.toContain(slug(id));
+        }
+      } else {
+        expect(
+          sets.some(({ slugs }) => slugs.includes(slug(id))),
+          `${id} is not a draft, so it needs an implementation file in ${sets.map(({ folder }) => folder).join(" or ")}`,
+        ).toBe(true);
+      }
+    }
   });
 });
 

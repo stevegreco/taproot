@@ -1,14 +1,11 @@
 import { defineConfig, type ComponentMarkdown } from "blume";
-import type { ComponentSpecSection } from "./lib/component-spec";
 import type { SemanticReferenceKind } from "./lib/semantic-reference";
 import { assertWorkspaceBuilds } from "./lib/workspace-builds";
 
 assertWorkspaceBuilds();
 
 const { palettes } = await import("./lib/color-palettes");
-const { componentSpecMarkdown } = await import("./lib/component-spec");
 const { componentCatalogSource } = await import("./lib/component-catalog");
-const { componentPagesSource, PROSE_FOLDER } = await import("./lib/component-pages");
 const { semanticReferenceMarkdown } = await import("./lib/semantic-reference");
 
 const colorFieldGuideMarkdown: ComponentMarkdown = () =>
@@ -36,14 +33,6 @@ const semanticTokenReferenceMarkdown: ComponentMarkdown = ({ props }) => {
   return semanticReferenceMarkdown(kind as SemanticReferenceKind);
 };
 
-const componentSpec: ComponentMarkdown = ({ props }) => {
-  const component = props.component;
-  if (typeof component !== "string") return null;
-  const section = props.section;
-  if (section != null && typeof section !== "string") return null;
-  return componentSpecMarkdown(component, section as ComponentSpecSection | undefined);
-};
-
 export default defineConfig({
   title: "Design System",
   description: "A token-first design system for consistent, themeable interfaces.",
@@ -59,21 +48,14 @@ export default defineConfig({
   },
   content: {
     sources: [
-      // Component pages render from the catalog. Their optional prose files
-      // live in docs/components/ but render only through that source.
-      { type: "filesystem", root: "docs", exclude: ["**/_*", "**/.*", `${PROSE_FOLDER}/*.mdx`] },
-      { type: "custom", source: componentPagesSource() },
+      { type: "filesystem", root: "docs", exclude: ["**/_*", "**/.*"] },
       { type: "custom", source: componentCatalogSource() },
     ],
-  },
-  examples: {
-    css: "theme.css",
   },
   ai: {
     markdownComponents: {
       ColorFieldGuide: colorFieldGuideMarkdown,
       SemanticTokenReference: semanticTokenReferenceMarkdown,
-      ComponentSpec: componentSpec,
     },
   },
   theme: {
