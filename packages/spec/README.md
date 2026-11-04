@@ -131,8 +131,8 @@ the rest. A folder that does not exist yet reads as nothing implemented. A `web-
 `attribute`, `property`, or `event`. A `react` file names its `export`, and its rows are `prop` or
 `callback`. A `parts` or `items` entry has its own rows for each record part and item. An item names
 its own `tagName` or `export`, or in React the array `prop` whose entries are the items, with a
-`field` row per key. A part names one only when it is its own element or component. Records stay technology-neutral; these files live with the implementation. The
-docs site reads the same files with `loadImplementations`, `parseImplementation`, and
+`field` row per key. A part names one only when it is its own element or component. Records stay technology-neutral; these files live with the implementation. Other
+tools can read the same files with `loadImplementations`, `parseImplementation`, and
 `checkImplementation` from `@stevegreco/design-system-spec/implementation`.
 `checkImplementation` confirms the file is named after a component record and that every
 parameter, value, and event a row names exists and every one the record has is covered; `get

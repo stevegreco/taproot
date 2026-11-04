@@ -1,15 +1,14 @@
 ---
 name: implement-component
-description: Build a component of the Ember & Sage design system from its draft spec. Completes the spec contract (parameters, rules, tokens, rationale), writes the failing tests, the hand-written web component in packages/components, the web API file in packages/components/implementation, and the Storybook stories. Use when asked to implement or build a component that has a draft spec, when finishing a partly built component, or when reviewing an implementation PR. The second of three phases, after spec-component and before document-component.
+description: Build a component of the Ember & Sage design system from its draft spec. Completes the spec contract (parameters, rules, tokens, rationale), writes the failing tests, the hand-written web component in packages/components, the web API file in packages/components/implementation, and the Storybook stories. Use when asked to implement or build a component that has a draft spec, when finishing a partly built component, or when reviewing an implementation PR. The second of two phases, after spec-component.
 ---
 
 # Implement a component
 
-The second of three phases, one commit each in a single pull request:
+The second of two phases, one commit each in a single pull request:
 
 1. **spec-component**: a draft spec that says what the component is for.
 2. **implement-component** (this skill): completes the spec and builds the web component.
-3. **document-component**: the docs example and its Verify steps.
 
 Start on the component's branch, after its draft commit is reviewed. If there is no draft, run
 spec-component first.
@@ -107,15 +106,15 @@ Check: `pnpm exec turbo run test --filter=@stevegreco/web-components`.
   web-specific guidance only, in the scaffold's sections: Slots, The hidden attribute, Framework
   notes, and Styles, which every file keeps as written.
   Behavior is in the spec's rules, so cite a rule by address (`component.<name>#<rule-id>`) rather
-  than restating it. `implementation/alert.md` is the example. This file gives the component its docs
-  page and serves `node packages/spec/bin/ds-spec.js get component.<name> --impl web`.
+  than restating it. `implementation/alert.md` is the example. This file gives the component its row in
+  the docs catalog and serves `node packages/spec/bin/ds-spec.js get component.<name> --impl web`.
 - `apps/storybook/stories/<name>.stories.js`: the scaffold has a control for every parameter. Add
   one story per notable state, as `stories/checkbox.stories.js` does. Check that the Accessibility panel reports no
   violations in both themes: `pnpm exec turbo run dev --filter=storybook`.
 
 ## 6. Ship it
 
-- Remove `status: draft` from the spec. The docs tests fail when a draft has an implementation
+- Remove `status: draft` from the spec. The spec tests fail when a draft has an implementation
   file.
 - Point the neighbors at it. Search for records whose `avoid` entries describe this component in
   plain text, such as "an inline status message", and set their `instead` to `component.<name>`:
@@ -141,11 +140,9 @@ Then run the repo gates from the root: `pnpm build`, `pnpm test`, `pnpm lint`,
 ## Pull request
 
 Commit on the same branch and add an "Implementation" section to the pull request description.
-Ask for review and stop before the docs commit. The section lists:
+Ask for review. The pull request merges after this commit is reviewed. The section lists:
 
 - Public API decisions.
 - Each checklist item that is not in the spec, with its `rationale` decision.
 - Each MUST rule the status script lists without a test, and why.
 - Check results.
-
-The docs example and Verify steps are the next phase: document-component.

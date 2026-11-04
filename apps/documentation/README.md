@@ -1,10 +1,10 @@
 # Design System Documentation
 
 The documentation site uses [Blume](https://blume.build), with Markdown and
-MDX content in `docs/`. Each component page combines a spec record
-(`packages/spec`) with an implementation file in
-`packages/components/implementation/<slug>.md` that holds the web-specific facts: tag name, usage markup, the API table's rows,
-and guidance.
+MDX content in `docs/`. It is for orientation: what the system is and how to start. The one
+component page, `/components`, is a catalog generated from the spec by
+`lib/component-catalog.ts`, and links each component to Storybook (ADR 0007). Agents get the rules
+and API from the spec's CLI and MCP server.
 
 ## Commands
 

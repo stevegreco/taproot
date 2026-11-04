@@ -73,35 +73,35 @@ keep those consistent in review.
 
 - The web components are hand-written in `packages/components`, with tests in
   `packages/components/test`.
-- The docs site builds a component page from the spec record plus
-  `packages/components/implementation/<name>.md` (package, tag name, usage, API table mapping web
-  attributes, properties, and events to spec parameters and events, and web-specific guidance).
-  `spec.config.json` points the CLI at the same folder, so `get --impl web` serves it.
-  Examples are in `apps/documentation/examples/`.
+- Each web component has `packages/components/implementation/<name>.md` (package, tag name, usage,
+  API table mapping web attributes, properties, and events to spec parameters and events, and
+  web-specific guidance). `spec.config.json` points the CLI at that folder, so `get --impl web`
+  serves it.
 - The React components in `packages/react` are a second implementation, built on React Aria
   Components, with tests in `packages/react/test`. Their mapping files are in
   `packages/react/implementation/<name>.md` (export name, usage, and API rows mapping props and
-  callbacks to spec parameters and events), served by `get --impl react`. The docs site and
+  callbacks to spec parameters and events), served by `get --impl react`. The docs catalog and
   Storybook show only the web components. The research log is `docs/research/react-implementation.md`.
 - The hosted MCP server in `apps/mcp` serves the spec from a snapshot built at deploy time, with one
   small entry file per host. The tools are in `packages/spec/src/server.js`. See ADR 0006.
 - Storybook in `apps/storybook` has a story file per component in `stories/`. It is a workbench
   for exploring states and themes, not a source of usage guidance. Run it with
   `pnpm exec turbo run dev --filter=storybook` (port 6006).
+- The docs site in `apps/documentation` is for orientation, with no page per component. Its one
+  component page is a catalog generated from the spec, linking to Storybook (ADR 0007).
 
 Before adding a component or variant, read `node packages/spec/bin/ds-spec.js get guideline.compose-or-propose`. A new
-component is built in three phases, each its own skill in `.agents/skills/` and its own commit on
-one branch. The phases share one pull request that merges after the docs commit, and review
-pauses after each commit:
+component is built in two phases, each its own skill in `.agents/skills/` and its own commit on
+one branch. The phases share one pull request that merges after the implementation commit, and
+review pauses after each commit:
 
 1. `spec-component`: a minimal spec with `status: draft`, reviewed before anything is built.
 2. `implement-component`: completes the spec (record each option the component does not ship in
    its `rationale`), builds the web component and its tests, maps the web API, adds stories, and
    removes `status: draft`.
-3. `document-component`: the docs example and its Verify steps.
 
-`pnpm component:new <name> --phase spec|implementation|docs` scaffolds each phase, and
-`pnpm component:status <name> [--phase spec|implementation|docs]` checks it.
+`pnpm component:new <name> --phase spec|implementation` scaffolds each phase, and
+`pnpm component:status <name> [--phase spec|implementation]` checks it.
 
 Token decisions live in `packages/tokens/docs/adr/`. Do not place design system facts only in a
 documentation page or an agent skill. Those consume the spec.
@@ -116,7 +116,7 @@ From the repository root:
 
 - `pnpm build` runs `turbo run build` for every package, in dependency order.
 - `pnpm test` runs `turbo run test`, which builds each package and its workspace dependencies once
-  before testing it. The documentation tests run each example's `examples/<slug>.verify.js` against the built site.
+  before testing it.
 - `pnpm exec turbo run <task> --filter=<pkg>` is the way to build, test, or develop one package
   and its workspace dependencies.
 

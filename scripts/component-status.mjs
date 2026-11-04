@@ -5,9 +5,8 @@
  *
  *   spec            a draft spec record (spec-component)
  *   implementation  runtime, tests, web API file, and stories (implement-component)
- *   docs            the docs example and its Verify steps (document-component)
  *
- *   pnpm component:status <name> [--phase spec|implementation|docs]
+ *   pnpm component:status <name> [--phase spec|implementation]
  *
  * With no phase, every phase is checked. This script is the only complete
  * list; each SKILL.md describes the steps. Exits 1 when a required file or
@@ -93,7 +92,7 @@ const CHECKLIST = [
   },
 ];
 
-const PHASES = ["spec", "implementation", "docs"];
+const PHASES = ["spec", "implementation"];
 const root = fileURLToPath(new URL("../", import.meta.url));
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -177,26 +176,6 @@ if (inPhase("implementation")) {
     console.log("\n  Decide-what-it-ships items (no spec yet)");
     for (const item of CHECKLIST) console.log(`  todo  ${item.label}: ${item.question}`);
   }
-}
-
-if (inPhase("docs")) {
-  console.log(`\nDocs phase: component.${slug}`);
-  for (const file of [
-    `apps/documentation/examples/${slug}.tsx`,
-    `apps/documentation/examples/${slug}.verify.js`,
-  ]) {
-    row(existsSync(path.join(root, file)), file);
-  }
-  const exampleSource = read(`apps/documentation/examples/${slug}.tsx`);
-  if (exampleSource) {
-    row(
-      exampleSource.includes(`\`${slug}.verify.js\``),
-      `examples/${slug}.tsx Verify header names ${slug}.verify.js`,
-    );
-  }
-  const prose = `apps/documentation/docs/components/${slug}.mdx`;
-  if (existsSync(path.join(root, prose))) row(true, `${prose} preview prose`);
-  else console.log(`  note  ${prose} preview prose is optional`);
 }
 
 console.log(missing ? `\n${missing} required item(s) missing.` : "\nNo required items missing.");
