@@ -1,0 +1,151 @@
+---
+title: Use with AI agents
+description: Give an AI coding agent the design system's rules, tokens, and API names through MCP or the command line.
+---
+
+The design system's spec describes each component: when to use it, its rules, its tokens, and the API
+names for each technology. An agent can look these up instead of guessing. Pick the option that fits
+how your agent works.
+
+| Option | Best for | Needs |
+| --- | --- | --- |
+| [Hosted MCP server](#hosted-mcp-server) | The quickest start, and agents with no terminal | A web address and nothing to install |
+| [Command line](#command-line) | Agents that can run commands, and a version pinned to your project | An install in your project |
+| [Local MCP server](#local-mcp-server) | MCP with a version pinned to your project | An install in your project |
+
+## Hosted MCP server
+
+The server is at `https://mcp.stevegreco.workers.dev/mcp`. It needs no sign-in and it is read-only.
+
+In Claude Code, run:
+
+```bash
+claude mcp add --transport http design-system https://mcp.stevegreco.workers.dev/mcp
+```
+
+In Cursor, add it to `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "design-system": {
+      "url": "https://mcp.stevegreco.workers.dev/mcp"
+    }
+  }
+}
+```
+
+The hosted server always answers with the latest deployed content. It covers the web components, and
+it does not offer `validate`. To stay on one version, or to validate your own edits to the spec,
+install the package.
+
+## Install the package
+
+The command line and the local MCP server both come from this package.
+
+```bash
+pnpm add -D @stevegreco/design-system-spec @stevegreco/design-system @stevegreco/web-components
+```
+
+The records work right away. For API names and token values, add a `spec.config.json` at your project
+root, which points at the other two packages:
+
+```json
+{
+  "implementations": {
+    "web": {
+      "folder": "node_modules/@stevegreco/web-components/implementation",
+      "technology": "web-component"
+    }
+  },
+  "constants": {
+    "border-width": "semantic.border.width",
+    "focus-ring-width": "semantic.focus.width",
+    "focus-ring-offset": "semantic.focus.offset"
+  },
+  "tokens": {
+    "format": "dtcg",
+    "sets": {
+      "light": [
+        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/light.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+      ],
+      "dark": [
+        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/dark.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+      ]
+    }
+  }
+}
+```
+
+## Command line
+
+The command is `ds-spec`. Run it through pnpm, which uses the copy installed in your project.
+
+```bash
+pnpm exec ds-spec search "destructive action"
+pnpm exec ds-spec get button --impl web
+pnpm exec ds-spec rules --level must --topic accessibility
+pnpm exec ds-spec tokens button --condition "variant.primary + hover" --resolve
+```
+
+To see every command, run:
+
+```bash
+pnpm exec ds-spec help
+```
+
+To see the instructions written for agents, run:
+
+```bash
+pnpm exec ds-spec help agents
+```
+
+:::tip[For agents]
+Going through pnpm adds about a second to each call. An agent making many calls should run
+`node_modules/.bin/ds-spec` directly, which is the same command without that delay.
+:::
+
+## Local MCP server
+
+Add the installed server to your agent's MCP config. In Claude Code, that is `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "design-system": {
+      "command": "node_modules/.bin/ds-spec-mcp"
+    }
+  }
+}
+```
+
+## What an agent can do
+
+Each MCP tool has a command with the same name.
+
+| Tool | Use it to |
+| --- | --- |
+| `search` | Find the component, pattern, or guideline that fits a need |
+| `get` | Read a record, or one rule or section of it, with the API names for a technology |
+| `list` | See every record |
+| `links` | Find alternatives, the patterns a component follows, and examples |
+| `rules` | Review work against the rules, and cite each one by its address and level |
+| `tokens` | See which tokens a part uses in a variant or state, with their values |
+| `format` | Read what records do not repeat, such as border width and focus-ring size |
+| `validate` | Check edited spec records. Not on the hosted server |
+
+Each record is also an MCP resource at `spec://<id>`, such as `spec://component.button`.
+
+## Files for other AI tools
+
+For tools that read web pages rather than MCP, this site publishes:
+
+- [`/llms.txt`](/llms.txt): a list of every page.
+- [`/llms-full.txt`](/llms-full.txt): every page in one file.
+- A Markdown copy of each page, at its address plus `.md`, such as [`/components/button.md`](/components/button.md).
