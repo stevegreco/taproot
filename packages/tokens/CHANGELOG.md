@@ -1,13 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- **New recipe: `semantic.typography.title`.** Body-size, semibold text for the title above body copy.
-  Alert and Dialog use it.
-- **New shape roles:** `semantic.radius.compact`, `semantic.border.width`, `semantic.focus.width`, and
-  `semantic.focus.offset`. Every component border and focus ring uses them.
-- Every semantic color role now has a description.
-
 ## 0.1.0
 
 Breaking. The CSS prefix, color primitives, the component tier, and several token names change in
@@ -15,6 +7,11 @@ one release.
 The reasons are in [ADR 0003](docs/adr/0003-token-tier-consumption.md) and the
 [semantic naming plan](docs/semantic-naming-plan.md).
 
+- **New recipe: `semantic.typography.title`.** Body-size, semibold text for the title above body copy.
+  Alert and Dialog use it.
+- **New shape roles:** `semantic.radius.compact`, `semantic.border.width`, `semantic.focus.width`, and
+  `semantic.focus.offset`. Every component border and focus ring uses them.
+- Every semantic color role now has a description.
 - **Every CSS variable starts with `--ds-`.** `--semantic-*` is now `--ds-semantic-*` and
   `--primitives-*` is now `--ds-primitives-*`, so a consumer's own variables cannot collide with
   ours. Token paths in JSON are unchanged. `CSS_PREFIX` from `./flatten` holds the prefix.

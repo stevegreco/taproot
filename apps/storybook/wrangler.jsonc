@@ -2,6 +2,7 @@
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "storybook",
   "compatibility_date": "2026-11-03",
+  "previews": {},
   "assets": {
     "directory": "./dist",
   },

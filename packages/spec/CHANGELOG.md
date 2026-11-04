@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.0.2
+
+- Add the `repository` field, which npm trusted publishing checks.
+- Add `@stevegreco/design-system-spec/http` and a snapshot build for hosted deploys. The local CLI and
+  MCP server still read the source files.
+- The MCP server reports its package version.
+
+## 0.0.1
 
 Breaking. The package is now a library over the authored files, and the record format is version 1
 (`urn:design-system-knowledge:record:1`). See [SPEC.md](SPEC.md) and
@@ -67,8 +74,6 @@ Breaking. The package is now a library over the authored files, and the record f
   `medium`, not `sm` and `md`. Icon's rules `label-when-meaningful`, `no-label-when-repeated`, and
   `label-names-meaning` are `name-when-meaningful`, `no-name-when-repeated`, and
   `name-says-meaning`, and Spinner's `label-names-work` is `name-says-work`.
-
-## 0.0.1
 
 This version breaks compatibility with bundles compiled earlier in this stack:
 

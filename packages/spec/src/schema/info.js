@@ -16,3 +16,34 @@ export const COMMON_FIELDS = Object.freeze(Object.keys(schema.properties));
 export function typeFields(type) {
   return typeBranches.find((branch) => branch.type === type)?.fields ?? [];
 }
+
+/**
+ * The neutral property names a token binding uses where they fit, as SPEC.md lists them. Other
+ * lowercase, hyphenated names are allowed.
+ */
+export const TOKEN_PROPERTIES = [
+  "background",
+  "foreground",
+  "border",
+  "border-width",
+  "radius",
+  "gap",
+  "padding-horizontal",
+  "padding-vertical",
+  "focus-ring",
+  "font-family",
+  "font-size",
+  "font-weight",
+  "line-height",
+  "letter-spacing",
+  "motion",
+  "motion-duration",
+  "motion-easing",
+  "shadow",
+  "size",
+  "height",
+  "track",
+];
+
+/** Values that name no token, for a property no token applies to. */
+export const TOKEN_KEYWORDS = ["transparent", "none", "inherit", "linear"];

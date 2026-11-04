@@ -217,3 +217,51 @@ warning.
 ```json
 { "mcpServers": { "design-system-spec": { "command": "node", "args": ["packages/spec/bin/ds-spec-mcp.js"] } } }
 ```
+
+## Use in another project
+
+The package ships the records, so `ds-spec` and `ds-spec-mcp` work after an install. Implementation
+names (`get --impl`), token values (`--resolve`), and the system-wide constants come from the other
+packages, so add a `spec.config.json` at the project root that points at the ones you install. Leave
+out `content` to use the shipped records, and leave out the implementation you do not use.
+
+```bash
+pnpm add -D @stevegreco/design-system-spec @stevegreco/design-system @stevegreco/web-components
+```
+
+```json
+{
+  "implementations": {
+    "web": {
+      "folder": "node_modules/@stevegreco/web-components/implementation",
+      "technology": "web-component"
+    }
+  },
+  "constants": {
+    "border-width": "semantic.border.width",
+    "focus-ring-width": "semantic.focus.width",
+    "focus-ring-offset": "semantic.focus.offset"
+  },
+  "tokens": {
+    "format": "dtcg",
+    "sets": {
+      "light": [
+        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/light.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+      ],
+      "dark": [
+        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/dark.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+      ]
+    }
+  }
+}
+```
+
+```json
+{ "mcpServers": { "design-system-spec": { "command": "node_modules/.bin/ds-spec-mcp" } } }
+```

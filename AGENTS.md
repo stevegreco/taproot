@@ -5,7 +5,7 @@
 `packages/spec` is the design system spec: the source of truth for what each component is and how
 to use it. It is a technology-neutral contract: design and engineering agree on it before anyone builds. The format
 is defined in [`packages/spec/SPEC.md`](packages/spec/SPEC.md), the only field reference. The
-decisions are in ADRs 0001 through 0005 in `docs/adr/`.
+decisions are in ADRs 0001 through 0006 in `docs/adr/`.
 [RFC 0002](docs/rfcs/0002-knowledge-layer-architecture.md) is historical background.
 
 **Query it** rather than reading files. The text between the markers below is what
@@ -84,6 +84,8 @@ keep those consistent in review.
   `packages/react/implementation/<name>.md` (export name, usage, and API rows mapping props and
   callbacks to spec parameters and events), served by `get --impl react`. The docs site and
   Storybook show only the web components. The research log is `docs/research/react-implementation.md`.
+- The hosted MCP server in `apps/mcp` serves the spec from a snapshot built at deploy time, with one
+  small entry file per host. The tools are in `packages/spec/src/server.js`. See ADR 0006.
 - Storybook in `apps/storybook` has a story file per component in `stories/`. It is a workbench
   for exploring states and themes, not a source of usage guidance. Run it with
   `pnpm exec turbo run dev --filter=storybook` (port 6006).
@@ -128,3 +130,10 @@ pnpm exec turbo run dev --filter=documentation
 After packages are already built, `pnpm exec vitest run` still runs the Vitest 5 workspace from the
 repo root. Prefer `pnpm test` in a clean tree. Use `pnpm --filter <pkg> exec …` only for commands
 that are not package scripts with workspace build dependencies, such as `blume validate`.
+
+## Releases
+
+`@stevegreco/design-system`, `@stevegreco/web-components`, and `@stevegreco/design-system-spec` are
+published to npm with Changesets. A change to one of them adds a changeset with `pnpm changeset`, in
+the same pull request. Merging to `main` opens or updates a Version Packages pull request, and
+merging that one publishes. `@stevegreco/react-components` is private and is not published.

@@ -13,8 +13,6 @@
  *
  * Front matter is validated on load against the technology's fields, and every error names the file.
  */
-import { readFileSync, readdirSync } from "node:fs";
-import { basename, join } from "node:path";
 import { parse } from "yaml";
 import { table } from "./render.js";
 
@@ -466,34 +464,6 @@ function parseApi(file, raw, technology, prefix, kinds) {
 }
 
 /**
- * Every `*.md` file in `dir`, parsed as files of `technology`, in file-name order. A folder that
- * does not exist yet holds no implementations, so it reads as nothing implemented.
- *
- * @param {string} dir
- * @param {Technology} technology
- * @returns {Implementation[]}
- */
-export function loadImplementations(dir, technology) {
-  let names;
-  try {
-    names = readdirSync(dir);
-  } catch (error) {
-    if (error.code === "ENOENT") return [];
-    throw error;
-  }
-  return names
-    .filter((name) => name.endsWith(".md"))
-    .sort()
-    .map((name) =>
-      parseImplementation(
-        readFileSync(join(dir, name), "utf8"),
-        `implementation/${name}`,
-        technology,
-      ),
-    );
-}
-
-/**
  * Check an implementation against the component record it implements, so a broken mapping fails
  * instead of serving incomplete guidance. The record must be a component, the file must be named
  * after it, every parameter and event needs a row, and every row must name a parameter, value, or
@@ -606,7 +576,7 @@ function checkApi(file, api, owner, name) {
  * @param {Implementation} implementation
  */
 export function implementationSlug(implementation) {
-  return basename(implementation.file, ".md");
+  return implementation.file.split("/").at(-1).replace(/\.md$/, "");
 }
 
 const code = (value) => `\`${value}\``;

@@ -12,9 +12,11 @@
     "spec": "node packages/spec/bin/ds-spec.js",
     "bench": "node packages/spec/scripts/bench.js",
     "component:new": "node scripts/component-new.mjs",
-    "component:status": "node scripts/component-status.mjs"
+    "component:status": "node scripts/component-status.mjs",
+    "changeset": "changeset"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "oxfmt": "^0.62.0",
     "oxlint": "^1.82.0",
     "playwright": "^1.62.1",

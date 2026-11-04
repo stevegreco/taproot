@@ -43,7 +43,12 @@ export class SpecError extends Error {
   }
 }
 
-async function check(options = {}) {
+/**
+ * Read and check every record without indexing it. A snapshot is built from these.
+ *
+ * @param {LoadOptions} [options]
+ */
+export async function check(options = {}) {
   const contentDir = path.resolve(options.contentDir ?? DEFAULT_CONTENT_DIR);
   const sources = await readSourceFiles(contentDir);
   const { issues, records } = await checkSources(sources, { tokenNames: options.tokenNames });

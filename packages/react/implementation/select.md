@@ -1,6 +1,6 @@
 ---
 component: component.select
-package: "@stevegreco/design-system-react"
+package: "@stevegreco/react-components"
 export: Select
 usage: |
   <Select
@@ -103,5 +103,5 @@ Load the token stylesheet and the component stylesheet once, before rendering:
 
 ```tsx
 import "@stevegreco/design-system/css";
-import "@stevegreco/design-system-react/style.css";
+import "@stevegreco/react-components/style.css";
 ```

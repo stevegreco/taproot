@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.1
 
 Breaking. Requires `@stevegreco/design-system` 0.1.0.
 
