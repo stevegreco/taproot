@@ -1,5 +1,8 @@
 # Agent retrieval evaluation
 
+> This record predates the rename to the spec. The `knowledge` CLI is now `ds-spec`, and other names
+> have changed since, such as the components package and Button's `danger` variant.
+
 - Started: 2026-10-01.
 - Question: can an agent build correct markup with the design system using only the knowledge CLI?
 - Prompted by: a comparison with Astryx (`@astryxdesign/cli`), whose CLI serves component docs, imports, and a typed JSON API from one command.

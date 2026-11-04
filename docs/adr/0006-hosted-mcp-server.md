@@ -1,7 +1,7 @@
 # ADR 0006: Hosted MCP server
 
 **Status:** Accepted
-**Amends:** [ADR 0003](0003-knowledge-delivery.md), which put remote delivery out of scope and chose
+**Amends:** [ADR 0003](0003-spec-delivery.md), which put remote delivery out of scope and chose
 no compiled format.
 
 ## Context

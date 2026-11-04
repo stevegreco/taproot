@@ -239,7 +239,7 @@ rationale:
       state and focus never depend on the theme colors (visible-expanded-state).
   - decision: Accordion consumes semantic colors and typography, with spacing primitives.
     why: >-
-      ADR 0003. The trigger is a low-emphasis control, so hover borrows the tertiary action hover.
+      Tokens ADR 0003. The trigger is a low-emphasis control, so hover borrows the tertiary action hover.
       The trigger uses label typography rather than heading typography so it stays the same size
       at every heading level. No semantic spacing role exists, so spacing primitives set padding
       and gaps.

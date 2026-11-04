@@ -9,6 +9,19 @@ tests two claims:
 Component behavior belongs in the spec records. This document records what building from them
 showed.
 
+## Status
+
+This is a dated log, so the findings below stay as written. Open ones are filed as issues #271
+through #283. These are resolved:
+
+- Tabs and Select now declare their sections and choices as `items`.
+- `get`, `search`, and the agent guidance name every implementation equally instead of web first.
+- A configured implementation folder that does not exist reads as nothing implemented.
+- `format` serves the binding property names and the system-wide constants, including border and
+  focus-ring geometry, so agents can reach them without reading SPEC.md.
+- An event that reports a changed value carries the new value.
+- A prose `instead` renders as written, not mid-sentence in capitals.
+
 ## Method
 
 - **Spec-only implementers.** Each component is built by a fresh agent that may read only `ds-spec`

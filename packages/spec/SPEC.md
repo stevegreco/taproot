@@ -50,9 +50,8 @@ more than one dotted segment, such as `example.action-hierarchy.settings`.
 
 A component starts as a `draft`: a record with only the required fields (`id`, `type`, `title`,
 `summary`, `description`, `usage`, and `anatomy`) that says what the component is for, so it can be
-reviewed before anyone builds it. A draft has no implementation, and `get` says so. The docs tests
-fail if a draft has an implementation file, or if a component that is not a draft has none, so
-removing `status: draft` is part of the change that ships the first implementation.
+reviewed before anyone builds it. A draft has no implementation, and `get` says so. Removing
+`status: draft` is part of the change that ships the first implementation.
 
 ### Known issues
 
@@ -166,7 +165,7 @@ rationale:
 | `rules`         | no       | Requirements, each with a stable `id`, a `level`, and a `topic`.                        |
 | `accessibility` | no       | The role, where the accessible name comes from, and keyboard interaction.               |
 | `tokens`        | no       | Which design tokens paint each part. See [Tokens](#tokens).                             |
-| `rationale`     | no       | Decisions and why they were made. `covers` optionally names the checklist items a decision settles, such as `loading`. In this repository the checklist ids are `CHECKLIST` in [`scripts/component-status.mjs`](../../scripts/component-status.mjs). |
+| `rationale`     | no       | Decisions and why they were made. `covers` optionally names the checklist items a decision settles, such as `loading`. The adopter defines the checklist. |
 
 Anatomy roles are `interactive-surface`, `label`, `description`, `indicator`, and `container`.
 
@@ -402,10 +401,7 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Every `tokens` part is an anatomy part. Every condition names `base`, a declared state, an enum
   value or boolean (`true` or `false`) of a declared parameter, or a declared preference value.
 - Every token reference is one of the keywords `transparent`, `none`, `inherit`, or `linear`, or
-  names a token in every set that `spec.config.json` configures. No color, radius, or border
-  reference names a primitive (`primitives.color.*`, `primitives.radius.*`,
-  `primitives.border.*`); those come from the semantic tier, as `stylesheets.test.js` requires of
-  the CSS.
+  names a token in every set that `spec.config.json` configures.
 - An example's asset files exist.
 - No text value starts with `TODO`. Scaffolded drafts use `TODO:` for text the author has not
   written yet.

@@ -164,7 +164,7 @@ tokens:
 rationale:
   - decision: Text field consumes semantic tokens directly.
     why: >-
-      ADR 0003. Focus, invalid, disabled, surface, and text already have semantic roles. No
+      Tokens ADR 0003. Focus, invalid, disabled, surface, and text already have semantic roles. No
       component-token namespace.
   - decision: Invalid is a state driven by the error message.
     why: >-

@@ -119,10 +119,10 @@ tokens:
       border: semantic.color.border.status.info.default
 rationale:
   - decision: Badge consumes semantic tokens directly.
-    why: ADR 0003. No component-token namespace.
+    why: Tokens ADR 0003. No component-token namespace.
   - decision: The gap between a leading icon and the label uses a spacing primitive.
     why: >-
-      ADR 0003 allows a primitive when no semantic role exists, as for padding. Badge is denser than
+      Tokens ADR 0003 allows a primitive when no semantic role exists, as for padding. Badge is denser than
       Button, so it uses the smaller step.
   - decision: Badge is non-interactive and sets no live-region role.
     why: Status that must be announced belongs to the surrounding UI.

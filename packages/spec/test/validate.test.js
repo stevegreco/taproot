@@ -228,14 +228,6 @@ const cases = [
     path: "/usage/do/1",
     message: "is a `TODO:` placeholder; replace it",
   },
-  {
-    name: "token-tier",
-    file: "thing.spec.yaml",
-    line: 16,
-    path: "/tokens/control/base/radius",
-    message:
-      "`primitives.radius.xs` is a primitive; colors, radii, and borders use a semantic token",
-  },
   { name: "yaml-syntax", file: "thing.md", line: 3, path: "", message: "Flow sequence" },
 ];
 

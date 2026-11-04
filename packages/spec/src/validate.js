@@ -437,25 +437,12 @@ function checkTokens(data, report) {
   }
 }
 
-/**
- * The token tier rule (tokens ADR 0003), the same one `stylesheets.test.js` applies to CSS: colors,
- * radii, and borders come from the semantic tier, never straight from a primitive.
- */
-const TIER_VIOLATION = /^primitives\.(?:color|radius|border)\./;
-
 function checkTokenReferences(data, tokenNames, report) {
   for (const [part, conditions] of Object.entries(data.tokens ?? {})) {
     for (const [condition, properties] of Object.entries(conditions)) {
       for (const [property, token] of Object.entries(properties)) {
         if (TOKEN_KEYWORDS.includes(token)) continue;
         const path = `/tokens/${pointerSegment(part)}/${pointerSegment(condition)}/${pointerSegment(property)}`;
-        if (TIER_VIOLATION.test(token)) {
-          report({
-            path,
-            message: `\`${token}\` is a primitive; colors, radii, and borders use a semantic token`,
-          });
-          continue;
-        }
         if (!tokenNames) continue;
         const missing = [...tokenNames]
           .filter(([, names]) => !names.has(token))

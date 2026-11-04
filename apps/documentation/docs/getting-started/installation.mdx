@@ -41,9 +41,8 @@ or Bun.
 
   </Step>
   <Step title="Load the CSS tokens">
-    The CSS entry point includes primitive values, semantic aliases, and
-    published component aliases. Load it from your main stylesheet or
-    application entry point.
+    The CSS entry point includes primitive values and semantic tokens. Load it
+    from your main stylesheet or application entry point.
 
     <Tabs>
       <Tab title="CSS">
@@ -62,9 +61,9 @@ or Bun.
 
   </Step>
   <Step title="Choose a color theme">
-    Light values are applied to `:root` by default. Set
-    `data-theme="dark"` on the root element to use the dark semantic values.
-    Primitive tokens do not change between themes.
+    Semantic tokens follow the system color preference by default. Set
+    `data-theme="light"` or `data-theme="dark"` on the root element to override
+    it. Primitive tokens do not change between themes.
 
     <Tabs>
       <Tab title="HTML">

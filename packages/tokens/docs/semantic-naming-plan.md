@@ -1,6 +1,6 @@
 # Semantic naming plan
 
-**Status:** Working draft
+**Status:** Accepted
 
 ## Strategy
 
@@ -43,18 +43,18 @@ vocabulary only when its contract is deliberately accepted.
 
 ## Background
 
-Background tokens are used only for fills. The working vocabulary currently contains 20 roles.
+Background tokens are used only for fills.
 
 ### Foundation
 
-| Proposed token                       | Purpose                                          | Replaces                             |
-| ------------------------------------ | ------------------------------------------------ | ------------------------------------ |
-| `semantic.color.background.default`  | Page or application background                   | Unchanged                            |
-| `semantic.color.background.surface`  | Cards, panels, popovers, and containing surfaces | `semantic.color.background.raised`   |
-| `semantic.color.background.sunken`   | Wells, inset regions, and grouped control beds   | Unchanged                            |
-| `semantic.color.background.muted`    | Quiet supporting regions and low-emphasis fills  | Unchanged                            |
-| `semantic.color.background.disabled` | Unavailable control or action fill               | `semantic.color.disabled.background` |
-| `semantic.color.background.overlay`  | Scrim that dims the page behind modal content    | New role                             |
+| Token                       | Purpose                                          |
+| ------------------------------------ | ------------------------------------------------ |
+| `semantic.color.background.default`  | Page or application background                   |
+| `semantic.color.background.surface`  | Cards, panels, popovers, and containing surfaces |
+| `semantic.color.background.sunken`   | Wells, inset regions, and grouped control beds   |
+| `semantic.color.background.muted`    | Quiet supporting regions and low-emphasis fills  |
+| `semantic.color.background.disabled` | Unavailable control or action fill               |
+| `semantic.color.background.overlay`  | Scrim that dims the page behind modal content    |
 
 In the light theme, `background.surface` uses `gray.25` to provide a near-white neutral containing layer
 against the warm `background.default`. It does not imply elevation.
@@ -68,26 +68,26 @@ dark page is already close to `gray.950`, so the same opacity would dim it less.
 
 ### Brand
 
-| Proposed token                            | Purpose                                               | Replaces                     |
-| ----------------------------------------- | ----------------------------------------------------- | ---------------------------- |
-| `semantic.color.background.brand.default` | Solid non-interactive brand fill                      | New role                     |
-| `semantic.color.background.brand.muted`   | Tinted brand surface for highlighted cards and badges | `semantic.color.accent.soft` |
+| Token                            | Purpose                                               |
+| ----------------------------------------- | ----------------------------------------------------- |
+| `semantic.color.background.brand.default` | Solid non-interactive brand fill                      |
+| `semantic.color.background.brand.muted`   | Tinted brand surface for highlighted cards and badges |
 
 ### Actions
 
-| Proposed token                                     | Purpose                     | Replaces                                           |
-| -------------------------------------------------- | --------------------------- | -------------------------------------------------- |
-| `semantic.color.background.action.primary.default` | Resting primary-action fill | Background uses of `semantic.color.accent.default` |
-| `semantic.color.background.action.primary.hover`   | Hovered primary-action fill | `semantic.color.accent.hover`                      |
-| `semantic.color.background.action.primary.pressed` | Pressed primary-action fill | `semantic.color.accent.press`                      |
+| Token                                     | Purpose                     |
+| -------------------------------------------------- | --------------------------- |
+| `semantic.color.background.action.primary.default` | Resting primary-action fill |
+| `semantic.color.background.action.primary.hover`   | Hovered primary-action fill |
+| `semantic.color.background.action.primary.pressed` | Pressed primary-action fill |
 
 ### Destructive actions
 
-| Proposed token                                         | Purpose                         | Replaces                                                  |
-| ------------------------------------------------------ | ------------------------------- | --------------------------------------------------------- |
-| `semantic.color.background.action.destructive.default` | Resting destructive-action fill | Uses of `semantic.color.background.status.danger.default` |
-| `semantic.color.background.action.destructive.hover`   | Hovered destructive-action fill | Repeated danger-status fill in the Button component tier  |
-| `semantic.color.background.action.destructive.pressed` | Pressed destructive-action fill | Repeated danger-status fill in the Button component tier  |
+| Token                                         | Purpose                         |
+| ------------------------------------------------------ | ------------------------------- |
+| `semantic.color.background.action.destructive.default` | Resting destructive-action fill |
+| `semantic.color.background.action.destructive.hover`   | Hovered destructive-action fill |
+| `semantic.color.background.action.destructive.pressed` | Pressed destructive-action fill |
 
 Destructive action fills are interactive contracts, not status surfaces. The light theme maps
 default, hover, and pressed to `rust.700`, `rust.800`, and `rust.900`; the dark theme maps them to
@@ -96,11 +96,11 @@ default, hover, and pressed to `rust.700`, `rust.800`, and `rust.900`; the dark 
 
 ### Secondary actions
 
-| Proposed token                                       | Purpose                       | Replaces                         |
-| ---------------------------------------------------- | ----------------------------- | -------------------------------- |
-| `semantic.color.background.action.secondary.default` | Resting secondary-action fill | New role; previously transparent |
-| `semantic.color.background.action.secondary.hover`   | Hovered secondary-action fill | Shared state-layer composition   |
-| `semantic.color.background.action.secondary.pressed` | Pressed secondary-action fill | Shared state-layer composition   |
+| Token                                       | Purpose                       |
+| ---------------------------------------------------- | ----------------------------- |
+| `semantic.color.background.action.secondary.default` | Resting secondary-action fill |
+| `semantic.color.background.action.secondary.hover`   | Hovered secondary-action fill |
+| `semantic.color.background.action.secondary.pressed` | Pressed secondary-action fill |
 
 Secondary actions use an opaque achromatic ramp so the control remains visually stable across
 foundation, brand, and quiet status backgrounds. The light theme maps default, hover, and pressed
@@ -109,10 +109,10 @@ to `gray.25`, `gray.50`, and `gray.100`; the dark theme maps them to `gray.900`,
 
 ### Tertiary actions
 
-| Proposed token                                      | Purpose                          | Replaces                           |
-| --------------------------------------------------- | -------------------------------- | ---------------------------------- |
-| `semantic.color.background.action.tertiary.hover`   | Hovered low-emphasis action fill | `semantic.color.background.muted`  |
-| `semantic.color.background.action.tertiary.pressed` | Pressed low-emphasis action fill | `semantic.color.background.sunken` |
+| Token                                      | Purpose                          |
+| --------------------------------------------------- | -------------------------------- |
+| `semantic.color.background.action.tertiary.hover`   | Hovered low-emphasis action fill |
+| `semantic.color.background.action.tertiary.pressed` | Pressed low-emphasis action fill |
 
 Tertiary actions remain transparent at rest and publish one semantic token for each interactive
 state. The light theme uses `gray.950` at 5% and 9% opacity; the dark theme uses `gray.25` at 6% and
@@ -122,12 +122,12 @@ background is literally transparent.
 
 ### Status
 
-| Proposed token                                     | Purpose                                  | Replaces                                   |
-| -------------------------------------------------- | ---------------------------------------- | ------------------------------------------ |
-| `semantic.color.background.status.success.default` | Positive outcome or confirmation fill    | `semantic.color.status.success.background` |
-| `semantic.color.background.status.warning.default` | Caution or attention-required fill       | `semantic.color.status.warning.background` |
-| `semantic.color.background.status.info.default`    | Informational or guidance fill           | `semantic.color.status.info.background`    |
-| `semantic.color.background.status.danger.default`  | Negative condition or error-outcome fill | `semantic.color.status.danger.background`  |
+| Token                                     | Purpose                                  |
+| -------------------------------------------------- | ---------------------------------------- |
+| `semantic.color.background.status.success.default` | Positive outcome or confirmation fill    |
+| `semantic.color.background.status.warning.default` | Caution or attention-required fill       |
+| `semantic.color.background.status.info.default`    | Informational or guidance fill           |
+| `semantic.color.background.status.danger.default`  | Negative condition or error-outcome fill |
 
 Only the default quiet fill is accepted. Lighter and stronger status-background variants remain
 deferred until a shipped consumer needs them. The light theme uses each hue's `100` stop, except
@@ -144,7 +144,7 @@ adds brand content and only the explicit background pairings currently under dis
 
 ### Foundation
 
-| Proposed token                       | Purpose                                                                     |
+| Token                       | Purpose                                                                     |
 | ------------------------------------ | --------------------------------------------------------------------------- |
 | `semantic.color.foreground.default`  | Primary text and icons on supported foundation and quiet status backgrounds |
 | `semantic.color.foreground.muted`    | Secondary or supporting text and icons                                      |
@@ -167,7 +167,7 @@ The achromatic foundation roles resolve through the neutral `gray` scale. The li
 
 ### Brand
 
-| Proposed token                            | Purpose                                                                          |
+| Token                            | Purpose                                                                          |
 | ----------------------------------------- | -------------------------------------------------------------------------------- |
 | `semantic.color.foreground.brand.default` | Non-interactive brand-colored text and icons on supported foundation backgrounds |
 
@@ -182,7 +182,7 @@ Foregrounds intended for a specific background contract use an explicit `on` seg
 semantic.color.foreground.on.<background-intent>[.<variant>][.<state>]
 ```
 
-| Proposed token                                    | Purpose                                           | Supported background pair                                         |
+| Token                                    | Purpose                                           | Supported background pair                                         |
 | ------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------- |
 | `semantic.color.foreground.on.brand`      | Text and icons placed on the solid brand fill     | `background.brand.default`                                        |
 | `semantic.color.foreground.on.action.primary`     | Text and icons placed on primary-action fills     | `background.action.primary.default`, `.hover`, and `.pressed`     |
@@ -199,7 +199,7 @@ Status foregrounds communicate status through the content color on supported fou
 backgrounds. Quiet status fills already support `foreground.default`, so they do not introduce a
 second set of `on.status.*` roles.
 
-| Proposed token                                     | Purpose                                                            |
+| Token                                     | Purpose                                                            |
 | -------------------------------------------------- | ------------------------------------------------------------------ |
 | `semantic.color.foreground.status.success.default` | Success-colored text and icons on supported foundation backgrounds |
 | `semantic.color.foreground.status.warning.default` | Warning-colored text and icons on supported foundation backgrounds |
@@ -228,7 +228,7 @@ perceivable, from decorative boundaries, which may be quieter but cannot be the 
 
 ### Foundation
 
-| Proposed token                   | Purpose                                                                 |
+| Token                   | Purpose                                                                 |
 | -------------------------------- | ----------------------------------------------------------------------- |
 | `semantic.color.border.default`  | Standard functional boundary for controls and other perceivable regions |
 | `semantic.color.border.strong`   | Emphasized functional boundary                                          |
@@ -251,7 +251,7 @@ strong, subtle, and disabled in the light theme; the dark theme uses `gray.400`,
 
 ### Brand
 
-| Proposed token                      | Purpose                                                   |
+| Token                      | Purpose                                                   |
 | ----------------------------------- | --------------------------------------------------------- |
 | `semantic.color.border.brand.muted` | Quiet brand-colored boundary for non-interactive emphasis |
 
@@ -261,7 +261,7 @@ theme maps it to `robRoy.200`; the dark theme maps it to `robRoy.800`.
 
 ### Actions
 
-| Proposed token                                     | Purpose                                  |
+| Token                                     | Purpose                                  |
 | -------------------------------------------------- | ---------------------------------------- |
 | `semantic.color.border.action.primary.default`     | Primary action boundary at rest          |
 | `semantic.color.border.action.primary.hover`       | Primary action boundary on hover         |
@@ -289,7 +289,7 @@ Status borders communicate an outcome or condition through the boundary itself. 
 must meet 3:1 against their paired quiet status background and against supported foundation
 backgrounds.
 
-| Proposed token                                 | Purpose                                   |
+| Token                                 | Purpose                                   |
 | ---------------------------------------------- | ----------------------------------------- |
 | `semantic.color.border.status.success.default` | Positive or confirmed boundary            |
 | `semantic.color.border.status.warning.default` | Caution or attention-required boundary    |
