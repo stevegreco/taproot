@@ -1,4 +1,4 @@
-# Ember & Sage design system
+# Taproot design system
 
 An agent-first design system. The spec says what each component is and how to use it, and agents
 read it through a CLI or an MCP server.

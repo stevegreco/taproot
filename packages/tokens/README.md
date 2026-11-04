@@ -1,6 +1,6 @@
 # @taproot-ds/tokens
 
-Design tokens for the Ember & Sage design system — distributed as CSS custom properties and JSON. Built with [Style Dictionary](https://styledictionary.com).
+Design tokens for the Taproot design system — distributed as CSS custom properties and JSON. Built with [Style Dictionary](https://styledictionary.com).
 
 ## Install
 

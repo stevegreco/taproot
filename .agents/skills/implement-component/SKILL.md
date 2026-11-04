@@ -1,6 +1,6 @@
 ---
 name: implement-component
-description: Build a component of the Ember & Sage design system from its draft spec. Completes the spec contract (parameters, rules, tokens, rationale), writes the failing tests, the hand-written web component in packages/components, the web API file in packages/components/implementation, and the Storybook stories. Use when asked to implement or build a component that has a draft spec, when finishing a partly built component, or when reviewing an implementation PR. The second of two phases, after spec-component.
+description: Build a component of the Taproot design system from its draft spec. Completes the spec contract (parameters, rules, tokens, rationale), writes the failing tests, the hand-written web component in packages/components, the web API file in packages/components/implementation, and the Storybook stories. Use when asked to implement or build a component that has a draft spec, when finishing a partly built component, or when reviewing an implementation PR. The second of two phases, after spec-component.
 ---
 
 # Implement a component

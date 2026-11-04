@@ -1,6 +1,6 @@
 ---
 name: spec-component
-description: Propose a new component for the Ember & Sage design system as a minimal draft spec in packages/spec, before anyone implements it. Use when asked to propose, spec, or start a new component such as Alert, Tabs, or Tooltip, or when reviewing a draft component spec. This is the first of two phases; implement-component follows.
+description: Propose a new component for the Taproot design system as a minimal draft spec in packages/spec, before anyone implements it. Use when asked to propose, spec, or start a new component such as Alert, Tabs, or Tooltip, or when reviewing a draft component spec. This is the first of two phases; implement-component follows.
 ---
 
 # Spec a component

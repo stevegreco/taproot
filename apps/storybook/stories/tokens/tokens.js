@@ -66,7 +66,7 @@ function kind(path) {
   return "none";
 }
 
-const SAMPLE = "Ember & Sage";
+const SAMPLE = "Taproot";
 
 function preview(token) {
   const value = paint(token);
