@@ -7,6 +7,7 @@ assertWorkspaceBuilds();
 
 const { palettes } = await import("./lib/color-palettes");
 const { componentSpecMarkdown } = await import("./lib/component-spec");
+const { componentCatalogSource } = await import("./lib/component-catalog");
 const { componentPagesSource, PROSE_FOLDER } = await import("./lib/component-pages");
 const { semanticReferenceMarkdown } = await import("./lib/semantic-reference");
 
@@ -62,6 +63,7 @@ export default defineConfig({
       // live in docs/components/ but render only through that source.
       { type: "filesystem", root: "docs", exclude: ["**/_*", "**/.*", `${PROSE_FOLDER}/*.mdx`] },
       { type: "custom", source: componentPagesSource() },
+      { type: "custom", source: componentCatalogSource() },
     ],
   },
   examples: {
