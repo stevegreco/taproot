@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- 319b0cf: First release through Changesets. Tokens ship their DTCG source files and web components ship their
+  implementation mappings, so an installed `ds-spec` can answer `tokens --resolve` and `get --impl web`.
+
 ## 0.1.0
 
 Breaking. The CSS prefix, color primitives, the component tier, and several token names change in
