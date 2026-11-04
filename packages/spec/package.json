@@ -1,6 +1,6 @@
 {
   "name": "@taproot-ds/spec",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Technology-neutral, validated specs for the Taproot design system.",
   "license": "ISC",
   "author": "Steve Greco",
