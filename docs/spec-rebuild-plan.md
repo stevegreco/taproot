@@ -25,10 +25,15 @@ commit on one branch, reviewed before the next starts. Items are in dependency o
 
 - Write `SPEC.md`: four record types (`component` as YAML, `pattern`, `guideline`, `example` as
   Markdown with front matter), common fields, component fields (usage, anatomy, parameters, events,
-  items, states, preferences, rules, accessibility, tokens, rationale), `status`, `known-issues`,
-  links, sections, cross-record checks, versioning. `items` holds the parameters and events of a
-  part the author repeats, such as each section of an accordion, keyed by that anatomy part
-  (ADR 0004).
+  parts, items, states, preferences, rules, accessibility, tokens, rationale), `status`,
+  `known-issues`, links, sections, cross-record checks, versioning. `items` holds the parameters
+  and events of a part the author repeats, such as each section of an accordion, keyed by that
+  anatomy part (ADR 0004). `parts` has the same shape, for a part that appears at most once, such
+  as a card's title (ADR 0005). A part is in one or the other, never both. An option that shapes the
+  whole component, or more than one part, stays in `parameters`. A token condition names a
+  component parameter or state, not a part or item parameter.
+- An event that reports a changed value carries the new value, so whoever owns the value can update
+  it without reading it back from the component.
 - Include a Conventions section: plain rule ids with shared ones (`visible-focus`,
   `forced-colors`, `not-a-control`, `not-color-alone`); `label` vs `accessibleName`; decorative
   graphics; sizes `small`/`medium`/`large`/`inherit`; camelCase parameter names; `checked` vs
@@ -52,13 +57,13 @@ rule breaks a check instead of silently dropping guidance.
 - Parse YAML keeping line numbers. YAML syntax errors and duplicate keys are issues. Validate each
   record against the schema.
 - Sections: Markdown heading slugs with deduplication (`foo`, `foo-1`, `foo-1-1`); in components,
-  rule ids, top-level fields, and dotted paths into anatomy, parameters, events, items, and enum
-  values, such as `items.section.parameters.label`;
+  rule ids, top-level fields, and dotted paths into anatomy, parameters, events, parts, items, and
+  enum values, such as `parts.title.parameters.label` or `items.section.parameters.label`;
   annotation ids in examples.
 - Cross-record checks from `SPEC.md`: unique ids; resolvable link targets, `instead` ids,
   references, and sections; rule ids unique and not equal to a top-level field name; enum
-  `default`/`examples`/`guidance` keys within `values`, for item parameters too; item keys are
-  anatomy parts; token parts and conditions declared;
+  `default`/`examples`/`guidance` keys within `values`, for part and item parameters too; part and
+  item keys are anatomy parts, and no part is in both; token parts and conditions declared;
   annotation ids unique and not equal to a heading slug; asset files exist and stay inside the
   record's folder; `known-issues` URLs are valid; no text starting with `TODO`.
 - `validateSpec()` returns `{ issues, recordCount }`. `loadSpec()` throws a `SpecError` with
@@ -77,9 +82,9 @@ message, and `skipInvalid` still serves the valid records.
 
 - Button with every field; minimal drafts of Link, Badge, and Icon, so Button's `instead` and
   `composes` targets exist; Text field, which follows `pattern.form-field`; Accordion, whose
-  sections carry their own label and expanded state as `items`;
-  `pattern.action-hierarchy`, `pattern.form-field`, `guideline.compose-or-propose`; and one example
-  with an image asset and annotations.
+  sections carry their own label and expanded state as `items`; Card, whose title carries its own
+  label and heading level as `parts`; `pattern.action-hierarchy`, `pattern.form-field`,
+  `guideline.compose-or-propose`; and one example with an image asset and annotations.
 - Give records `tags` with the words people search by when those differ from the title, such as
   `dropdown` or `destructive`. No new field: search already weights tags.
 - Fix the format or the checks in this commit wherever real content shows a gap.
@@ -95,8 +100,8 @@ every section kind.
 
 - Explicit `links` (`composes`, `follows`, `example-of`, `related`) plus derived links:
   `usage.avoid[].instead` → `alternative` (carrying `situation` and `why`); rule `references` →
-  `follows` or `related`; enum `guidance` → `follows` from the value's section, for a component
-  or item parameter.
+  `follows` or `related`; enum `guidance` → `follows` from the value's section, for a component,
+  part, or item parameter.
 - Add inverses automatically (`alternative-to`, `used-in`, `followed-by`, `examples`, `related`).
 - Enforce which record types each kind may go from and to.
 
@@ -138,18 +143,19 @@ records are frozen.
 - `spec.config.json`, found by walking up from the working directory: `content`, `implementations`
   (a name → `{ folder, technology }`, such as `web` → `{ folder: "packages/components/implementation",
   technology: "web-component" }`), and `tokens`
-  (`format: dtcg`, named sets such as `light` and `dark`, later files win). Paths are relative to
-  the config file.
+  (`format: dtcg`, named sets such as `light` and `dark`, later files win), and `constants` (the
+  token that holds each system-wide constant, such as `border-width` or `focus-ring-width`). Paths
+  are relative to the config file.
 - The content folder comes from `--content`, then the config. With neither, fail with a message
   that says how to set one.
 - A DTCG resolver that follows `{alias}` references, detects alias cycles, stringifies values
   (`{ value: 16, unit: "px" }` becomes `16px`), and returns a value per set. Token files are read
   only when values are requested, or by `validate`.
 - `validate` checks every token reference: a keyword (`transparent`, `none`, `inherit`, `linear`)
-  or a token present in every configured set.
+  or a token present in every configured set. Each constant's token must be in every set too.
 
-**Done when** a fixture resolves a reference to light and dark values, an unknown reference fails
-`validate`, and an alias cycle reports an issue instead of hanging.
+**Done when** a fixture resolves a reference to light and dark values, an unknown reference or
+constant fails `validate`, and an alias cycle reports an issue instead of hanging.
 
 ### 7. Implementation files
 
@@ -163,28 +169,36 @@ parameter names.
   own tests.
 - Format: Markdown with front matter: `component` (record id), `package`, `usage`, and `api` rows
   (`name`, `kind`, the `parameter` or `event` it implements, and `values` when value names
-  differ), `items` (for each record item, its own name field and `api` rows), plus a body of
-  technology-only guidance.
+  differ), `parts` and `items` (below), plus a body of technology-only guidance.
+- `parts` lists each record part with its `api` rows. A part with no name field is set on the
+  component itself, as a web Card sets `label` on its own element. A part with one is its own
+  element or component, as a compound React API would give `CardTitle`. The spec never says which.
+- `items` lists each record item with what realizes it and its `api` rows: an element for a web
+  component, which may be a native one such as `option`; for React, an exported component, or an
+  entry of an array prop (`prop: options`), whose rows are that entry's fields.
 - The `technology` in the config decides the fields that name the component and the allowed row
   kinds. One table in the library defines each technology, so adding one is a table entry:
   - `web-component`: `tagName` and `defineExport`; rows are `attribute`, `property`, or `event`.
-  - `react`: `export`; rows are `prop` or `callback`.
+  - `react`: `export`; rows are `prop` or `callback`, or `field` for an entry of an array prop.
   A file is checked against its folder's technology, and an unknown technology fails config
   validation.
 - Check each file that exists against its record: the component exists; every mapped parameter,
   value, and event exists; and every parameter and event of the record has a row. The same holds
-  for each item, and every record item has an entry in `items`. `validate` runs
-  these checks for each configured folder, and `get` with that implementation fails with the same
-  issues.
+  for each part and item, and every record part and item has an entry. `validate`
+  runs these checks for each configured folder, and `get` with that implementation fails with the
+  same issues.
 - `get` with an implementation appends the rendered file: package, usage, and an API table whose
-  descriptions come from the record, followed by one table per item element.
+  descriptions come from the record, followed by one table per part and item. Implements cells name
+  the owner, such as "section parameter `value`". Under a table with an empty Implements cell, a
+  line says the row is specific to the implementation.
 
 - A configured folder that does not exist means nothing is implemented in it, not an error.
 
-**Done when** a mapping to a missing parameter, or a record or item parameter with no row, fails
-`validate`, a component with no file passes, a missing folder passes, a field or row kind from the
-wrong technology fails, and `get` renders the API tables for a fixture folder of each technology
-outside the spec content.
+**Done when** a mapping to a missing parameter, or a record, part, or item parameter with no row,
+fails `validate`, a component with no file passes, a missing folder passes, a field or row kind from
+the wrong technology fails, a part maps both with and without its own element, an item maps to a
+native element and to an array prop, and `get` renders the API tables for a fixture folder of each
+technology outside the spec content.
 
 ### 8. CLI
 
@@ -192,19 +206,22 @@ outside the spec content.
 **so that** I can read and check it without writing code.
 
 - One operations layer, shared with the MCP server: id resolution (plain names, `#section`, unique
-  prefix, single-word typos), filter values checked against the valid ones, issue formatting, and
+  prefix, single-word typos, short paths such as `items.section.value` when only one parameter or
+  event matches), filter values checked against the valid ones, issue formatting, and
   results as `{ text, data, ok, error? }`.
 - Errors carry a code and suggestions, `{ code, suggestions }`: `ERR_UNKNOWN_RECORD`,
   `ERR_UNKNOWN_SECTION`, `ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, and
-  `ERR_INVALID_IMPLEMENTATION`.
-- `ds-spec`: `list`, `search`, `get [--impl <name>]`, `links`, `rules`,
-  `tokens [--part] [--condition] [--property] [--resolve]`, `batch`, `validate`,
-  `help [command]`, and `help format`.
-- `help format` prints what an implementer needs from `SPEC.md` and cannot get from a record: the
-  binding property names and the rule that border width and focus-ring width and offset are
-  system-wide constants a record does not list. Agents read the spec only through the tools, so
-  format decisions they cannot reach get guessed.
-  Global flags `--content`, `--config`, and `--json`.
+  `ERR_INVALID_IMPLEMENTATION`. An unknown section suggests the sections whose path ends in the
+  name asked for, so `#title` suggests `#anatomy.title` and `#parts.title`.
+- `ds-spec`: `list [--impl <name>]`, `search`, `get [--impl <name>]`, `links`, `rules`,
+  `tokens [--part] [--condition] [--property] [--resolve]`, `format [--resolve]`, `batch`,
+  `validate`, `help [command]`, and `help agents`. Global flags `--content`, `--config`, and
+  `--json`. `list --impl` lists the components that implementation has.
+- `format` prints what an implementer needs from `SPEC.md` and cannot get from a record: the binding
+  property names, token keywords, condition syntax, anatomy roles, and the system-wide constants
+  with their tokens. `--resolve` adds each constant's value per set. Agents read the spec only
+  through the tools, so format decisions they cannot reach get guessed. A test keeps `SPEC.md`'s
+  property list equal to the one `format` prints.
 - `batch` runs several commands in one call and loads the corpus once, such as
   `ds-spec batch --command "get button --impl web" --command "tokens button --resolve"`. Each
   `--command` string is split into arguments the way a shell would (quotes group words; no
@@ -215,7 +232,11 @@ outside the spec content.
 - Output details: each search result names the command that reads it; a weak search starts with
   "No strong match" and marks weak hits; `get` on a component ends with lines naming its
   implementations and its token count instead of printing the token table; `rules` prints each
-  rule's applicability. Hints name every configured implementation equally, never one first.
+  rule's applicability; a section read starts with its path, such as `parameters.headingLevel`;
+  parts and items lead with "Options of the `title` part." and "Options of each `section`.";
+  `tokens` notes under a non-base condition that the base bindings still apply; stray positional
+  words get a hint to quote a value of several words. Hints name every configured implementation
+  equally, never one first.
 - Exit codes: 0 ok, 1 issues, empty result, or unknown id or section, 2 usage error. Commands other
   than `validate` skip broken records and say so on stderr.
 
@@ -233,13 +254,13 @@ a test, and `ds-spec validate` passes on the seed.
 **As** an agent, **I want** the same queries as MCP tools and resources,
 **so that** I read the spec the same way a person does.
 
-- `ds-spec-mcp` (stdio): one tool per CLI command except `batch` (MCP clients already call
-  several tools in one turn), each calling the shared operations layer. A tool's `structuredContent` is the CLI's `--json` output, and a failure puts
+- `ds-spec-mcp` (stdio): one tool per CLI command except `help` and `batch` (MCP clients already
+  call several tools in one turn), each calling the shared operations layer. A tool's `structuredContent` is the CLI's `--json` output, and a failure puts
   `{ code, suggestions }` in `structuredContent.error`.
-- Each record as a `spec://<id>` resource, and the `help format` text as `spec://format`.
+- Each record as a `spec://<id>` resource.
 - Agent instructions live once in the library: search, get, follow links, cite rules by address,
-  read the implementation before writing code, and use `batch` (CLI) or parallel tool calls (MCP)
-  for several lookups. They tell agents to use the CLI when they have a terminal and the MCP server
+  use `format` for what records do not repeat, read the implementation before writing code, and use
+  `batch` (CLI) or parallel tool calls (MCP) for several lookups. They tell agents to use the CLI when they have a terminal and the MCP server
   when they don't, and to run the CLI from an installed copy (a workspace or project dependency),
   never an `npx` download per call. The server sends them as its instructions, and
   `ds-spec help agents` prints them for an `AGENTS.md` or skill file.
