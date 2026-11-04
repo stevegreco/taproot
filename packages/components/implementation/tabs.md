@@ -43,3 +43,14 @@ when the attribute matches no section, it returns the first section's value.
 Only the selected section is assigned to the panel, so the others are not rendered and are not in
 the accessibility tree. Content in hidden sections stays in the document, so form fields inside them
 keep their values and still submit with their form.
+
+## Styles
+
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.

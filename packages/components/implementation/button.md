@@ -52,10 +52,19 @@ Button defaults to `type="button"`. Set the type when it participates in a form:
 Use `type="reset"` only when restoring every form control to its initial value is the intended
 behavior.
 
-## Styling
+## Styles
 
-Load the published token stylesheet once at the application root. Button reads semantic tokens
-directly, so it follows the active theme. The tokens it reads are not a customization API.
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.
+
+Button reads semantic tokens directly, so it follows the active theme. The tokens it reads are not
+a customization API.
 
 Do not recreate Button states with product CSS. Use the published variants and sizes first. Treat
 `::part(button)` as an escape hatch that requires a specific product need and design review.

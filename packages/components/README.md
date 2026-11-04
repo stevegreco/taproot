@@ -49,12 +49,10 @@ root for the barrel.
 ## Components
 
 Each component implements the technology-neutral contract in
-`packages/spec/content/components/<name>/<name>.spec.yaml`. The docs site
-renders it at `/components/<name>`, with the live example from
-`apps/documentation/examples/<name>.tsx`. `implementation/<name>.md` maps each
-web attribute, property, and event to the spec's parameters and events, and
-holds web-specific guidance. Change it in the same commit as the component's
-API. The docs site and `pnpm spec get <name> --impl web` read it.
+`packages/spec/content/components/<name>/<name>.spec.yaml`.
+`implementation/<name>.md` maps each web attribute, property, and event to the
+spec's parameters and events, and holds web-specific guidance. Change it in the
+same commit as the component's API. `pnpm spec get <name> --impl web` reads it.
 
 Every attribute has a matching property (`el.variant`,
 `el.disabled`, …). Programmatic `focus()` and `blur()` forward to the inner
@@ -134,13 +132,12 @@ component also has its own `test/<name>.test.js` for behavior.
 ```bash
 pnpm exec turbo run build --filter=@stevegreco/web-components
 pnpm exec turbo run test --filter=@stevegreco/web-components
-pnpm exec turbo run dev --filter=documentation --filter=@stevegreco/web-components
+pnpm exec turbo run dev --filter=storybook --filter=@stevegreco/web-components
 ```
 
 Turbo builds the token package before the component styles. `pnpm --filter`
 runs this package's script only and will fail on a clean tree when `dist/` is missing.
 
-This package has no standalone demo. Each component's demo is its docs example,
-`apps/documentation/examples/<name>.tsx`, shown at `/components/<name>`. The
-`dev` task above runs the docs site and rebuilds `dist/*.styles.js` whenever a
-`src/*.css` file changes.
+This package has no standalone demo. Each component's stories are in
+`apps/storybook/stories/<name>.stories.js`. The `dev` task above runs Storybook
+and rebuilds `dist/*.styles.js` whenever a `src/*.css` file changes.

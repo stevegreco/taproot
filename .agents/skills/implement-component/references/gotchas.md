@@ -1,7 +1,6 @@
 # Gotchas
 
-Grouped by the file you are in. The docs example and Verify steps have their own skill,
-document-component.
+Grouped by the file you are in.
 
 ## Contents
 
@@ -84,7 +83,7 @@ document-component.
 
 ## Implementation file
 
-- `packages/components/implementation/<name>.md` is required for the component page. Its `api`
+- `packages/components/implementation/<name>.md` is required for every web component. Its `api`
   rows map each web attribute, property, and event to a spec parameter or event by name.
 - Keep the body to web-specific guidance. Rules, anatomy, and tokens come from the spec.
 - Copy the shape of `implementation/alert.md`.

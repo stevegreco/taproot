@@ -29,6 +29,8 @@ associated with the control, so assistive technology reads it as the description
 Write the error as what to fix: "Enter an email address with an @ sign", not "Invalid".
 
 - A non-empty error marks the control invalid, and clearing the error removes that state.
+- Clear the error when the person edits the value. A form reset restores the value but leaves the
+  error, so clear it on reset too.
 - While a non-empty error is set, the control blocks its form from submitting.
 - The error is associated with the control, so assistive technology reads it as the description.
 - The invalid state always includes the text message. Meaning never depends on color alone.

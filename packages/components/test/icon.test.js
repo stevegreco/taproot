@@ -1,15 +1,22 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { userEvent } from "vitest/browser";
 
+import { defineButton } from "../src/button.js";
 import { defineIcon } from "../src/icon.js";
+import { defineLink } from "../src/link.js";
 import { exposedNodes } from "./helpers/accessibility.js";
 import { expectRendered } from "./helpers/rendered.js";
 import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-icon";
+const buttonTag = "test-ds-icon-button";
+const linkTag = "test-ds-icon-link";
 const svg = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 22 22H2z"/></svg>`;
 
 beforeAll(() => {
   defineIcon(tagName);
+  defineButton(buttonTag);
+  defineLink(linkTag);
 });
 
 afterEach(() => {
@@ -100,5 +107,37 @@ describe("DsIcon", () => {
     const path = document.querySelector(`${tagName} path`);
 
     expect(getComputedStyle(path).fill).toBe("rgb(200, 0, 0)");
+  });
+
+  test("[decorative-by-default] adds nothing to a button's accessible name", async () => {
+    render(`<${buttonTag}><${tagName}>${svg}</${tagName}>Delete project</${buttonTag}>`);
+
+    const nodes = await exposedNodes();
+
+    expect(nodes).toContainEqual({ role: "button", name: "Delete project" });
+  });
+
+  test("[follows-text-color] takes the disabled text color in a disabled button", () => {
+    const button = render(
+      `<${buttonTag} disabled><${tagName}>${svg}</${tagName}>Save</${buttonTag}>`,
+    );
+    const color = getComputedStyle(button.querySelector(tagName)).color;
+
+    expect(color).toBe(getComputedStyle(button.shadowRoot.querySelector("button")).color);
+    expect(color).toBe(resolvedValue("color", "var(--ds-semantic-color-foreground-disabled)"));
+  });
+
+  test("[follows-text-color] follows a link's color on hover", async () => {
+    const link = render(
+      `<${linkTag} href="#usage" variant="standalone">Usage <${tagName}>${svg}</${tagName}></${linkTag}>`,
+    );
+    const anchor = link.shadowRoot.querySelector("a");
+    const iconColor = () => getComputedStyle(link.querySelector(tagName)).color;
+    const rest = iconColor();
+
+    await userEvent.hover(anchor);
+    await expect.poll(iconColor).not.toBe(rest);
+    expect(iconColor()).toBe(getComputedStyle(anchor).color);
+    await userEvent.unhover(anchor);
   });
 });

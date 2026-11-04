@@ -1,19 +1,18 @@
 ---
 name: spec-component
-description: Propose a new component for the Ember & Sage design system as a minimal draft spec in packages/spec, before anyone implements it. Use when asked to propose, spec, or start a new component such as Alert, Tabs, or Tooltip, or when reviewing a draft component spec. This is the first of three phases; implement-component and document-component follow.
+description: Propose a new component for the Ember & Sage design system as a minimal draft spec in packages/spec, before anyone implements it. Use when asked to propose, spec, or start a new component such as Alert, Tabs, or Tooltip, or when reviewing a draft component spec. This is the first of two phases; implement-component follows.
 ---
 
 # Spec a component
 
-The first of three phases, one commit each in a single pull request:
+The first of two phases, one commit each in a single pull request:
 
 1. **spec-component** (this skill): a draft spec that says what the component is for.
 2. **implement-component**: completes the spec contract and builds the web component.
-3. **document-component**: the docs example and its Verify steps.
 
-All three phases are commits on one branch off `main`, in one pull request. Review pauses
-after each commit, and the next phase starts only once that commit is reviewed. The pull request
-merges after the docs commit, so a draft or an undocumented component never reaches `main`.
+Both phases are commits on one branch off `main`, in one pull request. Review pauses after each
+commit, and the next phase starts only once that commit is reviewed. The pull request merges after
+the implementation commit, so a draft never reaches `main`.
 
 A draft is small on purpose. It is the proposal people review before anything is built, so it
 holds only what the schema requires. Parameters, rules, tokens, and rationale come in the
@@ -65,7 +64,7 @@ anatomy:
 The scaffold names one part, `container`. Rename it and add a part for each named piece, in
 reading order.
 
-- `status: draft` is required. The docs tests fail when a spec that is not a draft has no
+- `status: draft` is required. The spec tests fail when a spec that is not a draft has no
   implementation file.
 - Technology-neutral. No element, attribute, slot, framework, or CSS names, and no code. If you want
   to write one, it belongs in the implementation phase.

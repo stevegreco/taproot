@@ -76,3 +76,14 @@ Unconsumed Escape is handled in the bubble phase for the active dialog, includin
 fallen back to the document body. A child control must call `preventDefault()` to consume Escape
 without dismissing the dialog; `stopPropagation()` alone does not prevent a native close request.
 Composing key events do not request dismissal through the component keyboard handler.
+
+## Styles
+
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.

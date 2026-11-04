@@ -30,6 +30,21 @@ api:
 
 Set `name` to include the current value in form submission. The `value` attribute supplies the
 initial value; the `value` property changes the current value without changing the reset value.
-A non-empty `error` blocks submission. Clear it after the user corrects the value.
+A non-empty `error` blocks submission.
+
+To validate in your own code, set `novalidate` on the form so the submit reaches your listener.
+Read the values there, and set `error` on each field that needs a correction. Clear `error` on the
+field's `input` event and when the form resets, because a reset leaves it set.
 
 `rows` accepts positive whole numbers and defaults to four. `readonly` preserves focus and submission while preventing edits. Users can resize the control vertically.
+
+## Styles
+
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.

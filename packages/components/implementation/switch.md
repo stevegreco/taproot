@@ -24,3 +24,14 @@ api:
 Listen for `change` and apply the setting immediately. Read the live `checked` property.
 If saving fails, restore the previous `checked` value and set `error` to explain the failure.
 The `checked` attribute is the initial state; form reset restores it.
+
+## Styles
+
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.

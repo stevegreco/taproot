@@ -21,6 +21,13 @@ export default defineConfig({
           },
         },
       },
+      {
+        test: {
+          name: "types",
+          include: ["test/**/*.test.ts"],
+          environment: "node",
+        },
+      },
     ],
   },
 });

@@ -57,8 +57,8 @@ reviewed before anyone builds it. A draft has no implementation, and `get` says 
 
 `rationale` is permanent: it says why a decision was made. A problem waiting on a fix is not a
 decision, so it goes in `known-issues` instead, as a short `statement`. Add the URL of the `issue`
-that tracks the fix when there is one. `get` and the docs page show each entry under the summary,
-so readers meet it before building on the record.
+that tracks the fix when there is one. `get` shows each entry under the summary, so readers meet it
+before building on the record.
 
 ```yaml
 known-issues:

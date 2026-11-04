@@ -45,7 +45,11 @@ items:
 
 Set `name` to include the current value in form submission. The `value` attribute supplies the
 initial value; the `value` property changes the current value without changing the reset value.
-A non-empty `error` blocks submission. Clear it after the user corrects the value.
+A non-empty `error` blocks submission.
+
+To validate in your own code, set `novalidate` on the form so the submit reaches your listener.
+Read the values there, and set `error` on each field that needs a correction. Clear `error` on the
+field's `input` event and when the form resets, because a reset leaves it set.
 
 Provide native `<option>` children, optionally grouped by `<optgroup label="…">`.
 The component copies this content into its shadow `<select>` and observes changes to choice text,
@@ -56,3 +60,14 @@ An initial `value` attribute takes precedence over an option's `selected` attrib
 `value`, native option defaults determine the reset value. A first empty-valued option provides a
 prompt and makes a required Select invalid until a non-empty value is chosen. The menu appearance
 and opening keys follow the browser and operating system.
+
+## Styles
+
+Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+the application root. Without it, the component has no colors, spacing, or type.
+
+```js
+import "@stevegreco/design-system/css";
+```
+
+Without a bundler, link the package's `dist/css/tokens.css` instead.

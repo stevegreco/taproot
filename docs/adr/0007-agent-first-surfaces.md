@@ -1,6 +1,8 @@
 # ADR 0007: Agent-first surfaces
 
-**Status:** Accepted. The docs site cuts below are not built yet.
+**Status:** Accepted
+**Amends:** [ADR 0001](0001-spec-scope.md) and [ADR 0003](0003-spec-delivery.md), which make the docs
+site the spec's second consumer and have it build a page per component.
 
 ## Context
 
@@ -28,7 +30,8 @@ switching would add code to own. Revisit only if it gets in the way after the cu
 - A new feature is weighed first by what it does for agents, and names the one surface that owns it.
 - Before the docs examples are deleted, their Verify suites are compared with
   `packages/components/test`, and any unique coverage moves there.
-- The `document-component` skill and phase change or go away with the pages.
+- The `document-component` skill and phase go away with the pages. A component is built in two
+  phases, spec and implementation.
 
 ## Alternatives considered
 
