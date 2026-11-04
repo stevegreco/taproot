@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.2
+
+- Add the `repository` field, which npm trusted publishing checks.
+- Add `@stevegreco/design-system-spec/http` and a snapshot build for hosted deploys. The local CLI and
+  MCP server still read the source files.
+- The MCP server reports its package version.
+
 ## 0.0.1
 
 Breaking. The package is now a library over the authored files, and the record format is version 1
