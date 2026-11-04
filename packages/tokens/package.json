@@ -1,6 +1,6 @@
 {
   "name": "@stevegreco/design-system",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Design tokens distributed as CSS and JSON artifacts.",
   "keywords": [
     "css-variables",
