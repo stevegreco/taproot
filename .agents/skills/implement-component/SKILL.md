@@ -93,7 +93,7 @@ In `packages/components`, fill in the scaffold:
 on disk, so they need no edits. The tooling checks that the API mapping covers the spec, but nothing
 checks behavior or styling against it. When you change one, read the other.
 
-Check: `pnpm exec turbo run test --filter=@stevegreco/web-components`.
+Check: `pnpm exec turbo run test --filter=@taproot-ds/web-components`.
 
 ## 5. Map the web API and add stories
 

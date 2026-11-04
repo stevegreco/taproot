@@ -1,16 +1,16 @@
 /**
  * Token data and previews for the token tier stories. Everything is read from
- * the built artifacts of @stevegreco/design-system, so the pages follow the
+ * the built artifacts of @taproot-ds/tokens, so the pages follow the
  * token source without a copy here. Previews paint with `var(--token)`, so
  * the theme toolbar switches them live. Color primitives are not published as
  * CSS variables, so their swatches paint the literal value instead.
  */
 import { html, nothing } from "lit";
-import { flatten } from "@stevegreco/design-system/flatten";
-import primitivesJson from "@stevegreco/design-system/tokens/primitives";
-import semanticLightJson from "@stevegreco/design-system/tokens/semantic-light";
-import semanticDarkJson from "@stevegreco/design-system/tokens/semantic-dark";
-import semanticMeta from "@stevegreco/design-system/tokens/semantic-meta";
+import { flatten } from "@taproot-ds/tokens/flatten";
+import primitivesJson from "@taproot-ds/tokens/tokens/primitives";
+import semanticLightJson from "@taproot-ds/tokens/tokens/semantic-light";
+import semanticDarkJson from "@taproot-ds/tokens/tokens/semantic-dark";
+import semanticMeta from "@taproot-ds/tokens/tokens/semantic-meta";
 
 import "./tokens.css";
 

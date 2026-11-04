@@ -8,7 +8,7 @@
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadSpec } from "@stevegreco/design-system-spec";
+import { loadSpec } from "@taproot-ds/spec";
 import type { ContentSource, SourceEntry } from "blume/sources/types.ts";
 
 export const STORYBOOK_URL = "https://storybook.stevegreco.workers.dev";
@@ -28,7 +28,7 @@ function packageDir(name: string): string {
 }
 
 const spec = await loadSpec({
-  contentDir: join(packageDir("@stevegreco/design-system-spec"), "content"),
+  contentDir: join(packageDir("@taproot-ds/spec"), "content"),
 });
 
 /** Storybook's docs page id for a component: `Components/Text area` is `components-text-area--docs`. */
@@ -38,7 +38,7 @@ export function storybookHref(slug: string): string {
 
 /** Every row, sorted by title. */
 export function catalogRows(): CatalogRow[] {
-  return readdirSync(join(packageDir("@stevegreco/web-components"), "implementation"))
+  return readdirSync(join(packageDir("@taproot-ds/web-components"), "implementation"))
     .filter((file) => file.endsWith(".md"))
     .map((file) => {
       const slug = file.slice(0, -".md".length);

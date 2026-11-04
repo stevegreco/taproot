@@ -3,6 +3,6 @@
  * would. Without it every var(--ds-semantic-…) in a component stylesheet is
  * unresolved and a computed style falls back to the inherited value.
  */
-import "@stevegreco/design-system/css";
+import "@taproot-ds/tokens/css";
 
 document.documentElement.dataset.theme = "light";

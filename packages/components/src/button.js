@@ -2,7 +2,7 @@
  * <ds-button> — a token-driven button web component.
  *
  * Every visual value comes from the CSS custom properties published by
- * @stevegreco/design-system. Custom properties are inherited, so they cross the
+ * @taproot-ds/tokens. Custom properties are inherited, so they cross the
  * shadow boundary on their own: load `tokens.css` once on the page and the
  * button (including its dark theme) follows automatically.
  */

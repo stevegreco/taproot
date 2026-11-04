@@ -1,6 +1,6 @@
 # Design system spec
 
-`@stevegreco/design-system-spec` holds the design system spec as plain files: technology-neutral
+`@taproot-ds/spec` holds the design system spec as plain files: technology-neutral
 records for components, patterns, guidelines, and examples, with rules that have an address and a
 level. A small library reads, validates, and queries them.
 
@@ -27,7 +27,7 @@ examples are Markdown files with front matter that has an `id`. Folders are up t
 Validate after a change:
 
 ```sh
-pnpm --filter @stevegreco/design-system-spec test
+pnpm --filter @taproot-ds/spec test
 ```
 
 The tests load all content and fail on any issue. Each issue names the file, the line when known,
@@ -36,7 +36,7 @@ the JSON pointer of the field, and the problem.
 ## Library
 
 ```js
-import { loadSpec, validateSpec } from "@stevegreco/design-system-spec";
+import { loadSpec, validateSpec } from "@taproot-ds/spec";
 
 // Throws a SpecError, with `error.issues`, when any content is invalid.
 const spec = await loadSpec();
@@ -116,7 +116,7 @@ The content folder comes from `--content`, then the config, then the folder ship
 Each token set lists DTCG files. Later files win, `{alias.path}` references resolve, and values are
 stringified (`{ value: 16, unit: "px" }` becomes `16px`). Token files are read only when values are
 requested, or by `validate`. Use `createDtcgResolver` and `readDtcgTokenNames` from
-`@stevegreco/design-system-spec/tokens-dtcg`, and `loadFromConfig` and `validateFromConfig` from
+`@taproot-ds/spec/tokens-dtcg`, and `loadFromConfig` and `validateFromConfig` from
 `.../config`, to do the same in code. `loadSpec({ skipInvalid: true })` leaves out invalid record
 files and lists their issues in `spec.issues` instead of throwing.
 
@@ -133,7 +133,7 @@ the rest. A folder that does not exist yet reads as nothing implemented. A `web-
 its own `tagName` or `export`, or in React the array `prop` whose entries are the items, with a
 `field` row per key. A part names one only when it is its own element or component. Records stay technology-neutral; these files live with the implementation. Other
 tools can read the same files with `loadImplementations`, `parseImplementation`, and
-`checkImplementation` from `@stevegreco/design-system-spec/implementation`.
+`checkImplementation` from `@taproot-ds/spec/implementation`.
 `checkImplementation` confirms the file is named after a component record and that every
 parameter, value, and event a row names exists and every one the record has is covered; `get
 --impl` reports a mismatch as `ERR_INVALID_IMPLEMENTATION` instead of printing incomplete rows.
@@ -226,14 +226,14 @@ packages, so add a `spec.config.json` at the project root that points at the one
 out `content` to use the shipped records, and leave out the implementation you do not use.
 
 ```bash
-pnpm add -D @stevegreco/design-system-spec @stevegreco/design-system @stevegreco/web-components
+pnpm add -D @taproot-ds/spec @taproot-ds/tokens @taproot-ds/web-components
 ```
 
 ```json
 {
   "implementations": {
     "web": {
-      "folder": "node_modules/@stevegreco/web-components/implementation",
+      "folder": "node_modules/@taproot-ds/web-components/implementation",
       "technology": "web-component"
     }
   },
@@ -246,16 +246,16 @@ pnpm add -D @stevegreco/design-system-spec @stevegreco/design-system @stevegreco
     "format": "dtcg",
     "sets": {
       "light": [
-        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/light.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/light.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
       ],
       "dark": [
-        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/dark.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/dark.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
       ]
     }
   }

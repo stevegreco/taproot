@@ -2,7 +2,7 @@
  * Proves the published element types are real: each `@ts-expect-error` line must fail to compile,
  * or TypeScript reports the directive as unused. `test/element-types.test.ts` compiles this file.
  */
-import type { ElementAttributes } from "@stevegreco/web-components";
+import type { ElementAttributes } from "@taproot-ds/web-components";
 
 export const button: ElementAttributes["ds-button"] = {
   variant: "secondary",

@@ -1,5 +1,5 @@
-import { CSS_PREFIX } from "@stevegreco/design-system/flatten";
-import semanticLight from "@stevegreco/design-system/tokens/semantic-light";
+import { CSS_PREFIX } from "@taproot-ds/tokens/flatten";
+import semanticLight from "@taproot-ds/tokens/tokens/semantic-light";
 
 export type SemanticReferenceKind =
   | "background"

@@ -9,7 +9,7 @@ and API from the spec's CLI and MCP server.
 ## Commands
 
 From this package directory, `pnpm dev`, `pnpm build`, and `pnpm test` run only
-this app. They do not build `@stevegreco/design-system` or the web components. From the repository root, use Turbo so those workspace
+this app. They do not build `@taproot-ds/tokens` or the web components. From the repository root, use Turbo so those workspace
 dependencies are built first:
 
 ```bash

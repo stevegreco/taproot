@@ -1,11 +1,11 @@
-# @stevegreco/design-system
+# @taproot-ds/tokens
 
 Design tokens for the Ember & Sage design system — distributed as CSS custom properties and JSON. Built with [Style Dictionary](https://styledictionary.com).
 
 ## Install
 
 ```bash
-pnpm add @stevegreco/design-system
+pnpm add @taproot-ds/tokens
 ```
 
 ## Quick start
@@ -13,13 +13,13 @@ pnpm add @stevegreco/design-system
 Link the single CSS file once at the root of your app. All token tiers are included.
 
 ```html
-<link rel="stylesheet" href="node_modules/@stevegreco/design-system/dist/css/tokens.css" />
+<link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/tokens.css" />
 ```
 
 Or import via a bundler:
 
 ```js
-import "@stevegreco/design-system/css";
+import "@taproot-ds/tokens/css";
 ```
 
 Then use tokens in your CSS:
@@ -123,21 +123,21 @@ A surface that must keep one appearance in both themes needs a semantic role for
 Resolved token values are also available as JSON for use in design tooling, style pipelines, or non-CSS targets.
 
 ```js
-import primitives from "@stevegreco/design-system/tokens/primitives";
-import semantic from "@stevegreco/design-system/tokens/semantic-light";
+import primitives from "@taproot-ds/tokens/tokens/primitives";
+import semantic from "@taproot-ds/tokens/tokens/semantic-light";
 ```
 
 The semantic tier is theme-specific. Import the semantic file that matches the
 theme whose resolved values you need.
 
 ```js
-import semantic from "@stevegreco/design-system/tokens/semantic-dark";
+import semantic from "@taproot-ds/tokens/tokens/semantic-dark";
 ```
 
 Descriptions are theme-independent. Import the meta file to read every semantic token's type and purpose. `description` is the token's own purpose, or null when none has been written. `groupDescription` is the purpose of a parent group, used by typography recipes, or null when the token has no described group.
 
 ```js
-import semanticMeta from "@stevegreco/design-system/tokens/semantic-meta";
+import semanticMeta from "@taproot-ds/tokens/tokens/semantic-meta";
 ```
 
 The CSS build needs no such split: `dist/css/tokens.css` carries both themes and swaps at runtime.
@@ -157,7 +157,7 @@ The CSS build needs no such split: `dist/css/tokens.css` carries both themes and
 From the repository root:
 
 ```bash
-pnpm exec turbo run build --filter=@stevegreco/design-system
+pnpm exec turbo run build --filter=@taproot-ds/tokens
 ```
 
 Source tokens live in `src/tokens/`. Never edit `dist/` files directly — they are regenerated on every build.

@@ -1,4 +1,4 @@
-import primitiveTokenData from "@stevegreco/design-system/tokens/primitives";
+import primitiveTokenData from "@taproot-ds/tokens/tokens/primitives";
 
 type ColorScale = Record<string, string>;
 

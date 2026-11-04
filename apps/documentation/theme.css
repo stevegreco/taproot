@@ -1,4 +1,4 @@
-@import "@stevegreco/design-system/css";
+@import "@taproot-ds/tokens/css";
 
 :root,
 :root[data-theme="dark"] {

@@ -44,7 +44,7 @@ install the package.
 The command line and the local MCP server both come from this package.
 
 ```bash
-pnpm add -D @stevegreco/design-system-spec @stevegreco/design-system @stevegreco/web-components
+pnpm add -D @taproot-ds/spec @taproot-ds/tokens @taproot-ds/web-components
 ```
 
 The records work right away. For API names and token values, add a `spec.config.json` at your project
@@ -54,7 +54,7 @@ root, which points at the other two packages:
 {
   "implementations": {
     "web": {
-      "folder": "node_modules/@stevegreco/web-components/implementation",
+      "folder": "node_modules/@taproot-ds/web-components/implementation",
       "technology": "web-component"
     }
   },
@@ -67,16 +67,16 @@ root, which points at the other two packages:
     "format": "dtcg",
     "sets": {
       "light": [
-        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/light.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/light.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
       ],
       "dark": [
-        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/dark.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/dark.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
       ]
     }
   }

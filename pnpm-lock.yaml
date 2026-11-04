@@ -32,7 +32,7 @@ importers:
 
   apps/cli-explorer:
     dependencies:
-      '@stevegreco/design-system':
+      '@taproot-ds/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
 
@@ -47,18 +47,18 @@ importers:
       '@shikijs/twoslash':
         specifier: ^4.3.1
         version: 4.3.1(supports-color@10.2.2)(typescript@6.0.3)
-      '@stevegreco/design-system':
-        specifier: workspace:*
-        version: link:../../packages/tokens
-      '@stevegreco/design-system-spec':
-        specifier: workspace:*
-        version: link:../../packages/spec
-      '@stevegreco/web-components':
-        specifier: workspace:*
-        version: link:../../packages/components
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@26.2.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))
+      '@taproot-ds/spec':
+        specifier: workspace:*
+        version: link:../../packages/spec
+      '@taproot-ds/tokens':
+        specifier: workspace:*
+        version: link:../../packages/tokens
+      '@taproot-ds/web-components':
+        specifier: workspace:*
+        version: link:../../packages/components
       astro:
         specifier: ^7.3.4
         version: 7.3.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0)
@@ -90,23 +90,23 @@ importers:
 
   apps/mcp:
     dependencies:
-      '@stevegreco/design-system-spec':
+      '@taproot-ds/spec':
         specifier: workspace:*
         version: link:../../packages/spec
     devDependencies:
-      '@stevegreco/design-system':
+      '@taproot-ds/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
-      '@stevegreco/web-components':
+      '@taproot-ds/web-components':
         specifier: workspace:*
         version: link:../../packages/components
 
   apps/storybook:
     dependencies:
-      '@stevegreco/design-system':
+      '@taproot-ds/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
-      '@stevegreco/web-components':
+      '@taproot-ds/web-components':
         specifier: workspace:*
         version: link:../../packages/components
     devDependencies:
@@ -131,7 +131,7 @@ importers:
 
   packages/components:
     dependencies:
-      '@stevegreco/design-system':
+      '@taproot-ds/tokens':
         specifier: workspace:*
         version: link:../tokens
     devDependencies:
@@ -150,7 +150,7 @@ importers:
 
   packages/react:
     dependencies:
-      '@stevegreco/design-system':
+      '@taproot-ds/tokens':
         specifier: workspace:*
         version: link:../tokens
       react-aria-components:

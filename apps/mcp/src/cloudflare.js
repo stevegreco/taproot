@@ -1,4 +1,4 @@
-import { handleMcpRequest } from "@stevegreco/design-system-spec/http";
+import { handleMcpRequest } from "@taproot-ds/spec/http";
 import snapshot from "../dist/snapshot.json";
 
 export default {

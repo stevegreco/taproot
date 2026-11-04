@@ -75,6 +75,6 @@ const server = http.createServer(async (request, response) => {
 server.listen(port, "127.0.0.1", () => {
   console.log(`CLI Explorer: http://localhost:${port}`);
   if (!existsSync(tokens)) {
-    console.log("Tokens are not built yet. Run `pnpm --filter @stevegreco/design-system build`.");
+    console.log("Tokens are not built yet. Run `pnpm --filter @taproot-ds/tokens build`.");
   }
 });

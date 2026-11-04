@@ -1,5 +1,5 @@
 {
-  "name": "@stevegreco/web-components",
+  "name": "@taproot-ds/web-components",
   "version": "0.1.1",
   "description": "Framework-agnostic web components styled entirely with design system tokens.",
   "keywords": [
@@ -11,7 +11,7 @@
   "author": "Steve Greco",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stevegreco/design-system.git",
+    "url": "git+https://github.com/stevegreco/taproot.git",
     "directory": "packages/components"
   },
   "files": [
@@ -51,7 +51,7 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
-    "@stevegreco/design-system": "workspace:*"
+    "@taproot-ds/tokens": "workspace:*"
   },
   "devDependencies": {
     "@vitest/browser-playwright": "^5.0.0",

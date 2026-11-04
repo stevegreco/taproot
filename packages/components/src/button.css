@@ -2,7 +2,7 @@
  * <ds-button> styles.
  *
  * Adopted into the shadow root as a single shared CSSStyleSheet. Visual values
- * consume tokens from @stevegreco/design-system; custom properties are
+ * consume tokens from @taproot-ds/tokens; custom properties are
  * inherited, so they cross the shadow boundary and themes apply for free.
  *
  * Built into dist/button.styles.js by build-styles.js — this file is the source.

@@ -1,6 +1,6 @@
-import { flatten } from "@stevegreco/design-system/flatten";
-import semanticDark from "@stevegreco/design-system/tokens/semantic-dark";
-import semanticLight from "@stevegreco/design-system/tokens/semantic-light";
+import { flatten } from "@taproot-ds/tokens/flatten";
+import semanticDark from "@taproot-ds/tokens/tokens/semantic-dark";
+import semanticLight from "@taproot-ds/tokens/tokens/semantic-light";
 
 export type LabTheme = "light" | "dark";
 

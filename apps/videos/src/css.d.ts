@@ -1,1 +1,1 @@
-declare module "@stevegreco/design-system/css";
+declare module "@taproot-ds/tokens/css";

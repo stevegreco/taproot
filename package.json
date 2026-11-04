@@ -1,5 +1,5 @@
 {
-  "name": "design-system",
+  "name": "taproot",
   "private": true,
   "scripts": {
     "build": "turbo run build",

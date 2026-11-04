@@ -1,5 +1,5 @@
-import "@stevegreco/design-system/css";
-import "@stevegreco/web-components";
+import "@taproot-ds/tokens/css";
+import "@taproot-ds/web-components";
 import "./preview.css";
 
 /**

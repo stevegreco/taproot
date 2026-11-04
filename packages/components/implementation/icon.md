@@ -1,6 +1,6 @@
 ---
 component: component.icon
-package: "@stevegreco/web-components"
+package: "@taproot-ds/web-components"
 tagName: ds-icon
 defineExport: defineIcon
 usage: |
@@ -24,11 +24,11 @@ The role and accessible name are set through `ElementInternals`, so the host nev
 
 ## Styles
 
-Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
 the application root. Without it, the component has no colors, spacing, or type.
 
 ```js
-import "@stevegreco/design-system/css";
+import "@taproot-ds/tokens/css";
 ```
 
 Without a bundler, link the package's `dist/css/tokens.css` instead.

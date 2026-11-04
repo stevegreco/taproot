@@ -63,7 +63,7 @@ before building on the record.
 ```yaml
 known-issues:
   - statement: Link text measures 4.32:1 on the light info surface, below the 4.5:1 minimum.
-    issue: https://github.com/stevegreco/design-system/issues/183
+    issue: https://github.com/stevegreco/taproot/issues/183
 ```
 
 Remove the entry in the change that fixes the problem.

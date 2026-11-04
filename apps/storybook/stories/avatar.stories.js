@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { defineAvatar } from "@stevegreco/web-components/avatar";
+import { defineAvatar } from "@taproot-ds/web-components/avatar";
 
 // The package root registers every component; Avatar is registered here until it joins the root.
 defineAvatar();

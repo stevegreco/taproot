@@ -61,7 +61,7 @@ each record as a `spec://<id>` resource.
 
 **Edit it** in `packages/spec/content/`. Components are `components/<name>/<name>.spec.yaml`.
 Patterns, guidelines, and examples are Markdown with front matter. There is no build step. Validate
-with `node packages/spec/bin/ds-spec.js validate` or `pnpm --filter @stevegreco/design-system-spec test`.
+with `node packages/spec/bin/ds-spec.js validate` or `pnpm --filter @taproot-ds/spec test`.
 
 **What not to put in a spec.** No element, attribute, slot, framework, or CSS names, and no code.
 A spec says what a component is, not how any technology builds it. Token references are opaque
@@ -122,7 +122,7 @@ From the repository root:
 
 ```bash
 pnpm exec turbo run build --filter=documentation
-pnpm exec turbo run test --filter=@stevegreco/design-system-spec
+pnpm exec turbo run test --filter=@taproot-ds/spec
 pnpm exec turbo run dev --filter=documentation
 ```
 
@@ -132,7 +132,7 @@ that are not package scripts with workspace build dependencies, such as `blume v
 
 ## Releases
 
-`@stevegreco/design-system`, `@stevegreco/web-components`, and `@stevegreco/design-system-spec` are
+`@taproot-ds/tokens`, `@taproot-ds/web-components`, and `@taproot-ds/spec` are
 published to npm with Changesets. A change to one of them adds a changeset with `pnpm changeset`, in
 the same pull request. Merging to `main` opens or updates a Version Packages pull request, and
-merging that one publishes. `@stevegreco/react-components` is private and is not published.
+merging that one publishes. `@taproot-ds/react-components` is private and is not published.

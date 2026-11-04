@@ -15,8 +15,8 @@
     "@remotion/google-fonts": "4.0.533",
     "@remotion/media": "4.0.533",
     "@remotion/transitions": "4.0.533",
-    "@stevegreco/design-system": "link:../../packages/tokens",
-    "@stevegreco/web-components": "link:../../packages/components",
+    "@taproot-ds/tokens": "link:../../packages/tokens",
+    "@taproot-ds/web-components": "link:../../packages/components",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "remotion": "4.0.533"
