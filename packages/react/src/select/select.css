@@ -1,4 +1,4 @@
-/* Select, styled from the bindings `ds-spec tokens component.select` lists. The control is a
+/* Select, styled from the bindings `taproot tokens component.select` lists. The control is a
    native select, so hover and focus come from :hover and :focus-visible rather than React Aria's
    data attributes. The root carries [data-disabled], [data-invalid], and [data-required]. The
    platform draws the choice list and the opening indicator; the spec has no part for either. */

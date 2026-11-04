@@ -1,6 +1,6 @@
 # Design system spec format
 
-**Version:** 1 (`urn:design-system-spec:record:1`)
+**Version:** 1 (`urn:taproot:record:1`)
 
 This format holds a design system spec as plain files: what each component is and how to
 use it, and the patterns, guidelines, and examples around it. Design and engineering agree on a
@@ -63,7 +63,7 @@ before building on the record.
 ```yaml
 known-issues:
   - statement: Link text measures 4.32:1 on the light info surface, below the 4.5:1 minimum.
-    issue: https://github.com/stevegreco/design-system/issues/183
+    issue: https://github.com/stevegreco/taproot/issues/183
 ```
 
 Remove the entry in the change that fixes the problem.
@@ -284,7 +284,7 @@ tokens:
   `linear` (for `motion-easing`).
 - System-wide constants, such as border width and focus-ring width and offset, are the same for
   every component, so a component map does not have to list them. The adopter names each constant
-  and the token that holds it in `constants` in `spec.config.json`, and `ds-spec format` serves
+  and the token that holds it in `constants` in `spec.config.json`, and `taproot format` serves
   them with the property names and keywords above.
 
 The map is reference data. It answers "which token does primary hover use for its background?" It

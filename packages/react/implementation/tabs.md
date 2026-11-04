@@ -1,6 +1,6 @@
 ---
 component: component.tabs
-package: "@stevegreco/react-components"
+package: "@taproot-ds/react-components"
 export: Tabs
 usage: |
   <Tabs accessibleName="Account settings" defaultValue="profile">
@@ -56,8 +56,8 @@ and runs only when a person selects a different tab, never for a value set by th
 Load the token stylesheet and the component stylesheet once, before rendering:
 
 ```tsx
-import "@stevegreco/design-system/css";
-import "@stevegreco/react-components/style.css";
+import "@taproot-ds/tokens/css";
+import "@taproot-ds/react-components/style.css";
 ```
 
 ## Hidden sections

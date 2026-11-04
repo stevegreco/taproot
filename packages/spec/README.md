@@ -1,6 +1,6 @@
 # Design system spec
 
-`@stevegreco/design-system-spec` holds the design system spec as plain files: technology-neutral
+`@taproot-ds/spec` holds the design system spec as plain files: technology-neutral
 records for components, patterns, guidelines, and examples, with rules that have an address and a
 level. A small library reads, validates, and queries them.
 
@@ -9,7 +9,7 @@ level. A small library reads, validates, and queries them.
 | To                                  | Read                                                          |
 | ----------------------------------- | ------------------------------------------------------------- |
 | Look up a field or write a record   | [SPEC.md](SPEC.md), the only field reference                  |
-| Query the spec                      | [CLI](#cli), or `node packages/spec/bin/ds-spec.js help` from the repository root |
+| Query the spec                      | [CLI](#cli), or `node packages/spec/bin/taproot.js help` from the repository root |
 | Understand the format's decisions   | The ADRs in [`docs/adr/`](../../docs/adr)                     |
 
 The JSON Schema is [`src/schema/spec-record.schema.json`](src/schema/spec-record.schema.json).
@@ -27,7 +27,7 @@ examples are Markdown files with front matter that has an `id`. Folders are up t
 Validate after a change:
 
 ```sh
-pnpm --filter @stevegreco/design-system-spec test
+pnpm --filter @taproot-ds/spec test
 ```
 
 The tests load all content and fail on any issue. Each issue names the file, the line when known,
@@ -36,7 +36,7 @@ the JSON pointer of the field, and the problem.
 ## Library
 
 ```js
-import { loadSpec, validateSpec } from "@stevegreco/design-system-spec";
+import { loadSpec, validateSpec } from "@taproot-ds/spec";
 
 // Throws a SpecError, with `error.issues`, when any content is invalid.
 const spec = await loadSpec();
@@ -116,7 +116,7 @@ The content folder comes from `--content`, then the config, then the folder ship
 Each token set lists DTCG files. Later files win, `{alias.path}` references resolve, and values are
 stringified (`{ value: 16, unit: "px" }` becomes `16px`). Token files are read only when values are
 requested, or by `validate`. Use `createDtcgResolver` and `readDtcgTokenNames` from
-`@stevegreco/design-system-spec/tokens-dtcg`, and `loadFromConfig` and `validateFromConfig` from
+`@taproot-ds/spec/tokens-dtcg`, and `loadFromConfig` and `validateFromConfig` from
 `.../config`, to do the same in code. `loadSpec({ skipInvalid: true })` leaves out invalid record
 files and lists their issues in `spec.issues` instead of throwing.
 
@@ -133,7 +133,7 @@ the rest. A folder that does not exist yet reads as nothing implemented. A `web-
 its own `tagName` or `export`, or in React the array `prop` whose entries are the items, with a
 `field` row per key. A part names one only when it is its own element or component. Records stay technology-neutral; these files live with the implementation. Other
 tools can read the same files with `loadImplementations`, `parseImplementation`, and
-`checkImplementation` from `@stevegreco/design-system-spec/implementation`.
+`checkImplementation` from `@taproot-ds/spec/implementation`.
 `checkImplementation` confirms the file is named after a component record and that every
 parameter, value, and event a row names exists and every one the record has is covered; `get
 --impl` reports a mismatch as `ERR_INVALID_IMPLEMENTATION` instead of printing incomplete rows.
@@ -141,28 +141,28 @@ parameter, value, and event a row names exists and every one the record has is c
 ## CLI
 
 ```sh
-ds-spec validate
-ds-spec list [--type <t>] [--tag <tag>] [--status <s>] [--impl <name>]
-ds-spec search <query...> [--type <t>] [--tag <tag>] [--limit <n>]
-ds-spec get <id | name | id#section> [--impl <name>]
-ds-spec links <id> [--kind <k>] [--direction out|in|both]
-ds-spec rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
-ds-spec tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
-ds-spec format [--resolve]
-ds-spec batch --command "<command>" [--command "<command>" ...]
-ds-spec help [command]
+taproot validate
+taproot list [--type <t>] [--tag <tag>] [--status <s>] [--impl <name>]
+taproot search <query...> [--type <t>] [--tag <tag>] [--limit <n>]
+taproot get <id | name | id#section> [--impl <name>]
+taproot links <id> [--kind <k>] [--direction out|in|both]
+taproot rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
+taproot tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
+taproot format [--resolve]
+taproot batch --command "<command>" [--command "<command>" ...]
+taproot help [command]
 ```
 
 Global flags: `--content <dir>`, `--config <path>`, `--json`. Output is Markdown, or the library's
 return values as JSON. Exit codes: 0 ok, 1 validation issues, an empty result, or an unknown id or
 section, 2 usage error, including a filter value (`--type`, `--status`, `--kind`, `--topic`,
 `--level`) that is not one of the valid ones, which the error lists. In this repo, run it as
-`node packages/spec/bin/ds-spec.js ...`. `pnpm spec ...` also works, but pnpm adds about a second
-to each call. Elsewhere, run the installed bin (`node_modules/.bin/ds-spec`), not an `npx` download
-per call. `pnpm bench` times `ds-spec get button` against a 300 ms target, and a test in
+`node packages/spec/bin/taproot.js ...`. `pnpm spec ...` also works, but pnpm adds about a second
+to each call. Elsewhere, run the installed bin (`node_modules/.bin/taproot`), not an `npx` download
+per call. `pnpm bench` times `taproot get button` against a 300 ms target, and a test in
 `pnpm test` fails if it takes over a second.
 
-`ds-spec help agents` prints how an agent should use the spec. The MCP server sends the same text
+`taproot help agents` prints how an agent should use the spec. The MCP server sends the same text
 as its instructions, and AGENTS.md carries a copy that a test keeps equal.
 
 `validate` also checks each token reference against the token sets in the config. The other
@@ -189,7 +189,7 @@ does the same, so no technology reads as the default.
 `batch` runs several commands in one process and loads the spec once, which takes about half the
 time of separate calls. Each `--command` is split into words the way a shell would (quotes group
 words, with no variables or globs), and takes the batch's `--json`, `--content`, and `--config`
-instead of its own. Text output gives each command's output under a `$ ds-spec <command>` line;
+instead of its own. Text output gives each command's output under a `$ taproot <command>` line;
 `--json` prints an array of `{ command, exitCode, result }`, where `result` is that command's own
 JSON. A failed command does not stop the others, and the batch exits with the highest exit code.
 The MCP server has no `batch` tool, since MCP clients already call several tools in one turn.
@@ -206,7 +206,7 @@ name or title matches (`chec`, `textfi`), and each result is followed by the com
 
 ## MCP server
 
-`ds-spec-mcp` is a local stdio server (`--content` and `--config` work as in the CLI). Tools:
+`taproot-mcp` is a local stdio server (`--content` and `--config` work as in the CLI). Tools:
 `search`, `get`, `list`, `links`, `rules`, `tokens`, `format`, and `validate`. `get` takes an optional
 `implementation`, such as `"web"`, that works like `--impl`. Names, typo suggestions, and next-step
 lines work as in the CLI, and a failed call's `structuredContent.error` holds `{ code, suggestions }`. Every record is also a resource
@@ -215,25 +215,25 @@ issues it keeps serving the last valid version and starts each tool result and r
 warning.
 
 ```json
-{ "mcpServers": { "design-system-spec": { "command": "node", "args": ["packages/spec/bin/ds-spec-mcp.js"] } } }
+{ "mcpServers": { "taproot": { "command": "node", "args": ["packages/spec/bin/taproot-mcp.js"] } } }
 ```
 
 ## Use in another project
 
-The package ships the records, so `ds-spec` and `ds-spec-mcp` work after an install. Implementation
+The package ships the records, so `taproot` and `taproot-mcp` work after an install. Implementation
 names (`get --impl`), token values (`--resolve`), and the system-wide constants come from the other
 packages, so add a `spec.config.json` at the project root that points at the ones you install. Leave
 out `content` to use the shipped records, and leave out the implementation you do not use.
 
 ```bash
-pnpm add -D @stevegreco/design-system-spec @stevegreco/design-system @stevegreco/web-components
+pnpm add -D @taproot-ds/spec @taproot-ds/tokens @taproot-ds/web-components
 ```
 
 ```json
 {
   "implementations": {
     "web": {
-      "folder": "node_modules/@stevegreco/web-components/implementation",
+      "folder": "node_modules/@taproot-ds/web-components/implementation",
       "technology": "web-component"
     }
   },
@@ -246,16 +246,16 @@ pnpm add -D @stevegreco/design-system-spec @stevegreco/design-system @stevegreco
     "format": "dtcg",
     "sets": {
       "light": [
-        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/light.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/light.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
       ],
       "dark": [
-        "node_modules/@stevegreco/design-system/src/tokens/primitives.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/dark.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@stevegreco/design-system/src/tokens/semantic/typography.tokens.json"
+        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/dark.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
+        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
       ]
     }
   }
@@ -263,5 +263,5 @@ pnpm add -D @stevegreco/design-system-spec @stevegreco/design-system @stevegreco
 ```
 
 ```json
-{ "mcpServers": { "design-system-spec": { "command": "node_modules/.bin/ds-spec-mcp" } } }
+{ "mcpServers": { "taproot": { "command": "node_modules/.bin/taproot-mcp" } } }
 ```

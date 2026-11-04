@@ -2,7 +2,7 @@
 name: design-tokens
 description: >
   Consumer guidance for selecting and applying existing published primitive and semantic tokens
-  from @stevegreco/design-system. Use when developers or designers need to choose or review token
+  from @taproot-ds/tokens. Use when developers or designers need to choose or review token
   consumption in component or product styles.
 ---
 

@@ -9,7 +9,7 @@ import { splitWords } from "../src/util.js";
 import { fixture } from "./helpers.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const bin = path.resolve(here, "../bin/ds-spec.js");
+const bin = path.resolve(here, "../bin/taproot.js");
 const repoRoot = path.resolve(here, "../../..");
 const tools = fixture("tools");
 // Implementations come from a fixture config, so adding one to the repository changes no output.
@@ -20,7 +20,7 @@ function cli(args, cwd = repoRoot) {
   return { code: result.status, out: result.stdout, err: result.stderr };
 }
 
-describe("ds-spec CLI, real content", () => {
+describe("taproot CLI, real content", () => {
   it("validates", () => {
     const r = cli(["validate"]);
     expect(r.code).toBe(0);
@@ -84,7 +84,7 @@ describe("ds-spec CLI, real content", () => {
     expect(r.out).toContain("\n  - Applies when: The checkbox belongs to a form.");
     const all = cli(["rules", "--id", "checkbox"]);
     expect(all.out).toMatch(
-      /Run `ds-spec get <address>`, such as `ds-spec get component\.checkbox#[\w-]+`/,
+      /Run `taproot get <address>`, such as `taproot get component\.checkbox#[\w-]+`/,
     );
   });
 
@@ -124,17 +124,17 @@ describe("ds-spec CLI, real content", () => {
     const copy = agents.match(
       /<!-- agent-instructions:start -->\n([\s\S]*?)\n<!-- agent-instructions:end -->/,
     );
-    expect(copy?.[1], "AGENTS.md copy of `ds-spec help agents`").toBe(AGENT_INSTRUCTIONS);
+    expect(copy?.[1], "AGENTS.md copy of `taproot help agents`").toBe(AGENT_INSTRUCTIONS);
   });
 
   it("prints help", () => {
     const r = cli(["help", "tokens"]);
     expect(r.code).toBe(0);
-    expect(r.out).toContain("ds-spec tokens <id>");
+    expect(r.out).toContain("taproot tokens <id>");
   });
 });
 
-describe("ds-spec CLI, --json", () => {
+describe("taproot CLI, --json", () => {
   it.each([
     [["list"], (d) => expect(Array.isArray(d)).toBe(true)],
     [["search", "button"], (d) => expect(d[0]).toHaveProperty("score")],
@@ -157,7 +157,7 @@ describe("ds-spec CLI, --json", () => {
   });
 });
 
-describe("ds-spec CLI, failures", () => {
+describe("taproot CLI, failures", () => {
   it("exits 2 on usage errors", () => {
     expect(cli([]).code).toBe(0);
     expect(cli(["bogus"]).code).toBe(2);
@@ -227,7 +227,7 @@ describe("ds-spec CLI, failures", () => {
   });
 });
 
-describe("ds-spec CLI, startup", () => {
+describe("taproot CLI, startup", () => {
   // A loose limit that catches a large regression, such as loading a dependency per call, without
   // failing on a slow machine. The best of three runs ignores a call slowed by parallel tests.
   // `pnpm bench` measures against the real target.
@@ -241,7 +241,7 @@ describe("ds-spec CLI, startup", () => {
   });
 });
 
-describe("ds-spec CLI, fixture config", () => {
+describe("taproot CLI, fixture config", () => {
   it("finds the config from the working directory", () => {
     const r = cli(["list"], tools);
     expect(r.out).toContain("component.thing");
@@ -263,14 +263,14 @@ describe("ds-spec CLI, fixture config", () => {
   });
 });
 
-describe("ds-spec CLI, implementations", () => {
+describe("taproot CLI, implementations", () => {
   it("gets a component with its web implementation", () => {
     const r = cli(["get", "component.button", "--impl", "web"], impls);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/^# Button/);
     expect(r.out).toContain("## Web implementation");
     expect(r.out).toContain("- Element: `<ds-button>`");
-    expect(r.out).toContain('import { defineButton } from "@stevegreco/web-components/button";');
+    expect(r.out).toContain('import { defineButton } from "@taproot-ds/web-components/button";');
     expect(r.out).toContain(
       "| `type` | attribute | parameter `action` | `activate` → `button`, `submit`, `reset` |",
     );
@@ -283,8 +283,8 @@ describe("ds-spec CLI, implementations", () => {
     const { out } = cli(["get", "component.button"], impls);
     expect(out).not.toContain("## Web implementation");
     expect(out.trimEnd().split("\n").slice(-2)).toEqual([
-      "Implementations: web, react. Run `ds-spec get component.button --impl <web | react>` for the package, import, and API names.",
-      "Tokens: 50 bindings, left out here. Run `ds-spec tokens component.button` to filter them by part, condition, or property.",
+      "Implementations: web, react. Run `taproot get component.button --impl <web | react>` for the package, import, and API names.",
+      "Tokens: 50 bindings, left out here. Run `taproot tokens component.button` to filter them by part, condition, or property.",
     ]);
     expect(cli(["get", "pattern.action-hierarchy"], impls).out).not.toContain("Implementations:");
   });
@@ -347,15 +347,15 @@ describe("ds-spec CLI, implementations", () => {
     expect(r.out).toContain("No react implementation for component.button.");
     // The folder that exists still counts, and the missing one is not offered.
     expect(cli(["get", "component.button", ...config]).out).toContain(
-      "Implementations: web. Run `ds-spec get component.button --impl web` for",
+      "Implementations: web. Run `taproot get component.button --impl web` for",
     );
     expect(cli(["search", "chekbox", ...config]).out).toContain(
-      "  → ds-spec get component.checkbox --impl web\n",
+      "  → taproot get component.checkbox --impl web\n",
     );
   });
 });
 
-describe("ds-spec CLI, format reference", () => {
+describe("taproot CLI, format reference", () => {
   it("prints the token properties, keywords, roles, and constants", () => {
     const r = cli(["format"]);
     expect(r.code).toBe(0);
@@ -364,7 +364,7 @@ describe("ds-spec CLI, format reference", () => {
     expect(r.out).toContain("`inherit` (the value comes from the surrounding content)");
     expect(r.out).toContain("`interactive-surface`, `label`");
     expect(r.out).toContain("| focus-ring-width | `semantic.focus.width` |");
-    expect(r.out).toContain("Run `ds-spec format --resolve` for values.");
+    expect(r.out).toContain("Run `taproot format --resolve` for values.");
   });
 
   it("resolves each constant in each token set", () => {
@@ -417,7 +417,7 @@ describe("ds-spec CLI, format reference", () => {
   });
 });
 
-describe("ds-spec CLI, items", () => {
+describe("taproot CLI, items", () => {
   it("prints each item's parameters as a table, in the record and as a section", () => {
     const { out } = cli(["get", "component.accordion"]);
     expect(out).toContain("## Items\n\n### section\n\nOptions of each `section`.");
@@ -488,7 +488,7 @@ describe("ds-spec CLI, items", () => {
   });
 });
 
-describe("ds-spec CLI, parts", () => {
+describe("taproot CLI, parts", () => {
   it("prints a part's parameters as a table, in the record and as a section", () => {
     const { out } = cli(["get", "component.card"]);
     expect(out).toContain("## Parts\n\n### title\n\nOptions of the `title` part.");
@@ -514,7 +514,7 @@ describe("ds-spec CLI, parts", () => {
   });
 });
 
-describe("ds-spec CLI, short records", () => {
+describe("taproot CLI, short records", () => {
   it("leaves the token table out of a whole component record", () => {
     for (const args of [
       ["get", "button"],
@@ -546,7 +546,7 @@ describe("ds-spec CLI, short records", () => {
   });
 });
 
-describe("ds-spec CLI, forgiving lookups", () => {
+describe("taproot CLI, forgiving lookups", () => {
   it("matches the start of a name or title", () => {
     expect(cli(["search", "chec"]).out).toMatch(/^- component\.checkbox — /);
     expect(cli(["search", "textfi"]).out).toMatch(/^- component\.text-field — /);
@@ -598,14 +598,14 @@ describe("ds-spec CLI, forgiving lookups", () => {
   it("searches through typos and names the next command", () => {
     const r = cli(["search", "chekbox"], impls);
     expect(r.out).toContain("- component.checkbox — Checkbox: ");
-    expect(r.out).toContain("  → ds-spec get component.checkbox --impl <web | react>\n");
+    expect(r.out).toContain("  → taproot get component.checkbox --impl <web | react>\n");
     // One edit is the allowance for a word this short, so two edits match nothing.
     expect(cli(["search", "buxxon"]).out).toMatch(/^No results for "buxxon"\. /);
     // Four letters get no typo allowance, and words in a longer query are not corrected.
     expect(cli(["search", "lnik"]).out).toMatch(/^No results for "lnik"\. /);
     expect(cli(["search", "buton", "zzzz"]).out).toMatch(/^No results for "buton zzzz"\. /);
     expect(cli(["search", "destructive", "action"], impls).out).toContain(
-      "  → ds-spec get pattern.action-hierarchy\n",
+      "  → taproot get pattern.action-hierarchy\n",
     );
   });
 
@@ -613,7 +613,7 @@ describe("ds-spec CLI, forgiving lookups", () => {
     const weak = cli(["search", "toast", "notification"]);
     expect(weak.code).toBe(0);
     expect(weak.out).toMatch(/^No strong match for "toast notification"\./);
-    expect(weak.out).toContain("`ds-spec list`, or read guideline.compose-or-propose");
+    expect(weak.out).toContain("`taproot list`, or read guideline.compose-or-propose");
     expect(weak.out).toContain("(weak match)");
     const strong = cli(["search", "loading"]);
     expect(strong.out).toMatch(/^- component\.spinner — /);
@@ -623,7 +623,7 @@ describe("ds-spec CLI, forgiving lookups", () => {
   });
 });
 
-describe("ds-spec CLI, batch", () => {
+describe("taproot CLI, batch", () => {
   const commands = [
     "get button --impl web",
     "tokens button --part control --condition 'variant.primary + hover' --resolve",
@@ -636,7 +636,7 @@ describe("ds-spec CLI, batch", () => {
     const batch = cli(["batch", ...batchArgs], impls);
     const alone = commands.map((command) => cli(splitWords(command), impls));
     expect(batch.out).toBe(
-      commands.map((command, i) => `$ ds-spec ${command}\n${alone[i].out}`).join("\n"),
+      commands.map((command, i) => `$ taproot ${command}\n${alone[i].out}`).join("\n"),
     );
     // The worst exit code wins: `get buton` finds nothing.
     expect(batch.code).toBe(1);
@@ -668,8 +668,8 @@ describe("ds-spec CLI, batch", () => {
       "list --type component",
     ]);
     expect(r.code).toBe(2);
-    expect(r.out).toContain("$ ds-spec list --type component\n- component.accordion — ");
-    expect(r.err).toContain("$ ds-spec list --type nope\n--type must be one of:");
+    expect(r.out).toContain("$ taproot list --type component\n- component.accordion — ");
+    expect(r.err).toContain("$ taproot list --type nope\n--type must be one of:");
     expect(r.err).toContain("Put --json on batch, not on its commands.");
     expect(r.err).toContain("A batch cannot run batch.");
     expect(r.err).toContain(`Cannot read "get 'button": unclosed single quote.`);
@@ -717,7 +717,7 @@ describe("splitWords", () => {
   });
 });
 
-describe("ds-spec CLI, agent friction", () => {
+describe("taproot CLI, agent friction", () => {
   it("heads a section read with its path", () => {
     const r = cli(["get", "component.card#parts.title.parameters.headingLevel"]);
     expect(r.code).toBe(0);

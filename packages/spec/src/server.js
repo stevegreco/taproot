@@ -45,7 +45,7 @@ function nextCall(id, names) {
 export function createServer(source) {
   const { warning: readWarning = () => undefined } = source;
   const server = new McpServer(
-    { name: "design-system-spec", version: packageJson.version },
+    { name: "taproot", version: packageJson.version },
     { instructions: AGENT_INSTRUCTIONS },
   );
 

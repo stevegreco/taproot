@@ -1,4 +1,4 @@
-# Ember & Sage design system
+# Taproot design system
 
 An agent-first design system. The spec says what each component is and how to use it, and agents
 read it through a CLI or an MCP server.
@@ -12,14 +12,14 @@ read it through a CLI or an MCP server.
 | [`apps/documentation`](apps/documentation/README.md) | The documentation site                              |
 | `apps/storybook`                                  | A workbench for exploring component states and themes  |
 | [`apps/mcp`](apps/mcp/README.md)                  | The hosted MCP server                                  |
-| [`apps/cli-explorer`](apps/cli-explorer/README.md) | A local page for trying `ds-spec` commands            |
+| [`apps/cli-explorer`](apps/cli-explorer/README.md) | A local page for trying `taproot` commands            |
 | [`apps/videos`](apps/videos/README.md)            | Remotion videos, outside the workspace                 |
 
 Query the spec from the repository root:
 
 ```bash
-node packages/spec/bin/ds-spec.js search "destructive action"
-node packages/spec/bin/ds-spec.js get component.button
+node packages/spec/bin/taproot.js search "destructive action"
+node packages/spec/bin/taproot.js get component.button
 ```
 
 Build and test:

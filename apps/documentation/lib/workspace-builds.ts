@@ -33,21 +33,21 @@ export function assertSpecifier(specifier: string, packageName: string): string 
 
 /** Every `src/*.css` must have the `dist/*.styles.js` that build-styles.js emits for it. */
 function assertComponentStyles(): void {
-  const indexSrc = assertSpecifier("@stevegreco/web-components", "@stevegreco/web-components");
+  const indexSrc = assertSpecifier("@taproot-ds/web-components", "@taproot-ds/web-components");
   const src = dirname(indexSrc);
   const dist = join(src, "../dist");
   for (const file of readdirSync(src).filter((name) => name.endsWith(".css"))) {
     const styles = file.replace(/\.css$/, ".styles.js");
     if (!existsSync(join(dist, styles))) {
-      throw new MissingWorkspaceBuildError("@stevegreco/web-components", `dist/${styles}`);
+      throw new MissingWorkspaceBuildError("@taproot-ds/web-components", `dist/${styles}`);
     }
   }
 }
 
 /** Fail with a turbo command instead of a raw missing-module path. */
 export function assertWorkspaceBuilds(): void {
-  assertSpecifier("@stevegreco/design-system/tokens/primitives", "@stevegreco/design-system");
-  assertSpecifier("@stevegreco/design-system/tokens/semantic-light", "@stevegreco/design-system");
-  assertSpecifier("@stevegreco/design-system/flatten", "@stevegreco/design-system");
+  assertSpecifier("@taproot-ds/tokens/tokens/primitives", "@taproot-ds/tokens");
+  assertSpecifier("@taproot-ds/tokens/tokens/semantic-light", "@taproot-ds/tokens");
+  assertSpecifier("@taproot-ds/tokens/flatten", "@taproot-ds/tokens");
   assertComponentStyles();
 }

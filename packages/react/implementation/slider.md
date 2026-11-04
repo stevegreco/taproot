@@ -1,6 +1,6 @@
 ---
 component: component.slider
-package: "@stevegreco/react-components"
+package: "@taproot-ds/react-components"
 export: Slider
 usage: |
   <Slider
@@ -74,6 +74,6 @@ right, and Arrow Right decreases the value. The value text keeps the reader's nu
 Load the token stylesheet and the component stylesheet once, before rendering:
 
 ```tsx
-import "@stevegreco/design-system/css";
-import "@stevegreco/react-components/style.css";
+import "@taproot-ds/tokens/css";
+import "@taproot-ds/react-components/style.css";
 ```

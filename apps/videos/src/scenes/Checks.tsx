@@ -20,7 +20,7 @@ export function Checks() {
   return (
     <Chapter number="07" name="Checks" title="Checked, so it stays true.">
       <Panel style={{ padding: "52px 60px", fontFamily: fonts.mono, fontSize: 33 }}>
-        <div style={{ color: color.line, opacity: ease(frame, 10, 12) }}>$ ds-spec validate</div>
+        <div style={{ color: color.line, opacity: ease(frame, 10, 12) }}>$ taproot validate</div>
         {checks.map((check, i) => (
           <div
             key={check}

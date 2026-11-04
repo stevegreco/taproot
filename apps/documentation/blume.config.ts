@@ -34,7 +34,7 @@ const semanticTokenReferenceMarkdown: ComponentMarkdown = ({ props }) => {
 };
 
 export default defineConfig({
-  title: "Design System",
+  title: "Taproot",
   description: "A token-first design system for consistent, themeable interfaces.",
   deployment: {
     site: "https://docs.stevegreco.workers.dev",

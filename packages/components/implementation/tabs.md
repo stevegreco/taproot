@@ -1,6 +1,6 @@
 ---
 component: component.tabs
-package: "@stevegreco/web-components"
+package: "@taproot-ds/web-components"
 tagName: ds-tabs
 defineExport: defineTabs
 usage: |
@@ -46,11 +46,11 @@ keep their values and still submit with their form.
 
 ## Styles
 
-Install `@stevegreco/design-system` alongside this package, and load its token stylesheet once at
+Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
 the application root. Without it, the component has no colors, spacing, or type.
 
 ```js
-import "@stevegreco/design-system/css";
+import "@taproot-ds/tokens/css";
 ```
 
 Without a bundler, link the package's `dist/css/tokens.css` instead.

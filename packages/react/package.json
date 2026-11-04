@@ -1,5 +1,5 @@
 {
-  "name": "@stevegreco/react-components",
+  "name": "@taproot-ds/react-components",
   "version": "0.0.1",
   "private": true,
   "description": "React components built from the design system spec and styled with design system tokens.",
@@ -11,7 +11,7 @@
   "author": "Steve Greco",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stevegreco/design-system.git",
+    "url": "git+https://github.com/stevegreco/taproot.git",
     "directory": "packages/react"
   },
   "files": [
@@ -37,7 +37,7 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
-    "@stevegreco/design-system": "workspace:*",
+    "@taproot-ds/tokens": "workspace:*",
     "react-aria-components": "^1.22.1"
   },
   "devDependencies": {

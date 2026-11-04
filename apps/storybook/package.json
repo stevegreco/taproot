@@ -9,8 +9,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@stevegreco/design-system": "workspace:*",
-    "@stevegreco/web-components": "workspace:*"
+    "@taproot-ds/tokens": "workspace:*",
+    "@taproot-ds/web-components": "workspace:*"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.6.1",

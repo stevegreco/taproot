@@ -194,7 +194,7 @@ describe("spec MCP server", () => {
   });
 
   it("reads token files only for tokens with resolve, so a broken token file cannot fail get", async () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ds-spec-mcp-"));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "taproot-mcp-"));
     cleanups.push(async () => fs.rmSync(dir, { recursive: true }));
     fs.writeFileSync(
       path.join(dir, "spec.config.json"),
@@ -240,7 +240,7 @@ describe("spec MCP server", () => {
   });
 
   it("keeps the last good index and warns when a reload has issues", async () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "ds-spec-mcp-"));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "taproot-mcp-"));
     cleanups.push(() => fs.rmSync(tmp, { recursive: true }));
     fs.cpSync(fixture("valid"), tmp, { recursive: true });
     const { client, reload } = await connect({ cwd: tmp, contentDir: tmp });
@@ -267,7 +267,7 @@ describe("spec MCP server", () => {
   });
 
   it("reloads when files change", async () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "ds-spec-mcp-"));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "taproot-mcp-"));
     cleanups.push(() => fs.rmSync(tmp, { recursive: true }));
     fs.cpSync(fixture("valid"), tmp, { recursive: true });
     const { client } = await connect({ cwd: tmp, contentDir: tmp, watch: true, debounceMs: 20 });
@@ -292,7 +292,7 @@ describe("spec MCP server", () => {
     const client = new Client({ name: "test", version: "0.0.0" });
     const transport = new StdioClientTransport({
       command: process.execPath,
-      args: [path.join(here, "../bin/ds-spec-mcp.js")],
+      args: [path.join(here, "../bin/taproot-mcp.js")],
       cwd: repoRoot,
     });
     cleanups.push(() => client.close());

@@ -17,6 +17,6 @@ try {
     process.exit(0);
   });
 } catch (error) {
-  process.stderr.write(`ds-spec-mcp: ${error.message}\n`);
+  process.stderr.write(`taproot-mcp: ${error.message}\n`);
   process.exit(1);
 }

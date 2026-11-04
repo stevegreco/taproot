@@ -20,10 +20,10 @@ importers:
       '@remotion/transitions':
         specifier: 4.0.533
         version: 4.0.533(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@stevegreco/design-system':
+      '@taproot-ds/tokens':
         specifier: link:../../packages/tokens
         version: link:../../packages/tokens
-      '@stevegreco/web-components':
+      '@taproot-ds/web-components':
         specifier: link:../../packages/components
         version: link:../../packages/components
       react:

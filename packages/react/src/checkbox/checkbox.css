@@ -1,4 +1,4 @@
-/* Checkbox, styled from the bindings `ds-spec tokens component.checkbox` lists. React Aria exposes
+/* Checkbox, styled from the bindings `taproot tokens component.checkbox` lists. React Aria exposes
    state as data attributes on the field and the choice row: [data-selected], [data-indeterminate],
    [data-hovered], [data-focus-visible], [data-disabled], [data-invalid]. Indeterminate wins over
    checked: both paint the box the same, and the component renders the dash instead of the mark. */

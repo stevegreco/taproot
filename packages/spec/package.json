@@ -1,17 +1,17 @@
 {
-  "name": "@stevegreco/design-system-spec",
+  "name": "@taproot-ds/spec",
   "version": "0.2.0",
-  "description": "Technology-neutral, validated specs for the Ember & Sage design system.",
+  "description": "Technology-neutral, validated specs for the Taproot design system.",
   "license": "ISC",
   "author": "Steve Greco",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stevegreco/design-system.git",
+    "url": "git+https://github.com/stevegreco/taproot.git",
     "directory": "packages/spec"
   },
   "bin": {
-    "ds-spec": "./bin/ds-spec.js",
-    "ds-spec-mcp": "./bin/ds-spec-mcp.js"
+    "taproot": "./bin/taproot.js",
+    "taproot-mcp": "./bin/taproot-mcp.js"
   },
   "files": [
     "bin",

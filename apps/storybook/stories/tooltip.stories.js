@@ -1,6 +1,6 @@
 import { html, svg } from "lit";
 // The package root does not register ds-tooltip yet, so register it here.
-import { defineTooltip } from "@stevegreco/web-components/tooltip";
+import { defineTooltip } from "@taproot-ds/web-components/tooltip";
 
 defineTooltip();
 

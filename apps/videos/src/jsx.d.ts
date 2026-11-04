@@ -1,4 +1,4 @@
-import type { ElementAttributes } from "@stevegreco/web-components";
+import type { ElementAttributes } from "@taproot-ds/web-components";
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
 
 type CustomElements = {

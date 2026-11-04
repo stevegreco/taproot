@@ -2,7 +2,7 @@ import { loadFont as loadLora } from "@remotion/google-fonts/Lora";
 import { loadFont as loadSourceSans } from "@remotion/google-fonts/SourceSans3";
 import { loadFont as loadMono } from "@remotion/google-fonts/JetBrainsMono";
 
-// Fonts and colors come from the Ember & Sage primitives in packages/tokens.
+// Fonts and colors come from the Taproot primitives in packages/tokens.
 const lora = loadLora("normal", { weights: ["500", "600"], subsets: ["latin"] });
 const sans = loadSourceSans("normal", { weights: ["400", "600", "700"], subsets: ["latin"] });
 const mono = loadMono("normal", { weights: ["400", "600"], subsets: ["latin"] });

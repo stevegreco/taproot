@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Time how long `ds-spec get button` takes, the way an agent calls it: a fresh `node` process per
+ * Time how long `taproot get button` takes, the way an agent calls it: a fresh `node` process per
  * call, run from the repository root so it finds spec.config.json. Not part of `pnpm test`; a
  * looser 1 s limit in test/cli.test.js catches large regressions.
  *
@@ -15,7 +15,7 @@ import { parseArgs } from "node:util";
 const TARGET_MS = 300;
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const bin = path.resolve(here, "../bin/ds-spec.js");
+const bin = path.resolve(here, "../bin/taproot.js");
 const repoRoot = path.resolve(here, "../../..");
 const args = ["get", "button"];
 
@@ -31,7 +31,7 @@ function once() {
   const result = spawnSync(process.execPath, [bin, ...args], { cwd: repoRoot, encoding: "utf8" });
   const ms = performance.now() - started;
   if (result.status !== 0) {
-    console.error(`ds-spec ${args.join(" ")} exited ${result.status}:\n${result.stderr}`);
+    console.error(`taproot ${args.join(" ")} exited ${result.status}:\n${result.stderr}`);
     process.exit(1);
   }
   return ms;
@@ -43,7 +43,7 @@ const times = Array.from({ length: runs }, once).sort((a, b) => a - b);
 const median = times[Math.floor(times.length / 2)];
 const fmt = (ms) => `${Math.round(ms)} ms`;
 
-console.log(`ds-spec ${args.join(" ")}, ${runs} runs after one warm-up`);
+console.log(`taproot ${args.join(" ")}, ${runs} runs after one warm-up`);
 console.log(`  min ${fmt(times[0])}, median ${fmt(median)}, max ${fmt(times.at(-1))}`);
 console.log(
   median <= TARGET_MS

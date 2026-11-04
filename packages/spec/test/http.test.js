@@ -27,7 +27,7 @@ describe("MCP over HTTP", () => {
       arguments: { target: "button", implementation: "web" },
     });
     expect(button.isError).toBe(false);
-    expect(button.content[0].text).toContain("@stevegreco/web-components");
+    expect(button.content[0].text).toContain("@taproot-ds/web-components");
 
     const react = await client.callTool({
       name: "get",

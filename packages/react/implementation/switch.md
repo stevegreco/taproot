@@ -1,6 +1,6 @@
 ---
 component: component.switch
-package: "@stevegreco/react-components"
+package: "@taproot-ds/react-components"
 export: Switch
 usage: |
   <Switch
@@ -56,8 +56,8 @@ a controlled switch keeps `checked`, so listen for the form's `reset` event and 
 Load the token stylesheet and the component stylesheet once, before rendering:
 
 ```tsx
-import "@stevegreco/design-system/css";
-import "@stevegreco/react-components/style.css";
+import "@taproot-ds/tokens/css";
+import "@taproot-ds/react-components/style.css";
 ```
 
 ## Reading direction

@@ -1,6 +1,6 @@
 # CLI Explorer
 
-A local web page for trying `ds-spec` commands and seeing what they return. Each run calls the
+A local web page for trying `taproot` commands and seeing what they return. Each run calls the
 real CLI twice and shows both outputs side by side: the Markdown an agent reads and the `--json`
 data, plus the exit code and any warnings. A switcher in the corner picks the system, light, or dark
 theme and remembers the choice.
@@ -18,5 +18,5 @@ starts it faster. Set `PORT` to use another port. The server listens on localhos
 To try the MCP tools instead, use the MCP Inspector:
 
 ```bash
-npx @modelcontextprotocol/inspector node packages/spec/bin/ds-spec-mcp.js
+npx @modelcontextprotocol/inspector node packages/spec/bin/taproot-mcp.js
 ```

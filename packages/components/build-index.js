@@ -54,7 +54,7 @@ await writeFile(
   `${SRC}/index.js`,
   `${header}
 /**
- * @stevegreco/web-components
+ * @taproot-ds/web-components
  *
  * Importing this module registers every element with its default tag name.
  * Import from a subpath (e.g. "…/button") to register selectively, or use the

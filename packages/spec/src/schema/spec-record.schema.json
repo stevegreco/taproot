@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:design-system-spec:record:1",
+  "$id": "urn:taproot:record:1",
   "title": "Design system spec record",
   "description": "One record of a design system spec: a component contract (YAML), or the front matter of a pattern, guideline, or example (Markdown). See SPEC.md.",
   "type": "object",
