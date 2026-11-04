@@ -10,11 +10,9 @@ level. A small library reads, validates, and queries them.
 | ----------------------------------- | ------------------------------------------------------------- |
 | Look up a field or write a record   | [SPEC.md](SPEC.md), the only field reference                  |
 | Query the spec                      | [CLI](#cli), or `node packages/spec/bin/ds-spec.js help` from the repository root |
-| Understand the format's decisions   | ADRs 0001 through 0003 in [`docs/adr/`](../../docs/adr)       |
+| Understand the format's decisions   | The ADRs in [`docs/adr/`](../../docs/adr)                     |
 
 The JSON Schema is [`src/schema/spec-record.schema.json`](src/schema/spec-record.schema.json).
-[RFC 0002](../../docs/rfcs/0002-knowledge-layer-architecture.md) is historical background, written
-when this package was called the knowledge layer.
 
 There is no build step. The library reads the authored files directly and keeps an index in memory.
 A command-line tool and a local MCP server call the same library. See [CLI](#cli) and
@@ -131,7 +129,9 @@ front matter with the record id, package, what to import, usage, and API rows th
 parameter or event each member implements, then Markdown guidance. The folder's `technology` sets
 the rest. A folder that does not exist yet reads as nothing implemented. A `web-component` file names its `tagName` and `defineExport`, and its rows are
 `attribute`, `property`, or `event`. A `react` file names its `export`, and its rows are `prop` or
-`callback`. An item names its own `tagName` or `export`. Records stay technology-neutral; these files live with the implementation. The
+`callback`. A `parts` or `items` entry has its own rows for each record part and item. An item names
+its own `tagName` or `export`, or in React the array `prop` whose entries are the items, with a
+`field` row per key. A part names one only when it is its own element or component. Records stay technology-neutral; these files live with the implementation. The
 docs site reads the same files with `loadImplementations`, `parseImplementation`, and
 `checkImplementation` from `@stevegreco/design-system-spec/implementation`.
 `checkImplementation` confirms the file is named after a component record and that every

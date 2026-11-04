@@ -247,7 +247,7 @@ tokens:
 rationale:
   - decision: Checkbox consumes semantic tokens directly.
     why: >-
-      ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is
+      Tokens ADR 0003. The checked fill reuses the primary action roles, whose on-action foreground is
       already audited against them. The box uses semantic.radius.compact, the radius for small
       controls. No component-token namespace.
   - decision: Checked and indeterminate are states driven by their parameters.

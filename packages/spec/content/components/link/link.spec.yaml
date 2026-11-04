@@ -143,7 +143,7 @@ tokens:
 rationale:
   - decision: Link consumes semantic tokens directly.
     why: >-
-      ADR 0003. Brand foreground is audited as text on the page background, and focus already has a
+      Tokens ADR 0003. Brand foreground is audited as text on the page background, and focus already has a
       semantic role. No component-token namespace.
   - decision: Placement is a variant, not a size.
     why: >-

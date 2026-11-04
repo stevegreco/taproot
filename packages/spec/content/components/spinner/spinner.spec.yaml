@@ -170,7 +170,7 @@ rationale:
     why: >-
       Inherit lets a spinner sit beside text at the text's size, like Icon. A spinner also stands
       alone in an empty region, which needs a larger size than any icon. Spacing primitives are used
-      because no semantic size role exists (ADR 0003).
+      because no semantic size role exists (tokens ADR 0003).
   - decision: The indicator paints in the current text color, and its track uses the subtle border color.
     covers: [forced-colors]
     why: >-

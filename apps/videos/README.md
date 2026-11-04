@@ -2,7 +2,7 @@
 
 [Remotion](https://www.remotion.dev/) videos built with the design tokens and web components.
 `src/Root.tsx` loads `tokens.css` and registers every `ds-*` element once, so any composition can
-use `var(--semantic-…)` tokens and render `<ds-button>`, `<ds-badge>`, and the rest directly in JSX.
+use `var(--ds-semantic-…)` tokens and render `<ds-button>`, `<ds-badge>`, and the rest directly in JSX.
 
 This app is opt in. It is outside the repository's pnpm workspace, so a normal `pnpm install`,
 `pnpm build`, `pnpm test`, and CI never install Remotion or touch it. It has its own

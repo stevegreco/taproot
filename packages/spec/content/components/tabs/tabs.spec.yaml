@@ -243,6 +243,6 @@ rationale:
       and focus never depend on the theme colors (forced-colors).
   - decision: Tabs consume semantic colors and typography, with spacing primitives.
     why: >-
-      ADR 0003. The selected indicator borrows the primary action fill as the strongest accent the
+      Tokens ADR 0003. The selected indicator borrows the primary action fill as the strongest accent the
       system has, and hover borrows the tertiary action hover because a tab is a low-emphasis
       control. No semantic spacing role exists, so spacing primitives set padding and gaps.

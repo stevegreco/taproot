@@ -1,192 +1,35 @@
-# @stevegreco/design-system
+# Ember & Sage design system
 
-Design tokens for the Ember & Sage design system — distributed as CSS custom properties and JSON. Built with [Style Dictionary](https://styledictionary.com).
+An agent-first design system. The spec says what each component is and how to use it, and agents
+read it through a CLI or an MCP server.
 
-This repository also holds the design system spec (a technology-neutral contract for each
-component, with patterns and guidelines) in [`packages/spec`](packages/spec/README.md),
-the web components in [`packages/components`](packages/components/README.md), and the
-documentation site in `apps/documentation`.
+| Path                                              | What it is                                             |
+| ------------------------------------------------- | ------------------------------------------------------ |
+| [`packages/spec`](packages/spec/README.md)        | The spec: records, format, CLI, and MCP server         |
+| [`packages/tokens`](packages/tokens/README.md)    | Design tokens as CSS custom properties and JSON        |
+| [`packages/components`](packages/components/README.md) | Web components                                    |
+| [`packages/react`](packages/react/README.md)      | React components, a second implementation (unpublished) |
+| [`apps/documentation`](apps/documentation/README.md) | The documentation site                              |
+| `apps/storybook`                                  | A workbench for exploring component states and themes  |
+| [`apps/mcp`](apps/mcp/README.md)                  | The hosted MCP server                                  |
+| [`apps/cli-explorer`](apps/cli-explorer/README.md) | A local page for trying `ds-spec` commands            |
+| [`apps/videos`](apps/videos/README.md)            | Remotion videos, outside the workspace                 |
 
-Start with the spec's [Start here](packages/spec/README.md#start-here) table. Query the spec
-from the repository root with `node packages/spec/bin/ds-spec.js search <query>` or `node packages/spec/bin/ds-spec.js get <id>`. An MCP server for the same content is
-registered in `.mcp.json`.
-
-## Install
+Query the spec from the repository root:
 
 ```bash
-pnpm add @stevegreco/design-system
+node packages/spec/bin/ds-spec.js search "destructive action"
+node packages/spec/bin/ds-spec.js get component.button
 ```
 
-## Quick start
-
-Link the single CSS file once at the root of your app. All token tiers are included.
-
-```html
-<link rel="stylesheet" href="node_modules/@stevegreco/design-system/dist/css/tokens.css" />
-```
-
-Or import via a bundler:
-
-```js
-import "@stevegreco/design-system/css";
-```
-
-Then use tokens in your CSS:
-
-```css
-.card {
-  background: var(--ds-semantic-color-background-surface);
-  border: 1px solid var(--ds-semantic-color-border-default);
-  color: var(--ds-semantic-color-foreground-default);
-}
-
-.btn-primary {
-  background: var(--ds-semantic-color-background-action-primary-default);
-  color: var(--ds-semantic-color-foreground-on-action-primary);
-  border-radius: var(--ds-semantic-radius-control);
-}
-```
-
-## Fonts
-
-The design system uses three typefaces, each mapped to a font token:
-
-| Token                          | Family         | Role                             |
-| ------------------------------ | -------------- | -------------------------------- |
-| `--ds-primitives-font-display` | Lora           | Headings, card titles, logotype  |
-| `--ds-primitives-font-sans`    | Source Sans 3  | Body text, UI labels, buttons    |
-| `--ds-primitives-font-mono`    | JetBrains Mono | Code, token values, numeric data |
-
-Each token includes a system fallback stack, so the UI remains readable if Google Fonts fails to load. To use the intended typefaces, add the following `<link>` tags to your document `<head>` **before** the tokens stylesheet:
-
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
-  rel="stylesheet"
-/>
-```
-
-The `display=swap` parameter ensures text renders immediately in the fallback font while the custom fonts load, avoiding invisible text during page load.
-
-If you are using a bundler with a `<head>` injection plugin (e.g. Vite's `vite-plugin-html`) or a framework like Next.js, load the fonts using your framework's preferred font mechanism instead of a raw `<link>` tag.
-
-## Token architecture
-
-Primitive and semantic tokens are the whole public vocabulary. Components read semantic tokens
-directly; there is no component tier.
-
-```
-Primitives  →  Semantic
-  (scale)       (intent)
-```
-
-| Tier          | Prefix              | Use when                                            |
-| ------------- | ------------------- | --------------------------------------------------- |
-| **Primitive** | `--ds-primitives-*` | No semantic role expresses the raw scale choice     |
-| **Semantic**  | `--ds-semantic-*`   | Styling components and product interfaces by intent |
-
-Color primitives are not published as CSS variables. Use a semantic color token, which follows the
-active theme. The palette is still in `primitives.json` for design tooling.
-
-### Semantic token groups
-
-| Group                       | Example                                                 | Purpose                                 |
-| --------------------------- | ------------------------------------------------------- | --------------------------------------- |
-| `background`                | `--ds-semantic-color-background-default`                | Page and surface fills                  |
-| `foreground`                | `--ds-semantic-color-foreground-muted`                  | Text and icon colors                    |
-| `border`                    | `--ds-semantic-color-border-default`                    | Dividers and outlines                   |
-| `background.action.primary` | `--ds-semantic-color-background-action-primary-default` | Primary interactions                    |
-| `background.brand`          | `--ds-semantic-color-background-brand-muted`            | Brand surfaces                          |
-| `foreground.on`             | `--ds-semantic-color-foreground-on-action-primary`      | Content paired with a specific fill     |
-| `*.status.*`                | `--ds-semantic-color-background-status-success-default` | Feedback surfaces, content, and borders |
-
-## Theming
-
-With no `data-theme` attribute on `<html>`, semantic tokens follow the user's system preference. A
-dark system preference activates the dark theme through `prefers-color-scheme`; light is the
-default.
-
-Set `data-theme` to override the system preference. The attribute always takes priority.
-
-```html
-<html data-theme="light"></html>
-<html data-theme="dark"></html>
-```
-
-```js
-document.documentElement.setAttribute("data-theme", "dark");
-document.documentElement.setAttribute("data-theme", "light");
-document.documentElement.removeAttribute("data-theme"); // follow the system preference
-```
-
-When the attribute is absent, changes to the system preference apply without JavaScript or a page
-refresh. The stylesheet also sets `color-scheme`, so supported browser controls and scrollbars
-match the active theme.
-
-A surface that must keep one appearance in both themes needs a semantic role for it. Propose one rather than hard-coding palette values.
-
-## JSON tokens
-
-Resolved token values are also available as JSON for use in design tooling, style pipelines, or non-CSS targets.
-
-```js
-import primitives from "@stevegreco/design-system/tokens/primitives";
-import semantic from "@stevegreco/design-system/tokens/semantic-light";
-```
-
-The semantic tier is theme-specific. Import the semantic file that matches the
-theme whose resolved values you need.
-
-```js
-import semantic from "@stevegreco/design-system/tokens/semantic-dark";
-```
-
-Descriptions are theme-independent. Import the meta file to read every semantic token's type and purpose. `description` is the token's own purpose, or null when none has been written. `groupDescription` is the purpose of a parent group, used by typography recipes, or null when the token has no described group.
-
-```js
-import semanticMeta from "@stevegreco/design-system/tokens/semantic-meta";
-```
-
-The CSS build needs no such split: `dist/css/tokens.css` carries both themes and swaps at runtime.
-
-## Build outputs
-
-| File                              | Contents                                                                    |
-| --------------------------------- | --------------------------------------------------------------------------- |
-| `dist/css/tokens.css`             | Primitives except color, and semantic light/dark. The package's main entry. |
-| `dist/tokens/primitives.json`     | Raw primitive scale values, including the color palette                     |
-| `dist/tokens/semantic.light.json` | Resolved semantic tokens for light theme                                    |
-| `dist/tokens/semantic.dark.json`  | Resolved semantic tokens for dark theme                                     |
-| `dist/tokens/semantic.meta.json`  | Type and purpose for every semantic token                                   |
-
-## Building from source
+Build and test:
 
 ```bash
 pnpm install
-pnpm run build
-```
-
-Source tokens live in `src/tokens/`. Never edit `dist/` files directly — they are regenerated on every build.
-
-### Developing this repository
-
-`pnpm --filter <pkg> build` and `pnpm --filter <pkg> test` skip Turbo's `^build` graph. On a clean
-tree they fail looking for missing `dist/` files. From the repository root, use Turbo to build or
-test one package and its workspace dependencies:
-
-```bash
-pnpm exec turbo run build --filter=documentation
-pnpm exec turbo run test --filter=documentation
+pnpm build
 pnpm test
 ```
 
-`pnpm build` and `pnpm test` are `turbo run` wrappers. After packages are already built,
-`pnpm exec vitest run` still runs the Vitest workspace from the repo root.
-
-## Publish checklist
-
-1. `pnpm run build`
-2. Bump version in `package.json`
-3. `pnpm publish`
+[`AGENTS.md`](AGENTS.md) has the working guide: how to query and edit the spec, add a component, and
+release packages. Decisions are in [`docs/adr/`](docs/adr), and token decisions are in
+[`packages/tokens/docs/adr/`](packages/tokens/docs/adr).

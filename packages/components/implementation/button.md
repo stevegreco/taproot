@@ -52,16 +52,7 @@ Button defaults to `type="button"`. Set the type when it participates in a form:
 Use `type="reset"` only when restoring every form control to its initial value is the intended
 behavior.
 
-## Map intent to variants
-
-- Use `primary` for the highest-emphasis action in the group.
-- Use `secondary` for a visible supporting action.
-- Use `tertiary` for a low-emphasis contextual action.
-- Use `destructive` for a destructive or difficult-to-reverse action.
-
-Apply the hierarchy to each action group, not to the page as a whole.
-
-## Use the component contract
+## Styling
 
 Load the published token stylesheet once at the application root. Button reads semantic tokens
 directly, so it follows the active theme. The tokens it reads are not a customization API.
@@ -69,13 +60,7 @@ directly, so it follows the active theme. The tokens it reads are not a customiz
 Do not recreate Button states with product CSS. Use the published variants and sizes first. Treat
 `::part(button)` as an escape hatch that requires a specific product need and design review.
 
-## Handle labels and icons
+## Icons
 
-Keep visible text when it is needed to understand the result. Mark a decorative icon hidden from
-assistive technology. Provide `aria-label` when an icon is the only visible content.
-
-## Handle unavailable actions
-
-Use `disabled` only while the action is unavailable. When the reason is not apparent from the
-surrounding fields or content, explain it nearby. Do not replace disabled behavior with a visual
-style that still allows activation.
+Mark a decorative icon hidden from assistive technology. Provide `aria-label` when an icon is the
+only visible content.

@@ -91,8 +91,8 @@ In `packages/components`, fill in the scaffold:
   `form`, enum properties, and properties set before registration.
 
 `test/package-root.test.js` and `packages/spec/test/content.test.js` find components and records
-on disk, so they need no edits. Nothing checks the implementation against the spec. When you
-change one, read the other.
+on disk, so they need no edits. The tooling checks that the API mapping covers the spec, but nothing
+checks behavior or styling against it. When you change one, read the other.
 
 Check: `pnpm exec turbo run test --filter=@stevegreco/web-components`.
 

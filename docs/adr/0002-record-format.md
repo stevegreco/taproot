@@ -1,8 +1,9 @@
 # ADR 0002: Record format
 
 **Status:** Accepted
-**Source:** [RFC 0002](../rfcs/0002-knowledge-layer-architecture.md). This ADR and ADRs 0001 and
-0003 replaced the earlier ADRs 0001 through 0007, which are available in git history.
+**Amended by:** [ADR 0004](0004-repeated-items.md) and [ADR 0005](0005-part-options.md).
+
+This ADR and ADRs 0001 and 0003 replaced earlier ADRs, which are in git history.
 
 The field reference is [`packages/spec/SPEC.md`](../../packages/spec/SPEC.md). This ADR records
 the choices and why. It does not list the fields.

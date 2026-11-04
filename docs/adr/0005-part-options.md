@@ -55,8 +55,7 @@ component parameter or state, not a part parameter.
 - An agent reading Card sees `label` and `headingLevel` as options of the title.
 - A mapping can show an option on a child element or component without the spec naming it.
 - Adding an optional field leaves every existing record valid, so the format version stays 1.
-- Other components can move part options out of their component parameters one at a time, such as
-  Dialog's title and description, or Alert's dismiss button.
+- Card, Dialog, and Alert declare their part options this way.
 
 ## Alternatives considered
 

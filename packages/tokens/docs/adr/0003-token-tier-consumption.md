@@ -32,8 +32,9 @@ semantic tier cannot express. That change revises this ADR first.
 ### Primitive use is allowed when it is honest
 
 A component may consume a primitive directly when the semantic vocabulary has no matching role,
-such as spacing, radius, or motion scale choices. Never reference a primitive when a semantic token
-already expresses the same intent.
+such as spacing or motion scale choices. Never reference a primitive when a semantic token already
+expresses the same intent. Colors, radii, and borders always come from the semantic tier, and tests
+in the components and spec packages enforce that.
 
 ### Color primitives are not published as CSS
 

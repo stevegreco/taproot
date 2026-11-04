@@ -50,6 +50,15 @@ describe("shipped content", () => {
   it("exposes the parsed schema", () => {
     expect(schema.$id).toBe("urn:design-system-spec:record:1");
   });
+
+  it("takes colors, radii, and borders from the semantic tier (tokens ADR 0003)", async () => {
+    const spec = await loadSpec({ contentDir: DEFAULT_CONTENT_DIR });
+    const primitives = spec
+      .list({ type: "component" })
+      .flatMap(({ id }) => spec.tokens(id).map((binding) => `${id}: ${binding.token}`))
+      .filter((entry) => /: primitives\.(?:color|radius|border)\./.test(entry));
+    expect(primitives).toEqual([]);
+  });
 });
 
 describe("SPEC.md", () => {

@@ -313,7 +313,7 @@ rationale:
       product layout built from tokens, per the compose-or-propose guideline.
   - decision: Alert consumes semantic status tokens directly, with spacing primitives.
     why: >-
-      ADR 0003. The quiet status surfaces are audited for body text, status content, and borders in
+      Tokens ADR 0003. The quiet status surfaces are audited for body text, status content, and borders in
       both themes, and the focus border and brand text (for a composed Link) are audited against
       each of them. No semantic spacing role exists, so spacing primitives set padding and gaps.
       The title uses semantic.typography.title, as in Dialog. The dismiss control borrows the tertiary action hover and pressed

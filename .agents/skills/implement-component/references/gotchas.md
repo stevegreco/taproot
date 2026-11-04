@@ -25,7 +25,8 @@ document-component.
   `motion-duration`, `motion-easing`. Token references are opaque strings.
 - Geometry and layout are not token properties. State them as rules or rationale.
 - Prefer semantic tokens (tokens ADR 0003). Use a primitive only when no semantic role fits, and
-  say why in `rationale`.
+  say why in `rationale`. Colors, radii, and borders are always semantic. `validate` does not catch
+  this, but the spec package's content test does.
 - A rule ID is unique within its record and must not equal a top-level field name. Its address is
   `component.<name>#<rule-id>`.
 - An `avoid[].instead` that is a record ID creates an `alternative` link and must resolve. Plain
@@ -78,14 +79,15 @@ document-component.
   just as well for an element that never rendered. Start it with
   `expectRendered(element, "part", …)` from `test/helpers/rendered.js`, which fails unless the
   element upgraded and rendered those parts. Then see the test fail at least once.
-- No test compares the implementation to the spec. Review them together.
+- The tooling checks that the API mapping covers the spec, but no test compares behavior or styling
+  to it. Review them together.
 
 ## Implementation file
 
 - `packages/components/implementation/<name>.md` is required for the component page. Its `api`
   rows map each web attribute, property, and event to a spec parameter or event by name.
 - Keep the body to web-specific guidance. Rules, anatomy, and tokens come from the spec.
-- Copy `implementation/button.md` or `text-field.md`.
+- Copy the shape of `implementation/alert.md`.
 
 ## Types
 

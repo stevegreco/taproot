@@ -137,7 +137,7 @@ rationale:
   - decision: Fixed sizes use spacing primitives.
     covers: [sizes]
     why: >-
-      ADR 0003 allows a primitive when no semantic role exists. No semantic size role exists yet,
+      Tokens ADR 0003 allows a primitive when no semantic role exists. No semantic size role exists yet,
       and adding one is a token architecture change, not part of adding a component.
   - decision: The default size inherits the surrounding text size.
     why: >-

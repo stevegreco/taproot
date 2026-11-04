@@ -81,7 +81,7 @@ Disabled colors remain recognizable but are exempt from WCAG minimum contrast re
 
 - Light and dark semantic files maintain structural parity.
 - CSS consumers follow the system color preference until the product sets an explicit root theme.
-- Component aliases inherit theme changes by referencing semantic variables; components without a published component contract consume semantic variables directly.
+- Components consume semantic variables directly, so they inherit theme changes.
 - The contrast audit encodes supported foreground/background and border/background pairings.
 - The parity audit enforces theme response and interaction-state direction.
 - The ramp audit prevents theme-specific surface values from entering primitive color ramps.

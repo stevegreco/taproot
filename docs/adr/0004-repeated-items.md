@@ -55,7 +55,7 @@ does for the component's.
 - An agent reading Accordion sees `label` and `expanded` as options of each section, not prose.
 - A web implementation that leaves out an item attribute fails the check.
 - Adding an optional field leaves every existing record valid, so the format version stays 1.
-- Tabs, Radio group, and Select can move their item options out of prose one at a time.
+- Accordion, Tabs, Radio group, and Select declare their item options this way.
 
 ## Alternatives considered
 

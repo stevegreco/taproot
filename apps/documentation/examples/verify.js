@@ -3,9 +3,7 @@
  *
  * Each `examples/<slug>.tsx` names its steps file, `examples/<slug>.verify.js`,
  * in its header comment. That file is the only copy of the steps. The docs tests
- * run every example against the built site (`test/examples.test.ts`); the
- * verify-design-system skill runs them against a dev server
- * (`control.mjs examples`).
+ * run every example against the built site (`test/examples.test.ts`).
  */
 import { readdir } from "node:fs/promises";
 
