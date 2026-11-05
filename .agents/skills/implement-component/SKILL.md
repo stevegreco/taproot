@@ -46,6 +46,17 @@ why the component does not have it. Give that entry `covers` with the item names
 as `covers: [loading, invalid]`. One entry can cover several items. Ask the user only about
 decisions that change public API.
 
+The component inherits the rules of each pattern and guideline in its `links.follows`. Do not
+restate them. Write only what is true of this component, and change an inherited rule on purpose:
+
+- To narrow it, repeat its `id` with `extends: <address>` and a `statement` for this component,
+  such as what its value is for `form-value`.
+- To set it aside, repeat its `id` with `waived: <reason>`, such as a rule about an option the
+  component does not have.
+
+`node packages/spec/bin/taproot.js rules --id component.<name>` lists the full set to build and test
+against.
+
 `tokens` maps each anatomy part to conditions (`base`, `variant.primary`, `hover`,
 `variant.primary + hover`) and each condition to properties and token references.
 
@@ -64,7 +75,8 @@ goes: `src/<name>.js` (property accessors from the parameters, an empty shadow r
 overwrites a file that exists. Do not edit `src/index.js` or `src/index.d.ts`: the build generates
 them from `src/`.
 
-The test file has one failing test per MUST rule, named `[rule-id] <statement>`. Before any runtime
+The test file has one failing test per MUST rule, inherited ones included, named
+`[rule-id] <statement>`. Before any runtime
 code, replace each `expect.fail` with a test that proves the rule. Rename a test to say what it
 checks, keeping the ID first, or tag a test that proves several rules `"[a] [b] …"`. Run them and
 watch every one fail for the right reason.

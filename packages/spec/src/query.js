@@ -1,5 +1,6 @@
-import { scoreRecord, tokenize } from "./search.js";
+import { resolveRules } from "./inherit.js";
 import { INVERSE } from "./links.js";
+import { collectText, scoreRecord, tokenize } from "./search.js";
 import { byCodeUnit, editDistance, recordIdOf, typoAllowance } from "./util.js";
 
 /**
@@ -134,30 +135,45 @@ export function links(state, id, options = {}) {
 const mirrorKey = (link) =>
   `${link.from}\t${recordIdOf(link.to)}\t${link.kind}\t${link.situation ?? ""}`;
 
+/** Each record's rules once inheritance is applied, built once per state. */
+const resolvedRules = new WeakMap();
+export function recordRules(state, id) {
+  let byRecord = resolvedRules.get(state);
+  if (!byRecord) resolvedRules.set(state, (byRecord = new Map()));
+  if (!byRecord.has(id)) {
+    const { rules, waived } = resolveRules(state.records.get(id), (other) =>
+      state.records.get(other),
+    );
+    byRecord.set(id, { rules, waived });
+  }
+  return byRecord.get(id);
+}
+
+/**
+ * Rules to review against. Filtered to one component, the list includes the rules it inherits
+ * from the patterns and guidelines it follows, each at the address where it is written. Unfiltered,
+ * each rule appears once, under the record that writes it.
+ */
 export function rules(state, filter = {}) {
   const [recordId, ruleId] = filter.id ? filter.id.split("#") : [];
   const queryTokens = filter.query ? [...new Set(tokenize(filter.query))] : [];
   const hits = [];
   for (const record of state.records.values()) {
     if (recordId && record.id !== recordId) continue;
-    const indexed = state.searchIndex.get(record.id).rules;
-    (record.rules ?? []).forEach((rule, order) => {
+    const list = recordRules(state, record.id).rules.filter((rule) => recordId || !rule.appliesTo);
+    list.forEach((rule, order) => {
       if (ruleId && rule.id !== ruleId) return;
       if (filter.topic && rule.topic !== filter.topic) return;
       if (filter.level && rule.level !== filter.level) return;
       if (queryTokens.length > 0) {
         // The rule's text values only, so field names such as `topic` never match.
-        const words = new Set(indexed[order].tokens);
+        const { address: _a, recordId: _r, appliesTo: _t, extends: _e, ...authored } = rule;
+        const words = new Set(tokenize(collectText(authored).join(" ")));
         if (!queryTokens.every((token) => words.has(token))) return;
       }
       hits.push({
         order,
-        hit: {
-          address: `${record.id}#${rule.id}`,
-          recordId: record.id,
-          recordTitle: record.title,
-          ...rule,
-        },
+        hit: { ...rule, recordTitle: state.records.get(rule.recordId).title },
       });
     });
   }

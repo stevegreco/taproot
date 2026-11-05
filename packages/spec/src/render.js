@@ -1,5 +1,5 @@
 import { stringify } from "yaml";
-import { links, tokens } from "./query.js";
+import { links, recordRules, tokens } from "./query.js";
 import { byCodeUnit, recordIdOf } from "./util.js";
 
 const TOPICS = ["content", "behavior", "accessibility"];
@@ -59,12 +59,14 @@ function renderRecord(state, record, omit) {
   if (record.type === "component") {
     blocks.push(record.description);
     for (const field of FIELD_ORDER) {
-      if (record[field] !== undefined && !omit.includes(field)) {
-        blocks.push(renderField(state, record, field));
-      }
+      if (omit.includes(field)) continue;
+      // Inherited rules count, so a component with no rules of its own still lists them.
+      const present = field === "rules" ? hasRules(state, record) : record[field] !== undefined;
+      if (present) blocks.push(renderField(state, record, field));
     }
-  } else if (record.body) {
-    blocks.push(record.body);
+  } else {
+    if (record.body) blocks.push(record.body);
+    if (record.rules?.length) blocks.push(renderField(state, record, "rules"));
   }
   if (record.type === "example") blocks.push(renderAnnotations(state, record));
   blocks.push(renderLinks(state, record.id));
@@ -124,7 +126,10 @@ function referenceText(state, target) {
 
 function renderSection(state, record, name, entry) {
   if (entry.kind === "heading") return [`${"#".repeat(entry.depth)} ${entry.title}`, entry.content];
-  if (entry.kind === "rule") return [ruleLine(entry.content)];
+  if (entry.kind === "rule") {
+    const rule = recordRules(state, record.id).rules.find((item) => item.id === name);
+    return [ruleLine(rule ?? entry.content, record.id)];
+  }
   if (entry.kind === "value") {
     const { meaning, example, guidance } = entry.content;
     // A section is headed by its path, such as `parameters.variant.primary`, so it says where it is.
@@ -200,7 +205,7 @@ function renderField(state, record, field) {
         ),
       );
     case "rules":
-      return section("Rules", renderRules(value));
+      return section("Rules", renderRules(state, record));
     case "accessibility":
       return section("Accessibility", renderAccessibility(value));
     case "tokens":
@@ -275,30 +280,54 @@ function renderParameters(state, parameters) {
   return blocks.join("\n\n");
 }
 
-function ruleLine(rule) {
+/**
+ * A rule the record writes reads by its id. An inherited rule reads by its full address, and one
+ * that narrows an inherited rule names it, so the reader knows where each requirement comes from.
+ */
+function ruleLine(rule, recordId) {
   const details = [
+    rule.extends && `Extends: ${rule.extends}`,
     rule.applicability && `Applies when: ${rule.applicability}`,
     rule.rationale && `Why: ${rule.rationale}`,
     rule.references && `See: ${rule.references.join(", ")}`,
     rule.examples?.do && `Do: ${rule.examples.do.join("; ")}`,
     rule.examples?.avoid && `Avoid: ${rule.examples.avoid.join("; ")}`,
   ].filter(Boolean);
+  const name = rule.recordId && rule.recordId !== recordId ? rule.address : rule.id;
   return [
-    `- **${rule.level.toUpperCase()}** ${rule.id}: ${rule.statement}`,
+    `- **${rule.level.toUpperCase()}** ${name}: ${rule.statement}`,
     ...details.map((line) => `  - ${line}`),
   ].join("\n");
 }
 
-function renderRules(rules) {
-  return TOPICS.filter((topic) => rules.some((rule) => rule.topic === topic))
-    .map((topic) => {
-      const heading = `### ${topic[0].toUpperCase()}${topic.slice(1)}`;
-      return `${heading}\n\n${rules
-        .filter((rule) => rule.topic === topic)
-        .map(ruleLine)
-        .join("\n")}`;
-    })
-    .join("\n\n");
+const hasRules = (state, record) => {
+  const { rules, waived } = recordRules(state, record.id);
+  return rules.length > 0 || waived.length > 0;
+};
+
+function renderRules(state, record) {
+  const { rules, waived } = recordRules(state, record.id);
+  const inherited = [...new Set(rules.map((rule) => rule.recordId))].filter(
+    (id) => id !== record.id,
+  );
+  const blocks = [];
+  if (inherited.length > 0) {
+    blocks.push(
+      `Includes the rules of ${inherited.join(", ")}, which this component follows. Cite each rule by the address shown.`,
+    );
+  }
+  for (const topic of TOPICS) {
+    const ofTopic = rules.filter((rule) => rule.topic === topic);
+    if (ofTopic.length === 0) continue;
+    const heading = `### ${topic[0].toUpperCase()}${topic.slice(1)}`;
+    blocks.push(`${heading}\n\n${ofTopic.map((rule) => ruleLine(rule, record.id)).join("\n")}`);
+  }
+  if (waived.length > 0) {
+    blocks.push(
+      `### Waived\n\n${waived.map((item) => `- ${item.address}: ${item.waived}`).join("\n")}`,
+    );
+  }
+  return blocks.join("\n\n");
 }
 
 function renderAccessibility(accessibility) {

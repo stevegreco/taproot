@@ -50,7 +50,7 @@ function stem(word) {
   return word;
 }
 
-function collectText(value, out = []) {
+export function collectText(value, out = []) {
   if (typeof value === "string") out.push(value);
   else if (Array.isArray(value)) for (const item of value) collectText(item, out);
   else if (value && typeof value === "object")

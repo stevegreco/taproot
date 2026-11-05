@@ -123,10 +123,10 @@ rules:
     topic: behavior
     statement: Changes to available choices preserve the current value while it remains available; otherwise selection follows platform conventions.
   - id: form-value
-    level: should
-    topic: behavior
-    statement: The selected available choice submits under the name, and reset restores the initial selection. Disabled choices and groups submit nothing.
-    applicability: The field belongs to a form.
+    extends: pattern.form-field#form-value
+    statement: >-
+      The selected available choice submits under the name, and reset restores the initial
+      selection. Disabled choices and groups submit nothing.
   - id: forced-colors
     level: must
     topic: accessibility

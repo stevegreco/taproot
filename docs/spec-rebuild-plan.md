@@ -32,10 +32,18 @@ commit on one branch, reviewed before the next starts. Items are in dependency o
   as a card's title (ADR 0005). A part is in one or the other, never both. An option that shapes the
   whole component, or more than one part, stays in `parameters`. A token condition names a
   component parameter or state, not a part or item parameter.
+- Patterns and guidelines may declare `rules` in front matter, the same shape as a component's
+  (ADR 0009). A component inherits the rules of each record in its authored `links.follows`, at
+  their own addresses, and does not restate them. A component rule that repeats an inherited id
+  narrows it with `extends: <address>` and a `statement` (it keeps the id, topic, level, and
+  applicability, may raise the level, and carries no inherited examples, rationale, or references),
+  or sets it aside with `waived: <reason>` and no other fields. The schema shares the rule fields
+  between the plain and the component rule forms.
 - An event that reports a changed value carries the new value, so whoever owns the value can update
   it without reading it back from the component.
-- Include a Conventions section: plain rule ids with shared ones (`visible-focus`,
-  `forced-colors`, `not-a-control`, `not-color-alone`); `label` vs `accessibleName`; decorative
+- Include a Conventions section: plain rule ids; a requirement every component of a kind shares
+  is a rule of the pattern or guideline they follow; shared ids for alike requirements each
+  component words itself (`visible-focus`, `forced-colors`, `not-a-control`, `not-color-alone`); `label` vs `accessibleName`; decorative
   graphics; sizes `small`/`medium`/`large`/`inherit`; camelCase parameter names; `checked` vs
   `selected`.
 - Leave out anything specific to the old repository: no references to its scripts, docs tests, or
@@ -59,9 +67,13 @@ rule breaks a check instead of silently dropping guidance.
 - Sections: Markdown heading slugs with deduplication (`foo`, `foo-1`, `foo-1-1`); in components,
   rule ids, top-level fields, and dotted paths into anatomy, parameters, events, parts, items, and
   enum values, such as `parts.title.parameters.label` or `items.section.parameters.label`;
-  annotation ids in examples.
+  annotation ids in examples; rule ids in patterns and guidelines, after the headings. A waived
+  rule has no section.
 - Cross-record checks from `SPEC.md`: unique ids; resolvable link targets, `instead` ids,
-  references, and sections; rule ids unique and not equal to a top-level field name; enum
+  references, and sections; rule ids unique, a component's not equal to a top-level field name and
+  a pattern's or guideline's not equal to a heading slug; a component rule that repeats an
+  inherited id has `extends` or `waived`, `extends` names a rule of a followed record with the same
+  id and is not weaker, and `waived` names exactly one inherited rule; enum
   `default`/`examples`/`guidance` keys within `values`, for part and item parameters too; part and
   item keys are anatomy parts, and no part is in both; token parts and conditions declared;
   annotation ids unique and not equal to a heading slug; asset files exist and stay inside the
@@ -70,7 +82,8 @@ rule breaks a check instead of silently dropping guidance.
   `issues`, or with `skipInvalid: true` leaves out invalid files and lists them in `spec.issues`.
   A link to a record left out this way is itself an issue.
 - Port the old package's `test/fixtures/*` one for one (except `token-tier`): one fixture per
-  check.
+  check. The inherited-rule checks share one pattern and component, so their test builds each
+  corpus in a temporary folder instead of a fixture folder per check.
 
 **Done when** each check has a failing fixture whose issue names the file, line, JSON pointer, and
 message, and `skipInvalid` still serves the valid records.
@@ -81,10 +94,14 @@ message, and `skipInvalid` still serves the valid records.
 **so that** the format is proven on real records before the query layer is built on it.
 
 - Button with every field; minimal drafts of Link, Badge, and Icon, so Button's `instead` and
-  `composes` targets exist; Text field, which follows `pattern.form-field`; Accordion, whose
+  `composes` targets exist; Text field, which follows `pattern.form-field` and has no rules of its
+  own, so it inherits all of the pattern's; one form control that narrows `form-value` and waives a
+  rule it cannot meet; Accordion, whose
   sections carry their own label and expanded state as `items`; Card, whose title carries its own
   label and heading level as `parts`; `pattern.action-hierarchy`, `pattern.form-field`,
   `guideline.compose-or-propose`; and one example with an image asset and annotations.
+  `pattern.form-field` carries the shared form rules, and its body explains only what rules cannot
+  say, without restating them.
 - Give records `tags` with the words people search by when those differ from the title, such as
   `dropdown` or `destructive`. No new field: search already weights tags.
 - Fix the format or the checks in this commit wherever real content shows a gap.
@@ -123,11 +140,16 @@ inverse, and a link of the wrong type fails validation.
 - `links(id, { kind, direction })`: `out` (the default) lists links from the record, inverses
   included; `in` lists links to it; `both` merges them without duplicates.
 - `rules({ id, topic, level, query })`: addresses such as `component.button#visible-focus`, `must`
-  first, with each rule's applicability.
+  first, with each rule's applicability. Filtered to a component, it adds the rules the component
+  inherits, at the address where each is written (such as `pattern.form-field#error-blocks-submit`,
+  with `appliesTo` naming the component), replaces each narrowed rule with the component's (with
+  `extends`), and leaves out waived ones. Unfiltered, each rule appears once, under its record.
 - `tokens(id, { part, condition, property })`, with values when a `resolveToken` function was
   passed to `loadSpec`.
 - `render(target)`: Markdown for a record or a section, with draft/deprecated notes and known issues
-  under the summary. Throws on an unknown record or section.
+  under the summary. A component's rules include inherited ones by address, narrowed ones with
+  the rule they extend, and a Waived list with reasons; a pattern's or guideline's rules follow its
+  body. Throws on an unknown record or section.
 - Package exports: `.` (the library), `./config`, `./tokens-dtcg`, `./implementation`, and the
   schema.
 
@@ -232,7 +254,7 @@ technology outside the spec content.
 - Output details: each search result names the command that reads it; a weak search starts with
   "No strong match" and marks weak hits; `get` on a component ends with lines naming its
   implementations and its token count instead of printing the token table; `rules` prints each
-  rule's applicability; a section read starts with its path, such as `parameters.headingLevel`;
+  rule's applicability and marks a narrowed rule `(extends <address>)`; a section read starts with its path, such as `parameters.headingLevel`;
   parts and items lead with "Options of the `title` part." and "Options of each `section`.";
   `tokens` notes under a non-base condition that the base bindings still apply; stray positional
   words get a hint to quote a value of several words. Hints name every configured implementation
@@ -258,8 +280,8 @@ a test, and `ds-spec validate` passes on the seed.
   call several tools in one turn), each calling the shared operations layer. A tool's `structuredContent` is the CLI's `--json` output, and a failure puts
   `{ code, suggestions }` in `structuredContent.error`.
 - Each record as a `spec://<id>` resource.
-- Agent instructions live once in the library: search, get, follow links, cite rules by address,
-  use `format` for what records do not repeat, read the implementation before writing code, and use
+- Agent instructions live once in the library: search, get, follow links, cite rules by address
+  (a component's include those it inherits, at their own addresses), use `format` for what records do not repeat, read the implementation before writing code, and use
   `batch` (CLI) or parallel tool calls (MCP) for several lookups. They tell agents to use the CLI when they have a terminal and the MCP server
   when they don't, and to run the CLI from an installed copy (a workspace or project dependency),
   never an `npx` download per call. The server sends them as its instructions, and

@@ -24,7 +24,9 @@ Implement it in whatever technology the project uses.
   when it is the wrong choice, `follows` for the patterns and guidelines it applies, `examples` for
   worked usage.
 - Use `rules` to review work, and cite each rule by its address (for example
-  `component.button#label-describes-result`) with its level (MUST, SHOULD, MAY).
+  `component.button#label-describes-result`) with its level (MUST, SHOULD, MAY). A component's
+  rules include those of the patterns and guidelines it follows, at their own addresses (for
+  example `pattern.form-field#error-blocks-submit`).
 - Use `tokens` for the design tokens a component part uses in a variant or state. Add `--resolve`
   (MCP: `resolve`) for values. Use `format` for what records do not repeat: the system-wide
   constants, such as border width and focus-ring width and offset, with their tokens.

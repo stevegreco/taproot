@@ -115,8 +115,7 @@ states:
   - invalid
 rules:
   - id: visible-label
-    level: must
-    topic: content
+    extends: pattern.form-field#visible-label
     statement: Provide a visible label that names what the value sets, such as Volume.
   - id: value-shown
     level: must
@@ -154,11 +153,12 @@ rules:
     topic: behavior
     statement: Setting the value from outside, or a form reset, does not report input or change.
   - id: form-value
-    level: should
-    topic: behavior
-    statement: >-
-      Inside a form the value submits under name. A disabled slider submits nothing, a non-empty
-      error blocks submit, and reset restores the initial value.
+    extends: pattern.form-field#form-value
+    statement: The current number submits under the name, and reset restores the initial value.
+  - id: required-blocks-submit
+    waived: A slider always has a value between min and max, so it cannot be required.
+  - id: required-announced
+    waived: A slider always has a value between min and max, so it cannot be required.
   - id: thumb-contrast
     level: must
     topic: accessibility

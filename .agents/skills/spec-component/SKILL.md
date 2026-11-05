@@ -71,7 +71,8 @@ reading order.
 - `avoid` entries are where most of the thinking goes: they say where this component stops and its
   neighbors start. Point `instead` at a record ID where one exists.
 - Add `links.follows` for patterns and guidelines the component applies, and `links.related` for
-  close neighbors, when they are clear now.
+  close neighbors, when they are clear now. Following a record brings its `rules` with it, so a form
+  control that follows `pattern.form-field` already has its label, error, and form-value rules.
 - Leave out parameters, rules, tokens, and rationale unless one is the reason the component exists.
   Note open questions in the pull request instead.
 - Do not edit other components' records to point at this one yet. A draft is not built, so agents

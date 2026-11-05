@@ -2,6 +2,7 @@ import { stat } from "node:fs/promises";
 import path from "node:path";
 import { createSpecAjv } from "./schema/ajv.js";
 import { COMMON_FIELDS, RECORD_ID, TOKEN_KEYWORDS, schema, typeFields } from "./schema/info.js";
+import { resolveRules } from "./inherit.js";
 import { buildSections } from "./sections.js";
 import { byCodeUnit, parameterLists, pointerSegment, recordIdOf } from "./util.js";
 
@@ -74,8 +75,9 @@ export async function checkSources(sources, { tokenNames } = {}) {
     const report_ = (raw) => report(record.source, raw);
     checkReferences(record, byId, validById, report_);
     checkPlaceholders(record.data, "", report_);
+    checkRules(record, report_);
     if (record.data.type === "component") {
-      checkRules(record.data, report_);
+      checkInheritedRules(record.data, validById, report_);
       checkParameters(record.data, report_);
       checkPartOptions(record.data, report_);
       checkTokens(record.data, report_);
@@ -330,10 +332,15 @@ function checkPlaceholders(value, pointer, report) {
   }
 }
 
-// --- Component checks ---
+// --- Rules ---
 
-function checkRules(data, report) {
-  const reserved = new Set([...COMMON_FIELDS, ...typeFields("component")]);
+/**
+ * A rule's id is its section address, so it must be unique within the record and must not repeat
+ * a top-level field name or, in a Markdown record, a heading's slug.
+ */
+function checkRules(record, report) {
+  const { data } = record;
+  const reserved = new Set([...COMMON_FIELDS, ...typeFields(data.type)]);
   const seen = new Map();
   for (const [index, rule] of (data.rules ?? []).entries()) {
     const pointer = `/rules/${index}/id`;
@@ -342,14 +349,29 @@ function checkRules(data, report) {
         path: pointer,
         message: `rule id \`${rule.id}\` is already used by /rules/${seen.get(rule.id)}`,
       });
-    } else {
-      seen.set(rule.id, index);
-      if (reserved.has(rule.id)) {
-        report({ path: pointer, message: `rule id \`${rule.id}\` is also a top-level field name` });
-      }
+      continue;
+    }
+    seen.set(rule.id, index);
+    if (data.type === "component" && reserved.has(rule.id)) {
+      report({ path: pointer, message: `rule id \`${rule.id}\` is also a top-level field name` });
+    }
+    const entry = record.sections.get(rule.id);
+    if (entry?.kind === "heading") {
+      report({
+        path: pointer,
+        message: `rule id \`${rule.id}\` is also the address of the heading "${entry.title}"`,
+      });
     }
   }
 }
+
+/** Each `extends` and `waived` rule names a rule the component inherits, and none lowers a level. */
+function checkInheritedRules(data, validById, report) {
+  const { problems } = resolveRules(data, (id) => validById.get(id)?.data);
+  for (const problem of problems) report(problem);
+}
+
+// --- Component checks ---
 
 /**
  * Every parameter in a component record, its own and its parts' and items', with its JSON pointer.

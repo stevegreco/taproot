@@ -99,8 +99,8 @@ function nextCall(id, names) {
 const CHOICES = {
   type: schema.properties.type.enum,
   status: schema.properties.status.enum,
-  topic: schema.$defs.rule.properties.topic.enum,
-  level: schema.$defs.rule.properties.level.enum,
+  topic: schema.$defs.ruleFields.properties.topic.enum,
+  level: schema.$defs.ruleFields.properties.level.enum,
   kind: Object.keys(INVERSE),
   direction: ["out", "in", "both"],
 };

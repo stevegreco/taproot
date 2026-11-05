@@ -23,6 +23,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { validateFromConfig } from "../packages/spec/src/config.js";
+import { loadSpec } from "../packages/spec/src/index.js";
 
 /**
  * The "decide what it ships" checklist. A spec settles an item with a
@@ -171,7 +172,7 @@ if (inPhase("implementation")) {
     const draft = spec.status === "draft";
     row(!draft, "spec has no status: draft", draft ? "remove it now that it is built" : "");
     checklist(spec);
-    ruleCoverage(spec, read(testPath) ?? "");
+    ruleCoverage(await componentRules(spec), read(testPath) ?? "");
   } else {
     console.log("\n  Decide-what-it-ships items (no spec yet)");
     for (const item of CHECKLIST) console.log(`  todo  ${item.label}: ${item.question}`);
@@ -245,18 +246,28 @@ function checklist(spec) {
 }
 
 /**
- * MUST rules with no test named `[<rule-id>] …` in the component's test file. A test that
+ * MUST rules, including inherited ones, with no test named `[<rule-id>] …` in the component's
+ * test file. A test that
  * proves several rules starts with each tag, with or without spaces: `[a] [b] …`.
  * Content rules say what authors write, which a component test can't check.
  */
-function ruleCoverage(spec, testSource) {
+/**
+ * The component's rules, with the ones it inherits from the patterns and guidelines it follows.
+ * Falls back to the rules in the file when the spec does not load, which validation reports.
+ */
+async function componentRules(spec) {
+  const fallback = (spec.rules ?? []).filter((rule) => rule.level && rule.statement);
+  const loaded = await loadSpec({ skipInvalid: true }).catch(() => undefined);
+  if (!loaded?.get(spec.id)) return fallback;
+  return loaded.rules({ id: spec.id });
+}
+
+function ruleCoverage(rules, testSource) {
   const tagged = new Set();
   for (const [, tags] of testSource.matchAll(/["'`]((?:\[[a-z0-9-]+\] ?)+) /g)) {
     for (const [, id] of tags.matchAll(/\[([a-z0-9-]+)\]/g)) tagged.add(id);
   }
-  const must = (spec.rules ?? []).filter(
-    (rule) => rule.level === "must" && rule.topic !== "content",
-  );
+  const must = rules.filter((rule) => rule.level === "must" && rule.topic !== "content");
   const untested = must.filter((rule) => !tagged.has(rule.id));
 
   console.log(`\n  MUST rules (except content) with a test tagged [rule-id] in ${testPath}`);
@@ -265,5 +276,8 @@ function ruleCoverage(spec, testSource) {
     return;
   }
   row("warn", `${must.length - untested.length} of ${must.length} MUST rule(s) tested`);
-  for (const rule of untested) row("warn", `[${rule.id}] has no test`, rule.statement.trim());
+  for (const rule of untested) {
+    const from = rule.appliesTo ? `, from ${rule.address}` : "";
+    row("warn", `[${rule.id}] has no test${from}`, rule.statement.trim());
+  }
 }

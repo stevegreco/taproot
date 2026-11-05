@@ -137,12 +137,13 @@ rules:
     topic: behavior
     statement: Setting checked or indeterminate from script does not fire input or change.
   - id: form-value
-    level: should
-    topic: behavior
+    extends: pattern.form-field#form-value
     statement: >-
       When checked, the value submits under the name. Unchecked submits nothing. Reset restores the
       initial checked state and clears indeterminate.
-    applicability: The checkbox belongs to a form.
+  - id: required-blocks-submit
+    extends: pattern.form-field#required-blocks-submit
+    statement: A required checkbox that is unchecked blocks its form from submitting.
   - id: mixed-state
     level: must
     topic: accessibility

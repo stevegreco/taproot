@@ -128,11 +128,10 @@ rules:
       Disabled options cannot be checked by pointer or keyboard. Disabled groups prevent all
       interaction.
   - id: form-value
-    level: should
-    topic: behavior
+    extends: pattern.form-field#form-value
     statement: >-
-      Submit the checked enabled option under the group name. Submit nothing when no option is checked
-      or while disabled. Reset restores the initially checked option.
+      The checked option's value submits under the group name, and nothing submits when no option is
+      checked. Reset restores the initially checked option.
   - id: accessible-group
     level: must
     topic: accessibility
