@@ -175,6 +175,10 @@ the new value, so whoever owns the value can update it without reading it back f
 An enum parameter lists its `values` with a meaning for each, and may give `examples`: sample
 content, such as a label, for each value. A `default` must be one of the values.
 
+The format does not define value words. An adopter that wants one concept, such as size or status,
+to keep the same words across components lists them in `vocabulary` in `spec.config.json`, and
+`validate` holds every component to them.
+
 An enum parameter may also give `guidance`: for each value, the pattern or guideline section that
 says when to choose it. The pairing is explicit, so renaming a heading breaks a link check instead of
 silently dropping the guidance.
@@ -445,6 +449,8 @@ The schema checks each record alone. Tools also check the corpus as a whole:
   value or boolean (`true` or `false`) of a declared parameter, or a declared preference value.
 - Every token reference is one of the keywords `transparent`, `none`, `inherit`, or `linear`, or
   names a token in every set that `spec.config.json` configures.
+- With a `vocabulary` in `spec.config.json`, an enum parameter named for a concept uses only that
+  concept's words, and no enum value is one of a concept's aliases.
 - An example's asset files exist.
 - No text value starts with `TODO`. Scaffolded drafts use `TODO:` for text the author has not
   written yet.

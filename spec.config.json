@@ -15,6 +15,29 @@
     "focus-ring-width": "semantic.focus.width",
     "focus-ring-offset": "semantic.focus.offset"
   },
+  "vocabulary": {
+    "size": {
+      "parameter": "size",
+      "values": ["inherit", "small", "medium", "large"],
+      "aliases": {
+        "sm": "small",
+        "md": "medium",
+        "lg": "large"
+      }
+    },
+    "status": {
+      "values": ["info", "success", "warning", "danger"],
+      "aliases": {
+        "error": "danger",
+        "critical": "danger",
+        "negative": "danger",
+        "warn": "warning",
+        "caution": "warning",
+        "positive": "success",
+        "information": "info"
+      }
+    }
+  },
   "tokens": {
     "format": "dtcg",
     "sets": {

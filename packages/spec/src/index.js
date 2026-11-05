@@ -23,6 +23,8 @@ export const DEFAULT_CONTENT_DIR = path.resolve(
  *   Resolves a token reference to values keyed by set name, such as `{ light, dark }`.
  * @property {Map<string, Set<string>>} [tokenNames] The token names in each set. With them,
  *   validation checks that every token reference names a token in every set.
+ * @property {Record<string, import("./config.js").VocabularyTerm>} [vocabulary] Concepts that keep
+ *   one set of words. With it, validation checks each component's enum values against it.
  * @property {boolean} [skipInvalid] Leave out each record file that has an issue, and list the
  *   issues in `spec.issues`, instead of throwing.
  */
@@ -51,7 +53,10 @@ export class SpecError extends Error {
 export async function check(options = {}) {
   const contentDir = path.resolve(options.contentDir ?? DEFAULT_CONTENT_DIR);
   const sources = await readSourceFiles(contentDir);
-  const { issues, records } = await checkSources(sources, { tokenNames: options.tokenNames });
+  const { issues, records } = await checkSources(sources, {
+    tokenNames: options.tokenNames,
+    vocabulary: options.vocabulary,
+  });
   return { contentDir, sources, issues, records };
 }
 

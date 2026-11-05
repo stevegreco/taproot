@@ -94,8 +94,8 @@ Button means Badge is the alternative to Button.
 ## Config
 
 Both tools find their content with a `spec.config.json`, found by walking up from the working
-directory. Paths are relative to the config file. `implementations`, `constants`, and `tokens` are
-optional.
+directory. Paths are relative to the config file. `implementations`, `constants`, `vocabulary`, and
+`tokens` are optional.
 
 ```json
 {
@@ -108,6 +108,10 @@ optional.
     "border-width": "semantic.border.width",
     "focus-ring-width": "semantic.focus.width",
     "focus-ring-offset": "semantic.focus.offset"
+  },
+  "vocabulary": {
+    "size": { "parameter": "size", "values": ["small", "medium", "large"], "aliases": { "sm": "small" } },
+    "status": { "values": ["info", "success", "warning", "danger"], "aliases": { "error": "danger" } }
   },
   "tokens": {
     "format": "dtcg",
@@ -127,6 +131,11 @@ files and lists their issues in `spec.issues` instead of throwing.
 `constants` names the system-wide constants, such as border width, that every component uses and
 component records do not have to bind, each with the token that holds it. `format` serves them, and
 `validate` checks that each token is in every token set.
+
+`vocabulary` keeps one concept's words the same across components. Each concept lists its `values`.
+With a `parameter`, an enum parameter of that name may use only those values. `aliases` maps other
+words for the concept to the value to use, and no enum value in any parameter may be an alias.
+`validate` reports each mismatch with the word to use.
 
 Each implementation folder holds one `<slug>.md` file per component that a technology implements:
 front matter with the record id, package, what to import, usage, and API rows that name the record

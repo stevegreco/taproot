@@ -20,6 +20,17 @@ const NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
  * @property {Record<string, string>} [constants] System-wide constants, such as border width, by
  *   name, each with the token that holds it. Every component uses them, so component records do
  *   not bind them. With token sets configured, each token must exist in every set.
+ * @property {Record<string, VocabularyTerm>} [vocabulary] Concepts that keep one set of words
+ *   across components, such as size or status, by name. `validate` checks each component's enum
+ *   values against them.
+ */
+
+/**
+ * @typedef {object} VocabularyTerm
+ * @property {string[]} values The words for the concept.
+ * @property {string} [parameter] An enum parameter with this name may use only `values`.
+ * @property {Record<string, string>} [aliases] Words no enum value may use, each with the word in
+ *   `values` to use instead.
  */
 
 /**
@@ -77,7 +88,7 @@ function validateConfig(config, file) {
     fail("expected an object");
   }
   for (const key of Object.keys(config)) {
-    if (!["content", "tokens", "implementations", "constants"].includes(key)) {
+    if (!["content", "tokens", "implementations", "constants", "vocabulary"].includes(key)) {
       fail(`unknown field "${key}"`);
     }
   }
@@ -93,6 +104,7 @@ function validateConfig(config, file) {
       }
     }
   }
+  validateVocabulary(config.vocabulary, fail);
   if (config.content !== undefined && (typeof config.content !== "string" || !config.content)) {
     fail('"content" must be a non-empty string path');
   }
@@ -138,12 +150,45 @@ function validateConfig(config, file) {
   }
 }
 
+function validateVocabulary(vocabulary, fail) {
+  if (vocabulary === undefined) return;
+  const isObject = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
+  const isWord = (value) => typeof value === "string" && value !== "";
+  if (!isObject(vocabulary)) fail('"vocabulary" must be an object of concept name to term');
+  for (const [name, term] of Object.entries(vocabulary)) {
+    const at = `"vocabulary.${name}"`;
+    if (!NAME.test(name)) fail(`${at} must be a lowercase, hyphenated name`);
+    if (!isObject(term)) fail(`${at} must be an object with "values"`);
+    for (const key of Object.keys(term)) {
+      if (!["values", "parameter", "aliases"].includes(key)) {
+        fail(`${at} has an unknown field "${key}"`);
+      }
+    }
+    const { values, parameter, aliases } = term;
+    if (!Array.isArray(values) || values.length === 0 || !values.every(isWord)) {
+      fail(`${at}.values must be a non-empty array of words`);
+    }
+    if (new Set(values).size !== values.length) fail(`${at}.values lists a word twice`);
+    if (parameter !== undefined && !isWord(parameter)) {
+      fail(`${at}.parameter must be a parameter name`);
+    }
+    if (aliases === undefined) continue;
+    if (!isObject(aliases)) fail(`${at}.aliases must be an object of word to word in values`);
+    for (const [alias, word] of Object.entries(aliases)) {
+      if (values.includes(alias)) fail(`${at}.aliases.${alias} is also in values`);
+      if (!values.includes(word)) {
+        fail(`${at}.aliases.${alias} must name a word in values, not ${JSON.stringify(word)}`);
+      }
+    }
+  }
+}
+
 /**
  * Work out the content folder and token resolver from flags and config.
  * Precedence for the content folder: `contentDir` > config `content` > library default.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
- * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, ImplementationConfig & import("./operations.js").ImplementationSource>, constants: Record<string, string>, configPath?: string }}
+ * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, ImplementationConfig & import("./operations.js").ImplementationSource>, constants: Record<string, string>, vocabulary: Record<string, VocabularyTerm>, configPath?: string }}
  */
 export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = {}) {
   const found = configPath ? readConfig(path.resolve(cwd, configPath)) : findConfig(cwd);
@@ -178,6 +223,7 @@ export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = 
     tokenSets: sets,
     implementations,
     constants: { ...found?.config.constants },
+    vocabulary: { ...found?.config.vocabulary },
     configPath: found?.path,
   };
 }
@@ -200,14 +246,15 @@ export async function loadFromConfig({ resolveTokens = true, skipInvalid, ...opt
 
 /**
  * Validate the spec using flags and the nearest config. With token sets configured, every token
- * reference, and every constant's token, must name a token in every set.
+ * reference, and every constant's token, must name a token in every set. With a vocabulary, each
+ * component's enum values must keep to it.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
  */
 export async function validateFromConfig(options = {}) {
-  const { contentDir, tokenSets, constants, configPath } = resolveConfig(options);
+  const { contentDir, tokenSets, constants, vocabulary, configPath } = resolveConfig(options);
   const tokenNames = tokenSets ? readDtcgTokenNames(tokenSets) : undefined;
-  const result = await validateSpec({ contentDir, tokenNames });
+  const result = await validateSpec({ contentDir, tokenNames, vocabulary });
   if (!tokenNames) return result;
   const file = path.relative(options.cwd ?? process.cwd(), configPath);
   const issues = Object.entries(constants).flatMap(([name, token]) => {

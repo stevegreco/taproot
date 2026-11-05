@@ -165,8 +165,10 @@ records are frozen.
 - `spec.config.json`, found by walking up from the working directory: `content`, `implementations`
   (a name → `{ folder, technology }`, such as `web` → `{ folder: "packages/components/implementation",
   technology: "web-component" }`), and `tokens`
-  (`format: dtcg`, named sets such as `light` and `dark`, later files win), and `constants` (the
-  token that holds each system-wide constant, such as `border-width` or `focus-ring-width`). Paths
+  (`format: dtcg`, named sets such as `light` and `dark`, later files win), `constants` (the
+  token that holds each system-wide constant, such as `border-width` or `focus-ring-width`), and
+  `vocabulary` (each concept, such as `size` or `status`, with its `values`, an optional
+  `parameter` name limited to them, and `aliases` mapping other words to the value to use). Paths
   are relative to the config file.
 - The content folder comes from `--content`, then the config. With neither, fail with a message
   that says how to set one.
@@ -175,6 +177,8 @@ records are frozen.
   only when values are requested, or by `validate`.
 - `validate` checks every token reference: a keyword (`transparent`, `none`, `inherit`, `linear`)
   or a token present in every configured set. Each constant's token must be in every set too.
+- With a `vocabulary`, `validate` reports an enum value outside its concept's values for a parameter
+  named by the concept, and any enum value that is an alias, naming the value to use.
 
 **Done when** a fixture resolves a reference to light and dark values, an unknown reference or
 constant fails `validate`, and an alias cycle reports an issue instead of hanging.
