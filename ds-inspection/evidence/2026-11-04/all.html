@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Proof</title>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--ds-primitives-space-6);
+        background: var(--ds-semantic-color-background-default);
+        color: var(--ds-semantic-color-foreground-default);
+        font-family: var(--ds-semantic-typography-body-font-family);
+      }
+      main {
+        display: grid;
+        gap: var(--ds-primitives-space-6);
+        max-inline-size: 40rem;
+      }
+      form,
+      section {
+        display: grid;
+        gap: var(--ds-primitives-space-4);
+      }
+      .actions {
+        display: flex;
+        gap: var(--ds-primitives-space-2);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>All components</h1>
+      <ds-accordion heading-level="2"
+        ><ds-accordion-section label="How long does delivery take?" expanded
+          ><p>Three to five days.</p></ds-accordion-section
+        ><ds-accordion-section label="Can I return an item?"
+          ><p>Within 30 days.</p></ds-accordion-section
+        ></ds-accordion
+      >
+      <ds-alert variant="success" label="Changes saved" dismissible
+        >Your profile is up to date.</ds-alert
+      >
+      <ds-alert variant="danger" label="Upload failed"
+        ><ds-icon slot="icon" label="Error"
+          ><svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="10" /></svg></ds-icon
+        >Too large.<ds-button slot="actions" variant="secondary" size="small"
+          >Choose another file</ds-button
+        ></ds-alert
+      >
+      <ds-alert variant="warning" label="Warning">Careful.</ds-alert
+      ><ds-alert variant="info" label="Info">Note.</ds-alert>
+      <p>
+        <ds-avatar name="Grace Hopper" size="large"></ds-avatar>
+        <ds-avatar name="Ada Lovelace" size="small" decorative></ds-avatar> Ada
+      </p>
+      <p>
+        <ds-badge variant="success">Active</ds-badge> <ds-badge variant="warning">Warn</ds-badge>
+        <ds-badge variant="danger">Danger</ds-badge> <ds-badge variant="info">Info</ds-badge>
+        <ds-badge>Neutral</ds-badge>
+      </p>
+      <div class="actions">
+        <ds-button>Primary</ds-button><ds-button variant="secondary">Secondary</ds-button
+        ><ds-button variant="tertiary">Tertiary</ds-button
+        ><ds-button variant="destructive">Delete</ds-button><ds-button size="small">Small</ds-button
+        ><ds-button disabled>Disabled</ds-button>
+      </div>
+      <ul>
+        <li>
+          <ds-card label="Quarterly report" href="/q3"
+            >Revenue grew.<ds-badge variant="success">Published</ds-badge
+            ><ds-button slot="actions" variant="tertiary" size="small">Share</ds-button></ds-card
+          >
+        </li>
+      </ul>
+      <ds-checkbox label="Email me" name="u" hint="Monthly." checked></ds-checkbox
+      ><ds-checkbox label="Terms" name="t" required error="Accept the terms"></ds-checkbox>
+      <ds-divider></ds-divider>
+      <p>
+        <ds-link href="/a">Inline link</ds-link> and
+        <ds-link variant="standalone" href="/b">View all projects</ds-link>
+      </p>
+      <ds-progress-bar label="Uploading" value="40"></ds-progress-bar>
+      <ds-radio-group label="Delivery" name="d" value="s" required
+        ><option value="s">Standard</option>
+        <option value="e">Express</option></ds-radio-group
+      >
+      <ds-select label="Method" name="m" required error="Choose one"
+        ><option value="">Choose</option>
+        <option value="s">S</option></ds-select
+      >
+      <p><ds-spinner label="Saving draft"></ds-spinner> Saving</p>
+      <ds-switch label="Notify" hint="Now." checked></ds-switch
+      ><ds-switch label="Off" disabled></ds-switch>
+      <ds-tabs label="Account" value="p"
+        ><ds-tab-panel label="Profile" value="p">One</ds-tab-panel
+        ><ds-tab-panel label="Billing" value="b">Two</ds-tab-panel></ds-tabs
+      >
+      <ds-text-area label="About" name="a" rows="2"></ds-text-area
+      ><ds-text-field
+        label="Email"
+        name="e"
+        type="email"
+        hint="Sign-in."
+        error="Add an @"
+      ></ds-text-field
+      ><ds-text-field label="Off" disabled></ds-text-field>
+      <ds-tooltip label="Delete row"
+        ><ds-button variant="tertiary" size="small"
+          ><ds-icon
+            ><svg viewBox="0 0 16 16" fill="currentColor">
+              <circle cx="8" cy="8" r="6" /></svg></ds-icon></ds-button
+      ></ds-tooltip>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

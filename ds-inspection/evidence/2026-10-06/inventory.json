@@ -1,0 +1,475 @@
+[
+  {
+    "id": "component.badge",
+    "parameters": ["variant"],
+    "states": ["default"],
+    "typedAttributes": "export interface DsBadgeAttributes {\n  /** Defaults to `\"default\"`. */\n  variant?: BadgeVariant;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/badge.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/badge.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/badge.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/badge.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/badge.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/badge.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/badge.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/badge.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.button",
+    "parameters": ["variant", "size", "action", "disabled", "fullWidth", "accessibleName"],
+    "states": ["disabled", "pressed", "hover", "focus", "default"],
+    "typedAttributes": "export interface DsButtonAttributes {\n  /** Defaults to `\"primary\"`. */\n  variant?: ButtonVariant;\n  /** Defaults to `\"md\"`. */\n  size?: ButtonSize;\n  /** Defaults to `\"button\"`. */\n  type?: ButtonType;\n  disabled?: boolean;\n  /** Fills the available inline size. */\n  \"full-width\"?: boolean;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/button.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/button.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/button.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/button.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/button.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/button.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/button.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/button.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.checkbox",
+    "parameters": [
+      "label",
+      "hint",
+      "error",
+      "checked",
+      "indeterminate",
+      "name",
+      "value",
+      "disabled",
+      "required"
+    ],
+    "states": ["disabled", "invalid", "indeterminate", "checked", "hover", "focus", "default"],
+    "typedAttributes": "export interface DsCheckboxAttributes {\n  /** Visible label. This is the accessible name. */\n  label?: string;\n  /** Supporting guidance. Included in the accessible description when set. */\n  hint?: string;\n  /** What to fix. A non-empty value marks the control invalid and is included in the accessible description. */\n  error?: string;\n  /** Whether the option is on. The attribute sets the initial state; form reset restores it. */\n  checked?: boolean;\n  /** Shows a mixed state, for a parent whose options are partly selected. Presentational only; it does not change the submitted value. */\n  indeterminate?: boolean;\n  /** Form field name. The value is submitted under this name when checked. */\n  name?: string;\n  /** Value submitted when checked. Defaults to \"on\", as for a native checkbox. */\n  value?: string;\n  /** Prevents toggling. A disabled checkbox does not submit its value. */\n  disabled?: boolean;\n  /** The checkbox must be checked before submit. Conveyed by more than color. */\n  required?: boolean;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/checkbox.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/checkbox.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/checkbox.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/checkbox.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/checkbox.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/checkbox.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/checkbox.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/checkbox.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.dialog",
+    "parameters": ["open", "label", "description", "dismissible"],
+    "states": ["default", "open", "focus"],
+    "typedAttributes": "export interface DsDialogAttributes {\n  open?: boolean;\n  label?: string;\n  description?: string;\n  /** Defaults to true. Use \"false\" to block Escape dismissal. */\n  dismissible?: boolean | \"true\" | \"false\";\n}",
+    "files": [
+      {
+        "file": "packages/components/src/dialog.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/dialog.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/dialog.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/dialog.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/dialog.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/dialog.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/dialog.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/dialog.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.icon",
+    "parameters": ["size", "label"],
+    "states": ["default"],
+    "typedAttributes": "export interface DsIconAttributes {\n  /** What the graphic means. Without it the icon is decorative and hidden from assistive technology. */\n  label?: string;\n  /** Defaults to `\"inherit\"`, the surrounding text size. */\n  size?: IconSize;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/icon.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/icon.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/icon.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/icon.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/icon.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/icon.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/icon.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/icon.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.link",
+    "parameters": ["href", "variant"],
+    "states": ["hover", "focus", "default"],
+    "typedAttributes": "export interface DsLinkAttributes {\n  /** Destination. Without it the control is not a link and cannot receive focus. */\n  href?: string;\n  /** Defaults to `\"inline\"`. */\n  variant?: LinkVariant;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/link.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/link.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/link.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/link.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/link.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/link.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/link.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/link.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.radio-group",
+    "parameters": ["label", "hint", "error", "name", "value", "disabled", "required"],
+    "states": ["default", "hover", "focus", "checked", "disabled", "invalid"],
+    "typedAttributes": "export interface DsRadioGroupAttributes {\n  label?: string;\n  hint?: string;\n  error?: string;\n  name?: string;\n  value?: string;\n  disabled?: boolean;\n  required?: boolean;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/radio-group.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/radio-group.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/radio-group.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/radio-group.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/radio-group.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/radio-group.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/radio-group.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/radio-group.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.select",
+    "parameters": ["label", "hint", "error", "name", "value", "disabled", "required"],
+    "states": ["disabled", "invalid", "hover", "focus", "default"],
+    "typedAttributes": "export interface DsSelectAttributes {\n  /** Visible label. This is the accessible name. */\n  label?: string;\n  /** Supporting guidance. Included in the accessible description when set. */\n  hint?: string;\n  /** What to fix. A non-empty value marks the control invalid and is included in the accessible description. */\n  error?: string;\n  /** Form field name. The value is submitted under this name. */\n  name?: string;\n  /** Current value. The attribute sets the initial value. */\n  value?: string;\n  /** Prevents editing. A disabled field does not submit its value. */\n  disabled?: boolean;\n  /** The value must be provided before submit. Conveyed by more than color. */\n  required?: boolean;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/select.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/select.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/select.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/select.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/select.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/select.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/select.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/select.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.switch",
+    "parameters": ["label", "hint", "error", "checked", "disabled", "name", "value"],
+    "states": ["default", "hover", "focus", "checked", "disabled", "invalid"],
+    "typedAttributes": "export interface DsSwitchAttributes {\n  /** Visible label. This is the accessible name. */\n  label?: string;\n  /** Supporting guidance. Included in the accessible description when set. */\n  hint?: string;\n  /** What to fix. A non-empty value marks the control invalid and is included in the accessible description. */\n  error?: string;\n  /** Whether the option is on. The attribute sets the initial state; form reset restores it. */\n  checked?: boolean;\n  /** Form field name. The value is submitted under this name when checked. */\n  name?: string;\n  /** Value submitted when checked. Defaults to \"on\", as for a native checkbox. */\n  value?: string;\n  /** Prevents toggling. A disabled switch does not submit its value. */\n  disabled?: boolean;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/switch.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/switch.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/switch.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/switch.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/switch.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/switch.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/switch.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/switch.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.text-area",
+    "parameters": [
+      "label",
+      "hint",
+      "error",
+      "name",
+      "value",
+      "placeholder",
+      "autocomplete",
+      "rows",
+      "readonly",
+      "disabled",
+      "required"
+    ],
+    "states": ["readonly", "disabled", "invalid", "hover", "focus", "default"],
+    "typedAttributes": "export interface DsTextAreaAttributes {\n  /** Visible label. This is the accessible name. */\n  label?: string;\n  rows?: number;\n  readonly?: boolean;\n  /** Supporting guidance. Included in the accessible description when set. */\n  hint?: string;\n  /** What to fix. A non-empty value marks the control invalid and is included in the accessible description. */\n  error?: string;\n  /** Form field name. The value is submitted under this name. */\n  name?: string;\n  /** Current value. The attribute sets the initial value. */\n  value?: string;\n  /** Example text shown when the value is empty. Not a replacement for the label. */\n  placeholder?: string;\n  /** Hint for the browser autofill, such as email. */\n  autocomplete?: string;\n  /** Prevents editing. A disabled field does not submit its value. */\n  disabled?: boolean;\n  /** The value must be provided before submit. Conveyed by more than color. */\n  required?: boolean;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/text-area.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/text-area.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/text-area.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/text-area.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/text-area.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/text-area.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/text-area.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/text-area.stories.js",
+        "exists": true
+      }
+    ]
+  },
+  {
+    "id": "component.text-field",
+    "parameters": [
+      "label",
+      "hint",
+      "error",
+      "type",
+      "name",
+      "value",
+      "placeholder",
+      "autocomplete",
+      "disabled",
+      "required"
+    ],
+    "states": ["disabled", "invalid", "hover", "focus", "default"],
+    "typedAttributes": "export interface DsTextFieldAttributes {\n  /** Visible label. This is the accessible name. */\n  label?: string;\n  /** Supporting guidance. Included in the accessible description when set. */\n  hint?: string;\n  /** What to fix. A non-empty value marks the control invalid and is included in the accessible description. */\n  error?: string;\n  /** Defaults to `\"text\"`. */\n  type?: TextFieldType;\n  /** Form field name. The value is submitted under this name. */\n  name?: string;\n  /** Current value. The attribute sets the initial value. */\n  value?: string;\n  /** Example text shown when the value is empty. Not a replacement for the label. */\n  placeholder?: string;\n  /** Hint for the browser autofill, such as email. */\n  autocomplete?: string;\n  /** Prevents editing. A disabled field does not submit its value. */\n  disabled?: boolean;\n  /** The value must be provided before submit. Conveyed by more than color. */\n  required?: boolean;\n}",
+    "files": [
+      {
+        "file": "packages/components/src/text-field.js",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/text-field.css",
+        "exists": true
+      },
+      {
+        "file": "packages/components/src/text-field.d.ts",
+        "exists": true
+      },
+      {
+        "file": "packages/components/test/text-field.test.js",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/implementation/text-field.md",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/text-field.tsx",
+        "exists": true
+      },
+      {
+        "file": "apps/documentation/examples/text-field.verify.js",
+        "exists": true
+      },
+      {
+        "file": "apps/storybook/stories/text-field.stories.js",
+        "exists": true
+      }
+    ]
+  }
+]
