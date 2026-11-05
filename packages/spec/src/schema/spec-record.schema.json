@@ -93,7 +93,7 @@
             "$ref": "#/$defs/preferences"
           },
           "rules": {
-            "$ref": "#/$defs/rules"
+            "$ref": "#/$defs/componentRules"
           },
           "accessibility": {
             "$ref": "#/$defs/accessibility"
@@ -130,6 +130,42 @@
             "items": {
               "$ref": "#/$defs/annotation"
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "pattern"
+          }
+        },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "rules": {
+            "description": "Requirements a component inherits when it follows this record.",
+            "$ref": "#/$defs/rules"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "guideline"
+          }
+        },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "rules": {
+            "description": "Requirements a component inherits when it follows this record.",
+            "$ref": "#/$defs/rules"
           }
         }
       }
@@ -525,6 +561,147 @@
           }
         }
       }
+    },
+    "componentRules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/componentRule"
+      }
+    },
+    "componentRule": {
+      "description": "A component rule: its own, one that narrows an inherited rule (`extends`), or an inherited rule set aside (`waived`).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "description": "Stable within the record. Address: <record id>#<rule id>.",
+          "$ref": "#/$defs/name"
+        },
+        "level": {
+          "description": "RFC 2119 meaning. A rule that extends another inherits its level, and may raise it.",
+          "enum": ["must", "should", "may"]
+        },
+        "topic": {
+          "enum": ["content", "behavior", "accessibility"]
+        },
+        "statement": {
+          "$ref": "#/$defs/text"
+        },
+        "applicability": {
+          "description": "When the rule applies, if not always.",
+          "$ref": "#/$defs/text"
+        },
+        "rationale": {
+          "$ref": "#/$defs/text"
+        },
+        "references": {
+          "description": "Records or sections this rule cites.",
+          "$ref": "#/$defs/linkTargets"
+        },
+        "examples": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "do": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              }
+            },
+            "avoid": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              }
+            }
+          }
+        },
+        "extends": {
+          "description": "The inherited rule this one narrows. Keeps its id and topic.",
+          "$ref": "#/$defs/ruleAddress"
+        },
+        "waived": {
+          "description": "Why an inherited rule with this id does not apply to the component.",
+          "$ref": "#/$defs/text"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "waived": true
+            },
+            "required": ["waived"]
+          },
+          "then": {
+            "properties": {
+              "level": false,
+              "topic": false,
+              "statement": false,
+              "applicability": false,
+              "rationale": false,
+              "references": false,
+              "examples": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "extends": true,
+              "waived": true
+            },
+            "required": ["extends"],
+            "not": {
+              "properties": {
+                "waived": true
+              },
+              "required": ["waived"]
+            }
+          },
+          "then": {
+            "properties": {
+              "statement": true,
+              "topic": false
+            },
+            "required": ["statement"]
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "extends": true
+                  },
+                  "required": ["extends"]
+                },
+                {
+                  "properties": {
+                    "waived": true
+                  },
+                  "required": ["waived"]
+                }
+              ]
+            }
+          },
+          "then": {
+            "properties": {
+              "level": true,
+              "topic": true,
+              "statement": true
+            },
+            "required": ["level", "topic", "statement"]
+          }
+        }
+      ]
+    },
+    "ruleAddress": {
+      "description": "A rule by address: <record id>#<rule id>.",
+      "type": "string",
+      "pattern": "^(?:pattern|guideline)\\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\\.[a-z][a-z0-9]*(?:-[a-z0-9]+)*)*#[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
     },
     "accessibility": {
       "type": "object",

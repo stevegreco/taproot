@@ -1,0 +1,15 @@
+id: component.plain
+type: component
+title: Plain
+summary: Use Plain for testing.
+links:
+  follows:
+    - pattern.guide
+description: A test component.
+usage:
+  do:
+    - Test things.
+anatomy:
+  control:
+    role: interactive-surface
+    description: The control.

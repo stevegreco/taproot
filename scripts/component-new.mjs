@@ -22,6 +22,7 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
+import { loadSpec } from "../packages/spec/src/index.js";
 
 const PHASES = ["spec", "implementation"];
 const usage = `Usage: pnpm component:new <name> --phase ${PHASES.join("|")}   (for example: tooltip)`;
@@ -66,7 +67,7 @@ const existingSpec = readdirSync(contentDir, { recursive: true }).find(
 );
 
 if (values.phase === "spec") scaffoldSpec();
-if (values.phase === "implementation") scaffoldImplementation();
+if (values.phase === "implementation") await scaffoldImplementation();
 format();
 
 function scaffoldSpec() {
@@ -106,7 +107,7 @@ anatomy:
   console.log("Replace every TODO: placeholder; `pnpm spec validate` lists the ones left.");
 }
 
-function scaffoldImplementation() {
+async function scaffoldImplementation() {
   if (!existingSpec) {
     console.error(`component.${name} has no spec. Run: pnpm component:new ${name} --phase spec`);
     process.exit(1);
@@ -115,7 +116,12 @@ function scaffoldImplementation() {
   const spec = requireFromSpec("yaml").parse(
     readFileSync(path.join(contentDir, existingSpec), "utf8"),
   );
-  if (!spec.rules?.length) {
+  // Inherited rules count: a component that follows a pattern gets a test for each MUST rule of it.
+  const loaded = await loadSpec({ skipInvalid: true }).catch(() => undefined);
+  const rules = loaded?.get(spec.id)
+    ? loaded.rules({ id: spec.id })
+    : (spec.rules ?? []).map((rule) => ({ ...rule, address: `${spec.id}#${rule.id}` }));
+  if (!rules.length) {
     console.error(
       `component.${name} has no rules yet. Complete the spec contract first (implement-component step 1).`,
     );
@@ -130,9 +136,7 @@ function scaffoldImplementation() {
   }));
   const events = Object.keys(spec.events ?? {});
   const parts = Object.keys(spec.anatomy ?? {});
-  const must = (spec.rules ?? []).filter(
-    (rule) => rule.level === "must" && rule.topic !== "content",
-  );
+  const must = rules.filter((rule) => rule.level === "must" && rule.topic !== "content");
   const enums = parameters.filter((parameter) => parameter.kind === "enum");
   const literal = (value) => JSON.stringify(value);
 
@@ -231,7 +235,7 @@ ${must
       rule,
     ) => `  test(${literal(`[${rule.id}] ${rule.statement.replace(/\s+/g, " ").trim()}`)}, () => {
     render(\`<\${tagName}></\${tagName}>\`);
-    expect.fail("TODO: prove component.${name}#${rule.id}");
+    expect.fail("TODO: prove ${rule.address}");
   });
 `,
   )
@@ -261,7 +265,7 @@ ${[
 ---
 
 <!-- Web-specific guidance only. For behavior, cite the rule by address, such as
-\`component.${name}#${must[0]?.id ?? "rule-id"}\`, instead of restating it. Delete a section with nothing to say. -->
+\`${must[0]?.address ?? `component.${name}#rule-id`}\`, instead of restating it. Delete a section with nothing to say. -->
 
 ## Slots
 

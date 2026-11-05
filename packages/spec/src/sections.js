@@ -47,6 +47,9 @@ export function buildSections(data, body) {
 
   if (data.type === "component") addComponentSections(data, add);
   if (body) addHeadingSections(body, add);
+  // After the headings, so a rule id that repeats a heading's slug never hides the heading.
+  // Validation reports that collision.
+  addRuleSections(data, add);
   if (data.type === "example" && Array.isArray(data.annotations)) {
     for (const annotation of data.annotations) {
       if (isObject(annotation) && typeof annotation.id === "string") {
@@ -95,8 +98,12 @@ function addComponentSections(data, add) {
       }
     }
   }
+}
+
+/** A rule's id is its section. A waived rule carries no rule of its own, so it has none. */
+function addRuleSections(data, add) {
   for (const rule of Array.isArray(data.rules) ? data.rules : []) {
-    if (isObject(rule) && typeof rule.id === "string") {
+    if (isObject(rule) && typeof rule.id === "string" && rule.waived === undefined) {
       add(rule.id, { title: rule.id, content: rule, kind: "rule" });
     }
   }

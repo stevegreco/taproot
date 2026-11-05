@@ -80,11 +80,14 @@ describe("taproot CLI, real content", () => {
   it("keeps a conditional rule's condition, and says how to read a rule in full", () => {
     const r = cli(["rules", "--id", "component.checkbox#form-value"]);
     expect(r.code).toBe(0);
-    expect(r.out).toContain("- **SHOULD** component.checkbox#form-value: ");
-    expect(r.out).toContain("\n  - Applies when: The checkbox belongs to a form.");
+    expect(r.out).toContain(
+      "- **SHOULD** component.checkbox#form-value (extends pattern.form-field#form-value): ",
+    );
+    // A rule that extends another keeps the condition it inherits.
+    expect(r.out).toContain("\n  - Applies when: The control belongs to a form.");
     const all = cli(["rules", "--id", "checkbox"]);
     expect(all.out).toMatch(
-      /Run `taproot get <address>`, such as `taproot get component\.checkbox#[\w-]+`/,
+      /Run `taproot get <address>`, such as `taproot get (?:component\.checkbox|pattern\.form-field)#[\w-]+`/,
     );
   });
 

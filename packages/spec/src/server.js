@@ -152,7 +152,7 @@ export function createServer(source) {
   );
   tool(
     "rules",
-    "Get must/should/may rules to review a design or implementation against; cite rules by address. Filter by record id (or address), topic, level, or text.",
+    "Get must/should/may rules to review a design or implementation against; cite rules by address. Filter by record id (or address), topic, level, or text. Filtered to a component, the list includes the rules it inherits from the patterns and guidelines it follows.",
     {
       id: z.string().optional().describe("A record id or rule address."),
       topic: z.enum(["content", "behavior", "accessibility"]).optional(),

@@ -28,6 +28,10 @@ Grouped by the file you are in.
   this, but the spec package's content test does.
 - A rule ID is unique within its record and must not equal a top-level field name. Its address is
   `component.<name>#<rule-id>`.
+- Rules from the patterns and guidelines in `links.follows` are inherited. Repeating an inherited
+  rule's ID is an error unless the rule has `extends` (narrow it, same ID, same or stronger level)
+  or `waived` (a reason, and no other fields). An inherited rule's address stays in the pattern,
+  such as `pattern.form-field#error-blocks-submit`; tag its test `[error-blocks-submit]`.
 - An `avoid[].instead` that is a record ID creates an `alternative` link and must resolve. Plain
   text is allowed for a component that does not exist yet.
 - Links and references may target a section: a heading slug, a rule ID, or a field path such as

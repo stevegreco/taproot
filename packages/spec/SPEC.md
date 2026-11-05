@@ -162,7 +162,7 @@ rationale:
 | `items`         | no       | Parts the author repeats, with the parameters and events each copy has. See [Items](#items). |
 | `states`        | no       | Interaction and data states, such as `hover`, `disabled`, or `checked`. Order has no meaning. |
 | `preferences`   | no       | User preferences the component responds to, with their values.                         |
-| `rules`         | no       | Requirements, each with a stable `id`, a `level`, and a `topic`.                        |
+| `rules`         | no       | Requirements, each with a stable `id`, a `level`, and a `topic`. See [Rules](#rules).   |
 | `accessibility` | no       | The role, where the accessible name comes from, and keyboard interaction.               |
 | `tokens`        | no       | Which design tokens paint each part. See [Tokens](#tokens).                             |
 | `rationale`     | no       | Decisions and why they were made. `covers` optionally names the checklist items a decision settles, such as `loading`. The adopter defines the checklist. |
@@ -259,6 +259,36 @@ A rule is one requirement a design or an implementation must meet.
 - `applicability` says when the rule applies, if not always. `rationale` says why.
 - `references` cites records or sections. `examples` gives `do` and `avoid` samples.
 
+#### Inherited rules
+
+A requirement shared by several components is written once, as a rule of a pattern or guideline
+(see [Pattern, guideline, and example records](#pattern-guideline-and-example-records)). A component
+inherits the rules of each record in its `links.follows`, at their own addresses, such as
+`pattern.form-field#error-blocks-submit`. It does not restate them. Its own `rules` hold what is
+true of it alone, and may change an inherited rule in one of two ways, by repeating its `id`:
+
+- **Narrow it** with `extends`, the inherited rule's address, and a `statement` that says what the
+  rule means for this component. The rule keeps its `id`, `topic`, and `level`, and its
+  `applicability` unless it gives its own. It may raise the `level`, never lower it. Examples,
+  rationale, and references describe the inherited statement, so they do not carry over. Its address is the component's: `component.switch#form-value`.
+- **Waive it** with `waived`: why the rule cannot apply, such as a requirement about an option the
+  component does not have. A waived rule has no other fields. Add `extends` only when two followed
+  records have a rule with that `id`.
+
+```yaml
+links:
+  follows: [pattern.form-field]
+rules:
+  - id: form-value
+    extends: pattern.form-field#form-value
+    statement: The value submits only while the switch is on. Reset restores the initial state.
+  - id: required-blocks-submit
+    waived: A switch is always on or off, so it has no required option.
+```
+
+A component's rules, as `rules` and `get` show them, are its own, then each inherited rule it does
+not narrow or waive. Review against all of them.
+
 ### Tokens
 
 `tokens` maps each anatomy part to conditions, and each condition to properties and token
@@ -296,6 +326,11 @@ When a combination matters, write it as its own condition, or explain it in `rat
 These records are Markdown with YAML front matter. The front matter has the common fields. The
 body is the guidance.
 
+A pattern or guideline may also have `rules`, the same shape as a component's. Components that
+follow it inherit them (see [Inherited rules](#inherited-rules)). Write a requirement there when
+every component that follows the record must meet it, and keep the body for the explanation and
+examples people read.
+
 ```markdown
 ---
 id: pattern.action-hierarchy
@@ -322,10 +357,13 @@ An example record also has:
 Records follow these so that one idea has one name everywhere.
 
 - **Rule ids** name the requirement in plain words, with no topic prefix, because `topic` already
-  says `accessibility`. Shared requirements use shared ids: `visible-focus`, `forced-colors`,
+  says `accessibility`. A requirement every component of a kind shares is a rule of the pattern or
+  guideline they follow, such as `pattern.form-field`. Requirements that are alike but that each
+  component words for itself use shared ids: `visible-focus`, `forced-colors`,
   `not-a-control`, and `not-color-alone`.
-- **Form fields** follow `pattern.form-field` for label, hint, error, required, disabled, form
-  value, and focus, and keep only the rules about their own control.
+- **Form fields** follow `pattern.form-field` and inherit its rules for label, hint, error,
+  required, disabled, form value, and focus. Each keeps only the rules about its own control, and
+  narrows `form-value` to say what its value is.
 - **`label`** is visible text that names the component, and it is also the accessible name. A name
   that is not shown is **`accessibleName`**.
 - **Decorative:** a graphic with no `accessibleName` is decorative and hidden from assistive
@@ -375,7 +413,8 @@ A link target is a record ID, optionally followed by `#` and a section:
   punctuation removed and spaces replaced by hyphens. `## Assign emphasis` is `assign-emphasis`.
   Every heading has its own slug. A slug an earlier heading already has gets `-1`, `-2`, and so on,
   skipping any an earlier heading took, so headings `Foo`, `Foo`, and `Foo-1` are `foo`, `foo-1`,
-  and `foo-1-1`.
+  and `foo-1-1`. A pattern's or guideline's rule ID is also a section, and must not repeat a
+  heading's slug.
 - In a component record, a section is a rule ID, a top-level field (`usage`, `anatomy`,
   `parameters`, `tokens`, and so on), or a dotted path into `anatomy`, `parameters`, `events`,
   `parts`, or `items`, such as `parameters.variant`, `parameters.variant.destructive`,
@@ -394,7 +433,11 @@ The schema checks each record alone. Tools also check the corpus as a whole:
 - Each `links` kind is written on a record type it describes and points at a record type it allows:
   see [Links](#links). An enum parameter's `guidance` points at a pattern or a guideline.
 - Annotation IDs are unique within an example, and none is also a heading's slug.
-- Rule IDs are unique within a record, and do not collide with a top-level field name.
+- Rule IDs are unique within a record. A component's rule ID does not collide with a top-level
+  field name, and a pattern's or guideline's does not collide with a heading's slug.
+- A component rule that repeats the ID of a rule it inherits narrows it with `extends` or sets it
+  aside with `waived`. `extends` names a rule of a record the component follows, with the same ID,
+  and does not lower its level. `waived` names exactly one inherited rule.
 - An enum parameter's `default`, `examples` keys, and `guidance` keys are among its `values`. This
   holds for part and item parameters too.
 - Every `parts` and `items` key is an anatomy part, and no part is in both.

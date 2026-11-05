@@ -68,6 +68,10 @@ spec.links("component.link", { kind: "alternative-to", direction: "out" });
 spec.rules({ topic: "accessibility", level: "must", query: "focus" });
 // [{ address: "component.button#visible-focus", ... }], must first
 
+spec.rules({ id: "component.text-field" });
+// Its own rules and the ones it inherits, such as { address: "pattern.form-field#error-blocks-submit",
+// recordId: "pattern.form-field", appliesTo: "component.text-field", ... }
+
 spec.tokens("component.button", { condition: "variant.primary + hover" });
 // [{ part, condition, property, token, values? }]
 
@@ -174,7 +178,9 @@ strong match", each weak hit is marked, and `--json` hits carry `weak: true`.
 
 `rules` prints each rule's level, address, and statement, and the condition it applies under, if
 any, so a conditional rule never reads as unconditional. A closing line says how to read a rule's
-rationale, references, and examples with `get <address>`.
+rationale, references, and examples with `get <address>`. `rules --id <component>` includes the
+rules the component inherits from the patterns and guidelines it follows, each at the address where
+it is written, and marks a rule that narrows one of them with `(extends <address>)`.
 
 A whole component record leaves out its token table, which is most of its length; a closing line
 gives the count and the command. Read the table with `get <id>#tokens` or filter it with `tokens`.

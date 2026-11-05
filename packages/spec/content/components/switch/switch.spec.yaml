@@ -103,11 +103,16 @@ rules:
     topic: behavior
     statement: Programmatic state changes do not report user input or change.
   - id: form-value
-    level: should
-    topic: behavior
-    statement: >-
-      A form records the value only when the switch is on and enabled. Reset restores the initial
-      state.
+    extends: pattern.form-field#form-value
+    statement: The value submits only while the switch is on. Reset restores the initial state.
+  - id: required-blocks-submit
+    waived: >-
+      A switch applies its setting immediately and is always on or off, so it has no required
+      option.
+  - id: required-announced
+    waived: >-
+      A switch applies its setting immediately and is always on or off, so it has no required
+      option.
   - id: state-not-color-alone
     level: must
     topic: accessibility

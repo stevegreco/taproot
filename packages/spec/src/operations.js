@@ -336,7 +336,8 @@ export function rules(spec, { id: typed, topic, level, query } = {}, options = {
   const data = spec.rules({ id, topic, level, query });
   if (data.length === 0) return { text: "No rules match.", data, ok: true };
   const lines = data.map((r) => {
-    const line = `- **${r.level.toUpperCase()}** ${r.address}: ${r.statement}`;
+    const narrows = r.extends ? ` (extends ${r.extends})` : "";
+    const line = `- **${r.level.toUpperCase()}** ${r.address}${narrows}: ${r.statement}`;
     return r.applicability ? `${line}\n  - Applies when: ${r.applicability}` : line;
   });
   const detailed = data.find((r) => r.rationale || r.references || r.examples);
