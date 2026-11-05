@@ -41,7 +41,8 @@ rationale, and references are its own, since they describe the statement it rewr
 - `component:status` counts inherited MUST rules, so a component that follows a pattern needs tests
   tagged with those rule ids, and lists the ones that have none.
 - A rule ID in a pattern or guideline is a section, so it must not repeat a heading's slug.
-  `pattern.form-field`'s "Form value" heading became "Value" so the shared `form-value` id could stay.
+- A record's body no longer restates its rules. `pattern.form-field`'s body keeps only what rules
+  cannot say: how label, hint, and error work together, and when to choose Switch.
 - The format version stays at 1: every record that was valid is still valid.
 
 ## Alternatives considered

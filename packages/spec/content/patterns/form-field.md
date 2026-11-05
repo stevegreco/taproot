@@ -91,53 +91,18 @@ rules:
     statement: Keyboard focus stays visible in every state, including under forced colors.
 ---
 
-Text field, Text area, Select, Checkbox, Switch, Radio group, and Slider share the guidance below.
-Each of them follows this pattern, so it inherits the rules above. A component keeps only the rules
-about its own control, narrows a rule where its control differs, such as what its value is, and
-waives a rule that cannot apply, with the reason.
+Text field, Text area, Select, Checkbox, Switch, Radio group, and Slider follow this pattern and
+inherit the rules above. Each keeps only the rules about its own control. It narrows a rule where its
+control differs, such as what its value is, and waives one that cannot apply, with the reason.
 
-## Label
+## Label, hint, and error
 
-Provide a visible label that names the value. The label is the control's accessible name.
-Placeholder text is not a label. Write "Email address", not "Enter email".
-
-## Hint
-
-Use a hint for format, purpose, or consequence that the label does not already state. The hint is
-associated with the control, so assistive technology reads it as the description.
-
-## Error
-
-Write the error as what to fix: "Enter an email address with an @ sign", not "Invalid".
-
-- A non-empty error marks the control invalid, and clearing the error removes that state.
-- Clear the error when the person edits the value. A form reset restores the value but leaves the
-  error, so clear it on reset too.
-- While a non-empty error is set, the control blocks its form from submitting.
-- The error is associated with the control, so assistive technology reads it as the description.
-- The invalid state always includes the text message. Meaning never depends on color alone.
-
-## Required
-
-A required control is announced as required, and shows it by more than color. A required control
-with no value blocks its form from submitting.
-
-## Disabled
-
-Disabled prevents interaction from pointer and keyboard, and a disabled control submits nothing.
-When the reason a control is unavailable is not obvious, explain it nearby.
-
-## Value
-
-Inside a form, the control's value submits under its name, and reset restores the initial value.
-Each component says what its value is, such as the checked option of a Radio group.
-
-## Focus
-
-Keyboard focus stays visible in every state, including under forced colors.
+The label says what the value is. The hint says what the label cannot, such as a format or a
+consequence. The error says how to fix what was entered. Assistive technology reads the label as the
+control's name and the hint and error as its description, so each must make sense on its own.
 
 ## Switch and forms
 
 Switch applies its setting immediately, without a separate submit action. It can also submit with a
-form, so the guidance on this page applies to it. Use Checkbox when the choice takes effect only
-when the form is submitted.
+form, so these rules apply to it. Use Checkbox when the choice takes effect only when the form is
+submitted.

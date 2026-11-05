@@ -512,10 +512,9 @@
         "$ref": "#/$defs/rule"
       }
     },
-    "rule": {
+    "ruleFields": {
+      "description": "The fields a rule may have, shared by a rule and a component rule.",
       "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "level", "topic", "statement"],
       "properties": {
         "id": {
           "description": "Stable within the record. Address: <record id>#<rule id>.",
@@ -562,6 +561,18 @@
         }
       }
     },
+    "rule": {
+      "type": "object",
+      "$ref": "#/$defs/ruleFields",
+      "required": ["id", "level", "topic", "statement"],
+      "properties": {
+        "id": true,
+        "level": true,
+        "topic": true,
+        "statement": true
+      },
+      "unevaluatedProperties": false
+    },
     "componentRules": {
       "type": "array",
       "items": {
@@ -571,52 +582,10 @@
     "componentRule": {
       "description": "A component rule: its own, one that narrows an inherited rule (`extends`), or an inherited rule set aside (`waived`).",
       "type": "object",
-      "additionalProperties": false,
+      "$ref": "#/$defs/ruleFields",
       "required": ["id"],
       "properties": {
-        "id": {
-          "description": "Stable within the record. Address: <record id>#<rule id>.",
-          "$ref": "#/$defs/name"
-        },
-        "level": {
-          "description": "RFC 2119 meaning. A rule that extends another inherits its level, and may raise it.",
-          "enum": ["must", "should", "may"]
-        },
-        "topic": {
-          "enum": ["content", "behavior", "accessibility"]
-        },
-        "statement": {
-          "$ref": "#/$defs/text"
-        },
-        "applicability": {
-          "description": "When the rule applies, if not always.",
-          "$ref": "#/$defs/text"
-        },
-        "rationale": {
-          "$ref": "#/$defs/text"
-        },
-        "references": {
-          "description": "Records or sections this rule cites.",
-          "$ref": "#/$defs/linkTargets"
-        },
-        "examples": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "do": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/text"
-              }
-            },
-            "avoid": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/text"
-              }
-            }
-          }
-        },
+        "id": true,
         "extends": {
           "description": "The inherited rule this one narrows. Keeps its id and topic.",
           "$ref": "#/$defs/ruleAddress"
@@ -696,7 +665,8 @@
             "required": ["level", "topic", "statement"]
           }
         }
-      ]
+      ],
+      "unevaluatedProperties": false
     },
     "ruleAddress": {
       "description": "A rule by address: <record id>#<rule id>.",

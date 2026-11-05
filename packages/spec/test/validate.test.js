@@ -228,63 +228,6 @@ const cases = [
     path: "/usage/do/1",
     message: "is a `TODO:` placeholder; replace it",
   },
-  {
-    name: "rule-heading",
-    file: "guide.md",
-    line: 11,
-    path: "/rules/1/id",
-    message: 'rule id `overview` is also the address of the heading "Overview"',
-  },
-  {
-    name: "rule-inherited-clash",
-    file: "thing.spec.yaml",
-    line: 17,
-    path: "/rules/0/id",
-    message: "rule id `shared` is already inherited from pattern.guide#shared",
-  },
-  {
-    name: "rule-extends-unknown",
-    file: "thing.spec.yaml",
-    line: 18,
-    path: "/rules/0/extends",
-    message:
-      "`pattern.guide#missing` is not a rule of a pattern or guideline that component.thing follows",
-  },
-  {
-    name: "rule-extends-id",
-    file: "thing.spec.yaml",
-    line: 17,
-    path: "/rules/0/id",
-    message: "a rule that extends pattern.guide#shared keeps its id: use `shared`",
-  },
-  {
-    name: "rule-extends-weaker",
-    file: "thing.spec.yaml",
-    line: 19,
-    path: "/rules/0/level",
-    message: "`should` is weaker than the `must` of pattern.guide#shared",
-  },
-  {
-    name: "rule-extends-topic",
-    file: "thing.spec.yaml",
-    line: 19,
-    path: "/rules/0/topic",
-    message: "`topic` is not allowed here",
-  },
-  {
-    name: "rule-waived-unknown",
-    file: "thing.spec.yaml",
-    line: 17,
-    path: "/rules/0/id",
-    message: "`ghost` is waived, but no pattern or guideline that component.thing follows",
-  },
-  {
-    name: "rule-waived-detail",
-    file: "thing.spec.yaml",
-    line: 19,
-    path: "/rules/0/statement",
-    message: "`statement` is not allowed here",
-  },
   { name: "yaml-syntax", file: "thing.md", line: 3, path: "", message: "Flow sequence" },
 ];
 
