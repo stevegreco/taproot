@@ -1,5 +1,7 @@
 import { afterEach, beforeAll, expect, test, vi } from "vitest";
+import { cdp, userEvent } from "vitest/browser";
 import { defineTextArea } from "../src/text-area.js";
+import { resolvedValue } from "./helpers/tokens.js";
 const tag = "test-text-area";
 beforeAll(() => defineTextArea(tag));
 afterEach(() => document.body.replaceChildren());
@@ -65,4 +67,24 @@ test("fieldset disabled state excludes and restores current value, restore respe
   expect(field.value).toBe("Recovered\nnotes");
   form.reset();
   expect(field.value).toBe("Default");
+});
+
+test("[forced-colors] keeps the boundary, focus, and disabled state visible under forced colors", async () => {
+  await cdp().send("Emulation.setEmulatedMedia", {
+    features: [{ name: "forced-colors", value: "active" }],
+  });
+  try {
+    expect(matchMedia("(forced-colors: active)").matches).toBe(true);
+    const { control } = render();
+    expect(getComputedStyle(control).borderTopColor).toBe(resolvedValue("color", "ButtonText"));
+
+    await userEvent.tab();
+    expect(control.matches(":focus-visible")).toBe(true);
+    expect(getComputedStyle(control).outlineColor).toBe(resolvedValue("color", "Highlight"));
+
+    control.disabled = true;
+    expect(getComputedStyle(control).borderTopColor).toBe(resolvedValue("color", "GrayText"));
+  } finally {
+    await cdp().send("Emulation.setEmulatedMedia", { features: [] });
+  }
 });

@@ -5,7 +5,7 @@
   <rect width="960" height="640" fill="#faf6f0"/>
   <rect x="0" y="0" width="220" height="640" fill="#171c1a"/>
 
-  <text x="32" y="52" fill="#fcfcfc" font-family="Georgia, serif" font-size="24" font-weight="600">Ember &amp; Sage</text>
+  <text x="32" y="52" fill="#fcfcfc" font-family="Georgia, serif" font-size="24" font-weight="600">Taproot</text>
   <text x="32" y="108" fill="#b9b9b9" font-family="system-ui, sans-serif" font-size="12" font-weight="600" letter-spacing="1.2">WORKSPACE</text>
   <text x="32" y="146" fill="#b9b9b9" font-family="system-ui, sans-serif" font-size="15">Overview</text>
   <text x="32" y="184" fill="#b9b9b9" font-family="system-ui, sans-serif" font-size="15">Projects</text>

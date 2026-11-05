@@ -29,6 +29,10 @@ and its `value` attribute identifies it, defaulting to the label. Values must be
 tab set. Tabs follow the order of the children, and children can be added, removed, or relabeled
 after connection. Other children are not rendered.
 
+The tab set's `label` attribute names the tab list inside it, not the host, so use `label`, not
+`aria-label`. Button is the one component that takes `aria-label`; the
+[Button implementation](button.md) says why.
+
 `defineTabs()` registers both elements. Pass a second tag name to alias the section element as well
 as the tab set.
 

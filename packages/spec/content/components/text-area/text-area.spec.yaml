@@ -106,6 +106,12 @@ rules:
     level: should
     topic: behavior
     statement: Allow users to increase the visible height without changing the control width.
+  - id: forced-colors
+    level: must
+    topic: accessibility
+    statement: >-
+      Under forced colors, the control boundary and keyboard focus stay visible, and a disabled
+      field stays distinguishable from an enabled one.
 accessibility:
   role: Text input
   name: Required from the visible label.

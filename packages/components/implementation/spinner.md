@@ -21,7 +21,8 @@ None. The spinner renders its own indicator and ignores children. Put visible st
 
 The role (`progressbar`, with no value) and accessible name are set through `ElementInternals`, so
 the host never gains `role` or `aria-*` attributes (`component.spinner#always-named`). An empty or
-missing `label` reads as "Loading".
+missing `label` reads as "Loading". Use `label`, not `aria-label`, to name the spinner. Button is
+the one component that takes `aria-label`; the [Button implementation](button.md) says why.
 
 ## The hidden attribute
 
