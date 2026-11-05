@@ -21,6 +21,8 @@ working.
 
 The role and accessible name are set through `ElementInternals`, so the host never gains `role` or
 `aria-*` attributes. Without `label` the icon is hidden from assistive technology.
+Use `label`, not `aria-label`, to name the icon. Button is the one component that takes
+`aria-label`; the [Button implementation](button.md) says why.
 
 ## Styles
 

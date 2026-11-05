@@ -1,5 +1,7 @@
 import { afterEach, beforeAll, expect, test, vi } from "vitest";
+import { cdp, userEvent } from "vitest/browser";
 import { defineSelect } from "../src/select.js";
+import { resolvedValue } from "./helpers/tokens.js";
 const tag = "test-select";
 beforeAll(() => defineSelect(tag));
 afterEach(() => document.body.replaceChildren());
@@ -112,4 +114,24 @@ test("removing then reinserting the old choice does not revive stale selection",
   field.append(option);
   await vi.waitFor(() => expect(field.shadowRoot.querySelector("select").options.length).toBe(4));
   expect(field.value).toBe("");
+});
+
+test("[forced-colors] keeps the boundary, focus, and disabled state visible under forced colors", async () => {
+  await cdp().send("Emulation.setEmulatedMedia", {
+    features: [{ name: "forced-colors", value: "active" }],
+  });
+  try {
+    expect(matchMedia("(forced-colors: active)").matches).toBe(true);
+    const { control } = render();
+    expect(getComputedStyle(control).borderTopColor).toBe(resolvedValue("color", "ButtonText"));
+
+    await userEvent.tab();
+    expect(control.matches(":focus-visible")).toBe(true);
+    expect(getComputedStyle(control).outlineColor).toBe(resolvedValue("color", "Highlight"));
+
+    control.disabled = true;
+    expect(getComputedStyle(control).borderTopColor).toBe(resolvedValue("color", "GrayText"));
+  } finally {
+    await cdp().send("Emulation.setEmulatedMedia", { features: [] });
+  }
 });

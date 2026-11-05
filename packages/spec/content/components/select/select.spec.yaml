@@ -127,6 +127,12 @@ rules:
     topic: behavior
     statement: The selected available choice submits under the name, and reset restores the initial selection. Disabled choices and groups submit nothing.
     applicability: The field belongs to a form.
+  - id: forced-colors
+    level: must
+    topic: accessibility
+    statement: >-
+      Under forced colors, the control boundary and keyboard focus stay visible, and a disabled
+      field stays distinguishable from an enabled one.
 accessibility:
   role: Single-choice selection
   name: Required from the visible label.

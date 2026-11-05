@@ -73,3 +73,13 @@ Do not recreate Button states with product CSS. Use the published variants and s
 
 Mark a decorative icon hidden from assistive technology. Provide `aria-label` when an icon is the
 only visible content.
+
+## Why `aria-label` and not `label`
+
+Button maps `accessibleName` to `aria-label`, while Icon, Spinner, and Tabs map it to `label`. The
+difference is deliberate. `aria-label` is the attribute people already put on an icon-only button,
+and Button only passes it to the native button inside, so it keeps its standard meaning. The other
+three use `label` because their name does more than name: Icon is hidden from assistive technology
+without one, Spinner falls back to "Loading", and Tabs names the tab list inside it rather than the
+host. They set the name through `ElementInternals` or on that inner element, so the host never
+gains `aria-*` attributes. Renaming either side would break published markup.
