@@ -1,3 +1,7 @@
 # Written by build-index.js during the build.
 src/index.js
 src/index.d.ts
+
+# CI compares against the Linux references. Local references stay local.
+visual/__screenshots__/**/*-darwin.png
+visual/__screenshots__/**/*-win32.png
