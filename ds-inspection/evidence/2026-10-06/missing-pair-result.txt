@@ -1,0 +1,2 @@
+Isolated copy of audit-contrast.js with foreground.on.action.primary removed in both themes. Source checkout unchanged.
+Returned failures: 0. Six missing pairs were printed, but failure count is zero.

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Proof</title>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--ds-primitives-space-6);
+        background: var(--ds-semantic-color-background-default);
+        color: var(--ds-semantic-color-foreground-default);
+        font-family: var(--ds-semantic-typography-body-font-family);
+      }
+      main {
+        display: grid;
+        gap: var(--ds-primitives-space-6);
+        max-inline-size: 40rem;
+      }
+      form,
+      section {
+        display: grid;
+        gap: var(--ds-primitives-space-4);
+      }
+      .actions {
+        display: flex;
+        gap: var(--ds-primitives-space-2);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Account settings</h1>
+      <form aria-label="Profile">
+        <ds-text-field label="Full name" name="name" autocomplete="name" required></ds-text-field>
+        <ds-text-field
+          label="Email address"
+          name="email"
+          type="email"
+          autocomplete="email"
+          hint="Used for sign-in."
+          required
+        ></ds-text-field>
+        <ds-select label="Language" name="language"
+          ><option value="en">English</option>
+          <option value="fr">French</option></ds-select
+        >
+        <ds-text-area label="Bio" name="bio" rows="3"></ds-text-area>
+        <div class="actions">
+          <ds-button type="button" variant="secondary">Cancel</ds-button
+          ><ds-button type="submit">Save changes</ds-button>
+        </div>
+      </form>
+      <ds-switch
+        label="Send desktop notifications"
+        hint="Changes apply immediately."
+        checked
+      ></ds-switch>
+      <ds-divider></ds-divider>
+      <section aria-labelledby="dz">
+        <h2 id="dz">Delete account</h2>
+        <p>This removes your profile and all your projects. It cannot be undone.</p>
+        <div><ds-button id="delete" variant="destructive">Delete account</ds-button></div>
+      </section>
+      <ds-dialog label="Delete account?" description="This cannot be undone."
+        ><p>Your profile and projects are removed.</p>
+        <ds-button id="keep" slot="actions" variant="secondary">Keep account</ds-button
+        ><ds-button slot="actions" variant="destructive">Delete account</ds-button></ds-dialog
+      >
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

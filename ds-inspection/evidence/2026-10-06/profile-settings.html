@@ -1,0 +1,30 @@
+<!-- Bundler-consumed HTML. Application save/cancel handlers are product-owned. -->
+<script type="module">
+  // REQUIRED: import the published tokens CSS once at application root.
+  // Exact package/export path is NOT discoverable through the spec CLI.
+  // No guessed import is supplied: this snippet is incomplete until it is known.
+  import { defineTextField } from "@stevegreco/design-system-components/text-field";
+  import { defineCheckbox } from "@stevegreco/design-system-components/checkbox";
+  import { defineButton } from "@stevegreco/design-system-components/button";
+
+  defineTextField();
+  defineCheckbox();
+  defineButton();
+</script>
+
+<form aria-labelledby="profile-settings-title">
+  <h2 id="profile-settings-title">Profile settings</h2>
+  <ds-text-field label="Display name" name="displayName" type="text"></ds-text-field>
+  <ds-text-field
+    label="Email address"
+    name="email"
+    type="email"
+    autocomplete="email"
+    hint="Used for account messages."
+  ></ds-text-field>
+  <ds-checkbox label="Email me product updates" name="updates" value="yes"></ds-checkbox>
+  <div>
+    <ds-button type="button" variant="secondary">Cancel</ds-button>
+    <ds-button type="submit" variant="primary">Save changes</ds-button>
+  </div>
+</form>

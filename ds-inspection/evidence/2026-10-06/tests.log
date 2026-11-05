@@ -1,0 +1,467 @@
+
+   • turbo 2.11.7
+   • Packages in scope: @stevegreco/design-system, @stevegreco/design-system-components, @stevegreco/design-system-spec, documentation, storybook
+   • Running test in 5 packages
+   • Remote caching disabled, using shared worktree cache
+
+@stevegreco/design-system-spec:test: cache bypass, force executing 027484c0d776d293
+@stevegreco/design-system:build: cache bypass, force executing 800570fc2909aa51
+@stevegreco/design-system:build: $ pnpm run clean && node build-tokens.js && node build-css.js && pnpm run audit
+@stevegreco/design-system-spec:test: $ vitest run
+@stevegreco/design-system:build: $ rm -rf dist
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: tokensJson
+@stevegreco/design-system:build: ✔︎ dist/tokens/primitives.json
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: css
+@stevegreco/design-system:build: ✔︎ dist/css/primitives.css
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: tokensJson
+@stevegreco/design-system:build: ✔︎ dist/tokens/semantic.light.json
+@stevegreco/design-system:build: ✔︎ dist/tokens/semantic.meta.json
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: css
+@stevegreco/design-system:build: ✔︎ dist/css/semantic.light.css
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: tokensJson
+@stevegreco/design-system:build: ✔︎ dist/tokens/semantic.dark.json
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: css
+@stevegreco/design-system:build: ✔︎ dist/css/semantic.dark.css
+@stevegreco/design-system:build: ✔︎ dist/css/semantic.dark.system.css
+@stevegreco/design-system-spec:test: 
+@stevegreco/design-system-spec:test:  RUN  v5.0.0 /Users/stevegreco/.codex/worktrees/b7e6/design-system/packages/spec
+@stevegreco/design-system-spec:test: 
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: tokensJson
+@stevegreco/design-system:build: ✔︎ dist/tokens/components.json
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: css
+@stevegreco/design-system-spec:test:  ✓ |spec| test/tokens-dtcg.test.js (8 tests) 7ms
+@stevegreco/design-system-spec:test:  ✓ |spec| test/implementation.test.js (7 tests) 3ms
+@stevegreco/design-system:build: $ node scripts/audit.js
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: Contrast audit — WCAG 2.1
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build:   light
+@stevegreco/design-system:build:   ────────────────────────────────────────────────────────────
+@stevegreco/design-system:build:   ✔ all 45 pairs meet their requirement
+@stevegreco/design-system:build:   ~ disabled label — 3.62:1, below 4.5:1 but exempt (disabled state)
+@stevegreco/design-system:build:   ~ disabled border vs page — 1.82:1, below 3:1 but exempt (disabled state)
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build:   dark
+@stevegreco/design-system:build:   ────────────────────────────────────────────────────────────
+@stevegreco/design-system:build:   ✔ all 45 pairs meet their requirement
+@stevegreco/design-system:build:   ~ disabled label — 3.16:1, below 4.5:1 but exempt (disabled state)
+@stevegreco/design-system:build:   ~ disabled border vs page — 1.89:1, below 3:1 but exempt (disabled state)
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: Theme parity — ADR-0002
+@stevegreco/design-system:build:   ────────────────────────────────────────────────────────────
+@stevegreco/design-system:build:   ✔ both themes define the same 108 tokens
+@stevegreco/design-system:build:   ✔ every color token responds to the theme
+@stevegreco/design-system:build:   · color.foreground.disabled exempt — disabled content intentionally uses the same neutral gray in both themes
+@stevegreco/design-system:build:   · 20 interaction states checked for direction
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build: Ramp integrity — ADR-0002 §3
+@stevegreco/design-system:build:   ────────────────────────────────────────────────────────────
+@stevegreco/design-system:build:   ✔ 8 ramps hold hue direction, saturation and lightness
+@stevegreco/design-system:build: 
+@stevegreco/design-system:build:   No failures.
+@stevegreco/design-system:build: 
+@stevegreco/design-system-spec:test:  ✓ |spec| test/render.test.js (11 tests) 52ms
+@stevegreco/design-system-components:build: cache bypass, force executing 0717eccd5ab630b0
+@stevegreco/design-system:test: cache bypass, force executing 65b0595175060427
+@stevegreco/design-system-spec:test:  ✓ |spec| test/validate.test.js (31 tests) 220ms
+@stevegreco/design-system-spec:test:  ✓ |spec| test/query.test.js (36 tests) 185ms
+@stevegreco/design-system-spec:test:  ✓ |spec| test/content.test.js (3 tests) 278ms
+@stevegreco/design-system-spec:test:  ✓ |spec| test/config.test.js (10 tests) 254ms
+@stevegreco/design-system-components:build: $ node build-styles.js
+@stevegreco/design-system:test: $ vitest run
+@stevegreco/design-system-components:build: src/badge.css → dist/badge.styles.js
+@stevegreco/design-system-components:build: src/button.css → dist/button.styles.js
+@stevegreco/design-system-components:build: src/checkbox.css → dist/checkbox.styles.js
+@stevegreco/design-system-components:build: src/dialog.css → dist/dialog.styles.js
+@stevegreco/design-system-components:build: src/icon.css → dist/icon.styles.js
+@stevegreco/design-system-components:build: src/link.css → dist/link.styles.js
+@stevegreco/design-system-components:build: src/radio-group.css → dist/radio-group.styles.js
+@stevegreco/design-system-components:build: src/select.css → dist/select.styles.js
+@stevegreco/design-system-components:build: src/switch.css → dist/switch.styles.js
+@stevegreco/design-system-components:build: src/text-area.css → dist/text-area.styles.js
+@stevegreco/design-system-components:build: src/text-field.css → dist/text-field.styles.js
+documentation:build: cache bypass, force executing 555b7f115d7135ce
+@stevegreco/design-system-components:test: cache bypass, force executing d16b7762c18fb199
+storybook:build: cache bypass, force executing 7e6e1ac9b9c34422
+@stevegreco/design-system:test: 
+@stevegreco/design-system:test:  RUN  v5.0.0 /Users/stevegreco/.codex/worktrees/b7e6/design-system/packages/tokens
+@stevegreco/design-system:test: 
+documentation:build: $ blume build
+@stevegreco/design-system-components:test: $ vitest run
+storybook:build: $ storybook build --output-dir dist
+@stevegreco/design-system:test:  ✓ |tokens| test/css-theming.test.js (3 tests) 3ms
+@stevegreco/design-system:test:  ✓ |tokens| test/read-tokens.test.js (15 tests) 25ms
+@stevegreco/design-system:test: stdout | test/descriptions.test.js > leaf descriptions are comments on the light custom property
+@stevegreco/design-system:test: 
+@stevegreco/design-system:test: css
+@stevegreco/design-system:test: ✔︎ /tmp/semantic-light-jhOzQU/semantic.light.css
+@stevegreco/design-system:test: 
+@stevegreco/design-system:test:  ✓ |tokens| test/descriptions.test.js (5 tests) 62ms
+@stevegreco/design-system:test: 
+@stevegreco/design-system:test:  Test Files  3 passed (3)
+@stevegreco/design-system:test:       Tests  23 passed (23)
+@stevegreco/design-system:test:    Start at  17:43:46
+@stevegreco/design-system:test:    Duration  293ms (import 37%, transform 33%, tests 27%, worker 2%)
+@stevegreco/design-system:test: 
+@stevegreco/design-system-spec:test:  ✓ |spec| test/mcp.test.js (10 tests) 953ms
+@stevegreco/design-system-spec:test:    ✓ spec MCP server (10)
+@stevegreco/design-system-spec:test:      ✓ serves over stdio 380ms
+@stevegreco/design-system-components:test: Plugin "vitest:mocks:interceptor" defines Vite-specific hooks (configureServer) in a plugin returned from applyToEnvironment. These hooks will be ignored.
+storybook:build: 
+storybook:build: ┌  Building storybook v10.6.1
+storybook:build: │
+storybook:build: ◇  Cleaning outputDir: dist
+storybook:build: │
+storybook:build: ◇  Loading presets
+@stevegreco/design-system-components:test: 
+@stevegreco/design-system-components:test:  RUN  v5.0.0 /Users/stevegreco/.codex/worktrees/b7e6/design-system/packages/components
+@stevegreco/design-system-components:test: 
+storybook:build: │
+storybook:build: ◇  Building manager..
+storybook:build: │
+storybook:build: ●  Building open services..
+storybook:build: │
+storybook:build: ●  Building preview..
+storybook:build: │  Vite vite v8.3.1 building client environment for production...
+storybook:build: transforming...
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/text-field.test.js (6 tests) 19ms
+storybook:build: ✓ 218 modules transformed.
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/button.test.js (6 tests) 10ms
+storybook:build: rendering chunks...
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/icon.test.js (11 tests) 193ms
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/text-area.test.js (4 tests) 3ms
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/select.test.js (8 tests) 280ms
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/badge.test.js (5 tests) 8ms
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/package-root.test.js (11 tests) 1ms
+storybook:build: computing gzip size...
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/link.test.js (11 tests) 345ms
+@stevegreco/design-system-components:test:    ✓ DsLink (11)
+@stevegreco/design-system-components:test:      ✓ [standalone-underline-on-hover] a standalone link is underlined on hover 330ms
+storybook:build: │  Vite dist/iframe.html                                     19.64 kB │
+storybook:build: │  gzip:   5.58 kB
+storybook:build: │  dist/assets/tokens-NaZJjGOm.css                       3.11 kB │ gzip:
+storybook:build: │  0.79 kB
+storybook:build: │  dist/assets/iframe-BL4pJTwS.css                      29.10 kB │ gzip:
+storybook:build: │  3.30 kB
+storybook:build: │  dist/assets/iframe-FYM5frUP.js                        0.04 kB │ gzip:
+storybook:build: │  0.06 kB
+storybook:build: │  dist/assets/formatter-L2YTDE3Q-RkjpF8cC.js            0.30 kB │ gzip:
+storybook:build: │  0.24 kB
+storybook:build: │  dist/assets/component.stories-D3cebPJM.js             0.73 kB │ gzip:
+storybook:build: │  0.44 kB
+storybook:build: │  dist/assets/chunk-UAWMPV5J-_VQykhfG.js                0.74 kB │ gzip:
+storybook:build: │  0.45 kB
+storybook:build: │  dist/assets/rolldown-runtime-DkW27tQK.js              1.19 kB │ gzip:
+storybook:build: │  0.67 kB
+storybook:build: │  dist/assets/introduction-CwX7noad.js                  1.21 kB │ gzip:
+storybook:build: │  0.62 kB
+storybook:build: │  dist/assets/link.stories-DD6LvD1p.js                  1.26 kB │ gzip:
+storybook:build: │  0.59 kB
+storybook:build: │  dist/assets/preload-helper-VEOc_cSF.js                1.33 kB │ gzip:
+storybook:build: │  0.75 kB
+storybook:build: │  dist/assets/overview-DgzmNRWo.js                      1.64 kB │ gzip:
+storybook:build: │  0.79 kB
+storybook:build: │  dist/assets/chunk-IMSF75WX-CGYlPTyG.js                1.67 kB │ gzip:
+storybook:build: │  0.91 kB
+storybook:build: │  dist/assets/switch.stories-B7Y-_xZf.js                1.92 kB │ gzip:
+storybook:build: │  0.72 kB
+storybook:build: │  dist/assets/semantic.stories-BOqInUu0.js              1.93 kB │ gzip:
+storybook:build: │  0.66 kB
+storybook:build: │  dist/assets/text-field.stories-CFcgtiYy.js            1.99 kB │ gzip:
+storybook:build: │  0.78 kB
+storybook:build: │  dist/assets/dialog.stories-wZqZzSKb.js                2.01 kB │ gzip:
+storybook:build: │  0.76 kB
+storybook:build: │  dist/assets/radio-group.stories-9fCsxvDN.js           2.05 kB │ gzip:
+storybook:build: │  0.75 kB
+storybook:build: │  dist/assets/checkbox.stories-BUgwF1Ix.js              2.31 kB │ gzip:
+storybook:build: │  0.77 kB
+storybook:build: │  dist/assets/badge.stories-D51CP14k.js                 2.37 kB │ gzip:
+storybook:build: │  0.93 kB
+storybook:build: │  dist/assets/select.stories-BhXFCY0V.js                2.38 kB │ gzip:
+storybook:build: │  0.82 kB
+storybook:build: │  dist/assets/text-area.stories-Cc_CcSLj.js             2.76 kB │ gzip:
+storybook:build: │  0.91 kB
+storybook:build: │  dist/assets/primitives.stories-B2gqIhSv.js            2.77 kB │ gzip:
+storybook:build: │  0.76 kB
+storybook:build: │  dist/assets/button.stories-35HcSve3.js                3.22 kB │ gzip:
+storybook:build: │  0.99 kB
+storybook:build: │  dist/assets/chunk-DRQKCCAG-DtXejAOb.js                3.38 kB │ gzip:
+storybook:build: │  1.41 kB
+storybook:build: │  dist/assets/icon.stories-BzCJV5Oj.js                  3.39 kB │ gzip:
+storybook:build: │  1.13 kB
+storybook:build: │  dist/assets/chunk-7PIQR4A3-BGgO7bU4.js                5.14 kB │ gzip:
+storybook:build: │  1.93 kB
+storybook:build: │  dist/assets/react-BZJXY1be.js                         7.53 kB │ gzip:
+storybook:build: │  2.88 kB
+storybook:build: │  dist/vite-inject-mocker-entry.js                     27.84 kB │ gzip:
+storybook:build: │  9.66 kB
+storybook:build: │  dist/assets/matchers-JIUQ3HVY-C789_MAK.js            28.79 kB │ gzip:
+storybook:build: │  9.68 kB
+storybook:build: │  dist/assets/Color-6AOWCN3U-CUTR_zWg.js               30.33 kB │ gzip:
+storybook:build: │  11.46 kB
+storybook:build: │  dist/assets/tokens-h_FcQplN.js                       31.49 kB │ gzip:
+storybook:build: │  5.87 kB
+storybook:build: │  dist/assets/WithTooltip-CDUNV5IS-Ccx_GNLA.js         32.67 kB │ gzip:
+storybook:build: │  11.45 kB
+storybook:build: │  dist/assets/chunk-RDNWKK3U-C8FG2EtC.js               44.13 kB │ gzip:
+storybook:build: │  12.28 kB
+storybook:build: │  dist/assets/syntaxhighlighter-4REYKNEV-BJt5OE_u.js   75.80 kB │ gzip:
+storybook:build: │  27.21 kB
+storybook:build: │  dist/assets/DocsRenderer-JROSPFPF-BC2I6BSa.js       180.39 kB │ gzip:
+storybook:build: │  57.30 kB
+storybook:build: │  dist/assets/axe-pQGJbW0T.js                         586.90 kB │ gzip:
+storybook:build: │  160.19 kB
+storybook:build: │  dist/assets/blocks-C3f2Rag2.js                      833.67 kB │ gzip:
+storybook:build: │  267.96 kB
+storybook:build: │  dist/assets/iframe-L9As8ROb.js                      913.25 kB │ gzip:
+storybook:build: │  249.30 kB
+storybook:build: 
+storybook:build: │
+storybook:build: ▲  Vite [plugin builtin:vite-reporter]
+storybook:build: │  (!) Some chunks are larger than 500 kB after minification. Consider:
+storybook:build: │  - Using dynamic import() to code-split the application
+storybook:build: │  - Use build.rolldownOptions.output.codeSplitting to improve chunking:
+storybook:build: │  ]8;;https://rolldown.rs/reference/OutputOptions.codeSplittinghttps://rolldown.rs/reference/OutputOptions.codeSplitting]8;;
+storybook:build: │  - Adjust chunk size limit for this warning via
+storybook:build: │  build.chunkSizeWarningLimit.
+storybook:build: │  Vite ✓ built in 1.03s
+storybook:build: │
+storybook:build: ◇  Output directory:
+storybook:build: │  /Users/stevegreco/.codex/worktrees/b7e6/design-system/apps/storybook/dist
+storybook:build: │
+storybook:build: └  Storybook build completed successfully
+storybook:build: 
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/switch.test.js (5 tests) 436ms
+@stevegreco/design-system-components:test:    ✓ DsSwitch (5)
+@stevegreco/design-system-components:test:      ✓ label activation and Space emit input then change, script emits neither 309ms
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/radio-group.test.js (11 tests) 451ms
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/checkbox.test.js (13 tests) 561ms
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/dialog.test.js (22 tests) 629ms
+@stevegreco/design-system-components:test:  ✓ |browser (chromium)| test/host-checks.test.js (108 tests) 810ms
+@stevegreco/design-system-components:test: 
+@stevegreco/design-system-components:test:  Test Files  13 passed (13)
+@stevegreco/design-system-components:test:       Tests  221 passed (221)
+@stevegreco/design-system-components:test:    Start at  17:43:47
+@stevegreco/design-system-components:test:    Duration  2.21s (worker 58%, tests 36%, import 4%, setup 2%)
+@stevegreco/design-system-components:test: 
+documentation:build: [blume] ◐ Building 23 page(s) (static output)
+documentation:build: 17:43:53 [content] Syncing content
+documentation:build: 17:43:53 [content] Synced content
+documentation:build: 17:43:53 [types] Generated 2.24s
+documentation:build: 17:43:53 [build] output: "static"
+documentation:build: 17:43:53 [build] mode: "static"
+documentation:build: 17:43:53 [build] directory: /Users/stevegreco/.codex/worktrees/b7e6/design-system/apps/documentation/dist/
+documentation:build: 17:43:53 [build] Collecting build info...
+documentation:build: 17:43:53 [build] ✓ Completed in 2.28s.
+documentation:build: 17:43:53 [build] Building static entrypoints...
+documentation:build: 17:43:59 [assets] Copying fonts (6 files)...
+documentation:build: 17:44:00 [vite] ✓ built in 6.82s
+documentation:build: [BABEL] Note: The code generator has deoptimised the styling of /Users/stevegreco/.codex/worktrees/b7e6/design-system/node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-client.production.js as it exceeds the max of 500KB.
+documentation:build: 17:44:01 [vite] ✓ built in 873ms
+documentation:build: 17:44:01 [build] Rearranging server assets...
+documentation:build: 
+documentation:build:  generating static routes 
+documentation:build: 17:44:01   ├─ /404.html17:44:01   ├─ /404.json17:44:01   ├─ /404.md17:44:01   ├─ /api/docs/navigation.json17:44:01   ├─ /api/docs/pages/index.json17:44:01   ├─ /api/docs/pages/components/badge.json17:44:01   ├─ /api/docs/pages/components/button.json17:44:01   ├─ /api/docs/pages/components/checkbox.json (+15ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/components/dialog.json (+17ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/components/icon.json (+18ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/components/link.json (+17ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/components/radio-group.json (+18ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/components/select.json (+3ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/components/switch.json (+2ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/components/text-area.json (+2ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/components/text-field.json (+19ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/design-tokens/overview.json (+19ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/design-tokens/primitives/color.json (+19ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/design-tokens/semantic.json (+2ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/getting-started/installation.json (+2ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/labs.json (+1ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/labs/background.json (+2ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/labs/border.json (+2ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/labs/elevation.json (+1ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/labs/foreground.json (+2ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/labs/shape.json (+2ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages/labs/typography.json (+1ms) 
+documentation:build: 17:44:01   ├─ /api/docs/pages.json (+2ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/badge/index.html (+7ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/button/index.html (+8ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/checkbox/index.html (+10ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/dialog/index.html (+10ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/icon/index.html (+12ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/link/index.html (+13ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/radio-group/index.html (+13ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/select/index.html (+2ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/switch/index.html (+5ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/text-area/index.html (+8ms) 
+documentation:build: 17:44:01   ├─ /blume-examples/text-field/index.html (+7ms) 
+documentation:build: 17:44:01   ├─ /blume-nav/current/default/g0/index.html (+12ms) 
+documentation:build: 17:44:01   ├─ /blume-nav/current/default/g1/index.html (+14ms) 
+documentation:build: 17:44:01   ├─ /blume-nav/current/default/g2/index.html (+20ms) 
+documentation:build: 17:44:01   ├─ /blume-nav/current/default/g3/index.html (+12ms) 
+documentation:build: 17:44:01   ├─ /blume-nav/current/default/g4/index.html (+6ms) 
+documentation:build: 17:44:01   ├─ /blume-search.json (+6ms) 
+documentation:build: 17:44:01   ├─ /openapi.json (+6ms) 
+documentation:build: 17:44:01   ├─ /index.md (+2ms) 
+documentation:build: 17:44:01   ├─ /components/badge.md (+3ms) 
+documentation:build: 17:44:01   ├─ /components/button.md (+1ms) 
+documentation:build: 17:44:01   ├─ /components/checkbox.md (+1ms) 
+documentation:build: 17:44:01   ├─ /components/dialog.md (+1ms) 
+documentation:build: 17:44:01   ├─ /components/icon.md (+5ms) 
+documentation:build: 17:44:01   ├─ /components/link.md (+6ms) 
+documentation:build: 17:44:01   ├─ /components/radio-group.md (+7ms) 
+documentation:build: 17:44:01   ├─ /components/select.md (+5ms) 
+documentation:build: 17:44:01   ├─ /components/switch.md (+6ms) 
+documentation:build: 17:44:01   ├─ /components/text-area.md (+1ms) 
+documentation:build: 17:44:01   ├─ /components/text-field.md (+1ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/overview.md (+1ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/primitives/color.md (+2ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/semantic.md (+2ms) 
+documentation:build: 17:44:01   ├─ /getting-started/installation.md (+2ms) 
+documentation:build: 17:44:01   ├─ /labs.md (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/background.md (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/border.md (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/elevation.md (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/foreground.md (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/shape.md (+1ms) 
+documentation:build: 17:44:01   ├─ /labs/typography.md (+1ms) 
+documentation:build: 17:44:01   ├─ /index.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /components/badge.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /components/button.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /components/checkbox.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /components/dialog.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /components/icon.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /components/link.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /components/radio-group.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /components/select.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /components/switch.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /components/text-area.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /components/text-field.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/overview.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/primitives/color.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/semantic.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /getting-started/installation.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /labs.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/background.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/border.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/elevation.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/foreground.mdx (+2ms) 
+documentation:build: 17:44:01   ├─ /labs/shape.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /labs/typography.mdx (+1ms) 
+documentation:build: 17:44:01   ├─ /index.html (+10ms) 
+documentation:build: 17:44:01   ├─ /components/badge/index.html (+155ms) 
+documentation:build: 17:44:01   ├─ /components/button/index.html (+244ms) 
+documentation:build: 17:44:01   ├─ /components/checkbox/index.html (+387ms) 
+documentation:build: 17:44:01   ├─ /components/dialog/index.html (+398ms) 
+documentation:build: 17:44:01   ├─ /components/icon/index.html (+419ms) 
+documentation:build: 17:44:01   ├─ /components/link/index.html (+428ms) 
+documentation:build: 17:44:01   ├─ /components/radio-group/index.html (+428ms) 
+documentation:build: 17:44:01   ├─ /components/select/index.html (+299ms) 
+documentation:build: 17:44:01   ├─ /components/switch/index.html (+218ms) 
+documentation:build: 17:44:01   ├─ /components/text-area/index.html (+472ms) 
+documentation:build: 17:44:01   ├─ /components/text-field/index.html (+98ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/overview/index.html (+89ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/primitives/color/index.html (+77ms) 
+documentation:build: 17:44:01   ├─ /design-tokens/semantic/index.html (+66ms) 
+documentation:build: 17:44:01   ├─ /getting-started/installation/index.html (+118ms) 
+documentation:build: 17:44:01   ├─ /labs/index.html (+95ms) 
+documentation:build: 17:44:01   ├─ /labs/background/index.html (+88ms) 
+documentation:build: 17:44:01   ├─ /labs/border/index.html (+81ms) 
+documentation:build: 17:44:01   ├─ /labs/elevation/index.html (+71ms) 
+documentation:build: 17:44:01   ├─ /labs/foreground/index.html (+71ms) 
+documentation:build: 17:44:01   ├─ /labs/shape/index.html (+64ms) 
+documentation:build: 17:44:01   ├─ /labs/typography/index.html (+58ms) 
+documentation:build:  (+13ms) 
+documentation:build:  (+16ms) 
+documentation:build:  (+12ms) 
+documentation:build:  (+9ms) 
+documentation:build:  (+7ms) 
+documentation:build:  (+4ms) 
+documentation:build:  (+2ms) 
+documentation:build: 17:44:01 ✓ Completed in 845ms.
+documentation:build: 
+documentation:build: 17:44:01 [build] ✓ Completed in 8.58s.
+documentation:build: 17:44:01 [blume] Generated llms.txt and llms-full.txt
+documentation:build: 17:44:01 [blume] Generated robots.txt
+documentation:build: 17:44:01 [blume] Generated agent-readability.json
+documentation:build: 17:44:01 [blume] Generated .well-known/api-catalog (RFC 9727)
+documentation:build: 17:44:01 [blume] Emitted _headers (UTF-8 Content-Type + homepage Link header)
+documentation:build: 17:44:01 [build] 40 page(s) built in 10.89s
+documentation:build: 17:44:01 [build] Complete!
+documentation:build: 
+documentation:build:  ╭───────────────────────────────────────╮
+documentation:build:  │                                       │
+documentation:build:  │  Output     static                    │
+documentation:build:  │  Adapter    none                      │
+documentation:build:  │  Site       not set                   │
+documentation:build:  │  Search     orama                     │
+documentation:build:  │  Redirects  0                         │
+documentation:build:  │  Sitemap    no (set deployment.site)  │
+documentation:build:  │  Robots     yes                       │
+documentation:build:  │  Agent JSON yes                       │
+documentation:build:  │  LLM files  yes                       │
+documentation:build:  │  Server features  none                │
+documentation:build:  │                                       │
+documentation:build:  ╰───────────────────────────────────────╯
+documentation:build: 
+documentation:build: [blume] ✔ Built to /Users/stevegreco/.codex/worktrees/b7e6/design-system/apps/documentation/dist
+documentation:test: cache bypass, force executing 5ca6486544cc4f83
+documentation:test: $ vitest run
+documentation:test: 
+documentation:test:  RUN  v5.0.0 /Users/stevegreco/.codex/worktrees/b7e6/design-system/apps/documentation
+documentation:test: 
+documentation:test:  ✓ |documentation| test/workspace-builds.test.ts (2 tests) 2ms
+documentation:test:  ✓ |documentation| test/semantic-reference.test.ts (2 tests) 3ms
+documentation:test:  ✓ |documentation| test/component-spec.test.ts (16 tests) 231ms
+documentation:test:  ✓ |documentation| test/example-types.test.ts (1 test) 712ms
+documentation:test:    ✓ examples type-check against the generated element types 711ms
+@stevegreco/design-system-spec:test:  ✓ |spec| test/cli.test.js (43 tests) 18712ms
+@stevegreco/design-system-spec:test:    ✓ ds-spec CLI, real content (13)
+@stevegreco/design-system-spec:test:      ✓ validates 428ms
+@stevegreco/design-system-spec:test:      ✓ gets a record and a section 550ms
+@stevegreco/design-system-spec:test:      ✓ shows incoming links with both ends, apart from outgoing ones 437ms
+@stevegreco/design-system-spec:test:      ✓ lists rules as addresses 349ms
+@stevegreco/design-system-spec:test:      ✓ keeps a conditional rule's condition, and says how to read a rule in full 875ms
+@stevegreco/design-system-spec:test:    ✓ ds-spec CLI, failures (4)
+@stevegreco/design-system-spec:test:      ✓ exits 2 on usage errors 1507ms
+@stevegreco/design-system-spec:test:      ✓ exits 1 for unknown ids and sections, with the error on stderr 838ms
+@stevegreco/design-system-spec:test:    ✓ ds-spec CLI, implementations (6)
+@stevegreco/design-system-spec:test:      ✓ points a plain get at the implementation 442ms
+@stevegreco/design-system-spec:test:      ✓ explains a missing or unknown implementation 827ms
+@stevegreco/design-system-spec:test:    ✓ ds-spec CLI, short records (4)
+@stevegreco/design-system-spec:test:      ✓ leaves the token table out of a whole component record 454ms
+@stevegreco/design-system-spec:test:      ✓ still prints the tokens section and the tokens command 731ms
+@stevegreco/design-system-spec:test:      ✓ keeps the full record in JSON 368ms
+@stevegreco/design-system-spec:test:    ✓ ds-spec CLI, forgiving lookups (5)
+@stevegreco/design-system-spec:test:      ✓ matches the start of a name or title 1011ms
+@stevegreco/design-system-spec:test:      ✓ finds a record by name 1603ms
+@stevegreco/design-system-spec:test:      ✓ suggests the record a typo meant 434ms
+@stevegreco/design-system-spec:test:      ✓ returns an error envelope in JSON 877ms
+@stevegreco/design-system-spec:test:      ✓ searches through typos and names the next command 1319ms
+@stevegreco/design-system-spec:test: 
+@stevegreco/design-system-spec:test:  Test Files  9 passed (9)
+@stevegreco/design-system-spec:test:       Tests  159 passed (159)
+@stevegreco/design-system-spec:test:    Start at  17:43:45
+@stevegreco/design-system-spec:test:    Duration  18.90s (tests 89%, import 7%, transform 4%)
+@stevegreco/design-system-spec:test: 
+documentation:test:  ✓ |documentation| test/examples.test.ts (12 tests) 3214ms
+documentation:test:    ✓ the radio-group example passes its Verify steps 300ms
+documentation:test:    ✓ the switch example passes its Verify steps 307ms
+documentation:test:    ✓ the text-area example passes its Verify steps 309ms
+documentation:test: 
+documentation:test:  Test Files  5 passed (5)
+documentation:test:       Tests  33 passed (33)
+documentation:test:    Start at  17:44:02
+documentation:test:    Duration  3.59s (tests 78%, import 13%, transform 8%, setup 1%)
+documentation:test: 
+
+ Tasks:    8 successful, 8 total
+Cached:    0 cached, 8 total
+  Time:    21.745s 
+

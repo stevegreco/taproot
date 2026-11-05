@@ -1,0 +1,243 @@
+[
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSdZg",
+        "name": "tokens",
+        "description": "Design token architecture",
+        "color": "0e8a16"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSeiw",
+        "name": "guardrail",
+        "description": "Build-time check preventing regressions",
+        "color": "fbca04"
+      }
+    ],
+    "number": 175,
+    "title": "Token audit comments still describe deleted policy",
+    "updatedAt": "2026-10-06T09:43:43Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSdZg",
+        "name": "tokens",
+        "description": "Design token architecture",
+        "color": "0e8a16"
+      }
+    ],
+    "number": 174,
+    "title": "Token auditor prompt still flags legal primitive aliases",
+    "updatedAt": "2026-10-06T09:43:42Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAACiOpgxA",
+        "name": "documentation",
+        "description": "Improvements or additions to documentation",
+        "color": "0075ca"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSdZg",
+        "name": "tokens",
+        "description": "Design token architecture",
+        "color": "0e8a16"
+      }
+    ],
+    "number": 173,
+    "title": "Theme docs say removing data-theme selects light",
+    "updatedAt": "2026-10-06T09:43:42Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSdZg",
+        "name": "tokens",
+        "description": "Design token architecture",
+        "color": "0e8a16"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSdtA",
+        "name": "a11y",
+        "description": "Accessibility / WCAG",
+        "color": "5319e7"
+      }
+    ],
+    "number": 172,
+    "title": "Theme the dialog backdrop so dark mode still dims the page",
+    "updatedAt": "2026-10-06T09:43:41Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSdZg",
+        "name": "tokens",
+        "description": "Design token architecture",
+        "color": "0e8a16"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSdtA",
+        "name": "a11y",
+        "description": "Accessibility / WCAG",
+        "color": "5319e7"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSeiw",
+        "name": "guardrail",
+        "description": "Build-time check preventing regressions",
+        "color": "fbca04"
+      }
+    ],
+    "number": 171,
+    "title": "Fail the contrast audit when a pair token is missing",
+    "updatedAt": "2026-10-06T09:43:41Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-EIA",
+        "name": "feedback",
+        "description": "Review feedback and improvement findings",
+        "color": "D4C5F9"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-HRA",
+        "name": "spec",
+        "description": "Knowledge contracts, format, validation, and delivery",
+        "color": "0075CA"
+      }
+    ],
+    "number": 164,
+    "title": "Add a neighbors step: update related specs when a component is added",
+    "updatedAt": "2026-10-01T10:59:42Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-EIA",
+        "name": "feedback",
+        "description": "Review feedback and improvement findings",
+        "color": "D4C5F9"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-HRA",
+        "name": "spec",
+        "description": "Knowledge contracts, format, validation, and delivery",
+        "color": "0075CA"
+      }
+    ],
+    "number": 163,
+    "title": "Run axe on every story in both themes and require a composition story",
+    "updatedAt": "2026-10-01T11:05:10Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-EIA",
+        "name": "feedback",
+        "description": "Review feedback and improvement findings",
+        "color": "D4C5F9"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-HRA",
+        "name": "spec",
+        "description": "Knowledge contracts, format, validation, and delivery",
+        "color": "0075CA"
+      }
+    ],
+    "number": 162,
+    "title": "Add a shared accessibility-tree test helper and write rule tests first",
+    "updatedAt": "2026-10-01T10:59:31Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-EIA",
+        "name": "feedback",
+        "description": "Review feedback and improvement findings",
+        "color": "D4C5F9"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-HRA",
+        "name": "spec",
+        "description": "Knowledge contracts, format, validation, and delivery",
+        "color": "0075CA"
+      }
+    ],
+    "number": 161,
+    "title": "Make status.mjs the single definition of done for a component",
+    "updatedAt": "2026-10-01T10:59:29Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-EIA",
+        "name": "feedback",
+        "description": "Review feedback and improvement findings",
+        "color": "D4C5F9"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-HRA",
+        "name": "spec",
+        "description": "Knowledge contracts, format, validation, and delivery",
+        "color": "0075CA"
+      }
+    ],
+    "number": 160,
+    "title": "Scaffold a component's boilerplate from its spec",
+    "updatedAt": "2026-10-01T10:59:41Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-EIA",
+        "name": "feedback",
+        "description": "Review feedback and improvement findings",
+        "color": "D4C5F9"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAAC6H-HRA",
+        "name": "spec",
+        "description": "Knowledge contracts, format, validation, and delivery",
+        "color": "0075CA"
+      }
+    ],
+    "number": 159,
+    "title": "Derive component lists in tests instead of hard-coding them",
+    "updatedAt": "2026-10-01T10:59:25Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAACiOpg5w",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      }
+    ],
+    "number": 101,
+    "title": "Add Field / FormField shell (label, hint, error)",
+    "updatedAt": "2026-09-21T21:53:26Z"
+  },
+  {
+    "labels": [
+      {
+        "id": "LA_kwDOSWtudc8AAAACiOpg5w",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      },
+      {
+        "id": "LA_kwDOSWtudc8AAAACtsSdZg",
+        "name": "tokens",
+        "description": "Design token architecture",
+        "color": "0e8a16"
+      }
+    ],
+    "number": 94,
+    "title": "Describe the semantic radius and elevation tokens",
+    "updatedAt": "2026-10-01T09:42:52Z"
+  }
+]

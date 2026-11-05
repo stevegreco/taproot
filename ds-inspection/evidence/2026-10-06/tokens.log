@@ -1,0 +1,28 @@
+
+Contrast audit — WCAG 2.1
+
+  light
+  ────────────────────────────────────────────────────────────
+  ✔ all 45 pairs meet their requirement
+  ~ disabled label — 3.62:1, below 4.5:1 but exempt (disabled state)
+  ~ disabled border vs page — 1.82:1, below 3:1 but exempt (disabled state)
+
+  dark
+  ────────────────────────────────────────────────────────────
+  ✔ all 45 pairs meet their requirement
+  ~ disabled label — 3.16:1, below 4.5:1 but exempt (disabled state)
+  ~ disabled border vs page — 1.89:1, below 3:1 but exempt (disabled state)
+
+Theme parity — ADR-0002
+  ────────────────────────────────────────────────────────────
+  ✔ both themes define the same 108 tokens
+  ✔ every color token responds to the theme
+  · color.foreground.disabled exempt — disabled content intentionally uses the same neutral gray in both themes
+  · 20 interaction states checked for direction
+
+Ramp integrity — ADR-0002 §3
+  ────────────────────────────────────────────────────────────
+  ✔ 8 ramps hold hue direction, saturation and lightness
+
+  No failures.
+
