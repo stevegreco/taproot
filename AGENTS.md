@@ -68,8 +68,10 @@ with `node packages/spec/bin/taproot.js validate` or `pnpm --filter @taproot-ds/
 **What not to put in a spec.** No element, attribute, slot, framework, or CSS names, and no code.
 A spec says what a component is, not how any technology builds it. Token references are opaque
 strings that name a token. The tooling checks that an implementation's API mapping covers every
-parameter, value, and event in the spec. Nothing checks behavior or styling against the spec, so
-keep those consistent in review.
+parameter, value, and event in the spec. In this repository, `packages/spec/test/web-source.test.js`
+also checks the web source by name: each stylesheet uses the tokens in its record's map, and the
+source has every attribute, value, property, and event its API table lists. Nothing checks behavior
+or how a component looks against the spec, so keep those consistent in review.
 
 **Implementation content** lives with the implementation:
 
