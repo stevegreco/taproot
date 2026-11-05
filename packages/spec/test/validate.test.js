@@ -284,6 +284,37 @@ describe("validation", () => {
     ]);
   });
 
+  it("checks enum values against the vocabulary", async () => {
+    const vocabulary = {
+      size: {
+        parameter: "size",
+        values: ["small", "medium", "large"],
+        aliases: { md: "medium" },
+      },
+      status: { values: ["danger"], aliases: { error: "danger" } },
+    };
+    const { issues } = await validateSpec({ contentDir: fixture("vocabulary"), vocabulary });
+    expect(issues.map((issue) => [issue.line, issue.path, issue.message])).toEqual([
+      [
+        18,
+        "/parameters/size/values/xl",
+        "`xl` is not a size word. Use one of `small`, `medium`, `large`, or add it to `vocabulary.size` in spec.config.json.",
+      ],
+      [
+        24,
+        "/parameters/tone/values/error",
+        "`error` is another word for the status `danger`. Use `danger`, the word the other components use.",
+      ],
+      [
+        32,
+        "/items/entry/parameters/size/values/md",
+        "`md` is another word for the size `medium`. Use `medium`, the word the other components use.",
+      ],
+    ]);
+    const without = await validateSpec({ contentDir: fixture("vocabulary") });
+    expect(without.issues).toEqual([]);
+  });
+
   it("leaves out invalid records with skipInvalid, and lists their issues", async () => {
     const spec = await loadSpec({ contentDir: fixture("link-to-invalid"), skipInvalid: true });
     expect(spec.list()).toEqual([]);

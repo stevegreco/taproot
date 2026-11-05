@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_CONTENT_DIR } from "../src/index.js";
-import { findConfig, loadFromConfig, resolveConfig } from "../src/config.js";
+import { findConfig, loadFromConfig, resolveConfig, validateFromConfig } from "../src/config.js";
 import { fixture } from "./helpers.js";
 
 const tools = fixture("tools");
@@ -140,5 +140,57 @@ describe("constants", () => {
       expect(() => resolveConfig({ cwd: tmp })).toThrow(message);
       fs.rmSync(tmp, { recursive: true });
     }
+  });
+});
+
+describe("vocabulary", () => {
+  const write = (config) => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "spec-config-"));
+    fs.writeFileSync(path.join(tmp, "spec.config.json"), JSON.stringify(config));
+    return tmp;
+  };
+
+  it("returns the configured vocabulary, or none", () => {
+    const vocabulary = { size: { parameter: "size", values: ["small"], aliases: { sm: "small" } } };
+    const tmp = write({ vocabulary });
+    expect(resolveConfig({ cwd: tmp }).vocabulary).toEqual(vocabulary);
+    expect(resolveConfig({ cwd: tools }).vocabulary).toEqual({});
+    fs.rmSync(tmp, { recursive: true });
+  });
+
+  it("rejects a malformed term", () => {
+    for (const [vocabulary, message] of [
+      [["size"], '"vocabulary" must be an object'],
+      [{ Size: { values: ["small"] } }, '"vocabulary.Size" must be a lowercase'],
+      [{ size: { values: [] } }, '"vocabulary.size".values must be a non-empty array'],
+      [{ size: { values: ["small", "small"] } }, '"vocabulary.size".values lists a word twice'],
+      [
+        { size: { values: ["small"], words: [] } },
+        '"vocabulary.size" has an unknown field "words"',
+      ],
+      [{ size: { values: ["small"], parameter: 1 } }, '"vocabulary.size".parameter must be'],
+      [
+        { size: { values: ["small"], aliases: { small: "small" } } },
+        "aliases.small is also in values",
+      ],
+      [
+        { size: { values: ["small"], aliases: { sm: "tiny" } } },
+        'must name a word in values, not "tiny"',
+      ],
+    ]) {
+      const tmp = write({ vocabulary });
+      expect(() => resolveConfig({ cwd: tmp })).toThrow(message);
+      fs.rmSync(tmp, { recursive: true });
+    }
+  });
+
+  it("is checked by validateFromConfig", async () => {
+    const tmp = write({
+      content: fixture("vocabulary"),
+      vocabulary: { status: { values: ["danger"], aliases: { error: "danger" } } },
+    });
+    const { issues } = await validateFromConfig({ cwd: tmp });
+    expect(issues.map((issue) => issue.path)).toEqual(["/parameters/tone/values/error"]);
+    fs.rmSync(tmp, { recursive: true });
   });
 });

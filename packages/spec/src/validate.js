@@ -32,11 +32,12 @@ const RECORD_TYPES = schema.properties.type.enum;
  * Check every source file against the schema and against the rest of the corpus.
  *
  * @param {import("./load.js").SourceFile[]} sources
- * @param {{ tokenNames?: Map<string, Set<string>> }} [options] The token names in each set. With
- *   them, every token reference must name a token in every set.
+ * @param {{ tokenNames?: Map<string, Set<string>>, vocabulary?: Record<string, import("./config.js").VocabularyTerm> }} [options]
+ *   `tokenNames` holds the token names in each set. With them, every token reference must name a
+ *   token in every set. With a `vocabulary`, each enum value must keep to it.
  * @returns {Promise<{ issues: Issue[], records: CheckedRecord[] }>}
  */
-export async function checkSources(sources, { tokenNames } = {}) {
+export async function checkSources(sources, { tokenNames, vocabulary } = {}) {
   /** @type {Issue[]} */
   const issues = [];
   const report = (source, raw) => {
@@ -82,6 +83,7 @@ export async function checkSources(sources, { tokenNames } = {}) {
       checkPartOptions(record.data, report_);
       checkTokens(record.data, report_);
       checkTokenReferences(record.data, tokenNames, report_);
+      checkVocabulary(record.data, vocabulary, report_);
     }
     if (record.data.type === "example") {
       checkAnnotations(record, report_);
@@ -452,6 +454,35 @@ function checkTokens(data, report) {
           report({
             path: `/tokens/${pointerSegment(part)}/${pointerSegment(condition)}`,
             message: `condition \`${condition}\`: ${problem}`,
+          });
+        }
+      }
+    }
+  }
+}
+
+/**
+ * One concept keeps one set of words: an enum parameter named for a concept uses only its words,
+ * and no enum value uses an alias of a concept's word.
+ */
+function checkVocabulary(data, vocabulary, report) {
+  const terms = Object.entries(vocabulary ?? {});
+  if (terms.length === 0) return;
+  for (const [name, parameter, pointer] of parameterEntries(data)) {
+    if (parameter.kind !== "enum") continue;
+    for (const value of Object.keys(parameter.values ?? {})) {
+      const path = `${pointer}/values/${pointerSegment(value)}`;
+      for (const [concept, term] of terms) {
+        const instead = term.aliases?.[value];
+        if (instead !== undefined) {
+          report({
+            path,
+            message: `\`${value}\` is another word for the ${concept} \`${instead}\`. Use \`${instead}\`, the word the other components use.`,
+          });
+        } else if (term.parameter === name && !term.values.includes(value)) {
+          report({
+            path,
+            message: `\`${value}\` is not a ${concept} word. Use one of ${term.values.map((word) => `\`${word}\``).join(", ")}, or add it to \`vocabulary.${concept}\` in spec.config.json.`,
           });
         }
       }

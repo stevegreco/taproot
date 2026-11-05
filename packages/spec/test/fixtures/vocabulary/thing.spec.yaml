@@ -1,0 +1,33 @@
+id: component.thing
+type: component
+title: Thing
+summary: Use Thing for testing.
+description: A test component.
+usage:
+  do:
+    - Test things.
+anatomy:
+  entry:
+    role: container
+    description: One entry.
+parameters:
+  size:
+    kind: enum
+    values:
+      small: Small.
+      xl: Extra large.
+    default: small
+  tone:
+    kind: enum
+    values:
+      quiet: Quiet.
+      error: Something went wrong.
+    default: quiet
+items:
+  entry:
+    parameters:
+      size:
+        kind: enum
+        values:
+          md: Medium.
+        default: md
