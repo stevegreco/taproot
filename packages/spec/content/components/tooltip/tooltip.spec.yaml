@@ -190,6 +190,14 @@ rationale:
       forced-colors mode, where the shadow disappears and the border takes the system text color.
       semantic.elevation.md is the role the tokens name for popovers, so no new shadow token is
       needed.
+  - decision: >-
+      The bubble is at most twice primitives.space.32 wide, and never wider than the viewport less
+      primitives.space.2 on each side.
+    why: >-
+      A tooltip holds a few words, so the cap wraps a long label instead of stretching the bubble
+      across the page. No token names a layout width, so the cap is a multiple of the largest
+      spacing step. The token map names a token for each property and cannot express a multiple,
+      so the cap is recorded here rather than in the map.
   - decision: Tooltip has one size and no density setting.
     covers: [sizes, density]
     why: >-

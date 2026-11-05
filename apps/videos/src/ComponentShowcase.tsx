@@ -63,7 +63,7 @@ export const ComponentShowcase = ({ theme }: { theme: Theme }) => {
               fontWeight: token("semantic-typography-heading-large-font-weight"),
             }}
           >
-            Ember &amp; Sage
+            Taproot
           </h1>
         </FadeUp>
       </Sequence>
