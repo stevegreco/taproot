@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- 3e35235: Control sizes come from tokens. A new semantic token, `semantic.indicator.width` (2px), sets the
+  thickness of a selection bar such as the selected tab's underline. Checkbox, Radio group, Switch,
+  and Tabs bind their box, dot, track, thumb, and indicator sizes in their spec records, and the web
+  components read those tokens instead of fixed pixel values. The Switch track is now 32 by 20
+  instead of 32 by 18, with the thumb centered; the other controls look the same.
+
+### Patch Changes
+
+- 2ffce15: Raise the dark theme's `border.subtle` from `gray.800` to `gray.700`, so it measures 1.38:1 on
+  `background.surface` instead of 1.06:1 and a Divider inside a Card is visible. On
+  `background.default` it goes from 1.45:1 to 1.89:1. Divider's spec drops the known issue.
+
 ## 0.2.0
 
 ### Minor Changes
