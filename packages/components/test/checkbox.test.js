@@ -178,7 +178,7 @@ describe("DsCheckbox", () => {
     expect(input.disabled).toBe(false);
   });
 
-  test("[state-not-color-alone] draws a check when checked and a dash when indeterminate", () => {
+  test("[not-color-alone] draws a check when checked and a dash when indeterminate", () => {
     const checkbox = render(`<${tagName} label="Updates"></${tagName}>`);
 
     expect(shown(checkbox, ".check")).toBe(false);

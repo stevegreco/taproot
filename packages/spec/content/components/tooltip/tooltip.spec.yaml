@@ -12,6 +12,7 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+    - guideline.accessibility
   related:
     - component.button
 description: >-

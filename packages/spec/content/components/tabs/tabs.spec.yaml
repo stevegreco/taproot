@@ -10,6 +10,7 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+    - guideline.accessibility
   related:
     - component.radio-group
     - component.link
@@ -116,11 +117,10 @@ rules:
       The tab list is named by the accessibleName parameter. Each tab exposes its label and whether it is
       selected, and the panel is named by the selected tab.
   - id: forced-colors
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#forced-colors
     statement: >-
-      The selected tab is marked by an indicator, not by color alone, and the indicator and
-      keyboard focus stay visible under forced colors.
+      The selected tab is marked by an indicator, not by color alone, and the indicator and keyboard
+      focus stay visible under forced colors.
   - id: labels-short-and-unique
     level: must
     topic: content

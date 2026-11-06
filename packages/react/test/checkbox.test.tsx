@@ -301,7 +301,7 @@ describe("component.checkbox#mixed-state (MUST)", () => {
   });
 });
 
-describe("component.checkbox#state-not-color-alone (MUST)", () => {
+describe("component.checkbox#not-color-alone (MUST)", () => {
   const shape = () => indicator()?.querySelector("path")?.getAttribute("d");
 
   test("unchecked shows no indicator; checked shows a mark; indeterminate shows a dash", async () => {

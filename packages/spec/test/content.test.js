@@ -40,6 +40,15 @@ describe("shipped content", () => {
     expect(issues).toEqual([]);
   });
 
+  it("has every component follow guideline.accessibility, which defines the shared rules", async () => {
+    const spec = await loadSpec();
+    const missing = spec
+      .list({ type: "component" })
+      .filter(({ id }) => !(spec.get(id).links?.follows ?? []).includes("guideline.accessibility"))
+      .map(({ id }) => id);
+    expect(missing).toEqual([]);
+  });
+
   it("finds every record on disk by its id, once", async () => {
     const spec = await loadSpec({ contentDir: DEFAULT_CONTENT_DIR });
     const ids = spec.list().map((record) => record.id);

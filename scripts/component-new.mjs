@@ -90,6 +90,9 @@ type: component
 title: ${title}
 summary: "TODO: Use ${title} to … (one sentence that says when to use it)"
 status: draft
+links:
+  follows:
+    - guideline.accessibility
 description: "TODO: What it shows or does, in a sentence or two."
 usage:
   do:

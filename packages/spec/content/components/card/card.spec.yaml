@@ -11,6 +11,7 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+    - guideline.accessibility
   composes:
     - component.link
   related:
@@ -121,14 +122,12 @@ rules:
       Without a destination, the title is plain heading text, the surface does not react to hover,
       and the card adds no tab stop.
   - id: visible-focus
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#visible-focus
     statement: >-
       When the title link has keyboard focus, the focus indicator surrounds the whole surface, so
       the extent of the target is clear.
   - id: forced-colors
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#forced-colors
     statement: >-
       Under forced colors, the card boundary and the focus indicator stay visible without the
       surface fill or the elevation.

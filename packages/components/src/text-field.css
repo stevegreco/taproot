@@ -110,3 +110,19 @@
 .error {
   color: var(--ds-semantic-color-foreground-status-danger-default);
 }
+
+/* Same as Text area: the boundary, focus, and disabled state keep system colors. */
+@media (forced-colors: active) {
+  .control {
+    border-color: ButtonText;
+  }
+
+  .control:disabled {
+    color: GrayText;
+    border-color: GrayText;
+  }
+
+  .control:focus-visible {
+    outline-color: Highlight;
+  }
+}

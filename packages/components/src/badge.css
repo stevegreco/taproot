@@ -64,3 +64,11 @@
   letter-spacing: var(--ds-semantic-typography-label-sm-letter-spacing);
   white-space: nowrap;
 }
+
+/* Forced colors drop the tone fills, so the boundary keeps the badge visible and its text tells the
+   tones apart. */
+@media (forced-colors: active) {
+  .badge {
+    border-color: CanvasText;
+  }
+}

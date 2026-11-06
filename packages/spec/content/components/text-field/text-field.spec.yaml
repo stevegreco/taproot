@@ -13,6 +13,7 @@ links:
   follows:
     - pattern.form-field
     - guideline.compose-or-propose
+    - guideline.accessibility
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -100,6 +101,12 @@ states:
   - hover
   - focus
   - default
+rules:
+  - id: forced-colors
+    extends: guideline.accessibility#forced-colors
+    statement: >-
+      Under forced colors, the control boundary and keyboard focus stay visible, and a disabled
+      field stays distinguishable from an enabled one.
 accessibility:
   role: Text input
   name: Required from the visible label.

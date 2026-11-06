@@ -12,6 +12,9 @@ tags:
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
+links:
+  follows:
+    - guideline.accessibility
 description: >-
   Displays a graphic you supply at a consistent size, in the color of the surrounding text. It is
   decorative unless it has an accessible name.
@@ -92,11 +95,8 @@ rules:
         - Yellow triangle
         - Arrow icon
   - id: not-a-control
-    level: must
-    topic: behavior
+    extends: guideline.accessibility#not-a-control
     statement: Icon is not focusable and does not activate. Put it inside a Button or Link to act.
-    references:
-      - component.button#icon-accessible-name
   - id: follows-text-color
     level: must
     topic: behavior
@@ -110,10 +110,10 @@ rules:
       The icon occupies a square of its size. The artwork scales to fit inside it without
       distortion.
   - id: not-color-alone
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#not-color-alone
     statement: >-
-      Meaning carried by an icon does not depend on its color. The symbol or its accessible name carries it.
+      Meaning carried by an icon does not depend on its color. The symbol or its accessible name
+      carries it.
 accessibility:
   role: Image when named. Otherwise hidden from assistive technology.
   name: From the accessibleName parameter. None when decorative.

@@ -13,6 +13,7 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+    - guideline.accessibility
   related:
     - component.button
 sources:
@@ -95,10 +96,6 @@ rules:
       the work with an Alert.
     references:
       - component.alert#parameters.announce
-  - id: not-a-control
-    level: must
-    topic: behavior
-    statement: The spinner is not focusable and does not activate.
   - id: follows-text-color
     level: must
     topic: behavior

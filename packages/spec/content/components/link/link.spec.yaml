@@ -11,6 +11,8 @@ tags:
 links:
   composes:
     - component.icon
+  follows:
+    - guideline.accessibility
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -106,13 +108,8 @@ rules:
     topic: accessibility
     statement: The purpose of the link is clear from its text, or from its text and the sentence around it.
   - id: not-color-alone
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#not-color-alone
     statement: An inline link does not depend on color alone to be identified.
-  - id: visible-focus
-    level: must
-    topic: accessibility
-    statement: Keyboard focus remains visibly indicated.
 accessibility:
   role: Link
   name: Required from the link text.

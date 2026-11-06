@@ -11,6 +11,7 @@ links:
   follows:
     - pattern.form-field
     - guideline.compose-or-propose
+    - guideline.accessibility
   related:
     - component.text-field
     - component.select
@@ -166,9 +167,9 @@ rules:
       The thumb and fill are visible against the track and the surface around it, so position is
       readable without the value text.
   - id: forced-colors
-    level: must
-    topic: accessibility
-    statement: Keep the track outline, the fill, the thumb, and keyboard focus visible under forced colors.
+    extends: guideline.accessibility#forced-colors
+    statement: >-
+      Keep the track outline, the fill, the thumb, and keyboard focus visible under forced colors.
 accessibility:
   role: Slider
   name: From the visible label.

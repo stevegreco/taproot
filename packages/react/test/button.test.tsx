@@ -142,7 +142,7 @@ describe("component.button#form-submit-reset (SHOULD)", () => {
   });
 });
 
-describe("component.button#visible-focus (MUST)", () => {
+describe("guideline.accessibility#visible-focus (MUST)", () => {
   test.each(variants)("keyboard focus draws a focus ring on %s", async (variant) => {
     await render(
       <>
@@ -217,28 +217,67 @@ describe("component.button#icon-accessible-name (MUST)", () => {
   });
 });
 
-describe("component.button#not-color-alone (MUST)", () => {
+describe("guideline.accessibility#not-color-alone (MUST)", () => {
   test("the disabled state is exposed to assistive technology, not only by color", async () => {
     await render(<Button disabled>Save changes</Button>);
     expect(button().disabled).toBe(true);
   });
+});
 
-  test.each(variants)("%s keeps a visible boundary under forced colors", async (variant) => {
-    await cdp().send("Emulation.setEmulatedMedia", {
+describe("component.button#forced-colors (MUST)", () => {
+  const forced = () =>
+    cdp().send("Emulation.setEmulatedMedia", {
       features: [{ name: "forced-colors", value: "active" }],
     });
-    await render(<Button variant={variant}>Save changes</Button>);
+
+  test.each(["primary", "destructive"] as const)(
+    "%s stays filled with Highlight",
+    async (variant) => {
+      await forced();
+      await render(<Button variant={variant}>Save changes</Button>);
+      const style = getComputedStyle(button());
+      expect(style.backgroundColor).toBe(asColor("Highlight"));
+      expect(style.borderTopColor).toBe(asColor("Highlight"));
+      expect(style.color).toBe(asColor("HighlightText"));
+    },
+  );
+
+  test("secondary is outlined", async () => {
+    await forced();
+    await render(<Button variant="secondary">Cancel</Button>);
     const style = getComputedStyle(button());
+    expect(style.backgroundColor).toBe(asColor("ButtonFace"));
     expect(parseFloat(style.borderTopWidth)).toBeGreaterThan(0);
-    expect(style.borderTopColor).not.toBe(TRANSPARENT);
+    expect(style.borderTopColor).toBe(asColor("ButtonText"));
   });
 
-  test("disabled reads as GrayText under forced colors", async () => {
-    await cdp().send("Emulation.setEmulatedMedia", {
-      features: [{ name: "forced-colors", value: "active" }],
-    });
-    await render(<Button disabled>Save changes</Button>);
-    expect(getComputedStyle(button()).color).toBe(asColor("GrayText"));
+  test("tertiary is text alone", async () => {
+    await forced();
+    await render(<Button variant="tertiary">View details</Button>);
+    const style = getComputedStyle(button());
+    expect(style.backgroundColor).toBe(TRANSPARENT);
+    expect(style.borderTopColor).toBe(TRANSPARENT);
+    expect(style.color).toBe(asColor("ButtonText"));
+  });
+
+  test("hover keeps the system colors", async () => {
+    await forced();
+    await render(<Button>Save changes</Button>);
+    await userEvent.hover(button());
+    expect(button().dataset.hovered).toBeDefined();
+    expect(getComputedStyle(button()).backgroundColor).toBe(asColor("Highlight"));
+  });
+
+  test.each(variants)("disabled %s reads as GrayText, not filled", async (variant) => {
+    await forced();
+    await render(
+      <Button variant={variant} disabled>
+        Save changes
+      </Button>,
+    );
+    const style = getComputedStyle(button());
+    expect(style.color).toBe(asColor("GrayText"));
+    expect(style.backgroundColor).not.toBe(asColor("Highlight"));
   });
 });
 

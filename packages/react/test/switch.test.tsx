@@ -253,7 +253,7 @@ describe("accessibility", () => {
   });
 });
 
-describe("component.switch#state-not-color-alone (MUST)", () => {
+describe("component.switch#not-color-alone (MUST)", () => {
   test("the thumb sits at the start when off and at the end when on", async () => {
     await render(<Example />);
     const off = thumbOffset();

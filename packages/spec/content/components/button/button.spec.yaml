@@ -11,6 +11,8 @@ tags:
 links:
   composes:
     - component.icon
+  follows:
+    - guideline.accessibility
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -126,18 +128,16 @@ rules:
     topic: behavior
     statement: Submit submits the button's form, and reset restores that form's initial values.
     applicability: The button belongs to a form.
-  - id: visible-focus
-    level: must
-    topic: accessibility
-    statement: Keyboard focus remains visibly indicated.
   - id: icon-accessible-name
     level: must
     topic: accessibility
     statement: Icon-only buttons have an accessible name.
-  - id: not-color-alone
-    level: must
-    topic: accessibility
-    statement: Meaning does not depend on color alone.
+  - id: forced-colors
+    extends: guideline.accessibility#forced-colors
+    statement: >-
+      Under forced colors, emphasis stays visible: primary and destructive are filled, secondary is
+      outlined, and tertiary is text alone. A disabled button stays distinguishable from an enabled
+      one.
 accessibility:
   role: Button
   name: Required from visible content or accessibleName.
