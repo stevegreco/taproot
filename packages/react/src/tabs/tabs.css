@@ -48,14 +48,13 @@
 }
 
 /* selected-indicator: selected. A bar along the bottom edge of the selected tab, just above the
-   tab-list border (the scrolling row clips anything drawn over its border). Its thickness is not
-   in the spec: border.thick is a guess. */
+   tab-list border (the scrolling row clips anything drawn over its border). */
 .ds-tabs__tab[data-selected]::after {
   content: "";
   position: absolute;
   inset-inline: 0;
   inset-block-end: 0;
-  block-size: var(--ds-primitives-border-thick);
+  block-size: var(--ds-semantic-indicator-width);
   background: var(--ds-semantic-color-background-action-primary-default);
 }
 

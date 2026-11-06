@@ -33,7 +33,7 @@
   gap: var(--ds-primitives-space-2);
 }
 
-/* One label line tall, so the 16px box centers on the first line of the label. */
+/* One label line tall, so the box centers on the first line of the label. */
 .box {
   position: relative;
   display: inline-flex;
@@ -46,8 +46,8 @@
 
 .control {
   display: block;
-  width: 16px;
-  height: 16px;
+  width: var(--ds-primitives-space-4);
+  height: var(--ds-primitives-space-4);
   box-sizing: border-box;
   margin: 0;
   border-style: solid;
@@ -94,8 +94,8 @@
   position: absolute;
   inset-inline-start: 0;
   top: 50%;
-  width: 16px;
-  height: 16px;
+  width: var(--ds-primitives-space-4);
+  height: var(--ds-primitives-space-4);
   transform: translateY(-50%);
   color: var(--ds-semantic-color-foreground-on-action-primary);
   fill: none;
@@ -136,7 +136,7 @@
 .hint,
 .error {
   margin: 0;
-  padding-inline-start: calc(16px + var(--ds-primitives-space-2));
+  padding-inline-start: calc(var(--ds-primitives-space-4) + var(--ds-primitives-space-2));
   font-family: var(--ds-semantic-typography-body-sm-font-family);
   font-size: var(--ds-semantic-typography-body-sm-font-size);
   font-weight: var(--ds-semantic-typography-body-sm-font-weight);

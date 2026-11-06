@@ -18,8 +18,9 @@
   cursor: default;
 }
 
-/* control: base. The 32 by 18 size comes from the spec's rationale, not a token. The border width
-   is not bound in the spec: the semantic border width is a guess. */
+/* control: base. The padding centers the thumb across the track, so it sits as far from each end
+   as from the top and bottom (rationale). Border width is the system-wide constant `taproot
+   format` lists. */
 .ds-switch__control {
   box-sizing: border-box;
   display: inline-flex;
@@ -27,19 +28,22 @@
   align-items: center;
   /* Off sits at the start of the track and on at the end, following the inline direction. */
   justify-content: flex-start;
-  inline-size: 32px;
-  block-size: 18px;
-  padding: 2px;
+  inline-size: var(--ds-primitives-space-8);
+  block-size: var(--ds-primitives-space-5);
+  padding: calc(
+    (var(--ds-primitives-space-5) - var(--ds-primitives-space-3)) / 2 -
+      var(--ds-semantic-border-width)
+  );
   background: var(--ds-semantic-color-background-surface);
   border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-border-default);
   border-radius: var(--ds-semantic-radius-pill);
 }
 
-/* indicator: base. The thumb fills with its foreground color. Its size is not in the spec. */
+/* indicator: base. The thumb fills with its foreground color. */
 .ds-switch__indicator {
   display: block;
-  inline-size: 12px;
-  block-size: 12px;
+  inline-size: var(--ds-primitives-space-3);
+  block-size: var(--ds-primitives-space-3);
   border-radius: var(--ds-semantic-radius-pill);
   color: var(--ds-semantic-color-foreground-default);
   background: currentColor;

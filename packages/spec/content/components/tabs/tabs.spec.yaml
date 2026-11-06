@@ -48,7 +48,9 @@ anatomy:
     description: One labeled tab that selects its panel.
   selected-indicator:
     role: indicator
-    description: Mark on the selected tab that shows which panel is visible.
+    description: >-
+      Bar along the bottom edge of the selected tab, the full width of the tab, that shows which
+      panel is visible.
   panel:
     role: container
     description: >-
@@ -178,6 +180,7 @@ tokens:
   selected-indicator:
     selected:
       background: semantic.color.background.action.primary.default
+      height: semantic.indicator.width
   panel:
     base:
       padding-vertical: primitives.space.4
@@ -236,6 +239,14 @@ rationale:
     why: >-
       An instant change needs no reduced motion treatment, and a sliding indicator would delay
       reading the new panel.
+  - decision: >-
+      The selected indicator is a bar on the bottom edge of the selected tab, as wide as the tab,
+      and as thick as the semantic indicator width.
+    why: >-
+      A bar under the label points at the panel below it. It sits on the tab list's divider line,
+      inside the row, so a row that scrolls sideways does not clip it. Its thickness is a token,
+      so it changes with the system's other selection bars rather than being fixed in each
+      implementation.
   - decision: Forced colors keep the indicator and focus through system colors.
     covers: [forced-colors]
     why: >-

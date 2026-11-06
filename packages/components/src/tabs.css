@@ -60,7 +60,7 @@
   inset-inline: 0;
   inset-block-end: 0;
   display: none;
-  height: 2px;
+  height: var(--ds-semantic-indicator-width);
   background: var(--ds-semantic-color-background-action-primary-default);
 }
 

@@ -40,6 +40,13 @@
         "$type": "dimension",
         "$description": "Gap between an element and its focus outline"
       }
+    },
+    "indicator": {
+      "width": {
+        "$value": "{primitives.border.thick}",
+        "$type": "dimension",
+        "$description": "Thickness of a selection bar, such as the line under the selected tab"
+      }
     }
   }
 }

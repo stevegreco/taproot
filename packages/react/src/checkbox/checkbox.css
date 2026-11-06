@@ -19,18 +19,18 @@
   cursor: default;
 }
 
-/* control: base. A fixed 16px square aligned to the first line of the label (rationale). Border
-   width is not in the spec: semantic.border-width is a guess. */
+/* control: base. A square aligned to the first line of the label (rationale). Border width is the
+   system-wide constant `taproot format` lists. */
 .ds-checkbox__control {
   box-sizing: border-box;
   flex: none;
   display: inline-grid;
   place-items: center;
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: var(--ds-primitives-space-4);
+  block-size: var(--ds-primitives-space-4);
   margin-block-start: calc(
     (var(--ds-semantic-typography-body-md-line-height) *
-        var(--ds-semantic-typography-body-md-font-size) - 16px) /
+        var(--ds-semantic-typography-body-md-font-size) - var(--ds-primitives-space-4)) /
       2
   );
   background: var(--ds-semantic-color-background-surface);
@@ -72,8 +72,8 @@
 /* indicator: base takes the control's color (on-action-primary, or disabled foreground). */
 .ds-checkbox__indicator {
   display: block;
-  inline-size: 100%;
-  block-size: 100%;
+  inline-size: var(--ds-primitives-space-4);
+  block-size: var(--ds-primitives-space-4);
 }
 
 /* label: base */
@@ -93,7 +93,7 @@
 /* hint and error: body.sm. Indented to start under the label text; the spec does not say. */
 .ds-checkbox__hint,
 .ds-checkbox__error {
-  padding-inline-start: calc(16px + var(--ds-primitives-space-2));
+  padding-inline-start: calc(var(--ds-primitives-space-4) + var(--ds-primitives-space-2));
   font-family: var(--ds-semantic-typography-body-sm-font-family);
   font-size: var(--ds-semantic-typography-body-sm-font-size);
   font-weight: var(--ds-semantic-typography-body-sm-font-weight);
