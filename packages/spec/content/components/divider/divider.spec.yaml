@@ -11,6 +11,7 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+    - guideline.accessibility
 description: >-
   A thin line that marks the boundary between two groups of content that belong to the same
   surface or region. It runs across the width of its container between stacked groups, or along
@@ -60,8 +61,7 @@ rules:
       The divider is exposed to assistive technology as a separator with its orientation, and has
       no accessible name.
   - id: not-a-control
-    level: must
-    topic: behavior
+    extends: guideline.accessibility#not-a-control
     statement: The divider is not focusable, does not activate, and holds no content.
   - id: spans-container
     level: must
@@ -71,8 +71,7 @@ rules:
       the full height of the row it sits in. Its thickness is the border width, and it adds no
       space of its own on either side.
   - id: forced-colors
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#forced-colors
     statement: Under forced colors, the line stays visible in the system text color.
   - id: between-groups
     level: should

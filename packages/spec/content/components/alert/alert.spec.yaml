@@ -17,6 +17,7 @@ links:
   follows:
     - pattern.action-hierarchy
     - guideline.compose-or-propose
+    - guideline.accessibility
   related:
     - component.badge
 sources:
@@ -198,15 +199,11 @@ rules:
     references:
       - component.icon#no-name-when-repeated
   - id: visible-focus
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#visible-focus
     statement: Keyboard focus on the dismiss control is visibly indicated on every variant.
   - id: forced-colors
-    level: must
-    topic: accessibility
-    statement: >-
-      Under forced colors, the alert boundary and the dismiss control's focus stay visible, and
-      no meaning is lost with the variant colors.
+    extends: guideline.accessibility#forced-colors
+    statement: Under forced colors, the alert boundary and the dismiss control's focus stay visible.
 accessibility:
   role: >-
     The title and message are an alert when announce is urgent and a status when polite. With

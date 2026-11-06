@@ -362,11 +362,13 @@ Records follow these so that one idea has one name everywhere.
 
 - **Rule ids** name the requirement in plain words, with no topic prefix, because `topic` already
   says `accessibility`. A requirement every component of a kind shares is a rule of the pattern or
-  guideline they follow, such as `pattern.form-field`. Requirements that are alike but that each
-  component words for itself use shared ids: `visible-focus`, `forced-colors`,
-  `not-a-control`, and `not-color-alone`.
+  guideline they follow, such as `pattern.form-field`.
+- **Every component** follows `guideline.accessibility` and inherits `visible-focus`,
+  `forced-colors`, `not-color-alone`, and `not-a-control`. A component narrows one with `extends`
+  to name its own parts, such as which outline and indicator stay visible under forced colors, and
+  never restates it in other words.
 - **Form fields** follow `pattern.form-field` and inherit its rules for label, hint, error,
-  required, disabled, form value, and focus. Each keeps only the rules about its own control, and
+  required, disabled, and form value. Each keeps only the rules about its own control, and
   narrows `form-value` to say what its value is.
 - **`label`** is visible text that names the component, and it is also the accessible name. A name
   that is not shown is **`accessibleName`**.

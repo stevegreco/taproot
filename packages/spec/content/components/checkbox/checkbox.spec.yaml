@@ -12,6 +12,7 @@ links:
     - component.text-field
   follows:
     - pattern.form-field
+    - guideline.accessibility
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -148,14 +149,14 @@ rules:
     level: must
     topic: accessibility
     statement: Indeterminate is exposed to assistive technology as mixed.
-  - id: state-not-color-alone
-    level: must
-    topic: accessibility
-    statement: Checked and indeterminate are shown by the indicator's shape, not by fill color alone.
+  - id: not-color-alone
+    extends: guideline.accessibility#not-color-alone
+    statement: >-
+      Checked and indeterminate are shown by the indicator's shape, not by fill color alone.
   - id: forced-colors
-    level: must
-    topic: accessibility
-    statement: Under forced colors, the box outline, the indicator, and focus stay visible in every state.
+    extends: guideline.accessibility#forced-colors
+    statement: >-
+      Under forced colors, the box outline, the indicator, and focus stay visible in every state.
 accessibility:
   role: Checkbox
   name: Required from the visible label.

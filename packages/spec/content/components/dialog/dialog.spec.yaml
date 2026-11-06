@@ -6,7 +6,7 @@ summary: Use Dialog for a focused task or confirmation that temporarily blocks t
 tags: [overlay, modal, focus, popup, lightbox]
 links:
   composes: [component.button]
-  follows: [pattern.action-hierarchy, guideline.compose-or-propose]
+  follows: [pattern.action-hierarchy, guideline.compose-or-propose, guideline.accessibility]
 description: >-
   Presents a named modal conversation above the current view. Focus stays inside until the dialog
   closes, then returns to the person’s previous position in the workflow.
@@ -123,13 +123,8 @@ rules:
     topic: accessibility
     statement: Expose dialog role, modal state, title, and any supplied description to assistive technology.
   - id: visible-focus
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#visible-focus
     statement: Keyboard focus is visibly indicated, including when the title receives initial focus.
-  - id: forced-colors
-    level: must
-    topic: accessibility
-    statement: Dialog boundaries and focus remain visible under forced colors.
 accessibility:
   role: Dialog
   name: Required from its visible title.

@@ -12,6 +12,7 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+    - guideline.accessibility
 description: >-
   Shows a person as a small round picture. When there is no picture, or it fails to load, it shows
   the person's initials, and when there is no name either, a generic person symbol. It is not a
@@ -116,10 +117,6 @@ rules:
         - Ada Lovelace shows AL
         - Grace Brewster Murray Hopper shows GH
         - Prince shows P
-  - id: not-a-control
-    level: must
-    topic: behavior
-    statement: The avatar is not focusable and does not activate.
   - id: fixed-circle
     level: must
     topic: behavior
@@ -127,8 +124,7 @@ rules:
       The avatar occupies a circle of its size whether or not the picture has loaded, so the layout
       does not shift. The picture fills the circle and is cropped, never stretched.
   - id: forced-colors
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#forced-colors
     statement: >-
       In forced-colors mode the circle has a visible edge, and the initials and placeholder stay
       visible.

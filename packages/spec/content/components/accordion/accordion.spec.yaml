@@ -11,6 +11,7 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+    - guideline.accessibility
 description: >-
   A vertical stack of sections, each with a heading that shows or hides its content in place.
   Sections open independently, so people can read several at once or none.

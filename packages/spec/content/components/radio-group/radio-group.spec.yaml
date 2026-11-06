@@ -10,6 +10,7 @@ links:
   follows:
     - pattern.form-field
     - guideline.compose-or-propose
+    - guideline.accessibility
   related:
     - component.checkbox
 description: >-
@@ -145,8 +146,7 @@ rules:
       Tab enters and leaves the group. Arrow keys move focus and the checked option between enabled
       options and wrap at either end. Space checks the focused option.
   - id: forced-colors
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#forced-colors
     statement: A checked dot and visible keyboard focus remain distinguishable under forced colors.
 accessibility:
   role: Radio group

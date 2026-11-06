@@ -66,7 +66,7 @@ spec.links("component.link", { kind: "alternative-to", direction: "out" });
 // Inverses are included: button lists link as an alternative, so link lists button as alternative-to.
 
 spec.rules({ topic: "accessibility", level: "must", query: "focus" });
-// [{ address: "component.button#visible-focus", ... }], must first
+// [{ address: "guideline.accessibility#visible-focus", ... }], must first
 
 spec.rules({ id: "component.text-field" });
 // Its own rules and the ones it inherits, such as { address: "pattern.form-field#error-blocks-submit",

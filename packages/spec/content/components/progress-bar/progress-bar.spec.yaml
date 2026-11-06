@@ -11,6 +11,7 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
+    - guideline.accessibility
 description: >-
   Shows a visible label and a horizontal bar that fills from start to end as a task moves toward
   done. It always shows a known amount of progress. When the amount is not known, use a Spinner.
@@ -105,10 +106,6 @@ rules:
       an Alert.
     references:
       - component.alert#parameters.announce
-  - id: not-a-control
-    level: must
-    topic: behavior
-    statement: The progress bar is not focusable and does not activate.
   - id: reduced-motion-instant
     level: must
     topic: accessibility
@@ -116,8 +113,7 @@ rules:
       When the value changes, the fill moves smoothly to its new length. When the person prefers
       reduced motion, it changes at once.
   - id: forced-colors
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#forced-colors
     statement: >-
       In forced-colors mode the track keeps a visible outline and the fill a solid system color, so
       the amount done stays readable without the theme's colors.

@@ -73,6 +73,9 @@ reading order.
 - Add `links.follows` for patterns and guidelines the component applies, and `links.related` for
   close neighbors, when they are clear now. Following a record brings its `rules` with it, so a form
   control that follows `pattern.form-field` already has its label, error, and form-value rules.
+  Every component follows `guideline.accessibility` (the scaffold adds it), which brings
+  `visible-focus`, `forced-colors`, `not-color-alone`, and `not-a-control`. Narrow one with
+  `extends` when the component has its own parts to name; do not restate it.
 - Leave out parameters, rules, tokens, and rationale unless one is the reason the component exists.
   Note open questions in the pull request instead.
 - Do not edit other components' records to point at this one yet. A draft is not built, so agents

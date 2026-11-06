@@ -11,6 +11,7 @@ links:
   follows:
     - pattern.form-field
     - guideline.compose-or-propose
+    - guideline.accessibility
   related:
     - component.checkbox
 description: >-
@@ -113,13 +114,11 @@ rules:
     waived: >-
       A switch applies its setting immediately and is always on or off, so it has no required
       option.
-  - id: state-not-color-alone
-    level: must
-    topic: accessibility
+  - id: not-color-alone
+    extends: guideline.accessibility#not-color-alone
     statement: Thumb position communicates the state without color alone.
   - id: forced-colors
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#forced-colors
     statement: Keep the track outline and thumb and keyboard focus visible under forced colors.
 accessibility:
   role: Switch

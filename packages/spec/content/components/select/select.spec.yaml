@@ -14,6 +14,7 @@ links:
   follows:
     - pattern.form-field
     - guideline.compose-or-propose
+    - guideline.accessibility
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -128,8 +129,7 @@ rules:
       The selected available choice submits under the name, and reset restores the initial
       selection. Disabled choices and groups submit nothing.
   - id: forced-colors
-    level: must
-    topic: accessibility
+    extends: guideline.accessibility#forced-colors
     statement: >-
       Under forced colors, the control boundary and keyboard focus stay visible, and a disabled
       field stays distinguishable from an enabled one.

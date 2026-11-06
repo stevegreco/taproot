@@ -85,14 +85,11 @@ rules:
     level: must
     topic: accessibility
     statement: A required control is announced as required, and shows it by more than color.
-  - id: visible-focus
-    level: must
-    topic: accessibility
-    statement: Keyboard focus stays visible in every state, including under forced colors.
 ---
 
 Text field, Text area, Select, Checkbox, Switch, Radio group, and Slider follow this pattern and
-inherit the rules above. Each keeps only the rules about its own control. It narrows a rule where its
+inherit the rules above. Keyboard focus and forced colors come from `guideline.accessibility`,
+which they also follow. Each keeps only the rules about its own control. It narrows a rule where its
 control differs, such as what its value is, and waives one that cannot apply, with the reason.
 
 ## Label, hint, and error

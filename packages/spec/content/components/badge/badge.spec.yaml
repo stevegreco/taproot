@@ -12,6 +12,8 @@ tags:
 links:
   composes:
     - component.icon
+  follows:
+    - guideline.accessibility
 sources:
   - title: Token tier consumption (tokens ADR 0003)
     url: packages/tokens/docs/adr/0003-token-tier-consumption.md
@@ -64,20 +66,20 @@ rules:
     level: should
     topic: content
     statement: Keep the label short.
-  - id: not-a-control
-    level: must
-    topic: behavior
-    statement: Badge is not a control. It is not focusable and does not activate.
-  - id: text-communicates-state
-    level: must
-    topic: accessibility
-    statement: The text communicates the state. Meaning does not depend on color alone.
+  - id: not-color-alone
+    extends: guideline.accessibility#not-color-alone
+    statement: The text communicates the state, so meaning does not depend on the tone's color.
   - id: no-live-region
     level: must
     topic: accessibility
     statement: >-
       Badge does not set a live-region role. The surrounding UI announces a status change that must
       be announced.
+  - id: forced-colors
+    extends: guideline.accessibility#forced-colors
+    statement: >-
+      Under forced colors, the badge keeps a visible boundary. Its tones look alike there, so its
+      text tells them apart.
 accessibility:
   role: Non-interactive text
   name: Visible text is the accessible name.
