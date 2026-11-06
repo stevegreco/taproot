@@ -1,7 +1,8 @@
 /**
  * Component stylesheets take shared decisions from semantic tokens. A raw color
  * value or a palette variable skips the theme, and a hand-written focus ring or
- * border width drifts from the rest. Nothing else catches either.
+ * border width, or a size in pixels, drifts from the rest. Nothing else catches
+ * any of these.
  */
 import { expect, test } from "vitest";
 
@@ -34,4 +35,10 @@ test.each(stylesheets)("%s draws focus rings with the shared focus tokens", (_fi
       declaration !== "outline: none" && !declaration.includes("--ds-semantic-focus-"),
   );
   expect(handWritten).toEqual([]);
+});
+
+// Sizes come from tokens too, so geometry follows a token change instead of
+// drifting in one stylesheet. Derive a value with calc() from tokens.
+test.each(stylesheets)("%s writes no lengths in pixels", (_file, css) => {
+  expect(withoutComments(css).match(/(?<![\w-])\d*\.?\d+px\b/g) ?? []).toEqual([]);
 });
