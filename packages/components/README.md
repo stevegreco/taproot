@@ -127,6 +127,32 @@ against one row per component in `test/host-checks/<name>.js`; add a row file
 when adding a component. Each
 component also has its own `test/<name>.test.js` for behavior.
 
+`test/fixtures/gallery.js` holds one sample of every component; add one when
+adding a component. `test/axe.test.js` checks each sample against WCAG A and AA
+rules in both themes.
+
+### Screenshots
+
+CI compares each gallery sample, in both themes, against the Linux references in
+`visual/__screenshots__`. Screenshots differ between operating systems, so this
+is not part of `pnpm test`.
+
+When a change is intended, the CI run fails and its `visual-screenshots` artifact
+holds the reference, actual, and diff images. After reviewing them, accept the
+new screenshots and commit the result:
+
+```bash
+pnpm --filter @taproot-ds/web-components exec node visual/accept-ci-screenshots.js
+```
+
+To compare locally before pushing, create references for your own system from the
+unchanged code, make the change, and compare. Those references aren't committed.
+
+```bash
+pnpm --filter @taproot-ds/web-components test:visual --update
+pnpm --filter @taproot-ds/web-components test:visual
+```
+
 ## Local development
 
 ```bash

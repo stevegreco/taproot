@@ -46,6 +46,7 @@
     "clean": "rm -rf dist",
     "build": "node build-styles.js && node build-index.js",
     "test": "vitest run",
+    "test:visual": "vitest run --config vitest.visual.config.js",
     "watch": "chokidar \"src/**/*.css\" -c \"node build-styles.js\" --initial",
     "dev": "pnpm run watch",
     "prepack": "pnpm run build"
@@ -55,6 +56,7 @@
   },
   "devDependencies": {
     "@vitest/browser-playwright": "^5.0.0",
+    "axe-core": "^4.13.0",
     "chokidar-cli": "^3.0.0",
     "typescript": "^6.0.3",
     "vitest": "^5.0.0"
