@@ -174,6 +174,7 @@ tokens:
       background: semantic.color.background.surface
       border: semantic.color.border.default
       radius: semantic.radius.compact
+      size: primitives.space.4
     hover:
       border: semantic.color.border.strong
     focus:
@@ -215,6 +216,7 @@ tokens:
   indicator:
     base:
       foreground: semantic.color.foreground.on.action.primary
+      size: primitives.space.4
     disabled:
       foreground: semantic.color.foreground.disabled
   label:
@@ -276,8 +278,9 @@ rationale:
       this control until that shell lands.
   - decision: One size, no density variant, no pressed state.
     why: >-
-      The box is a fixed 16px square aligned to the first line of the label. Box size is component
-      geometry, not a token channel. The label row is the click target, so compact layouts change
+      The box is a square aligned to the first line of the label, and the mark fills it. Both sizes
+      are in the token map as spacing primitives, because no semantic size role exists (tokens ADR
+      0003). The label row is the click target, so compact layouts change
       spacing around the checkbox, not the checkbox. Activation commits on release, so there is no
       separate pressed styling.
   - decision: No icon-only, unlabeled, or visually hidden label.

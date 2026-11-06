@@ -139,6 +139,8 @@ tokens:
       background: semantic.color.background.surface
       border: semantic.color.border.default
       radius: semantic.radius.pill
+      width: primitives.space.8
+      height: primitives.space.5
     hover:
       border: semantic.color.border.strong
     focus:
@@ -154,6 +156,7 @@ tokens:
   indicator:
     base:
       foreground: semantic.color.foreground.default
+      size: primitives.space.3
     checked:
       foreground: semantic.color.foreground.on.action.primary
     disabled:
@@ -189,8 +192,11 @@ tokens:
 rationale:
   - decision: One size with no density or icon-only variant.
     why: >-
-      A 32 by 18 track has a visible label and a thumb at either end. Surrounding layout controls
-      density.
+      The track and thumb sizes are in the token map. The thumb is centered across the track, and
+      at each end it sits as far from the end as from the top and bottom. Surrounding layout
+      controls density. Sizes are spacing primitives because no semantic size role exists (tokens
+      ADR 0003), so the track is 32 by 20 rather than the earlier 32 by 18, which no primitive
+      expresses.
   - decision: No mixed state or required setting or loading state.
     why: >-
       A setting is on or off. The consumer can disable it during saving and restore its previous

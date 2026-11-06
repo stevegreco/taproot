@@ -172,6 +172,7 @@ tokens:
       background: semantic.color.background.surface
       border: semantic.color.border.default
       radius: semantic.radius.pill
+      size: primitives.space.4
     hover:
       border: semantic.color.border.strong
     focus:
@@ -187,6 +188,7 @@ tokens:
   indicator:
     base:
       foreground: semantic.color.foreground.on.action.primary
+      size: primitives.space.2
     disabled:
       foreground: semantic.color.foreground.disabled
   label:
@@ -235,8 +237,9 @@ rationale:
       choice unavailable at once.
   - decision: One size and vertical layout with no density or icon-only option.
     why: >-
-      A 16px circular control and visible label suit short lists. Layout around the group controls
-      density.
+      A small circular control and visible label suit short lists. The dot is centered in the
+      control. Both sizes are in the token map as spacing primitives, because no semantic size
+      role exists (tokens ADR 0003). Layout around the group controls density.
   - decision: No mixed or loading state.
     why: Exactly one option can be checked and a form applies the choice later.
   - decision: No animation or reduced motion variation.
