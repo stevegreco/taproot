@@ -11,11 +11,6 @@ tags:
 links:
   follows:
     - guideline.compose-or-propose
-known-issues:
-  - statement: >-
-      In the dark theme the subtle border color measures 1.06:1 on the surface background, so a
-      divider inside a Card or panel is nearly invisible. On the page background it measures 1.45:1.
-    issue: https://github.com/stevegreco/taproot/issues/245
 description: >-
   A thin line that marks the boundary between two groups of content that belong to the same
   surface or region. It runs across the width of its container between stacked groups, or along

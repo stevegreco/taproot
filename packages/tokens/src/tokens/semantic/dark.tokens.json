@@ -225,7 +225,7 @@
           "$description": "Emphasized functional boundary"
         },
         "subtle": {
-          "$value": "{primitives.color.gray.800}",
+          "$value": "{primitives.color.gray.700}",
           "$type": "color",
           "$description": "Decorative dividers and quiet surface edges"
         },
