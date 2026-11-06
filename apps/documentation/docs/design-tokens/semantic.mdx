@@ -171,8 +171,10 @@ changes.
 
 <SemanticTokenReference kind="shape" />
 
-Borders and focus rings share three more shape tokens. Use `--ds-semantic-border-width` for a border,
-and draw every focus ring with `--ds-semantic-focus-width` and `--ds-semantic-focus-offset`:
+Borders, focus rings, and selection bars share four more shape tokens. Use
+`--ds-semantic-border-width` for a border, `--ds-semantic-indicator-width` for the thickness of a
+selection bar such as the selected tab's underline, and draw every focus ring with
+`--ds-semantic-focus-width` and `--ds-semantic-focus-offset`:
 
 ```css
 outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
