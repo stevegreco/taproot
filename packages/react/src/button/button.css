@@ -150,16 +150,42 @@
   }
 }
 
-/* forced-colors: not in the spec. Every variant shows a system border, disabled reads as GrayText,
-   and the focus ring takes the system highlight. */
+/* forced-colors (component.button#forced-colors). The variant fills are dropped, so emphasis stays
+   visible in system colors: primary and destructive fill with Highlight, secondary is outlined, and
+   tertiary is text alone. The doubled attribute selectors outrank the hover and press rules above,
+   so those states keep system colors too. */
 @media (forced-colors: active) {
   .ds-button {
-    border-color: ButtonText;
+    forced-color-adjust: none;
   }
 
-  .ds-button[data-disabled] {
-    color: GrayText;
+  .ds-button[data-variant]:is([data-variant="primary"], [data-variant="destructive"]) {
+    background-color: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
+
+  .ds-button[data-variant][data-variant="secondary"] {
+    background-color: ButtonFace;
+    border-color: ButtonText;
+    color: ButtonText;
+  }
+
+  .ds-button[data-variant][data-variant="tertiary"] {
+    background-color: transparent;
+    border-color: transparent;
+    color: ButtonText;
+  }
+
+  .ds-button[data-variant][data-disabled] {
+    background-color: ButtonFace;
     border-color: GrayText;
+    color: GrayText;
+  }
+
+  .ds-button[data-variant="tertiary"][data-disabled] {
+    background-color: transparent;
+    border-color: transparent;
   }
 
   .ds-button[data-focus-visible] {

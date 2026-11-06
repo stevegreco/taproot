@@ -427,7 +427,7 @@ describe("component.dialog#visible-focus (MUST)", () => {
   });
 });
 
-describe("component.dialog#forced-colors (MUST)", () => {
+describe("guideline.accessibility#forced-colors (MUST)", () => {
   afterEach(async () => {
     await cdp().send("Emulation.setEmulatedMedia", { features: [] });
   });

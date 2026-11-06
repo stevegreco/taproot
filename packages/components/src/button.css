@@ -156,6 +156,63 @@ slot {
   cursor: not-allowed;
 }
 
+/*
+ * Forced colors drop the variant fills, which would leave every variant looking
+ * alike. Emphasis stays visible in system colors instead: primary and
+ * destructive fill with Highlight, secondary is outlined, and tertiary is text
+ * alone. Remapping the variant properties keeps hover, press, and disabled on
+ * system colors too.
+ */
+@media (forced-colors: active) {
+  :host,
+  :host([variant="destructive"]) {
+    --_background: Highlight;
+    --_background-hover: Highlight;
+    --_background-press: Highlight;
+    --_background-disabled: ButtonFace;
+    --_foreground: HighlightText;
+    --_foreground-disabled: GrayText;
+    --_border: Highlight;
+    --_border-hover: Highlight;
+    --_border-press: Highlight;
+    --_border-disabled: GrayText;
+  }
+
+  :host([variant="secondary"]) {
+    --_background: ButtonFace;
+    --_background-hover: ButtonFace;
+    --_background-press: ButtonFace;
+    --_background-disabled: ButtonFace;
+    --_foreground: ButtonText;
+    --_foreground-disabled: GrayText;
+    --_border: ButtonText;
+    --_border-hover: ButtonText;
+    --_border-press: ButtonText;
+    --_border-disabled: GrayText;
+  }
+
+  :host([variant="tertiary"]) {
+    --_background: transparent;
+    --_background-hover: transparent;
+    --_background-press: transparent;
+    --_background-disabled: transparent;
+    --_foreground: ButtonText;
+    --_foreground-disabled: GrayText;
+    --_border: transparent;
+    --_border-hover: transparent;
+    --_border-press: transparent;
+    --_border-disabled: transparent;
+  }
+
+  .button {
+    forced-color-adjust: none;
+  }
+
+  .button:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .button {
     transition: none;

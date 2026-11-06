@@ -1,7 +1,9 @@
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
+import { cdp, userEvent } from "vitest/browser";
 
 import { defineButton } from "../src/button.js";
 import { defineTextField } from "../src/text-field.js";
+import { resolvedValue } from "./helpers/tokens.js";
 
 const tagName = "test-ds-text-field";
 const buttonTag = "test-ds-text-field-button";
@@ -146,4 +148,25 @@ describe("DsTextField", () => {
     expect(field.value).toBe("first@example.com");
     expect(new FormData(form).get("email")).toBe("first@example.com");
   });
+});
+
+test("[forced-colors] keeps the boundary, focus, and disabled state visible under forced colors", async () => {
+  await cdp().send("Emulation.setEmulatedMedia", {
+    features: [{ name: "forced-colors", value: "active" }],
+  });
+  try {
+    expect(matchMedia("(forced-colors: active)").matches).toBe(true);
+    const field = render(`<${tagName} label="Email"></${tagName}>`);
+    const control = controlOf(field);
+    expect(getComputedStyle(control).borderTopColor).toBe(resolvedValue("color", "ButtonText"));
+
+    await userEvent.tab();
+    expect(control.matches(":focus-visible")).toBe(true);
+    expect(getComputedStyle(control).outlineColor).toBe(resolvedValue("color", "Highlight"));
+
+    field.disabled = true;
+    expect(getComputedStyle(control).borderTopColor).toBe(resolvedValue("color", "GrayText"));
+  } finally {
+    await cdp().send("Emulation.setEmulatedMedia", { features: [] });
+  }
 });

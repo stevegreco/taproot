@@ -16,7 +16,7 @@ afterEach(() => {
   document.documentElement.dataset.theme = "light";
 });
 
-describe("component.badge#not-a-control (MUST)", () => {
+describe("guideline.accessibility#not-a-control (MUST)", () => {
   test("is not focusable and has no interactive role", async () => {
     await render(
       <>
@@ -48,7 +48,7 @@ describe("component.badge#not-a-control (MUST)", () => {
   });
 });
 
-describe("component.badge#text-communicates-state (MUST)", () => {
+describe("component.badge#not-color-alone (MUST)", () => {
   test("the visible text is the accessible text; the icon is hidden", async () => {
     await render(
       <Badge variant="danger" icon={<Dot />}>

@@ -1,4 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { cdp } from "vitest/browser";
 
 import { defineBadge } from "../src/badge.js";
 import { defineIcon } from "../src/icon.js";
@@ -79,3 +80,27 @@ describe("DsBadge", () => {
     expect(label.left - icon.right).toBeCloseTo(parseFloat(gap), 0);
   });
 });
+
+async function withForcedColors(check) {
+  await cdp().send("Emulation.setEmulatedMedia", {
+    features: [{ name: "forced-colors", value: "active" }],
+  });
+  try {
+    expect(matchMedia("(forced-colors: active)").matches).toBe(true);
+    await check();
+  } finally {
+    await cdp().send("Emulation.setEmulatedMedia", { features: [] });
+  }
+}
+
+test.each(["default", "danger", "success"])(
+  "[forced-colors] a %s badge keeps a visible boundary under forced colors",
+  (variant) =>
+    withForcedColors(() => {
+      document.body.innerHTML = `<${tagName} variant="${variant}">Paid</${tagName}>`;
+      const surface = document.querySelector(tagName).shadowRoot.querySelector('[part="badge"]');
+      const style = getComputedStyle(surface);
+      expect(parseFloat(style.borderTopWidth)).toBeGreaterThan(0);
+      expect(style.borderTopColor).toBe(resolvedValue("color", "CanvasText"));
+    }),
+);

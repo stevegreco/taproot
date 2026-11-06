@@ -39,7 +39,7 @@ export function Badge({ variant = "default", icon, children, className }: BadgeP
     }
   }, [variant]);
 
-  // text-communicates-state: the label text, not the color or icon, carries the meaning.
+  // not-color-alone: the label text, not the color or icon, carries the meaning.
   useEffect(() => {
     if (!labelRef.current?.textContent?.trim()) {
       console.warn(
