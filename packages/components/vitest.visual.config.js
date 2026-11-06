@@ -20,7 +20,7 @@ export default defineConfig({
           comparatorName: "pixelmatch",
           // Strict enough to catch a one-step change to a quiet color, such as
           // a subtle border.
-          comparatorOptions: { threshold: 0.01, allowedMismatchedPixels: 0 },
+          comparatorOptions: { threshold: 0.01, includeAA: true, allowedMismatchedPixels: 0 },
           screenshotOptions: { animations: "disabled" },
         },
       },
