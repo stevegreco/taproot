@@ -1,4 +1,4 @@
-import { readFile, writeFile, rm } from "node:fs/promises";
+import { copyFile, readFile, writeFile, rm } from "node:fs/promises";
 import { createCombinedCss } from "./build-css-utils.js";
 
 const primitivesPath = "dist/css/primitives.css";
@@ -29,3 +29,6 @@ await Promise.all([
   rm(semanticDarkSystemPath),
   rm(semanticDarkPath),
 ]);
+
+// The optional page defaults (guideline.page-setup), published as `@taproot-ds/tokens/base`.
+await copyFile("src/css/base.css", "dist/css/base.css");

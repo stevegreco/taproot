@@ -1,0 +1,80 @@
+/*
+ * Taproot base stylesheet: optional page defaults.
+ *
+ * The components style only themselves. This file styles the page around them: the base font,
+ * text color, and background, and a type recipe for each heading level. It is the web form of
+ * guideline.page-setup in @taproot-ds/spec.
+ *
+ * Load it after tokens.css:
+ *
+ *   import "@taproot-ds/tokens/css";
+ *   import "@taproot-ds/tokens/base";
+ *
+ * Every selector is wrapped in :where(), so product styles override it without raising
+ * specificity. It sets no margins, resets, or layout.
+ */
+
+:where(html) {
+  background-color: var(--ds-semantic-color-background-default);
+  color: var(--ds-semantic-color-foreground-default);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+:where(body) {
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
+  background-color: var(--ds-semantic-color-background-default);
+  color: var(--ds-semantic-color-foreground-default);
+}
+
+:where(h1) {
+  font-family: var(--ds-semantic-typography-heading-lg-font-family);
+  font-size: var(--ds-semantic-typography-heading-lg-font-size);
+  font-weight: var(--ds-semantic-typography-heading-lg-font-weight);
+  line-height: var(--ds-semantic-typography-heading-lg-line-height);
+  letter-spacing: var(--ds-semantic-typography-heading-lg-letter-spacing);
+}
+
+:where(h2) {
+  font-family: var(--ds-semantic-typography-heading-md-font-family);
+  font-size: var(--ds-semantic-typography-heading-md-font-size);
+  font-weight: var(--ds-semantic-typography-heading-md-font-weight);
+  line-height: var(--ds-semantic-typography-heading-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-heading-md-letter-spacing);
+}
+
+:where(h3) {
+  font-family: var(--ds-semantic-typography-heading-sm-font-family);
+  font-size: var(--ds-semantic-typography-heading-sm-font-size);
+  font-weight: var(--ds-semantic-typography-heading-sm-font-weight);
+  line-height: var(--ds-semantic-typography-heading-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-heading-sm-letter-spacing);
+}
+
+:where(h4, h5, h6) {
+  font-family: var(--ds-semantic-typography-title-font-family);
+  font-size: var(--ds-semantic-typography-title-font-size);
+  font-weight: var(--ds-semantic-typography-title-font-weight);
+  line-height: var(--ds-semantic-typography-title-line-height);
+  letter-spacing: var(--ds-semantic-typography-title-letter-spacing);
+}
+
+:where(small) {
+  font-family: var(--ds-semantic-typography-body-sm-font-family);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
+  font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+  line-height: var(--ds-semantic-typography-body-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-sm-letter-spacing);
+}
+
+:where(code, kbd, samp, pre) {
+  font-family: var(--ds-semantic-typography-code-md-font-family);
+  font-size: var(--ds-semantic-typography-code-md-font-size);
+  font-weight: var(--ds-semantic-typography-code-md-font-weight);
+  line-height: var(--ds-semantic-typography-code-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-code-md-letter-spacing);
+}

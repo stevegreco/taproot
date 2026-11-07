@@ -34,6 +34,9 @@ Implement it in whatever technology the project uses.
   `--impl web` for web components, `--impl react` for React (MCP: `implementation`). It gives the
   package, what to import, and the attribute or prop that implements each parameter. Never derive
   those names from parameter names.
+- Components style only themselves. Before building a page, `get guideline.page-setup` for the
+  page's base font, text color, background, and heading recipes, and load the base stylesheet it
+  names when your technology has one.
 - For several lookups, run them in one `batch` with the CLI (for example
   `taproot batch --command "get button --impl web" --command "tokens button"`), or make the
   tool calls in parallel on the MCP server.
