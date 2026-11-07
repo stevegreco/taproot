@@ -38,6 +38,39 @@ Then use tokens in your CSS:
 }
 ```
 
+## Page defaults (optional)
+
+Components style only themselves. The optional base stylesheet sets the page around them: the base
+font, text color, and background, and a type recipe for each heading level. Load it after the
+tokens:
+
+```js
+import "@taproot-ds/tokens/css";
+import "@taproot-ds/tokens/base";
+```
+
+Without a bundler, link `dist/css/base.css` after `dist/css/tokens.css`.
+
+| Element             | Recipe or token                                      |
+| ------------------- | ---------------------------------------------------- |
+| page                | `--ds-semantic-color-background-default`, `--ds-semantic-color-foreground-default` |
+| `body`              | `--ds-semantic-typography-body-md-*`                 |
+| `h1`                | `--ds-semantic-typography-heading-lg-*`              |
+| `h2`                | `--ds-semantic-typography-heading-md-*`              |
+| `h3`                | `--ds-semantic-typography-heading-sm-*`              |
+| `h4`, `h5`, `h6`    | `--ds-semantic-typography-title-*`                   |
+| `small`             | `--ds-semantic-typography-body-sm-*`                 |
+| `code`, `kbd`, `samp`, `pre` | `--ds-semantic-typography-code-md-*`        |
+
+Each recipe is five variables: `-font-family`, `-font-size`, `-font-weight`, `-line-height`, and
+`-letter-spacing`. A token path becomes a variable by joining its segments with hyphens and
+converting camel case to kebab case: `semantic.typography.body.md.fontFamily` is
+`--ds-semantic-typography-body-md-font-family`. A misspelled variable fails silently, so copy names
+from `dist/css/tokens.css`.
+
+Every rule is wrapped in `:where()`, so product styles override it. It sets no margins, resets, or
+layout. The spec's `guideline.page-setup` holds the same decisions for any technology.
+
 ## Fonts
 
 The design system uses three typefaces, each mapped to a font token:

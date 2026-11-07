@@ -60,6 +60,30 @@ or Bun.
     </Tabs>
 
   </Step>
+  <Step title="Style the page (optional)">
+    Components style only themselves. The base stylesheet sets the page around
+    them: the base font, text color, background, and a type recipe for each
+    heading level. Load it after the tokens. Every rule has zero specificity, so
+    your own styles override it.
+
+    <Tabs>
+      <Tab title="CSS">
+        <CodeBlock
+          lang="css"
+          code={`@import "@taproot-ds/tokens/css";
+@import "@taproot-ds/tokens/base";`}
+        />
+      </Tab>
+      <Tab title="JavaScript">
+        <CodeBlock
+          lang="ts"
+          code={`import "@taproot-ds/tokens/css";
+import "@taproot-ds/tokens/base";`}
+        />
+      </Tab>
+    </Tabs>
+
+  </Step>
   <Step title="Choose a color theme">
     Semantic tokens follow the system color preference by default. Set
     `data-theme="light"` or `data-theme="dark"` on the root element to override

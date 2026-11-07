@@ -24,6 +24,8 @@
   "exports": {
     ".": "./dist/css/tokens.css",
     "./css": "./dist/css/tokens.css",
+    "./base": "./dist/css/base.css",
+    "./base.css": "./dist/css/base.css",
     "./tokens/primitives": "./dist/tokens/primitives.json",
     "./tokens/semantic-light": "./dist/tokens/semantic.light.json",
     "./tokens/semantic-dark": "./dist/tokens/semantic.dark.json",
