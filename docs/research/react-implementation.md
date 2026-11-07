@@ -53,6 +53,8 @@ can become a labeled issue at the end.
 - **`component:status` assumes web is the only implementation.** _Process._ It checks fixed
   `packages/components` paths, so it cannot report the state of a React port or of a component that
   exists only in React.
+  _Resolved:_ the implementation phase checks each implementation in `spec.config.json` that has a
+  mapping file for the component, with the files its technology needs. `--impl` checks one.
 - **A configured implementation folder that does not exist crashes the CLI.** _Tooling._ Before
   the folder existed, `get tabs --impl react` printed a raw `ENOENT: no such file or directory`
   error instead of saying nothing is implemented. The folder now holds a `.gitkeep`.
@@ -359,6 +361,7 @@ mapping. React Aria fit the contract with four adaptations:
 - **The draft missed a part.** _Spec._ The label and value sit on one line, which needs a
   container the draft did not name. The build added `header`. Draft review checks purpose and
   boundaries, not layout, so a missing container shows up only when someone builds it.
+  _Resolved:_ the spec-component skill now asks for a part for every container that groups others.
 - **The `input` and `change` wording now has a precise version.** _Spec._ Slider is the first
   component where the two events clearly differ, and its definitions ("every new value" and "once
   on release, only when different") could replace the vague wording that Switch, Checkbox, Select,
@@ -381,6 +384,7 @@ mapping. React Aria fit the contract with four adaptations:
 - **`component:status --phase implementation` is web-only.** _Tooling._ It reports seven missing
   `packages/components` files and looks for rule tests in `packages/components/test`, so a
   React-only component can never pass it. It should check each configured implementation.
+  _Resolved:_ see the Setup finding above. `component:status slider` now passes on the React build.
 - **The docs tests required a web implementation for every built component.** _Docs._ "Not a
   draft" meant "has a web implementation file". The test now accepts an implementation in any
   configured folder, and the docs site still builds pages only for web components, so Slider has
