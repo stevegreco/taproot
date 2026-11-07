@@ -50,6 +50,8 @@ rules:
     statement: >-
       Where the token package offers a base stylesheet for your technology, load it rather than
       writing the page defaults by hand. It applies these rules with names that are already right.
+      The web token package's is named in the Styles section of `taproot get <component> --impl
+      web`.
   - id: no-guessed-names
     level: must
     topic: behavior
@@ -90,11 +92,20 @@ produces a size and line height that were never designed together.
 For the values in each theme, read the token package, or resolve a component that uses the
 recipe, such as `taproot tokens card --part title --resolve`.
 
+## Token names in your technology
+
+A token reference such as `semantic.typography.body.md.fontFamily` is technology-neutral. Each
+technology's token package publishes it under its own name, and that package says how. In the web
+package, a reference becomes a CSS custom property: prefix `--ds-`, join the segments with hyphens,
+and turn camel case into hyphenated words, so the reference above is
+`--ds-semantic-typography-body-md-font-family`. Check a name against the package's stylesheet
+before you rely on it (`no-guessed-names`).
+
 ## Fonts
 
 The font tokens name the system's typefaces with fallbacks. The token package does not ship the
 font files. Load the typefaces the way your platform does, before the page renders; the token
-package's readme lists them. Without them, the fallbacks keep the page readable but it does not
+package's readme lists them and gives the web links to load them. Without them, the fallbacks keep the page readable but it does not
 look like the system.
 
 ## Theme
