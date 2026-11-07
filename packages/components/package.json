@@ -44,7 +44,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "node build-styles.js && node build-index.js",
+    "build": "node build-styles.js && node build-index.js && node build-manifest.js",
     "test": "vitest run",
     "test:visual": "vitest run --config vitest.visual.config.js",
     "watch": "chokidar \"src/**/*.css\" -c \"node build-styles.js\" --initial",
@@ -55,10 +55,12 @@
     "@taproot-ds/tokens": "workspace:*"
   },
   "devDependencies": {
+    "@taproot-ds/spec": "workspace:*",
     "@vitest/browser-playwright": "^5.0.0",
     "axe-core": "^4.13.0",
     "chokidar-cli": "^3.0.0",
     "typescript": "^6.0.3",
     "vitest": "^5.0.0"
-  }
+  },
+  "customElements": "./dist/custom-elements.json"
 }
