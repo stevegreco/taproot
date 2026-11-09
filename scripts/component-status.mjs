@@ -6,9 +6,12 @@
  *   spec            a draft spec record (spec-component)
  *   implementation  runtime, tests, web API file, and stories (implement-component)
  *
- *   pnpm component:status <name> [--phase spec|implementation]
+ *   pnpm component:status <name> [--phase spec|implementation] [--impl <name>]
  *
- * With no phase, every phase is checked. This script is the only complete
+ * With no phase, every phase is checked. The implementation phase checks each
+ * implementation in `spec.config.json` that has a mapping file for the
+ * component, so a component built only in React can pass. With none, it checks
+ * the first configured implementation. `--impl` checks one by name. This script is the only complete
  * list; each SKILL.md describes the steps. Exits 1 when a required file or
  * entry is missing, when `spec validate` reports an issue in the record
  * (a `TODO:` placeholder is one), or when a rationale entry names an unknown
@@ -93,31 +96,60 @@ const CHECKLIST = [
   },
 ];
 
+/**
+ * The files a built component needs, by implementation technology, besides the mapping file in
+ * the implementation's configured folder. Paths are relative to the package that holds that
+ * folder. `test` is the file whose `[rule-id]` tags count toward rule coverage. Storybook shows
+ * only the web components (ADR 0007), so only they need stories.
+ */
+const TECHNOLOGY_FILES = {
+  "web-component": (slug) => ({
+    files: [
+      `src/${slug}.js`,
+      `src/${slug}.css`,
+      `src/${slug}.d.ts`,
+      `test/${slug}.test.js`,
+      `test/host-checks/${slug}.js`,
+    ],
+    test: `test/${slug}.test.js`,
+    repoFiles: [`apps/storybook/stories/${slug}.stories.js`],
+  }),
+  react: (slug) => ({
+    files: [`src/${slug}/${pascal(slug)}.tsx`, `src/${slug}/${slug}.css`, `test/${slug}.test.tsx`],
+    test: `test/${slug}.test.tsx`,
+    repoFiles: [],
+  }),
+};
+
 const PHASES = ["spec", "implementation"];
 const root = fileURLToPath(new URL("../", import.meta.url));
 const { values, positionals } = parseArgs({
   allowPositionals: true,
-  options: { phase: { type: "string" } },
+  options: { phase: { type: "string" }, impl: { type: "string" } },
 });
 const slug = positionals[0];
 const phase = values.phase;
+const config = JSON.parse(readFileSync(path.join(root, "spec.config.json"), "utf8"));
+const implementations = Object.entries(config.implementations ?? {});
 const schema = JSON.parse(
   readFileSync(path.join(root, "packages/spec/src/schema/spec-record.schema.json"), "utf8"),
 );
 if (
   !slug ||
   !new RegExp(schema.$defs.name.pattern).test(slug) ||
-  (phase && !PHASES.includes(phase))
+  (phase && !PHASES.includes(phase)) ||
+  (values.impl && !implementations.some(([name]) => name === values.impl))
 ) {
   console.error(
-    `Usage: pnpm component:status <name> [--phase ${PHASES.join("|")}]   (for example: checkbox)`,
+    `Usage: pnpm component:status <name> [--phase ${PHASES.join("|")}] [--impl ${implementations.map(([name]) => name).join("|")}]   (for example: checkbox)`,
   );
   process.exit(2);
 }
 const inPhase = (name) => !phase || phase === name;
 
 const specPath = `packages/spec/content/components/${slug}/${slug}.spec.yaml`;
-const testPath = `packages/components/test/${slug}.test.js`;
+const mappingPath = ([, entry]) => `${entry.folder}/${slug}.md`;
+const built = implementations.filter((impl) => existsSync(path.join(root, mappingPath(impl))));
 const read = (file) => {
   const full = path.join(root, file);
   return existsSync(full) ? readFileSync(full, "utf8") : null;
@@ -140,10 +172,9 @@ if (specSource) {
 if (inPhase("spec")) {
   console.log(`\nSpec phase: component.${slug}`);
   row(Boolean(specSource), specPath);
-  const built = existsSync(path.join(root, `packages/components/implementation/${slug}.md`));
-  // A spec-phase commit lands a draft. With every phase checked, a built component skips this
-  // row, and the implementation phase requires the opposite.
-  if (spec && (phase === "spec" || !built)) {
+  // A spec-phase commit lands a draft. With every phase checked, a component built in any
+  // implementation skips this row, and the implementation phase requires the opposite.
+  if (spec && (phase === "spec" || built.length === 0)) {
     row(
       spec.status === "draft",
       "status: draft",
@@ -157,22 +188,48 @@ if (inPhase("spec")) {
 
 if (inPhase("implementation")) {
   console.log(`\nImplementation phase: component.${slug}`);
-  for (const file of [
-    `packages/components/src/${slug}.js`,
-    `packages/components/src/${slug}.css`,
-    `packages/components/src/${slug}.d.ts`,
-    testPath,
-    `packages/components/test/host-checks/${slug}.js`,
-    `packages/components/implementation/${slug}.md`,
-    `apps/storybook/stories/${slug}.stories.js`,
-  ]) {
-    row(existsSync(path.join(root, file)), file);
+  const checked = values.impl
+    ? implementations.filter(([name]) => name === values.impl)
+    : built.length
+      ? built
+      : implementations.slice(0, 1);
+  if (!values.impl && implementations.length > 1) {
+    const names = checked.map(([name]) => name).join(", ");
+    const others = implementations.filter((impl) => !checked.includes(impl));
+    console.log(
+      `  Checking ${names}${built.length ? "" : " (no implementation has a mapping file yet)"}.` +
+        (others.length
+          ? ` Not built: ${others.map(([name]) => name).join(", ")} (check one with --impl).`
+          : ""),
+    );
+  }
+  const tests = [];
+  for (const impl of checked) {
+    const [name, entry] = impl;
+    const kind = TECHNOLOGY_FILES[entry.technology];
+    console.log(`\n  ${name} (${entry.technology})`);
+    row(existsSync(path.join(root, mappingPath(impl))), mappingPath(impl));
+    if (!kind) {
+      row(
+        "warn",
+        `no file list for the technology ${entry.technology}`,
+        "only the mapping file is checked",
+      );
+      continue;
+    }
+    const pkg = path.posix.dirname(entry.folder);
+    const { files, test, repoFiles } = kind(slug);
+    for (const file of [...files.map((f) => `${pkg}/${f}`), ...repoFiles]) {
+      row(existsSync(path.join(root, file)), file);
+    }
+    tests.push(`${pkg}/${test}`);
   }
   if (spec) {
     const draft = spec.status === "draft";
     row(!draft, "spec has no status: draft", draft ? "remove it now that it is built" : "");
     checklist(spec);
-    ruleCoverage(await componentRules(spec), read(testPath) ?? "");
+    const rules = await componentRules(spec);
+    for (const test of tests) ruleCoverage(rules, test);
   } else {
     console.log("\n  Decide-what-it-ships items (no spec yet)");
     for (const item of CHECKLIST) console.log(`  todo  ${item.label}: ${item.question}`);
@@ -262,7 +319,8 @@ async function componentRules(spec) {
   return loaded.rules({ id: spec.id });
 }
 
-function ruleCoverage(rules, testSource) {
+function ruleCoverage(rules, testPath) {
+  const testSource = read(testPath) ?? "";
   const tagged = new Set();
   for (const [, tags] of testSource.matchAll(/["'`]((?:\[[a-z0-9-]+\] ?)+) /g)) {
     for (const [, id] of tags.matchAll(/\[([a-z0-9-]+)\]/g)) tagged.add(id);
@@ -280,4 +338,9 @@ function ruleCoverage(rules, testSource) {
     const from = rule.appliesTo ? `, from ${rule.address}` : "";
     row("warn", `[${rule.id}] has no test${from}`, rule.statement.trim());
   }
+}
+
+/** `text-field` → `TextField`, the React component and file name. */
+function pascal(name) {
+  return name.replace(/(^|-)([a-z0-9])/g, (_, __, letter) => letter.toUpperCase());
 }

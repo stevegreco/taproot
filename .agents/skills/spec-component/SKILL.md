@@ -64,6 +64,15 @@ anatomy:
 The scaffold names one part, `container`. Rename it and add a part for each named piece, in
 reading order.
 
+Before you move on, check the anatomy for layout:
+
+- Does every piece a person sees or hears have a part?
+- Does every container that groups other parts have its own part? A row that holds the label and
+  the value text, a header above the body, or a footer that holds the actions is a part, even when
+  it has no content of its own. The Slider draft missed its `header` this way, and the gap showed
+  up only when it was built.
+- Does each part's description say what it contains, so the grouping reads from the anatomy alone?
+
 - `status: draft` is required. The spec tests fail when a spec that is not a draft has no
   implementation file.
 - Technology-neutral. No element, attribute, slot, framework, or CSS names, and no code. If you want

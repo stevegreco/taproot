@@ -105,7 +105,9 @@ review pauses after each commit:
    removes `status: draft`.
 
 `pnpm component:new <name> --phase spec|implementation` scaffolds each phase, and
-`pnpm component:status <name> [--phase spec|implementation]` checks it.
+`pnpm component:status <name> [--phase spec|implementation] [--impl <name>]` checks it. The
+implementation phase checks each implementation in `spec.config.json` that has a mapping file for
+the component, so a component built only in React passes; `--impl` checks one.
 
 Token decisions live in `packages/tokens/docs/adr/`. Do not place design system facts only in a
 documentation page or an agent skill. Those consume the spec.
