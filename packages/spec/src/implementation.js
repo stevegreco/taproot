@@ -80,6 +80,9 @@ export class ImplementationError extends Error {
   constructor(file, message) {
     super(`${file}: ${message}`);
     this.name = "ImplementationError";
+    this.file = file;
+    /** The message without the file name. */
+    this.detail = message;
   }
 }
 
@@ -468,29 +471,38 @@ function parseApi(file, raw, technology, prefix, kinds) {
  * instead of serving incomplete guidance. The record must be a component, the file must be named
  * after it, every parameter and event needs a row, and every row must name a parameter, value, or
  * event the record has. The same holds for each part and item, and every record part and item
- * needs an entry.
+ * needs an entry. Throws on the first problem; `findImplementationProblems` lists them all.
  *
  * @param {Implementation} implementation
  * @param {Record<string, any> | undefined} record The record `implementation.component` names.
  * @throws {ImplementationError}
  */
 export function checkImplementation(implementation, record) {
-  const { file } = implementation;
+  const [first] = findImplementationProblems(implementation, record);
+  if (first) throw new ImplementationError(implementation.file, first);
+}
+
+/**
+ * Every way an implementation does not match its component record, in the order
+ * `checkImplementation` reports them, without the file name. Empty when it matches.
+ *
+ * @param {Implementation} implementation
+ * @param {Record<string, any> | undefined} record
+ * @returns {string[]}
+ */
+export function findImplementationProblems(implementation, record) {
   if (record?.type !== "component") {
-    throw new ImplementationError(
-      file,
-      `component "${implementation.component}" is not a component record in the spec.`,
-    );
+    return [`component "${implementation.component}" is not a component record in the spec.`];
   }
+  const problems = [];
   const slug = implementationSlug(implementation);
   const expected = record.id.slice("component.".length);
   if (slug !== expected) {
-    throw new ImplementationError(
-      file,
+    problems.push(
       `the file name says "${slug}", but it implements ${record.id}. Name the file ${expected}.md.`,
     );
   }
-  checkApi(file, implementation.api, record, record.id);
+  problems.push(...apiProblems(implementation.api, record, record.id));
   for (const [field, noun, hint] of [
     ["parts", "part", "Add its api rows."],
     ["items", "item", "Add its element and api rows."],
@@ -498,55 +510,56 @@ export function checkImplementation(implementation, record) {
     const recordOwners = record[field] ?? {};
     for (const [part, owner] of Object.entries(implementation[field])) {
       if (!(part in recordOwners)) {
-        throw new ImplementationError(
-          file,
+        problems.push(
           `${field}.${part} implements ${article(noun)} ${record.id} does not have. Its ${field}: ${Object.keys(recordOwners).join(", ") || "none"}.`,
         );
+        continue;
       }
-      checkApi(file, owner.api, recordOwners[part], `${record.id} ${noun} "${part}"`);
+      problems.push(
+        ...apiProblems(owner.api, recordOwners[part], `${record.id} ${noun} "${part}"`),
+      );
     }
     const missing = Object.keys(recordOwners).filter((part) => !(part in implementation[field]));
     if (missing.length > 0) {
-      throw new ImplementationError(
-        file,
+      problems.push(
         `${field} does not cover ${record.id} ${noun}${missing.length === 1 ? "" : "s"} ${missing.map((part) => `"${part}"`).join(", ")}. ${hint}`,
       );
     }
   }
+  return problems;
 }
 
 /**
  * Check API rows against the parameters and events they implement: a component's, or one part's or
  * item's.
  *
- * @param {string} file
  * @param {ImplementationApiRow[]} api
  * @param {{ parameters?: Record<string, any>, events?: Record<string, string> }} owner
  * @param {string} name The owner in messages, such as `component.accordion item "section"`.
+ * @returns {string[]}
  */
-function checkApi(file, api, owner, name) {
+function apiProblems(api, owner, name) {
+  const problems = [];
   const parameters = owner.parameters ?? {};
   const events = owner.events ?? {};
   for (const row of api) {
     const where = `api row "${row.name}"`;
     if (row.event && !(row.event in events)) {
-      throw new ImplementationError(
-        file,
+      problems.push(
         `${where} implements the event "${row.event}", but ${name} has no such event. Its events: ${Object.keys(events).join(", ") || "none"}.`,
       );
     }
     if (!row.parameter) continue;
     const parameter = parameters[row.parameter];
     if (!parameter) {
-      throw new ImplementationError(
-        file,
+      problems.push(
         `${where} implements the parameter "${row.parameter}", but ${name} has no such parameter. Its parameters: ${Object.keys(parameters).join(", ") || "none"}.`,
       );
+      continue;
     }
     for (const from of Object.keys(row.values ?? {})) {
       if (!parameter.values || !(from in parameter.values)) {
-        throw new ImplementationError(
-          file,
+        problems.push(
           `${where} renames the value "${from}", but ${name} parameter "${row.parameter}" has no such value.`,
         );
       }
@@ -563,11 +576,11 @@ function checkApi(file, api, owner, name) {
       .map((key) => `event "${key}"`),
   ];
   if (missing.length > 0) {
-    throw new ImplementationError(
-      file,
+    problems.push(
       `the api table does not cover ${name} ${missing.join(", ")}. Add a row with "parameter" or "event" for each.`,
     );
   }
+  return problems;
 }
 
 /**

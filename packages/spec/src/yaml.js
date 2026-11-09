@@ -1,7 +1,7 @@
 import { LineCounter, isMap, parseDocument } from "yaml";
 
 /**
- * @typedef {{ path: string, message: string, line?: number }} RawIssue
+ * @typedef {{ path: string, message: string, line?: number, kind?: "placeholder" | "dependency" }} RawIssue
  */
 
 /**

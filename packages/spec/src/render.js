@@ -1,5 +1,5 @@
 import { stringify } from "yaml";
-import { links, recordRules, tokens } from "./query.js";
+import { gaps, links, recordRules, tokens } from "./query.js";
 import { byCodeUnit, recordIdOf } from "./util.js";
 
 const TOPICS = ["content", "behavior", "accessibility"];
@@ -54,6 +54,8 @@ function renderRecord(state, record, omit) {
     `# ${record.title}`,
     record.summary,
     STATUS_NOTES[record.status],
+    renderUnfinished(record.unfinished),
+    renderMissing(gaps(state, record.id)),
     renderKnownIssues(record["known-issues"]),
   ];
   if (record.type === "component") {
@@ -71,6 +73,40 @@ function renderRecord(state, record, omit) {
   if (record.type === "example") blocks.push(renderAnnotations(state, record));
   blocks.push(renderLinks(state, record.id));
   return blocks;
+}
+
+const codeList = (items) => items.map((item) => `\`${item}\``).join(", ");
+
+/** A record loaded with `TODO:` placeholders says which fields are not written yet. */
+function renderUnfinished(unfinished = []) {
+  if (unfinished.length === 0) return "";
+  return `**Unfinished.** These fields still hold \`TODO:\` placeholders: ${codeList(unfinished.map((pointer) => pointer || "<record>"))}.`;
+}
+
+/** A record that links to left-out records says so, since its links and guidance are partial. */
+function renderMissing(found) {
+  if (!found || found.records.length === 0) return "";
+  return `**Incomplete.** It links to ${codeList(found.records)}, which ${found.records.length === 1 ? "has" : "have"} issues and ${found.records.length === 1 ? "was" : "were"} left out. Validate the content for details.`;
+}
+
+/**
+ * Sentences that say which rules are missing because a followed record was left out, or none.
+ *
+ * @param {import("./spec.js").Gaps | undefined} found
+ * @returns {string[]}
+ */
+export function describeRuleGaps(found) {
+  if (!found) return [];
+  const lines = [];
+  if (found.follows.length > 0) {
+    lines.push(
+      `The rules of ${codeList(found.follows)} are missing, because ${found.follows.length === 1 ? "it has" : "they have"} issues and ${found.follows.length === 1 ? "was" : "were"} left out.`,
+    );
+  }
+  for (const rule of found.rules) {
+    lines.push(`\`${rule.address}\` narrows \`${rule.extends}\` and is left out with it.`);
+  }
+  return lines;
 }
 
 /** Open problems go near the top, so a reader meets them before building on the record. */
@@ -302,7 +338,9 @@ function ruleLine(rule, recordId) {
 
 const hasRules = (state, record) => {
   const { rules, waived } = recordRules(state, record.id);
-  return rules.length > 0 || waived.length > 0;
+  return (
+    rules.length > 0 || waived.length > 0 || describeRuleGaps(gaps(state, record.id)).length > 0
+  );
 };
 
 function renderRules(state, record) {
@@ -311,6 +349,10 @@ function renderRules(state, record) {
     (id) => id !== record.id,
   );
   const blocks = [];
+  const missing = describeRuleGaps(gaps(state, record.id));
+  if (missing.length > 0) {
+    blocks.push(`**Incomplete.** ${missing.join(" ")} Do not treat this list as complete.`);
+  }
   if (inherited.length > 0) {
     blocks.push(
       `Includes the rules of ${inherited.join(", ")}, which this component follows. Cite each rule by the address shown.`,

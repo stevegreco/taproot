@@ -198,7 +198,10 @@ describe("taproot CLI, failures", () => {
     const r = cli(["get", "pattern.guide", "--content", fixture("unknown-section")]);
     expect(r.code).toBe(0);
     expect(r.err).toContain("left out 1 record file with issues: thing.spec.yaml");
-    expect(cli(["list", "--content", content]).err).toContain("broken.md, thing.spec.yaml");
+    // Thing links to Broken but has no issue of its own, so only Broken is left out.
+    expect(cli(["list", "--content", content]).err).toContain(
+      "left out 1 record file with issues: broken.md.",
+    );
   });
 
   it("exits 1 on empty results", () => {

@@ -30,6 +30,14 @@ import { byCodeUnit, deepFreeze } from "./util.js";
  * @property {(filter?: { id?: string, topic?: Topic, level?: Level, query?: string }) => RuleHit[]} rules
  * @property {(id: string, filter?: { part?: string, condition?: string, property?: string }) => TokenRow[]} tokens
  * @property {(target: string, options?: { omit?: string[] }) => string} render
+ * @property {(id: string) => Gaps | undefined} gaps What a record refers to that is not loaded,
+ *   because it had issues; undefined when nothing is missing.
+ *
+ * @typedef {object} Gaps
+ * @property {string[]} records Records this one links to that were left out.
+ * @property {string[]} follows The followed records among them, whose rules are absent.
+ * @property {import("./inherit.js").UnresolvedRule[]} rules This record's rules that narrow a rule
+ *   of a left-out record, and are left out with it.
  */
 
 /**
@@ -53,12 +61,13 @@ export function createSpec(contentDir, checked, resolveToken, issues = []) {
     searchIndex: new Map(),
     resolveToken,
   };
-  for (const { source, data, sections } of ordered) {
+  for (const { source, data, sections, unfinished } of ordered) {
     const record = {
       ...data,
       status: data.status ?? "stable",
       tags: data.tags ?? [],
       file: source.file,
+      ...(unfinished ? { unfinished } : {}),
       ...(source.body === undefined ? {} : { body: source.body }),
       sections: [...sections.keys()],
     };
@@ -79,5 +88,6 @@ export function createSpec(contentDir, checked, resolveToken, issues = []) {
     rules: (filter) => query.rules(state, filter),
     tokens: (id, filter) => query.tokens(state, id, filter),
     render: (target, options) => render(state, target, options),
+    gaps: (id) => query.gaps(state, id),
   });
 }

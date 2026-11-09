@@ -196,8 +196,14 @@ export async function run(argv, io = {}) {
   };
   const print = (result) => {
     // A failed lookup prints an error envelope in JSON: branch on `code`, not on the message.
+    // A partial answer, such as rules with some missing, also carries what was found as `results`.
     const json = result.error
-      ? { error: result.text, code: result.error.code, suggestions: result.error.suggestions }
+      ? {
+          error: result.text,
+          code: result.error.code,
+          suggestions: result.error.suggestions,
+          ...(result.data == null ? {} : { results: result.data }),
+        }
       : result.data;
     out(`${values.json ? JSON.stringify(json, null, 2) : result.text}\n`);
     // An empty result exits 1 too, so "nothing found" never reads as success.

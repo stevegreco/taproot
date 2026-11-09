@@ -125,8 +125,12 @@ Each token set lists DTCG files. Later files win, `{alias.path}` references reso
 stringified (`{ value: 16, unit: "px" }` becomes `16px`). Token files are read only when values are
 requested, or by `validate`. Use `createDtcgResolver` and `readDtcgTokenNames` from
 `@taproot-ds/spec/tokens-dtcg`, and `loadFromConfig` and `validateFromConfig` from
-`.../config`, to do the same in code. `loadSpec({ skipInvalid: true })` leaves out invalid record
-files and lists their issues in `spec.issues` instead of throwing.
+`.../config`, to do the same in code. `checkFromConfig` runs every check `validate` runs and also
+returns the checked records and implementations. `loadSpec({ skipInvalid: true })` leaves out each
+record file with an issue that makes it wrong, and lists those files' issues in `spec.issues`,
+instead of throwing. A record whose only issues are `TODO:` placeholders, or links to a left-out
+record, is kept: the first carries `unfinished`, the pointers to its placeholders, and
+`spec.gaps(id)` reports the second. Such issues have a `kind`, `placeholder` or `dependency`.
 
 `constants` names the system-wide constants, such as border width, that every component uses and
 component records do not have to bind, each with the token that holds it. `format` serves them, and
@@ -153,8 +157,11 @@ pointing to it, so component files keep only what is specific to their component
 tools can read the same files with `loadImplementations`, `parseImplementation`, and
 `checkImplementation` from `@taproot-ds/spec/implementation`.
 `checkImplementation` confirms the file is named after a component record and that every
-parameter, value, and event a row names exists and every one the record has is covered; `get
---impl` reports a mismatch as `ERR_INVALID_IMPLEMENTATION` instead of printing incomplete rows.
+parameter, value, and event a row names exists and every one the record has is covered. It throws on
+the first problem; `findImplementationProblems` lists them all, and `readImplementationFolder`
+reports each file that does not parse instead of throwing. `validate` checks every implementation
+file this way, and `get --impl` reports a mismatch as `ERR_INVALID_IMPLEMENTATION` instead of
+printing incomplete rows.
 
 ## CLI
 
@@ -173,8 +180,8 @@ taproot help [command]
 ```
 
 Global flags: `--content <dir>`, `--config <path>`, `--json`. Output is Markdown, or the library's
-return values as JSON. Exit codes: 0 ok, 1 validation issues, an empty result, or an unknown id or
-section, 2 usage error, including a filter value (`--type`, `--status`, `--kind`, `--topic`,
+return values as JSON. Exit codes: 0 ok, 1 validation issues, an empty result, an unknown id or
+section, or a `rules` list with rules missing, 2 usage error, including a filter value (`--type`, `--status`, `--kind`, `--topic`,
 `--level`) that is not one of the valid ones, which the error lists. In this repo, run it as
 `node packages/spec/bin/taproot.js ...`. `pnpm spec ...` also works, but pnpm adds about a second
 to each call. Elsewhere, run the installed bin (`node_modules/.bin/taproot`), not an `npx` download
@@ -184,9 +191,15 @@ per call. `pnpm bench` times `taproot get button` against a 300 ms target, and a
 `taproot help agents` prints how an agent should use the spec. The MCP server sends the same text
 as its instructions, and AGENTS.md carries a copy that a test keeps equal.
 
-`validate` also checks each token reference against the token sets in the config. The other
-commands leave out any record file with issues, say so on stderr, and serve the rest, so one broken
-draft does not hide its neighbors.
+`validate` also checks each token reference against the token sets in the config, each constant's
+token, and each implementation file against its record. A snapshot build for the hosted server runs
+the same checks and stops at any issue. Implementation files are checked only when the content is
+the folder the config names, not other content given with `--content`.
+
+The other commands leave out each record file with an issue that makes it wrong, name it on stderr,
+and serve the rest, so one broken record does not hide its neighbors. An unfinished draft, whose only
+issues are `TODO:` placeholders, still loads, and `get` says which fields are not written yet. A
+record that links to a left-out record also loads, and `get` says which records are missing.
 
 When the best `search` hit is weak (it matched no name, title, or tag), the output starts with "No
 strong match", each weak hit is marked, and `--json` hits carry `weak: true`.
@@ -195,7 +208,10 @@ strong match", each weak hit is marked, and `--json` hits carry `weak: true`.
 any, so a conditional rule never reads as unconditional. A closing line says how to read a rule's
 rationale, references, and examples with `get <address>`. `rules --id <component>` includes the
 rules the component inherits from the patterns and guidelines it follows, each at the address where
-it is written, and marks a rule that narrows one of them with `(extends <address>)`.
+it is written, and marks a rule that narrows one of them with `(extends <address>)`. When a record
+the component follows was left out, its rules are missing, so `rules` starts with `INCOMPLETE:`,
+names what is missing, and exits 1; `get` says the same in the record's rules. A `rules` list for
+every record does the same while any record file is left out.
 
 A whole component record leaves out its token table, which is most of its length; a closing line
 gives the count and the command. Read the table with `get <id>#tokens` or filter it with `tokens`.
@@ -224,8 +240,9 @@ system-wide constants with their tokens. `--resolve` adds each constant's value 
 as `button` or `text field`. A one-word `search` tolerates typos, the start of a
 name or title matches (`chec`, `textfi`), and each result is followed by the command that reads it. An unknown id or section suggests the closest ones. With `--json`, a failed lookup prints
 `{ error, code, suggestions }`, where `code` is one of `ERR_UNKNOWN_RECORD`, `ERR_UNKNOWN_SECTION`,
-`ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, `ERR_INVALID_IMPLEMENTATION`, or
-`ERR_NO_SETUP`. Branch on `code`, not on the message.
+`ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, `ERR_INVALID_IMPLEMENTATION`, `ERR_NO_SETUP`,
+or `ERR_INCOMPLETE_RULES`. An incomplete `rules` list also carries the rules it found as `results`.
+Branch on `code`, not on the message.
 
 ## MCP server
 
@@ -234,9 +251,10 @@ name or title matches (`chec`, `textfi`), and each result is followed by the com
 optional `implementation`, such as `"web"`, that works like `--impl`, and `setup` takes a required
 one. Names, typo suggestions, and next-step
 lines work as in the CLI, and a failed call's `structuredContent.error` holds `{ code, suggestions }`. Every record is also a resource
-at `spec://<id>`. The server reloads when the content folder changes, and if the new content has
-issues it keeps serving the last valid version and starts each tool result and resource read with a
-warning.
+at `spec://<id>`. The server reloads when the content folder changes. Like the CLI, it leaves out each
+record file with an issue that makes it wrong, still loads unfinished drafts, and fails an
+incomplete `rules` list with `ERR_INCOMPLETE_RULES`. While a file is left out, each tool result and
+resource read starts with a warning that names it and its issues.
 
 ```json
 { "mcpServers": { "taproot": { "command": "node", "args": ["packages/spec/bin/taproot-mcp.js"] } } }

@@ -22,21 +22,35 @@
  * @property {string} address The inherited rule set aside, by address.
  * @property {string} waived Why it does not apply.
  *
+ * @typedef {object} UnresolvedRule
+ * @property {string} id
+ * @property {string} address The component's own rule, by address.
+ * @property {string} extends The inherited rule it narrows, in a record that could not be read.
+ *
  * @typedef {object} RuleProblem
  * @property {string} path JSON pointer into the component record.
  * @property {string} message
  */
+
+import { recordIdOf } from "./util.js";
 
 const LEVEL_RANK = { must: 0, should: 1, may: 2 };
 
 /**
  * @param {Record<string, any>} record
  * @param {(id: string) => Record<string, any> | undefined} getRecord
- * @returns {{ rules: EffectiveRule[], waived: WaivedRule[], problems: RuleProblem[] }}
+ * @returns {{ rules: EffectiveRule[], waived: WaivedRule[], problems: RuleProblem[], missing: string[], unresolved: UnresolvedRule[] }}
+ *   `missing` names each followed record `getRecord` could not return, whose rules are therefore
+ *   absent. `unresolved` lists the component's rules that narrow a rule of a missing record, which
+ *   are left out of `rules` because their level and topic come from that rule.
  */
 export function resolveRules(record, getRecord) {
   /** @type {RuleProblem[]} */
   const problems = [];
+  /** @type {string[]} */
+  const missing = [];
+  /** @type {UnresolvedRule[]} */
+  const unresolved = [];
   const own = Array.isArray(record.rules) ? record.rules : [];
   if (record.type !== "component") {
     return {
@@ -47,6 +61,8 @@ export function resolveRules(record, getRecord) {
       })),
       waived: [],
       problems,
+      missing,
+      unresolved,
     };
   }
 
@@ -55,6 +71,13 @@ export function resolveRules(record, getRecord) {
   const inherited = new Map();
   for (const source of record.links?.follows ?? []) {
     const followed = getRecord(source);
+    if (!followed) {
+      // A link to a section of a record that exists inherits nothing, as before; one to a record
+      // that could not be read is missing.
+      const id = recordIdOf(source);
+      if (id === source || !getRecord(id)) missing.push(id);
+      continue;
+    }
     for (const rule of Array.isArray(followed?.rules) ? followed.rules : []) {
       inherited.set(`${source}#${rule.id}`, { source, rule });
     }
@@ -70,6 +93,19 @@ export function resolveRules(record, getRecord) {
   own.forEach((rule, index) => {
     const pointer = `/rules/${index}`;
     if (rule.waived !== undefined || rule.extends !== undefined) {
+      // A rule of a followed record that could not be read cannot be checked. A narrowing rule is
+      // reported as unresolved; a waived one sets aside a rule that is absent anyway.
+      if (rule.extends !== undefined && missing.includes(recordIdOf(rule.extends))) {
+        if (rule.waived === undefined) {
+          unresolved.push({
+            id: rule.id,
+            address: `${record.id}#${rule.id}`,
+            extends: rule.extends,
+          });
+        }
+        return;
+      }
+      if (rule.extends === undefined && missing.length > 0 && byId(rule.id).length === 0) return;
       const found = findInherited(rule, inherited, byId, record, pointer, problems);
       if (!found) return;
       const [address, entry] = found;
@@ -119,7 +155,7 @@ export function resolveRules(record, getRecord) {
     if (settled.has(address)) continue;
     rules.push({ ...rule, address, recordId: source, appliesTo: record.id });
   }
-  return { rules, waived, problems };
+  return { rules, waived, problems, missing, unresolved };
 }
 
 /** The inherited rule a narrowing or waived rule names, by `extends` or else by its `id`. */
