@@ -98,12 +98,5 @@ Compose actions with `Button` and give them emphasis by consequence: the main ac
 
 ## Styles
 
-Load the token stylesheet and the component stylesheet once, before rendering:
-
-```tsx
-import "@taproot-ds/tokens/css";
-import "@taproot-ds/react-components/style.css";
-```
-
 The dialog renders in a portal at the end of the document body. It is at most 32rem wide and fits
 the viewport; long content scrolls inside the dialog while the title and actions stay in view.

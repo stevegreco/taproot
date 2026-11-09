@@ -58,12 +58,3 @@ instead.
 
 Form reset restores `defaultChecked` and clears the dash without running `onInput` or `onChange`.
 A controlled checkbox keeps showing its `checked` prop after a reset, because the parent owns it.
-
-## Styles
-
-Load the token stylesheet and the component stylesheet once, before rendering:
-
-```tsx
-import "@taproot-ds/tokens/css";
-import "@taproot-ds/react-components/style.css";
-```

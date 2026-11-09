@@ -38,14 +38,17 @@ export function storybookHref(slug: string): string {
 
 /** Every row, sorted by title. */
 export function catalogRows(): CatalogRow[] {
-  return readdirSync(join(packageDir("@taproot-ds/web-components"), "implementation"))
-    .filter((file) => file.endsWith(".md"))
-    .map((file) => {
-      const slug = file.slice(0, -".md".length);
-      const record = spec.get(`component.${slug}`) as { title: string; summary: string };
-      return { slug, title: record.title, summary: record.summary, href: storybookHref(slug) };
-    })
-    .sort((a, b) => a.title.localeCompare(b.title));
+  return (
+    readdirSync(join(packageDir("@taproot-ds/web-components"), "implementation"))
+      // README.md is the setup every web component shares, not a component.
+      .filter((file) => file.endsWith(".md") && file !== "README.md")
+      .map((file) => {
+        const slug = file.slice(0, -".md".length);
+        const record = spec.get(`component.${slug}`) as { title: string; summary: string };
+        return { slug, title: record.title, summary: record.summary, href: storybookHref(slug) };
+      })
+      .sort((a, b) => a.title.localeCompare(b.title))
+  );
 }
 
 /** The MDX body of the catalog page. */

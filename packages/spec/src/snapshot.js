@@ -5,7 +5,7 @@ import { createSpec } from "./spec.js";
  *
  * @typedef {object} Snapshot
  * @property {{ file: string, data: Record<string, any>, body?: string, sections: [string, import("./sections.js").SectionEntry][] }[]} records
- * @property {Record<string, { technology: import("./implementation.js").Technology, items: import("./implementation.js").Implementation[] }>} implementations
+ * @property {Record<string, { technology: import("./implementation.js").Technology, items: import("./implementation.js").Implementation[], setup?: string }>} implementations
  * @property {Record<string, string>} constants
  * @property {Record<string, Record<string, string>>} tokens Token reference to value in each set.
  */
@@ -30,9 +30,9 @@ export function openSnapshot(snapshot, { resolveTokens = false } = {}) {
     resolveToken,
     constants: snapshot.constants,
     implementations: Object.fromEntries(
-      Object.entries(snapshot.implementations).map(([name, { technology, items }]) => [
+      Object.entries(snapshot.implementations).map(([name, { technology, items, setup }]) => [
         name,
-        { technology, load: () => items },
+        { technology, load: () => items, setup: () => setup },
       ]),
     ),
   };

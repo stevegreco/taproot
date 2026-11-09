@@ -51,15 +51,6 @@ With `name`, the switch submits `value` (default `on`) only when it is on and en
 `error` blocks the form from submitting. Reset restores `defaultChecked` in an uncontrolled switch;
 a controlled switch keeps `checked`, so listen for the form's `reset` event and set it yourself.
 
-## Styles
-
-Load the token stylesheet and the component stylesheet once, before rendering:
-
-```tsx
-import "@taproot-ds/tokens/css";
-import "@taproot-ds/react-components/style.css";
-```
-
 ## Reading direction
 
 The thumb sits at the inline start when off and the inline end when on, so it follows a

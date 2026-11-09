@@ -57,14 +57,3 @@ Give the parent checkbox no `name`, so it submits nothing. Set its `checked` pro
 option is on and its `indeterminate` property when only some are. On its `change` event, set the
 `checked` property of each option. Setting these from script fires no events
 (`component.checkbox#programmatic-no-events`), so update the parent yourself when an option changes.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

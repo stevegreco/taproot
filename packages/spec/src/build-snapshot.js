@@ -21,11 +21,12 @@ export async function buildSnapshot({ implementations: names, ...options } = {})
     if (!config.implementations[name]) throw new Error(`No implementation named "${name}".`);
   }
   const implementations = {};
-  for (const [name, { technology, load }] of Object.entries(config.implementations)) {
+  for (const [name, { technology, load, setup }] of Object.entries(config.implementations)) {
     if (names && !names.includes(name)) continue;
     const items = load();
     for (const item of items) checkImplementation(item, dataById.get(item.component));
-    implementations[name] = { technology, items };
+    const text = setup();
+    implementations[name] = { technology, items, ...(text === undefined ? {} : { setup: text }) };
   }
 
   const tokens = {};

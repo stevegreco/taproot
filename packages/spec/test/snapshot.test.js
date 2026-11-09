@@ -25,6 +25,7 @@ function answers({ spec, implementations, constants, resolveToken }) {
     browse: "browse",
     tokensHint: (id, count) => `tokens ${id} ${count}`,
     implementationHint: (id, names) => `impl ${id} ${names.join(" ")}`,
+    setupHint: (name) => `setup ${name}`,
     detailHint: (address) => `detail ${address}`,
     resolveHint: "resolve",
   };
@@ -48,7 +49,9 @@ function answers({ spec, implementations, constants, resolveToken }) {
   }
   for (const name of Object.keys(implementations)) {
     out[`list ${name}`] = ops.list(spec, { implementation: name }, options);
+    out[`setup ${name}`] = ops.setup({ implementation: name }, options);
   }
+  out["setup unknown"] = ops.setup({ implementation: "vue" }, options);
   for (const { id } of spec.list()) {
     out[`get ${id}`] = ops.get(spec, { target: id }, options);
     out[`links ${id}`] = ops.links(spec, { id, direction: "both" });

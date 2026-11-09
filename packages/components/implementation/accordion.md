@@ -63,14 +63,3 @@ section instead.
 - Keep each section's open state in your own state if it must survive a re-render, and update it
   from the `toggle` event.
 - Render `expanded` as a boolean attribute: present means open, whatever its value.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

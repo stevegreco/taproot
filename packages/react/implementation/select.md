@@ -96,12 +96,3 @@ make the first option `{ value: "", label: "Choose a size" }`.
 
 Form reset restores the initial selection without running `onInput` or `onChange`. A controlled
 Select keeps showing its `value` prop after a reset, because the parent owns it.
-
-## Styles
-
-Load the token stylesheet and the component stylesheet once, before rendering:
-
-```tsx
-import "@taproot-ds/tokens/css";
-import "@taproot-ds/react-components/style.css";
-```

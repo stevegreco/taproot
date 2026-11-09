@@ -144,7 +144,12 @@ the rest. A folder that does not exist yet reads as nothing implemented. A `web-
 `attribute`, `property`, or `event`. A `react` file names its `export`, and its rows are `prop` or
 `callback`. A `parts` or `items` entry has its own rows for each record part and item. An item names
 its own `tagName` or `export`, or in React the array `prop` whose entries are the items, with a
-`field` row per key. A part names one only when it is its own element or component. Records stay technology-neutral; these files live with the implementation. Other
+`field` row per key. A part names one only when it is its own element or component. Records stay technology-neutral; these files live with the implementation.
+
+A `README.md` in the folder is not a component file. It holds the setup every component of the
+implementation shares, written once: installing the package, loading its styles, fonts, and
+registering elements. `taproot setup --impl <name>` prints it, and `get --impl` ends with a line
+pointing to it, so component files keep only what is specific to their component. Other
 tools can read the same files with `loadImplementations`, `parseImplementation`, and
 `checkImplementation` from `@taproot-ds/spec/implementation`.
 `checkImplementation` confirms the file is named after a component record and that every
@@ -161,6 +166,7 @@ taproot get <id | name | id#section> [--impl <name>]
 taproot links <id> [--kind <k>] [--direction out|in|both]
 taproot rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
 taproot tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
+taproot setup --impl <name>
 taproot format [--resolve]
 taproot batch --command "<command>" [--command "<command>" ...]
 taproot help [command]
@@ -197,7 +203,8 @@ JSON output and `spec://` resources keep the full record.
 
 `get <id> --impl web` prints the record followed by its web implementation: package, element,
 import, usage, an API table mapping each attribute to the parameter it implements, and the guidance.
-With `--json` it returns `{ record, implementation }`. A plain `get` of an implemented component ends
+With `--json` it returns `{ record, implementation }`. When the implementation has a setup file, the
+output ends with a line naming `taproot setup --impl <name>`. A plain `get` of an implemented component ends
 with a line naming every configured implementation that has a file for it, and each `search` result
 does the same, so no technology reads as the default.
 
@@ -217,13 +224,15 @@ system-wide constants with their tokens. `--resolve` adds each constant's value 
 as `button` or `text field`. A one-word `search` tolerates typos, the start of a
 name or title matches (`chec`, `textfi`), and each result is followed by the command that reads it. An unknown id or section suggests the closest ones. With `--json`, a failed lookup prints
 `{ error, code, suggestions }`, where `code` is one of `ERR_UNKNOWN_RECORD`, `ERR_UNKNOWN_SECTION`,
-`ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, or `ERR_INVALID_IMPLEMENTATION`. Branch on `code`, not on the message.
+`ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, `ERR_INVALID_IMPLEMENTATION`, or
+`ERR_NO_SETUP`. Branch on `code`, not on the message.
 
 ## MCP server
 
 `taproot-mcp` is a local stdio server (`--content` and `--config` work as in the CLI). Tools:
-`search`, `get`, `list`, `links`, `rules`, `tokens`, `format`, and `validate`. `get` takes an optional
-`implementation`, such as `"web"`, that works like `--impl`. Names, typo suggestions, and next-step
+`search`, `get`, `setup`, `list`, `links`, `rules`, `tokens`, `format`, and `validate`. `get` takes an
+optional `implementation`, such as `"web"`, that works like `--impl`, and `setup` takes a required
+one. Names, typo suggestions, and next-step
 lines work as in the CLI, and a failed call's `structuredContent.error` holds `{ code, suggestions }`. Every record is also a resource
 at `spec://<id>`. The server reloads when the content folder changes, and if the new content has
 issues it keeps serving the last valid version and starts each tool result and resource read with a

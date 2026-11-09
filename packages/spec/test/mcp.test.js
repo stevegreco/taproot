@@ -44,6 +44,7 @@ describe("spec MCP server", () => {
       "list",
       "rules",
       "search",
+      "setup",
       "tokens",
       "validate",
     ]);
@@ -94,6 +95,18 @@ describe("spec MCP server", () => {
       arguments: { target: "pattern.action-hierarchy", implementation: "web" },
     });
     expect(pattern.isError).toBe(true);
+  });
+
+  it("serves an implementation's setup, and points get at it", async () => {
+    const { client } = await connect({ cwd: impls });
+    const setup = await client.callTool({ name: "setup", arguments: { implementation: "web" } });
+    expect(text(setup)).toMatch(/^# Web components setup/);
+    expect(setup.structuredContent.results.technology).toBe("web-component");
+    const got = await client.callTool({
+      name: "get",
+      arguments: { target: "component.divider", implementation: "web" },
+    });
+    expect(text(got)).toContain('Call `setup` with implementation "web" once per project.');
   });
 
   it("resolves names, suggests typos, and names the next call", async () => {
@@ -298,6 +311,6 @@ describe("spec MCP server", () => {
     cleanups.push(() => client.close());
     await client.connect(transport);
     const { tools } = await client.listTools();
-    expect(tools).toHaveLength(8);
+    expect(tools).toHaveLength(9);
   });
 });

@@ -115,8 +115,10 @@ Check: `pnpm exec turbo run test --filter=@taproot-ds/web-components`.
   `tagName` only when the part is its own child element. When the spec has `items`, add an `items`
   block that names each item's child element and gives its own `api` rows, as
   `implementation/accordion.md` does. The check fails until every part and item parameter has a row. The body is
-  web-specific guidance only, in the scaffold's sections: Slots, The hidden attribute, Framework
-  notes, and Styles, which every file keeps as written.
+  web-specific guidance only, in the scaffold's sections: Slots, The hidden attribute, and Framework
+  notes. Setup every component shares, such as installing the package and loading the token
+  stylesheet, lives once in `implementation/README.md` (`taproot setup --impl web`). Add a Styles
+  section only for styling guidance specific to this component.
   Behavior is in the spec's rules, so cite a rule by address (`component.<name>#<rule-id>`) rather
   than restating it. `implementation/alert.md` is the example. This file gives the component its row in
   the docs catalog and serves `node packages/spec/bin/taproot.js get component.<name> --impl web`.

@@ -39,14 +39,3 @@ it (`component.tooltip#stays-in-view`). It is hidden from assistive technology.
 - Change `label` when the action changes, such as Mute and Unmute. The trigger's name follows it.
 - Escape closes the bubble in the capture phase and marks the event handled, so a surrounding
   `<ds-dialog>` stays open (`component.tooltip#escape-closes`).
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

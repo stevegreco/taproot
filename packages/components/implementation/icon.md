@@ -23,14 +23,3 @@ The role and accessible name are set through `ElementInternals`, so the host nev
 `aria-*` attributes. Without `label` the icon is hidden from assistive technology.
 Use `label`, not `aria-label`, to name the icon. Button is the one component that takes
 `aria-label`; the [Button implementation](button.md) says why.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

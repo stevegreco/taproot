@@ -342,6 +342,39 @@ describe("taproot CLI, implementations", () => {
     expect(r.out).toContain("No implementations are configured.");
   });
 
+  it("prints the setup every component of an implementation shares", () => {
+    const r = cli(["setup", "--impl", "web"], impls);
+    expect(r.code).toBe(0);
+    expect(r.out).toMatch(/^# Web components setup/);
+    expect(r.out).toContain('import "@taproot-ds/tokens/css";');
+    const data = JSON.parse(cli(["setup", "--impl", "react", "--json"], impls).out);
+    expect(data).toMatchObject({ implementation: "react", technology: "react" });
+    expect(data.setup).toMatch(/^# React components setup/);
+  });
+
+  it("points get --impl at the setup once, instead of repeating it", () => {
+    const { out } = cli(["get", "component.divider", "--impl", "web"], impls);
+    expect(out.trimEnd().split("\n").at(-1)).toBe(
+      "Setup: install, styles, and fonts are the same for every component. Run `taproot setup --impl web` once per project.",
+    );
+    expect(out).not.toContain('import "@taproot-ds/tokens/css";');
+  });
+
+  it("explains a setup call it cannot answer", () => {
+    const none = cli(["setup"], impls);
+    expect(none.code).toBe(2);
+    expect(none.err).toContain("setup needs an implementation. Configured: web, react.");
+    expect(cli(["setup", "--impl", "ios"], impls).out).toContain('No implementation named "ios".');
+    const config = ["--config", path.join(impls, "missing-folder.config.json")];
+    const missing = cli(["setup", "--impl", "react", "--json", ...config]);
+    expect(missing.code).toBe(1);
+    expect(JSON.parse(missing.out).code).toBe("ERR_NO_SETUP");
+    // Without a setup file, get --impl has no setup line.
+    expect(cli(["get", "component.button", "--impl", "react", ...config]).out).not.toContain(
+      "Setup:",
+    );
+  });
+
   it("reads a missing implementation folder as nothing implemented", () => {
     const config = ["--config", path.join(impls, "missing-folder.config.json")];
     const r = cli(["get", "component.button", "--impl", "react", ...config]);

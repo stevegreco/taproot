@@ -51,14 +51,3 @@ focus moves focus on, however it was set (`component.alert#focus-after-dismiss`)
 - Clear your state from the `dismiss` event, or the next render may still hold the hidden element.
 - To send focus somewhere other than the next tabbable element, focus it from your `dismiss`
   listener.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

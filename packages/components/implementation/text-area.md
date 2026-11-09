@@ -37,14 +37,3 @@ Read the values there, and set `error` on each field that needs a correction. Cl
 field's `input` event and when the form resets, because a reset leaves it set.
 
 `rows` accepts positive whole numbers and defaults to four. `readonly` preserves focus and submission while preventing edits. Users can resize the control vertically.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

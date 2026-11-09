@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { loadSpec, validateSpec } from "./index.js";
 import { TECHNOLOGY_NAMES } from "./implementation.js";
-import { loadImplementations } from "./implementation-files.js";
+import { loadImplementations, readSetup } from "./implementation-files.js";
 import { createDtcgResolver, readDtcgTokenNames } from "./tokens-dtcg.js";
 
 export const CONFIG_FILE = "spec.config.json";
@@ -16,7 +16,8 @@ const NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
  *   Token sets; each set lists DTCG files, relative to the config file.
  * @property {Record<string, ImplementationConfig>} [implementations]
  *   Implementations by name, such as `web`. Each folder holds one `<slug>.md` implementation file
- *   per component, checked against the fields of its technology.
+ *   per component, checked against the fields of its technology, and may hold a `README.md` with
+ *   the setup every component shares (`taproot setup`).
  * @property {Record<string, string>} [constants] System-wide constants, such as border width, by
  *   name, each with the token that holds it. Every component uses them, so component records do
  *   not bind them. With token sets configured, each token must exist in every set.
@@ -214,6 +215,7 @@ export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = 
         folder: path.resolve(base, folder),
         technology,
         load: () => loadImplementations(path.resolve(base, folder), technology),
+        setup: () => readSetup(path.resolve(base, folder)),
       },
     ]),
   );
