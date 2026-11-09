@@ -289,12 +289,9 @@ the application root. Without it, the component has no colors, spacing, or type.
 
 \`\`\`js
 import "@taproot-ds/tokens/css";
-import "@taproot-ds/tokens/base"; // optional: page font, text color, background, and headings
 \`\`\`
 
-Without a bundler, link the package's \`dist/css/tokens.css\` instead, and \`dist/css/base.css\` for
-the optional page defaults. Components style only themselves; \`guideline.page-setup\` says what the
-page around them needs.
+Without a bundler, link the package's \`dist/css/tokens.css\` instead.
 `,
   );
 

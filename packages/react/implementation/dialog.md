@@ -102,11 +102,8 @@ Load the token stylesheet and the component stylesheet once, before rendering:
 
 ```tsx
 import "@taproot-ds/tokens/css";
-import "@taproot-ds/tokens/base"; // optional: page font, text color, background, and headings
 import "@taproot-ds/react-components/style.css";
 ```
-
-Components style only themselves; `guideline.page-setup` says what the page around them needs.
 
 The dialog renders in a portal at the end of the document body. It is at most 32rem wide and fits
 the viewport; long content scrolls inside the dialog while the title and actions stay in view.

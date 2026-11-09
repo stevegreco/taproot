@@ -50,8 +50,7 @@ rules:
     statement: >-
       Where the token package offers a base stylesheet for your technology, load it rather than
       writing the page defaults by hand. It applies these rules with names that are already right.
-      The web token package's is named in the Styles section of `taproot get <component> --impl
-      web`.
+      The web token package's readme names it.
   - id: no-guessed-names
     level: must
     topic: behavior
