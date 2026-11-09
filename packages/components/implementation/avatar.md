@@ -36,14 +36,3 @@ or `::part(initials)` does not change which one shows (`component.avatar#fallbac
   the accessible name. Mark the avatar `decorative` inside it.
 - Changing `image` shows the initials until the new picture loads, so reuse the element rather than
   re-creating it to avoid a flash.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

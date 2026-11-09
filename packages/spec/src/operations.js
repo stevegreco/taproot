@@ -15,8 +15,9 @@ import { editDistance, typoAllowance } from "./util.js";
  * @typedef {"ERR_UNKNOWN_RECORD" | "ERR_UNKNOWN_SECTION" | "ERR_UNKNOWN_IMPLEMENTATION" | "ERR_NO_IMPLEMENTATION" | "ERR_INVALID_IMPLEMENTATION"} ErrorCode
  * @typedef {{ code: ErrorCode, suggestions: string[] }} ResultError
  * @typedef {{ text: string, data: unknown, ok: boolean, error?: ResultError }} Result
- * @typedef {{ technology: import("./implementation.js").Technology, load: () => import("./implementation.js").Implementation[] }} ImplementationSource
- *   Where one implementation's files come from: the file system, or a snapshot.
+ * @typedef {{ technology: import("./implementation.js").Technology, load: () => import("./implementation.js").Implementation[], setup?: () => string | undefined }} ImplementationSource
+ *   Where one implementation's files come from: the file system, or a snapshot. `setup` is the
+ *   Markdown every component of the implementation shares, such as installing and loading styles.
  */
 
 const cell = (value) =>
@@ -119,9 +120,9 @@ function resolveTarget(spec, target) {
  * A whole component record leaves out its token table, which is most of its length and rarely
  * needed to choose or use the component. A closing line names the call that reads it.
  *
- * @param {{ implementations?: Record<string, ImplementationSource>, implementationHint?: (id: string, names: string[]) => string, tokensHint?: (id: string, count: number) => string }} [options]
+ * @param {{ implementations?: Record<string, ImplementationSource>, implementationHint?: (id: string, names: string[]) => string, tokensHint?: (id: string, count: number) => string, setupHint?: (name: string) => string }} [options]
  *   Implementations by name, and the lines that tell the caller how to ask for an
- *   implementation or the tokens.
+ *   implementation, the tokens, or an implementation's shared setup.
  */
 export function get(spec, { target: typedTarget, implementation }, options = {}) {
   if (!typedTarget) throw new UsageError("get needs an id or id#section");
@@ -214,8 +215,10 @@ function getWithImplementation(spec, record, name, folders, options) {
     );
   }
   const tokens = tokensLine(spec, record, options);
+  const setup = folders[name].setup?.() !== undefined && options.setupHint?.(name);
+  const hints = [tokens, setup].filter(Boolean).join("\n");
   return {
-    text: `${renderWithoutTokens(spec, record.id)}\n${renderImplementation(record, found, name)}${tokens ? `\n${tokens}\n` : ""}`,
+    text: `${renderWithoutTokens(spec, record.id)}\n${renderImplementation(record, found, name)}${hints ? `\n${hints}\n` : ""}`,
     data: { record, implementation: found },
     ok: true,
   };
@@ -244,6 +247,41 @@ function implementationIndex(folders) {
     }
   }
   return index;
+}
+
+/**
+ * The setup every component of an implementation shares: installing the package, loading its
+ * styles, and anything else a project does once. It comes from `README.md` in the
+ * implementation's folder.
+ *
+ * @param {{ implementation?: string }} args
+ * @param {{ implementations?: Record<string, ImplementationSource> }} [options]
+ * @returns {Result}
+ */
+export function setup({ implementation }, options = {}) {
+  const folders = options.implementations ?? {};
+  if (implementation === undefined) {
+    const names = Object.keys(folders);
+    throw new UsageError(
+      names.length
+        ? `setup needs an implementation. Configured: ${names.join(", ")}.`
+        : "No implementations are configured. Add `implementations` to spec.config.json.",
+    );
+  }
+  if (!folders[implementation]) return unknownImplementation(implementation, folders);
+  const text = folders[implementation].setup?.();
+  if (text === undefined) {
+    return failure(
+      `The ${implementation} implementation has no setup file. Add README.md to its folder.`,
+      "ERR_NO_SETUP",
+      [],
+    );
+  }
+  return {
+    text: text.trimEnd(),
+    data: { implementation, technology: folders[implementation].technology, setup: text },
+    ok: true,
+  };
 }
 
 function unknownImplementation(name, folders) {

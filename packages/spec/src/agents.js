@@ -23,7 +23,8 @@ Implement it in whatever technology the project uses.
 - Before writing code, \`get\` the component with the implementation for your technology:
   \`--impl web\` for web components, \`--impl react\` for React (MCP: \`implementation\`). It gives the
   package, what to import, and the attribute or prop that implements each parameter. Never derive
-  those names from parameter names.
+  those names from parameter names. Once per project, read \`setup --impl <name>\` (MCP: \`setup\`)
+  for what every component shares: installing the package, loading its styles, and fonts.
 - Components style only themselves. Before building a page, \`get guideline.page-setup\` for the
   page's base font, text color, background, and heading recipes, and load the base stylesheet it
   names when your technology has one.

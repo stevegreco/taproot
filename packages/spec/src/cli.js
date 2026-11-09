@@ -31,6 +31,12 @@ const COMMANDS = {
       "Print a record, or one section of it, as Markdown. A section is a rule id, a field such as parameters, or a dotted path such as anatomy.title, parts.title.parameters.label, or items.section. --impl <name> adds how that technology implements it: package, import, and API names.",
     options: { impl: str },
   },
+  setup: {
+    usage: "taproot setup --impl <name>",
+    summary:
+      "Print the setup every component of an implementation shares: installing the package, loading its styles, and anything else a project does once.",
+    options: { impl: str },
+  },
   links: {
     usage: "taproot links <id> [--kind <k>] [--direction out|in|both]",
     summary: "Show alternatives, patterns followed, examples, and other neighbors.",
@@ -210,6 +216,11 @@ export async function run(argv, io = {}) {
       const { issues, recordCount } = await validateFromConfig(loadOptions);
       return print(ops.formatIssues(issues, recordCount));
     }
+    if (command === "setup") {
+      if (positionals.length > 0) return usageError("setup takes its implementation with --impl.");
+      const { implementations } = resolveConfig(loadOptions);
+      return print(ops.setup({ implementation: values.impl }, { implementations }));
+    }
     if (command === "format") {
       if (positionals.length > 0) return usageError("format takes no positional arguments.");
       const { constants, resolveToken } = resolveConfig(loadOptions);
@@ -280,6 +291,8 @@ export async function run(argv, io = {}) {
                 `Tokens: ${count} bindings, left out here. Run \`taproot tokens ${id}\` to filter them by part, condition, or property.`,
               implementationHint: (id, names) =>
                 `Implementations: ${names.join(", ")}. Run \`${nextCall(id, names)}\` for the package, import, and API names.`,
+              setupHint: (name) =>
+                `Setup: install, styles, and fonts are the same for every component. Run \`taproot setup --impl ${name}\` once per project.`,
             },
           ),
         );

@@ -33,14 +33,3 @@ the page's job, and neither is announced (`component.progress-bar#not-announced`
 - Use the task's own unit for `max`, such as bytes or files, rather than converting to a
   percentage.
 - Report the outcome with a `<ds-alert announce="polite">` when the task ends.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

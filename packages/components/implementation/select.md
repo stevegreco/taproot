@@ -60,14 +60,3 @@ An initial `value` attribute takes precedence over an option's `selected` attrib
 `value`, native option defaults determine the reset value. A first empty-valued option provides a
 prompt and makes a required Select invalid until a non-empty value is chosen. The menu appearance
 and opening keys follow the browser and operating system.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

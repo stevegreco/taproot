@@ -33,7 +33,8 @@ Implement it in whatever technology the project uses.
 - Before writing code, `get` the component with the implementation for your technology:
   `--impl web` for web components, `--impl react` for React (MCP: `implementation`). It gives the
   package, what to import, and the attribute or prop that implements each parameter. Never derive
-  those names from parameter names.
+  those names from parameter names. Once per project, read `setup --impl <name>` (MCP: `setup`)
+  for what every component shares: installing the package, loading its styles, and fonts.
 - Components style only themselves. Before building a page, `get guideline.page-setup` for the
   page's base font, text color, background, and heading recipes, and load the base stylesheet it
   names when your technology has one.
@@ -55,6 +56,7 @@ node packages/spec/bin/taproot.js links component.button
 node packages/spec/bin/taproot.js rules --level must --topic accessibility
 node packages/spec/bin/taproot.js tokens component.button --condition "variant.primary + hover" --resolve
 node packages/spec/bin/taproot.js format --resolve
+node packages/spec/bin/taproot.js setup --impl web
 node packages/spec/bin/taproot.js batch --command "get button --impl web" --command "tokens button"
 ```
 
@@ -83,7 +85,9 @@ or how a component looks against the spec, so keep those consistent in review.
 - Each web component has `packages/components/implementation/<name>.md` (package, tag name, usage,
   API table mapping web attributes, properties, and events to spec parameters and events, and
   web-specific guidance). `spec.config.json` points the CLI at that folder, so `get --impl web`
-  serves it.
+  serves it. Setup every component shares (install, styles, fonts, registering elements) is
+  written once, in that folder's `README.md`, which `setup --impl web` serves. Do not repeat it in
+  a component's file. The React folder has its own `README.md`.
 - The React components in `packages/react` are a second implementation, built on React Aria
   Components, with tests in `packages/react/test`. Their mapping files are in
   `packages/react/implementation/<name>.md` (export name, usage, and API rows mapping props and

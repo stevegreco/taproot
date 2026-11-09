@@ -17,14 +17,3 @@ api:
 `ds-link` renders a native anchor, so activation, middle-click, modifier-click, and the browser's
 context menu open the destination as any link does. The browser limits `:visited` styling to color,
 so Link publishes no visited style.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

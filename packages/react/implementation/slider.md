@@ -68,12 +68,3 @@ the browser. Put units in the label.
 
 The track follows the page's computed CSS `direction`: in a right-to-left page `min` is on the
 right, and Arrow Right decreases the value. The value text keeps the reader's number format.
-
-## Styles
-
-Load the token stylesheet and the component stylesheet once, before rendering:
-
-```tsx
-import "@taproot-ds/tokens/css";
-import "@taproot-ds/react-components/style.css";
-```

@@ -51,15 +51,6 @@ Pass `value` and `onChange` to control the selection, or `defaultValue` to let T
 value that matches no section selects the first section. `onChange` receives the new section's value
 and runs only when a person selects a different tab, never for a value set by the parent.
 
-## Styles
-
-Load the token stylesheet and the component stylesheet once, before rendering:
-
-```tsx
-import "@taproot-ds/tokens/css";
-import "@taproot-ds/react-components/style.css";
-```
-
 ## Hidden sections
 
 Only the selected section's content is mounted. Switching tabs unmounts the others, so state inside

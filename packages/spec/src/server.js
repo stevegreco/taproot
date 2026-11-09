@@ -123,8 +123,19 @@ export function createServer(source) {
             `Tokens: ${count} bindings, left out here. Call \`tokens\` to filter them by part, condition, or property.`,
           implementationHint: (id, names) =>
             `Implementations: ${names.join(", ")}. Call ${nextCall(id, names)} for the package, import, and API names.`,
+          setupHint: (name) =>
+            `Setup: install, styles, and fonts are the same for every component. Call \`setup\` with implementation "${name}" once per project.`,
         },
       ),
+  );
+  tool(
+    "setup",
+    "Read the setup every component of an implementation shares: installing the package, loading its styles and the optional page defaults, and fonts. Read it once per project, before building with an implementation's components.",
+    {
+      implementation: z.string().describe('An implementation name, such as "web" or "react".'),
+    },
+    ({ implementation }) =>
+      ops.setup({ implementation }, { implementations: source.config().implementations }),
   );
   tool(
     "list",

@@ -43,14 +43,3 @@ The `value` attribute sets the initial selection. Read or set the `value` proper
 selection. Form reset restores the attribute. Children can be added, removed, or updated after
 connection. An unmatched value selects nothing. A selected disabled option submits nothing and
 does not satisfy `required`.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

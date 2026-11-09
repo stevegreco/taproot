@@ -37,14 +37,3 @@ is the page's job, and neither is announced (`component.spinner#not-announced`).
 - To mark a whole region as busy for assistive technology, set `aria-busy="true"` on the region
   while the spinner shows. The spinner does not do this for you.
 - Report the outcome with a `<ds-alert announce="polite">` once the spinner is gone.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

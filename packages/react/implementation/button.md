@@ -56,12 +56,3 @@ disabling it in nearby text when the context does not already say why.
 Pass an icon as a child next to the label and hide it from assistive technology
 (`aria-hidden`). An icon-only button needs `accessibleName`; without visible text or a name,
 Button logs a console warning.
-
-## Styles
-
-Load the token stylesheet and the component stylesheet once, before rendering:
-
-```tsx
-import "@taproot-ds/tokens/css";
-import "@taproot-ds/react-components/style.css";
-```

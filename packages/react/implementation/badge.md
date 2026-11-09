@@ -41,15 +41,6 @@ Badge renders a `span` with no role, no `tabindex`, and no event handlers. To ac
 Button beside it. To announce a status change, let the surrounding UI or an Alert do it: Badge sets
 no live region.
 
-## Styles
-
-Load the token stylesheet and the component stylesheet once, before rendering:
-
-```tsx
-import "@taproot-ds/tokens/css";
-import "@taproot-ds/react-components/style.css";
-```
-
 ## Unknown variants
 
 A `variant` outside the listed values renders as `default` and logs a console warning.

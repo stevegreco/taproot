@@ -48,14 +48,3 @@ control placed in the default slot is covered by it, so put it in the actions
   the bottom, so cards in a grid row line up. Lay cards out with a list and a grid in product CSS.
 - Listen for `click` on the card and check `event.composedPath()` for the title link when you need
   to know that the destination was followed rather than an action. Clicks on actions bubble too.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

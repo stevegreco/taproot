@@ -36,14 +36,3 @@ The divider never sets `hidden` itself. Setting it removes the line and the spac
   container and let the container's `gap` set the space on both sides.
 - A vertical divider stretches to the height of a flex or grid row, even when the row uses
   `align-items: center`. Outside such a row it is one line of text tall.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.

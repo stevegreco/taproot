@@ -54,18 +54,6 @@ behavior.
 
 ## Styles
 
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.
-
-Button reads semantic tokens directly, so it follows the active theme. The tokens it reads are not
-a customization API.
-
 Do not recreate Button states with product CSS. Use the published variants and sizes first. Treat
 `::part(button)` as an escape hatch that requires a specific product need and design review.
 

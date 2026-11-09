@@ -48,14 +48,3 @@ field's `input` event and when the form resets, because a reset leaves it set.
 
 The `value` attribute sets the initial value, which form reset restores. `autocomplete` takes the
 HTML autofill tokens, such as `email` or `current-password`, so the browser can offer saved values.
-
-## Styles
-
-Install `@taproot-ds/tokens` alongside this package, and load its token stylesheet once at
-the application root. Without it, the component has no colors, spacing, or type.
-
-```js
-import "@taproot-ds/tokens/css";
-```
-
-Without a bundler, link the package's `dist/css/tokens.css` instead.
