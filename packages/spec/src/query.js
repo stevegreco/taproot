@@ -141,12 +141,36 @@ export function recordRules(state, id) {
   let byRecord = resolvedRules.get(state);
   if (!byRecord) resolvedRules.set(state, (byRecord = new Map()));
   if (!byRecord.has(id)) {
-    const { rules, waived } = resolveRules(state.records.get(id), (other) =>
+    const { rules, waived, missing, unresolved } = resolveRules(state.records.get(id), (other) =>
       state.records.get(other),
     );
-    byRecord.set(id, { rules, waived });
+    byRecord.set(id, { rules, waived, missing, unresolved });
   }
   return byRecord.get(id);
+}
+
+/**
+ * What a record refers to that is not in the index, because it had issues and was left out.
+ *
+ * @returns {import("./spec.js").Gaps | undefined}
+ */
+export function gaps(state, id) {
+  if (!state.records.has(id)) return undefined;
+  const records = [
+    ...new Set(
+      state.links
+        .filter((link) => link.from === id)
+        .map((link) => recordIdOf(link.to))
+        .filter((target) => !state.records.has(target)),
+    ),
+  ].sort(byCodeUnit);
+  const { missing, unresolved } = recordRules(state, id);
+  if (records.length === 0 && missing.length === 0) return undefined;
+  return {
+    records,
+    follows: [...missing],
+    rules: unresolved.map((rule) => ({ ...rule })),
+  };
 }
 
 /**

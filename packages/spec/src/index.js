@@ -25,8 +25,10 @@ export const DEFAULT_CONTENT_DIR = path.resolve(
  *   validation checks that every token reference names a token in every set.
  * @property {Record<string, import("./config.js").VocabularyTerm>} [vocabulary] Concepts that keep
  *   one set of words. With it, validation checks each component's enum values against it.
- * @property {boolean} [skipInvalid] Leave out each record file that has an issue, and list the
- *   issues in `spec.issues`, instead of throwing.
+ * @property {boolean} [skipInvalid] Instead of throwing, leave out each record file with an issue
+ *   that makes it wrong, and list those files' issues in `spec.issues`. A record whose only issues
+ *   are `TODO:` placeholders or links to left-out records is kept: the first is marked
+ *   `unfinished`, and `spec.gaps` reports the second.
  */
 
 export class SpecError extends Error {
@@ -70,9 +72,21 @@ export async function check(options = {}) {
 export async function loadSpec(options = {}) {
   const { contentDir, issues, records } = await check(options);
   if (issues.length > 0 && !options.skipInvalid) throw new SpecError(issues);
-  const invalid = new Set(issues.map((issue) => issue.file));
-  const valid = records.filter((record) => !invalid.has(record.source.file));
-  return createSpec(contentDir, valid, options.resolveToken, issues);
+  const leftOut = new Set(issues.filter((issue) => !issue.kind).map((issue) => issue.file));
+  const kept = records
+    .filter((record) => !leftOut.has(record.source.file))
+    .map((record) => {
+      const unfinished = issues
+        .filter((issue) => issue.kind === "placeholder" && issue.file === record.source.file)
+        .map((issue) => issue.path);
+      return unfinished.length ? { ...record, unfinished } : record;
+    });
+  return createSpec(
+    contentDir,
+    kept,
+    options.resolveToken,
+    issues.filter((issue) => leftOut.has(issue.file)),
+  );
 }
 
 /**

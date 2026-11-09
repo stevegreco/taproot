@@ -252,7 +252,7 @@ describe("spec MCP server", () => {
     }
   });
 
-  it("keeps the last good index and warns when a reload has issues", async () => {
+  it("leaves out a file that has issues after a reload, and names it in every answer", async () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "taproot-mcp-"));
     cleanups.push(() => fs.rmSync(tmp, { recursive: true }));
     fs.cpSync(fixture("valid"), tmp, { recursive: true });
@@ -262,21 +262,24 @@ describe("spec MCP server", () => {
     const original = fs.readFileSync(file, "utf8");
     fs.writeFileSync(file, `${original}\nbogus: true\n`);
     await reload();
-    const warned = await client.callTool({ name: "get", arguments: { target: "component.thing" } });
-    expect(text(warned)).toMatch(/^WARNING: /);
-    expect(text(warned)).toContain("thing.spec.yaml");
-    expect(text(warned)).toContain("# Thing");
-    const read = async () =>
-      (await client.readResource({ uri: "spec://component.thing" })).contents[0].text;
-    const staleResource = await read();
-    expect(staleResource).toMatch(/^WARNING: /);
-    expect(staleResource).toContain("# Thing");
+    const gone = await client.callTool({ name: "get", arguments: { target: "component.thing" } });
+    expect(gone.isError).toBe(true);
+    expect(text(gone)).toMatch(/^WARNING: Left out 1 record file with issues: thing\.spec\.yaml\./);
+    expect(text(gone)).toContain("`bogus` is not an allowed field");
+    const other = await client.callTool({ name: "get", arguments: { target: "component.other" } });
+    expect(other.isError).toBe(false);
+    expect(text(other)).toMatch(/^WARNING: /);
+    expect(text(other)).toContain("# Other");
+    const resource = await client.readResource({ uri: "spec://component.other" });
+    expect(resource.contents[0].text).toMatch(/^WARNING: /);
 
     fs.writeFileSync(file, original);
     await reload();
     const clean = await client.callTool({ name: "get", arguments: { target: "component.thing" } });
     expect(text(clean)).toMatch(/^# Thing/);
-    expect(await read()).toMatch(/^# Thing/);
+    expect((await client.readResource({ uri: "spec://component.other" })).contents[0].text).toMatch(
+      /^# Other/,
+    );
   });
 
   it("reloads when files change", async () => {

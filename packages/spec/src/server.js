@@ -32,7 +32,8 @@ function nextCall(id, names) {
  * @typedef {object} ServerSource
  * @property {() => import("./spec.js").Spec} spec
  * @property {() => { implementations: Record<string, ops.ImplementationSource>, constants: Record<string, string>, resolveToken?: (ref: string) => Record<string, string> | undefined }} config
- * @property {() => string | undefined} [warning] Why the answers may be stale, for the start of each one.
+ * @property {() => string | undefined} [warning] Why the answers may be incomplete or stale, for the
+ *   start of each one.
  * @property {() => Promise<ops.Result>} [validate] Offers the `validate` tool, which needs source files.
  */
 
@@ -52,9 +53,7 @@ export function createServer(source) {
   /** Prefix text with the stale-content warning while the last reload has issues. */
   const disclose = (text) => {
     const warning = readWarning();
-    return warning
-      ? `WARNING: the content has issues, so this answer comes from the last valid version.\n${warning}\n\n${text}`
-      : text;
+    return warning ? `WARNING: ${warning}\n\n${text}` : text;
   };
 
   /** @param {ops.Result} result */

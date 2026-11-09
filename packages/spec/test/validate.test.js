@@ -316,9 +316,10 @@ describe("validation", () => {
   });
 
   it("leaves out invalid records with skipInvalid, and lists their issues", async () => {
+    // Thing's only issue is its link to Broken, so it stays, and `spec.gaps` reports the link.
     const spec = await loadSpec({ contentDir: fixture("link-to-invalid"), skipInvalid: true });
-    expect(spec.list()).toEqual([]);
-    expect(spec.issues.map((issue) => issue.file)).toEqual(["broken.md", "thing.spec.yaml"]);
+    expect(spec.list().map((record) => record.id)).toEqual(["component.thing"]);
+    expect(spec.issues.map((issue) => issue.file)).toEqual(["broken.md"]);
     const valid = await loadSpec({ contentDir: fixture("valid"), skipInvalid: true });
     expect(valid.list()).toHaveLength(4);
     expect(valid.issues).toEqual([]);

@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import { SpecError } from "./index.js";
 import { loadFromConfig, resolveConfig, validateFromConfig } from "./config.js";
 import * as ops from "./operations.js";
 import { createServer } from "./server.js";
@@ -14,9 +13,17 @@ export async function createSpecServer(options = {}) {
   const { cwd = process.cwd(), contentDir, configPath, watch = true, debounceMs = 200 } = options;
   const loadOptions = { cwd, contentDir, configPath };
 
-  let spec = await loadFromConfig({ ...loadOptions, resolveTokens: false });
-  /** @type {string | undefined} */
-  let warning;
+  // Like the CLI, the server leaves out record files with issues and names them, so one broken file
+  // or an unfinished draft does not stop it. Answers that depend on a left-out record say so.
+  const load = async () => {
+    const loaded = await loadFromConfig({
+      ...loadOptions,
+      resolveTokens: false,
+      skipInvalid: true,
+    });
+    return { spec: loaded, warning: leftOutWarning(loaded.issues) };
+  };
+  let { spec, warning } = await load();
 
   const server = createServer({
     spec: () => spec,
@@ -30,15 +37,10 @@ export async function createSpecServer(options = {}) {
 
   async function reload() {
     try {
-      spec = await loadFromConfig({ ...loadOptions, resolveTokens: false });
-      warning = undefined;
+      ({ spec, warning } = await load());
     } catch (error) {
-      if (error instanceof SpecError) {
-        const { text } = ops.formatIssues(error.issues, 0);
-        warning = text.replace(/\n[^\n]*$/, "");
-      } else {
-        warning = `Reload failed: ${error.message}`;
-      }
+      // A config or file system error keeps the last index.
+      warning = `Reload failed, so answers come from the last load: ${error.message}`;
     }
     if (server.isConnected()) {
       server.sendResourceListChanged();
@@ -66,4 +68,19 @@ export async function createSpecServer(options = {}) {
       watcher?.close();
     },
   };
+}
+
+/**
+ * Names the record files left out of the index and their issues, or undefined when none were.
+ *
+ * @param {import("./validate.js").Issue[]} issues
+ */
+function leftOutWarning(issues) {
+  if (issues.length === 0) return undefined;
+  const files = [...new Set(issues.map((issue) => issue.file))];
+  const { text } = ops.formatIssues(issues, 0);
+  return [
+    `Left out ${files.length} record file${files.length === 1 ? "" : "s"} with issues: ${files.join(", ")}. Answers do not include ${files.length === 1 ? "it" : "them"}.`,
+    text.replace(/\n[^\n]*$/, ""),
+  ].join("\n");
 }

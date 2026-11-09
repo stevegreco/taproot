@@ -17,6 +17,9 @@ const RECORD_TYPES = schema.properties.type.enum;
  * @property {number} [line] 1-based, when known.
  * @property {string} path JSON pointer into the record; empty for the record itself.
  * @property {string} message
+ * @property {"placeholder" | "dependency"} [kind] Set when the issue does not make the record wrong:
+ *   `placeholder` for a `TODO:` value a draft has not replaced yet, and `dependency` for a link to a
+ *   record that is itself invalid. A record whose issues all have a kind can still be loaded.
  */
 
 /**
@@ -26,6 +29,7 @@ const RECORD_TYPES = schema.properties.type.enum;
  * @property {import("./load.js").SourceFile} source
  * @property {Record<string, any>} data
  * @property {Map<string, import("./sections.js").SectionEntry>} sections
+ * @property {string[]} [unfinished] Pointers to `TODO:` placeholders, for a record loaded with them.
  */
 
 /**
@@ -47,6 +51,7 @@ export async function checkSources(sources, { tokenNames, vocabulary } = {}) {
       ...(line ? { line } : {}),
       path: raw.path,
       message: raw.message,
+      ...(raw.kind ? { kind: raw.kind } : {}),
     });
   };
 
@@ -290,12 +295,15 @@ function checkReferences(record, byId, validById, report) {
     const id = recordIdOf(target);
     const found = validById.get(id);
     if (!found) {
-      report({
-        path: pointer,
-        message: byId.has(id)
-          ? `\`${target}\` points at ${id}, which is not a valid record`
-          : `\`${target}\` does not match any record`,
-      });
+      report(
+        byId.has(id)
+          ? {
+              path: pointer,
+              message: `\`${target}\` points at ${id}, which is not a valid record`,
+              kind: "dependency",
+            }
+          : { path: pointer, message: `\`${target}\` does not match any record` },
+      );
       continue;
     }
     if (types && !types.includes(found.data.type)) {
@@ -320,7 +328,11 @@ const PLACEHOLDER = /^\s*TODO\b/i;
 function checkPlaceholders(value, pointer, report) {
   if (typeof value === "string") {
     if (PLACEHOLDER.test(value)) {
-      report({ path: pointer, message: "is a `TODO:` placeholder; replace it" });
+      report({
+        path: pointer,
+        message: "is a `TODO:` placeholder; replace it",
+        kind: "placeholder",
+      });
     }
     return;
   }

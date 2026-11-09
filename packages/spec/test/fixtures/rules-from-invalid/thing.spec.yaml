@@ -1,0 +1,23 @@
+id: component.thing
+type: component
+title: Thing
+summary: Use Thing for testing.
+links:
+  follows:
+    - pattern.guide
+description: A test component.
+usage:
+  do:
+    - Test things.
+anatomy:
+  control:
+    role: interactive-surface
+    description: The control.
+rules:
+  - id: keep-it-short
+    level: should
+    topic: content
+    statement: Keep the text short.
+  - id: name-it
+    extends: pattern.guide#name-it
+    statement: Name it after what it does.

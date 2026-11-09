@@ -3,6 +3,7 @@ import {
   checkImplementation,
   renderImplementation,
 } from "./implementation.js";
+import { describeRuleGaps } from "./render.js";
 import { TOKEN_KEYWORDS, TOKEN_PROPERTIES, schema } from "./schema/info.js";
 import { editDistance, typoAllowance } from "./util.js";
 
@@ -10,9 +11,10 @@ import { editDistance, typoAllowance } from "./util.js";
  * The operations behind both the CLI and the MCP server. Each returns `{ text, data, ok }`:
  * Markdown for agents, the library's return value for `--json`, and whether the call found what
  * it was asked for. A call that found nothing also returns `error`, with a stable code to branch
- * on and what the caller probably meant.
+ * on and what the caller probably meant. A call that found only part of the answer, as `rules` does
+ * when a record it needs was left out, returns `error` with its `data`.
  *
- * @typedef {"ERR_UNKNOWN_RECORD" | "ERR_UNKNOWN_SECTION" | "ERR_UNKNOWN_IMPLEMENTATION" | "ERR_NO_IMPLEMENTATION" | "ERR_INVALID_IMPLEMENTATION"} ErrorCode
+ * @typedef {"ERR_UNKNOWN_RECORD" | "ERR_UNKNOWN_SECTION" | "ERR_UNKNOWN_IMPLEMENTATION" | "ERR_NO_IMPLEMENTATION" | "ERR_INVALID_IMPLEMENTATION" | "ERR_NO_SETUP" | "ERR_INCOMPLETE_RULES"} ErrorCode
  * @typedef {{ code: ErrorCode, suggestions: string[] }} ResultError
  * @typedef {{ text: string, data: unknown, ok: boolean, error?: ResultError }} Result
  * @typedef {{ technology: import("./implementation.js").Technology, load: () => import("./implementation.js").Implementation[], setup?: () => string | undefined }} ImplementationSource
@@ -372,7 +374,10 @@ export function rules(spec, { id: typed, topic, level, query } = {}, options = {
     id = target.section === undefined ? target.id : `${target.id}#${target.section}`;
   }
   const data = spec.rules({ id, topic, level, query });
-  if (data.length === 0) return { text: "No rules match.", data, ok: true };
+  const missing = ruleGaps(spec, id);
+  if (data.length === 0 && missing.length === 0) {
+    return { text: "No rules match.", data, ok: true };
+  }
   const lines = data.map((r) => {
     const narrows = r.extends ? ` (extends ${r.extends})` : "";
     const line = `- **${r.level.toUpperCase()}** ${r.address}${narrows}: ${r.statement}`;
@@ -380,7 +385,39 @@ export function rules(spec, { id: typed, topic, level, query } = {}, options = {
   });
   const detailed = data.find((r) => r.rationale || r.references || r.examples);
   const hint = detailed && options.detailHint?.(detailed.address);
-  return { text: lines.join("\n") + (hint ? `\n\n${hint}` : ""), data, ok: true };
+  const text = lines.join("\n") + (hint ? `\n\n${hint}` : "");
+  if (missing.length === 0) return { text, data, ok: true };
+  // A shorter list reads as a complete one, so a review would pass work it should fail. Say so first,
+  // and fail the call.
+  const warning = `INCOMPLETE: ${missing.join(" ")} Validate the content, fix it, and ask again before reviewing against this list.`;
+  return {
+    text: data.length ? `${warning}\n\n${text}` : warning,
+    data,
+    ok: false,
+    error: { code: "ERR_INCOMPLETE_RULES", suggestions: [] },
+  };
+}
+
+/**
+ * Why a rules answer is missing rules: for one record, the followed records left out and its own
+ * rules that narrow theirs; for every record, also the record files left out.
+ *
+ * @returns {string[]}
+ */
+function ruleGaps(spec, id) {
+  if (id) return describeRuleGaps(spec.gaps(id.split("#")[0]));
+  const files = [...new Set(spec.issues.map((issue) => issue.file))];
+  const lines = files.length
+    ? [
+        `The rules of ${files.map((file) => `\`${file}\``).join(", ")} are missing, because ${files.length === 1 ? "that file has" : "those files have"} issues and ${files.length === 1 ? "was" : "were"} left out.`,
+      ]
+    : [];
+  for (const record of spec.list()) {
+    for (const rule of spec.gaps(record.id)?.rules ?? []) {
+      lines.push(`\`${rule.address}\` narrows \`${rule.extends}\` and is left out with it.`);
+    }
+  }
+  return lines;
 }
 
 /**

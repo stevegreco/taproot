@@ -14,7 +14,13 @@ const { values } = parseArgs({
 });
 if (!values.out) throw new Error("build-snapshot needs --out <file>.");
 
-const snapshot = await buildSnapshot({ implementations: values.impl, configPath: values.config });
+let snapshot;
+try {
+  snapshot = await buildSnapshot({ implementations: values.impl, configPath: values.config });
+} catch (error) {
+  process.stderr.write(`build-snapshot: ${error.message}\n`);
+  process.exit(1);
+}
 const text = JSON.stringify(snapshot);
 mkdirSync(path.dirname(path.resolve(values.out)), { recursive: true });
 writeFileSync(values.out, text);

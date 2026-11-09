@@ -1,32 +1,26 @@
-import { resolveConfig } from "./config.js";
-import { checkImplementation } from "./implementation.js";
-import { SpecError, check } from "./index.js";
+import { checkFromConfig } from "./config.js";
+import { SpecError } from "./index.js";
 import { readDtcgTokenNames } from "./tokens-dtcg.js";
 
 /**
- * Build a snapshot from the source files. Unlike the CLI, it stops at any issue, so a hosted deploy
- * cannot serve a broken record or mapping.
+ * Build a snapshot from the source files. It runs the same checks as `taproot validate`, including
+ * token references, vocabulary, constants, and the included implementation files, and stops at any
+ * issue, so a hosted deploy cannot serve a broken record, token, or mapping.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string, implementations?: string[] }} [options]
  *   `implementations` names the ones to include, in config order. By default, all of them.
  * @returns {Promise<import("./snapshot.js").Snapshot>}
  */
-export async function buildSnapshot({ implementations: names, ...options } = {}) {
-  const config = resolveConfig(options);
-  const { issues, records } = await check({ contentDir: config.contentDir });
-  if (issues.length > 0) throw new SpecError(issues);
-  const dataById = new Map(records.map(({ data }) => [data.id, data]));
-
-  for (const name of names ?? []) {
+export async function buildSnapshot(options = {}) {
+  const { config, issues, records, implementations } = await checkFromConfig(options);
+  for (const name of options.implementations ?? []) {
     if (!config.implementations[name]) throw new Error(`No implementation named "${name}".`);
   }
-  const implementations = {};
-  for (const [name, { technology, load, setup }] of Object.entries(config.implementations)) {
-    if (names && !names.includes(name)) continue;
-    const items = load();
-    for (const item of items) checkImplementation(item, dataById.get(item.component));
-    const text = setup();
-    implementations[name] = { technology, items, ...(text === undefined ? {} : { setup: text }) };
+  if (issues.length > 0) throw new SpecError(issues);
+  // Each implementation's shared setup, its folder's README.md, travels with its files.
+  for (const [name, implementation] of Object.entries(implementations)) {
+    const text = config.implementations[name].setup();
+    if (text !== undefined) implementation.setup = text;
   }
 
   const tokens = {};
