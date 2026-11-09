@@ -58,6 +58,14 @@ Every attribute has a matching property (`el.variant`,
 `el.disabled`, …). Programmatic `focus()` and `blur()` forward to the inner
 control. The host honors the native `hidden` attribute.
 
+## Editor and framework support
+
+The package ships a [custom elements manifest](https://github.com/webcomponents/custom-elements-manifest)
+at `dist/custom-elements.json`, and `package.json` points to it with `customElements`. IDE plugins
+and framework tools read it to offer each element's attributes, properties, events, slots, and CSS
+parts. `pnpm build` writes it from the API tables in `implementation/` and the spec's descriptions,
+so it matches `taproot get <name> --impl web`.
+
 ## Forms
 
 `<form>` association does not cross shadow boundaries, so a naive web-component
