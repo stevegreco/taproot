@@ -9,6 +9,7 @@ export default defineConfig({
         test: {
           name: "browser",
           include: ["test/**/*.test.js"],
+          exclude: ["test/node/**"],
           setupFiles: ["test/setup/tokens.js"],
           // Process the token stylesheet the setup file imports. Vitest
           // replaces CSS with an empty module unless it is included here.
@@ -19,6 +20,14 @@ export default defineConfig({
             instances: [{ browser: "chromium" }],
             provider: playwright(),
           },
+        },
+      },
+      {
+        // Tests that read files, such as the check of the source against the spec records.
+        test: {
+          name: "node",
+          include: ["test/node/**/*.test.js"],
+          environment: "node",
         },
       },
       {

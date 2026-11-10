@@ -8,20 +8,20 @@
  * - the attributes, values, properties, and events in the implementation file against the source
  *
  * They read the source as text, so they check names, not behavior. Component tests cover behavior.
+ * They run in Node, apart from the browser tests, because they read files.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { resolveConfig } from "../src/config.js";
-import { loadImplementations } from "../src/implementation-files.js";
-import { loadSpec } from "../src/index.js";
-import { TOKEN_KEYWORDS } from "../src/validate.js";
+import { TOKEN_KEYWORDS, loadSpec } from "@taproot-ds/spec";
+import { resolveConfig } from "@taproot-ds/spec/config";
+import { loadImplementations } from "@taproot-ds/spec/implementation";
 
-const root = fileURLToPath(new URL("../../..", import.meta.url));
+const root = fileURLToPath(new URL("../../../..", import.meta.url));
 const config = resolveConfig({ cwd: root });
 const web = config.implementations.web;
-const sourceDir = path.join(root, "packages/components/src");
+const sourceDir = fileURLToPath(new URL("../../src", import.meta.url));
 
 /** Global attributes a component may observe without listing them in its API table. */
 const GLOBAL_ATTRIBUTES = new Set(["hidden"]);

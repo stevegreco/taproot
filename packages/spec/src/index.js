@@ -6,6 +6,7 @@ import { schema } from "./schema/info.js";
 import { checkSources } from "./validate.js";
 
 export { schema };
+export { TOKEN_KEYWORDS, TOKEN_PROPERTIES } from "./schema/info.js";
 
 /** Absolute path of the content folder shipped with this package. */
 export const DEFAULT_CONTENT_DIR = path.resolve(

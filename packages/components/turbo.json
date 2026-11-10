@@ -4,6 +4,9 @@
   "tasks": {
     "build": {
       "outputs": ["dist/**", "src/index.js", "src/index.d.ts"]
+    },
+    "test": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/spec.config.json"]
     }
   }
 }
