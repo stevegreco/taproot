@@ -1,6 +1,7 @@
 import { RECORD_ID } from "./schema/info.js";
 import { byCodeUnit, parameterLists, recordIdOf } from "./util.js";
 
+/** Each link kind, authored or derived, and its inverse. */
 export const INVERSE = {
   alternative: "alternative-to",
   "alternative-to": "alternative",
@@ -12,6 +13,9 @@ export const INVERSE = {
   examples: "example-of",
   related: "related",
 };
+
+/** Every link kind, each followed by its inverse. */
+export const LINK_KINDS = Object.freeze(Object.keys(INVERSE));
 
 /**
  * Every link in the corpus: the ones authored or derived from fields, and their inverses.

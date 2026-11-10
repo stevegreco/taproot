@@ -3,20 +3,9 @@ import { z } from "zod";
 import * as ops from "./operations.js";
 import { AGENT_INSTRUCTIONS } from "./agents.js";
 import { openSnapshot } from "./snapshot.js";
+import { LINK_KINDS } from "./links.js";
+import { LEVELS, RECORD_TYPES, STATUSES, TOPICS } from "./schema/info.js";
 import packageJson from "../package.json" with { type: "json" };
-
-const TYPES = ["component", "pattern", "guideline", "example"];
-const LINK_KINDS = [
-  "alternative",
-  "alternative-to",
-  "composes",
-  "used-in",
-  "follows",
-  "followed-by",
-  "example-of",
-  "examples",
-  "related",
-];
 
 /** The next call for a record, naming each implementation that has a file for it. */
 function nextCall(id, names) {
@@ -79,7 +68,7 @@ export function createServer(source) {
       }
     });
 
-  const type = z.enum(TYPES).optional().describe("Restrict to one record type.");
+  const type = z.enum(RECORD_TYPES).optional().describe("Restrict to one record type.");
   const tag = z.string().optional().describe("Restrict to records with this tag.");
 
   tool(
@@ -142,7 +131,7 @@ export function createServer(source) {
     {
       type,
       tag,
-      status: z.enum(["draft", "stable", "deprecated"]).optional(),
+      status: z.enum(STATUSES).optional(),
       implementation: z
         .string()
         .optional()
@@ -165,8 +154,8 @@ export function createServer(source) {
     "Get must/should/may rules to review a design or implementation against; cite rules by address. Filter by record id (or address), topic, level, or text. Filtered to a component, the list includes the rules it inherits from the patterns and guidelines it follows.",
     {
       id: z.string().optional().describe("A record id or rule address."),
-      topic: z.enum(["content", "behavior", "accessibility"]).optional(),
-      level: z.enum(["must", "should", "may"]).optional(),
+      topic: z.enum(TOPICS).optional(),
+      level: z.enum(LEVELS).optional(),
       query: z.string().optional().describe("Text to look for in rule statements."),
     },
     (args) =>

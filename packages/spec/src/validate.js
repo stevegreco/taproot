@@ -1,7 +1,14 @@
 import { stat } from "node:fs/promises";
 import path from "node:path";
 import { createSpecAjv } from "./schema/ajv.js";
-import { COMMON_FIELDS, RECORD_ID, TOKEN_KEYWORDS, schema, typeFields } from "./schema/info.js";
+import {
+  COMMON_FIELDS,
+  RECORD_ID,
+  RECORD_TYPES,
+  TOKEN_KEYWORDS,
+  schema,
+  typeFields,
+} from "./schema/info.js";
 import { resolveRules } from "./inherit.js";
 import { buildSections } from "./sections.js";
 import { byCodeUnit, parameterLists, pointerSegment, recordIdOf } from "./util.js";
@@ -9,7 +16,6 @@ import { byCodeUnit, parameterLists, pointerSegment, recordIdOf } from "./util.j
 export { TOKEN_KEYWORDS, TOKEN_PROPERTIES } from "./schema/info.js";
 
 const validateSchema = createSpecAjv().compile(schema);
-const RECORD_TYPES = schema.properties.type.enum;
 
 /**
  * @typedef {object} Issue

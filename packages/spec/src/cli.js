@@ -1,9 +1,9 @@
 import { parseArgs } from "node:util";
 import { AGENT_INSTRUCTIONS } from "./agents.js";
 import { loadFromConfig, resolveConfig, validateFromConfig } from "./config.js";
-import { INVERSE } from "./links.js";
+import { LINK_KINDS } from "./links.js";
 import * as ops from "./operations.js";
-import { schema } from "./schema/info.js";
+import { LEVELS, RECORD_TYPES, STATUSES, TOPICS } from "./schema/info.js";
 import { splitWords } from "./util.js";
 
 const str = { type: "string" };
@@ -103,11 +103,11 @@ function nextCall(id, names) {
 
 /** The values each filter flag takes. Any other value is a usage error. */
 const CHOICES = {
-  type: schema.properties.type.enum,
-  status: schema.properties.status.enum,
-  topic: schema.$defs.ruleFields.properties.topic.enum,
-  level: schema.$defs.ruleFields.properties.level.enum,
-  kind: Object.keys(INVERSE),
+  type: RECORD_TYPES,
+  status: STATUSES,
+  topic: TOPICS,
+  level: LEVELS,
+  kind: LINK_KINDS,
   direction: ["out", "in", "both"],
 };
 
