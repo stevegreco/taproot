@@ -175,7 +175,7 @@ taproot list [--type <t>] [--tag <tag>] [--status <s>] [--impl <name>]
 taproot search <query...> [--type <t>] [--tag <tag>] [--limit <n>]
 taproot get <id | name | id#section> [--impl <name>]
 taproot links <id> [--kind <k>] [--direction out|in|both]
-taproot rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]
+taproot rules [<id | name | address>] [--topic <t>] [--level <l>] [--query <text>]
 taproot tokens <id> [--part <p>] [--condition <c>] [--property <p>] [--resolve]
 taproot setup --impl <name>
 taproot format [--resolve]
@@ -210,7 +210,7 @@ strong match", each weak hit is marked, and `--json` hits carry `weak: true`.
 
 `rules` prints each rule's level, address, and statement, and the condition it applies under, if
 any, so a conditional rule never reads as unconditional. A closing line says how to read a rule's
-rationale, references, and examples with `get <address>`. `rules --id <component>` includes the
+rationale, references, and examples with `get <address>`. `rules <component>` includes the
 rules the component inherits from the patterns and guidelines it follows, each at the address where
 it is written, and marks a rule that narrows one of them with `(extends <address>)`. When a record
 the component follows was left out, its rules are missing, so `rules` starts with `INCOMPLETE:`,
@@ -240,8 +240,8 @@ The MCP server has no `batch` tool, since MCP clients already call several tools
 property names token bindings use, the token keywords, condition syntax, anatomy roles, and the
 system-wide constants with their tokens. `--resolve` adds each constant's value in each token set.
 
-`get`, `links`, `tokens`, and `rules --id` take a record id or a name that matches one record, such
-as `button` or `text field`. A one-word `search` tolerates typos, the start of a
+`get`, `links`, `tokens`, and `rules` take a record id or a name that matches one record, such
+as `button` or `text field`. `rules` also takes it as `--id`, as it did before. A one-word `search` tolerates typos, the start of a
 name or title matches (`chec`, `textfi`), and each result is followed by the command that reads it. An unknown id or section suggests the closest ones. With `--json`, a failed lookup prints
 `{ error, code, suggestions }`, where `code` is one of `ERR_UNKNOWN_RECORD`, `ERR_UNKNOWN_SECTION`,
 `ERR_UNKNOWN_IMPLEMENTATION`, `ERR_NO_IMPLEMENTATION`, `ERR_INVALID_IMPLEMENTATION`, `ERR_NO_SETUP`,
