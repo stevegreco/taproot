@@ -3,6 +3,8 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_CONTENT_DIR } from "../src/index.js";
+import { TECHNOLOGY_NAMES } from "../src/implementation.js";
+import configSchema from "../src/schema/spec-config.schema.json" with { type: "json" };
 import { findConfig, loadFromConfig, resolveConfig, validateFromConfig } from "../src/config.js";
 import { fixture } from "./helpers.js";
 
@@ -64,7 +66,7 @@ describe("loadFromConfig", () => {
 
   it("throws a clear error for a bad config", () => {
     expect(() => resolveConfig({ cwd: tools, configPath: "bad.config.json" })).toThrow(
-      /"content" must be a non-empty string/,
+      /"content" must be a string/,
     );
     expect(() => resolveConfig({ cwd: tools, configPath: "missing.json" })).toThrow(
       /Cannot read config/,
@@ -134,7 +136,7 @@ describe("constants", () => {
     for (const [constants, message] of [
       [["semantic.border.width"], '"constants" must be an object'],
       [{ borderWidth: "semantic.border.width" }, '"constants.borderWidth" must be a lowercase'],
-      [{ "border-width": "" }, '"constants.border-width" must be a non-empty token reference'],
+      [{ "border-width": "" }, '"constants.border-width" must not be empty'],
     ]) {
       const tmp = write({ constants });
       expect(() => resolveConfig({ cwd: tmp })).toThrow(message);
@@ -158,20 +160,29 @@ describe("vocabulary", () => {
     fs.rmSync(tmp, { recursive: true });
   });
 
+  it("lists the technologies the implementation files support", () => {
+    expect(
+      configSchema.properties.implementations.additionalProperties.properties.technology.enum,
+    ).toEqual(TECHNOLOGY_NAMES);
+  });
+
   it("rejects a malformed term", () => {
     for (const [vocabulary, message] of [
       [["size"], '"vocabulary" must be an object'],
       [{ Size: { values: ["small"] } }, '"vocabulary.Size" must be a lowercase'],
-      [{ size: { values: [] } }, '"vocabulary.size".values must be a non-empty array'],
-      [{ size: { values: ["small", "small"] } }, '"vocabulary.size".values lists a word twice'],
+      [{ size: { values: [] } }, '"vocabulary.size.values" must not be empty'],
+      [{ size: { values: ["small", "small"] } }, '"vocabulary.size.values" lists a word twice'],
       [
         { size: { values: ["small"], words: [] } },
         '"vocabulary.size" has an unknown field "words"',
       ],
-      [{ size: { values: ["small"], parameter: 1 } }, '"vocabulary.size".parameter must be'],
+      [
+        { size: { values: ["small"], parameter: 1 } },
+        '"vocabulary.size.parameter" must be a string',
+      ],
       [
         { size: { values: ["small"], aliases: { small: "small" } } },
-        "aliases.small is also in values",
+        '"vocabulary.size.aliases.small" is also in values',
       ],
       [
         { size: { values: ["small"], aliases: { sm: "tiny" } } },

@@ -95,10 +95,14 @@ Button means Badge is the alternative to Button.
 
 Both tools find their content with a `spec.config.json`, found by walking up from the working
 directory. Paths are relative to the config file. `implementations`, `constants`, `vocabulary`, and
-`tokens` are optional.
+`tokens` are optional. The file is checked against
+[`src/schema/spec-config.schema.json`](src/schema/spec-config.schema.json), exported as
+`@taproot-ds/spec/schema/spec-config.json`. Point `$schema` at it for checks and completion in an
+editor. Every problem in the file is reported at once.
 
 ```json
 {
+  "$schema": "./node_modules/@taproot-ds/spec/src/schema/spec-config.schema.json",
   "content": "packages/spec/content",
   "implementations": {
     "web": { "folder": "packages/components/implementation", "technology": "web-component" },
@@ -273,6 +277,7 @@ pnpm add -D @taproot-ds/spec @taproot-ds/tokens @taproot-ds/web-components
 
 ```json
 {
+  "$schema": "./node_modules/@taproot-ds/spec/src/schema/spec-config.schema.json",
   "implementations": {
     "web": {
       "folder": "node_modules/@taproot-ds/web-components/implementation",
