@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "You are helping in a project that uses the Taproot design system.\n\nEnd your reply with one line of JSON with exactly these keys: token, light, dark. Use null for a value that does not exist."
+  },
+  {
+    "role": "user",
+    "content": "What token sets the background of a Taproot primary button on hover, and what's its hex value in the light and dark themes?"
+  },
+  {
+    "role": "assistant",
+    "content": "I can't answer this reliably: I don't have any file or search tools in this session, so I can't read the Taproot tokens in the project. I also don't know Taproot's token names or hex values from memory, and I don't want to guess at them.\n\nTo find the answer, search the project for the hover token, for example:\n\n```sh\ngrep -rniE \"(button|btn).*primary.*(hover|bg|background)|primary.*(button|btn).*hover\" . --exclude-dir=.git\n```\n\nThe installed package is also worth checking if the project has `node_modules`. Look in `node_modules/` for the Taproot package and open its token files, usually `tokens.json` or a theme CSS file. If the hover token points to another token, such as a color primitive, follow that reference separately in the light and dark themes to get the final hex values.\n\nIf you paste the matching token definitions here, I can work out the token and both values. The nulls below mean I couldn't look these values up, not that they don't exist.\n\n{\"token\": null, \"light\": null, \"dark\": null}"
+  }
+]

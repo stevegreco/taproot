@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "You are helping in a project that uses the Taproot design system.\n\nEnd your reply with one line of JSON: {\"components\": [\"component.<name>\"]}, listing each Taproot component to use. Use an empty list if Taproot has no component for this."
+  },
+  {
+    "role": "user",
+    "content": "I want a little tooltip explaining the required password format on our password field. Is that right in Taproot, or which component should carry that help?"
+  },
+  {
+    "role": "assistant",
+    "content": "I'd skip the tooltip and put the password format in persistent help text directly under the field, connected with `aria-describedby`. People need the rules while they're typing, but a tooltip disappears at that moment, is unreliable on touch screens, and is easy to miss. Validation errors should also say which rule failed, rather than just \"invalid password\".\n\nI can't confirm which Taproot component should carry this, though. I don't have its docs or component list in this session, and I don't want to guess a name that may not exist. Look for a helper or description option on Taproot's password or text input, or on its form field wrapper. If you share the docs or point me to where Taproot is defined in this project, I can give you the exact component and prop.\n\nThe JSON list below is empty because I couldn't verify a component, not because I know Taproot lacks one.\n\n{\"components\": []}"
+  }
+]

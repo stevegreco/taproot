@@ -1,0 +1,7 @@
+id	split	baseline	v1	v2
+compose-avatar-presence	all	1.000	1.000	1.000
+nomatch-date-picker	all	1.000	1.000	0.000
+choose-format-help	all	0.000	1.000	1.000
+fact-button-submit	all	1.000	1.000	1.000
+fact-primary-hover-values	all	0.000	1.000	1.000
+avail-web-slider	all	0.000	1.000	1.000

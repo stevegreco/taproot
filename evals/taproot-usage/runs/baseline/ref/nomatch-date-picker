@@ -1,0 +1,7 @@
+I can't tell you which Taproot component this is because I don't have Taproot's component catalog or any tools in this session to search the project for it. I also don't want to guess a name that may not exist.
+
+To find it, search Taproot's docs or package exports for `date`, `calendar`, or `picker`. Design systems sometimes split this into a date input and a separate calendar or popover, so you may need to combine them.
+
+If you share the component list or the path to Taproot's docs, I can identify the right component for your booking form. The empty list below means I couldn't confirm a match, not that Taproot doesn't have one.
+
+{"components": []}

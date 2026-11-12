@@ -1,0 +1,7 @@
+Use an **avatar** for the person's picture and a **badge** on top of it to show whether they're online.
+
+I don't have Taproot's component catalog or docs here, so I'm inferring these names from common design system conventions and haven't verified them. Check that both exist in your version of Taproot. In particular, it may have a dedicated presence or status indicator, or a status option built into the avatar, and either would be a better fit than a separate badge.
+
+Also make sure online status isn't conveyed by color alone. Include a text label for screen readers, such as "Online" or "Offline".
+
+{"components": ["component.avatar", "component.badge"]}

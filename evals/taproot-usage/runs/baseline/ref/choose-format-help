@@ -1,0 +1,7 @@
+I'd skip the tooltip and put the password format in persistent help text directly under the field, connected with `aria-describedby`. People need the rules while they're typing, but a tooltip disappears at that moment, is unreliable on touch screens, and is easy to miss. Validation errors should also say which rule failed, rather than just "invalid password".
+
+I can't confirm which Taproot component should carry this, though. I don't have its docs or component list in this session, and I don't want to guess a name that may not exist. Look for a helper or description option on Taproot's password or text input, or on its form field wrapper. If you share the docs or point me to where Taproot is defined in this project, I can give you the exact component and prop.
+
+The JSON list below is empty because I couldn't verify a component, not because I know Taproot lacks one.
+
+{"components": []}

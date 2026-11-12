@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "You are helping in a project that uses the Taproot design system.\n\nEnd your reply with one line of JSON: {\"components\": [\"component.<name>\"]}, listing each Taproot component to use. Use an empty list if Taproot has no component for this."
+  },
+  {
+    "role": "user",
+    "content": "I want to show a person's picture and whether they're online. Which Taproot components do I use?"
+  },
+  {
+    "role": "assistant",
+    "content": "Use an **avatar** for the person's picture and a **badge** on top of it to show whether they're online.\n\nI don't have Taproot's component catalog or docs here, so I'm inferring these names from common design system conventions and haven't verified them. Check that both exist in your version of Taproot. In particular, it may have a dedicated presence or status indicator, or a status option built into the avatar, and either would be a better fit than a separate badge.\n\nAlso make sure online status isn't conveyed by color alone. Include a text label for screen readers, such as \"Online\" or \"Offline\".\n\n{\"components\": [\"component.avatar\", \"component.badge\"]}"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "You are helping in a project that uses the Taproot design system.\n\nEnd your reply with one line of JSON with exactly these keys: available, tag. Use null for a value that does not exist."
+  },
+  {
+    "role": "user",
+    "content": "Is there a Taproot slider web component I can use today? If so, what's its tag name?"
+  },
+  {
+    "role": "assistant",
+    "content": "I can't confirm that Taproot has a slider web component, or what its tag name would be. I don't have reliable information about Taproot's component list, and I have no tools available in this session to check the project files or docs. I don't want to guess at a tag name, because it could look right and still not exist.\n\nTo check it yourself, look in these places:\n- **Installed package:** search `node_modules` for a Taproot package and look for `slider` in its filenames, and in `custom-elements.json` if the package ships one.\n- **Component registrations:** search the package source for `customElements.define` to see the exact tag names it registers.\n- **Official docs:** check the component list or changelog for the Taproot version you're using, as a slider may be new, in beta or not released yet.\n\nIf you paste the package's `custom-elements.json` or component list here, I can find the slider entry for you.\n\n{\"available\": null, \"tag\": null}"
+  }
+]

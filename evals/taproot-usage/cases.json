@@ -1,0 +1,252 @@
+[
+  {
+    "id": "choose-instant-setting",
+    "tags": ["choose", "confusable"],
+    "prompt": "On our settings page people should be able to turn email notifications on. It should take effect right away, with no save button. Which Taproot component should I use?",
+    "expected": { "components": ["component.switch"] }
+  },
+  {
+    "id": "choose-consent-in-form",
+    "tags": ["choose", "confusable"],
+    "prompt": "Our signup form has a 'send me product news' option that gets saved with everything else when they press Create account. Which Taproot component fits that option?",
+    "expected": { "components": ["component.checkbox"] }
+  },
+  {
+    "id": "choose-few-visible-options",
+    "tags": ["choose", "confusable"],
+    "prompt": "Checkout offers three shipping speeds and I want people to compare them all at a glance before picking one. Which Taproot component?",
+    "expected": { "components": ["component.radio-group"] }
+  },
+  {
+    "id": "choose-long-list",
+    "tags": ["choose", "confusable"],
+    "prompt": "I need a country field on an address form, about 200 countries, and people can only pick one. Which Taproot component?",
+    "expected": { "components": ["component.select"] }
+  },
+  {
+    "id": "choose-views-same-subject",
+    "tags": ["choose", "confusable"],
+    "prompt": "A project page has Overview, Activity, and Members. Only one shows at a time and the address shouldn't change. Which Taproot component?",
+    "expected": { "components": ["component.tabs"] }
+  },
+  {
+    "id": "choose-open-several",
+    "tags": ["choose", "confusable"],
+    "prompt": "Our FAQ page is really long. People should be able to open whichever questions they care about, even several at once. Which Taproot component?",
+    "expected": { "components": ["component.accordion"] }
+  },
+  {
+    "id": "choose-save-failed-message",
+    "tags": ["choose", "confusable"],
+    "prompt": "When saving a form fails I want to show 'We couldn't save your changes' above the form with a Try again action. It shouldn't stop them from using the page. Which Taproot component?",
+    "expected": { "components": ["component.alert"] }
+  },
+  {
+    "id": "choose-table-status",
+    "tags": ["choose", "confusable"],
+    "prompt": "Each row in our invoices table needs to show Paid or Overdue. Which Taproot component?",
+    "expected": { "components": ["component.badge"] }
+  },
+  {
+    "id": "choose-block-until-confirmed",
+    "tags": ["choose", "confusable"],
+    "prompt": "Before someone deletes their account they have to confirm, and they shouldn't be able to do anything else until they answer. Which Taproot component?",
+    "expected": { "components": ["component.dialog"] }
+  },
+  {
+    "id": "choose-known-progress",
+    "tags": ["choose", "confusable"],
+    "prompt": "We're importing a CSV and we know how many of the rows are done so far. How should I show that with Taproot?",
+    "expected": { "components": ["component.progress-bar"] }
+  },
+  {
+    "id": "choose-unknown-wait",
+    "tags": ["choose", "confusable"],
+    "prompt": "Search results come back from the server and we have no idea how long that takes. What Taproot component shows we're working on it?",
+    "expected": { "components": ["component.spinner"] }
+  },
+  {
+    "id": "choose-rough-level",
+    "tags": ["choose", "confusable"],
+    "prompt": "I'm adding a volume control to a video player. People adjust by ear. Which Taproot component?",
+    "expected": { "components": ["component.slider"] }
+  },
+  {
+    "id": "choose-exact-large-number",
+    "tags": ["choose", "trap"],
+    "prompt": "People need to order an exact quantity, anywhere from 1 to 10,000. A designer suggested a slider. What does Taproot say to use?",
+    "expected": { "components": ["component.text-field"] }
+  },
+  {
+    "id": "choose-format-help",
+    "tags": ["choose", "trap"],
+    "prompt": "I want a little tooltip explaining the required password format on our password field. Is that right in Taproot, or which component should carry that help?",
+    "expected": { "components": ["component.text-field"] }
+  },
+  {
+    "id": "choose-clickable-status-chip",
+    "tags": ["choose", "trap"],
+    "prompt": "We have Badges showing Open and Closed, and I want to make them clickable so pressing one filters the list in the current view. What should the clickable thing be in Taproot?",
+    "expected": { "components": ["component.button"] }
+  },
+  {
+    "id": "choose-nav-styled-action",
+    "tags": ["choose", "trap"],
+    "prompt": "At the bottom of a dashboard card I want 'View all projects', which takes people to the projects page. Which Taproot component is the control?",
+    "expected": { "components": ["component.link"] }
+  },
+  {
+    "id": "nomatch-date-picker",
+    "tags": ["no-match"],
+    "prompt": "I need a date picker with a calendar popup for a booking form. Which Taproot component is that?",
+    "expected": { "components": [] }
+  },
+  {
+    "id": "nomatch-data-table",
+    "tags": ["no-match"],
+    "prompt": "I need a data table with sortable columns and pagination. Which Taproot component is that?",
+    "expected": { "components": [] }
+  },
+  {
+    "id": "nomatch-file-dropzone",
+    "tags": ["no-match"],
+    "prompt": "I want a drag-and-drop area for uploading files. Which Taproot component does that?",
+    "expected": { "components": [] }
+  },
+  {
+    "id": "compose-avatar-presence",
+    "tags": ["compose"],
+    "prompt": "I want to show a person's picture and whether they're online. Which Taproot components do I use?",
+    "expected": { "components": ["component.avatar", "component.badge"] }
+  },
+  {
+    "id": "compose-account-menu-trigger",
+    "tags": ["compose"],
+    "prompt": "Pressing a person's picture in the header should open their account menu. Which Taproot components make up that pressable picture?",
+    "expected": { "components": ["component.avatar", "component.button"] }
+  },
+  {
+    "id": "fact-button-submit",
+    "tags": ["fact", "web", "name-differs"],
+    "prompt": "Using the web components, how do I make a Taproot button submit its form? Give me the exact attribute and value.",
+    "fields": ["attribute", "value"],
+    "expected": { "attribute": "type", "value": "submit" },
+    "source": "get component.button --impl web"
+  },
+  {
+    "id": "fact-button-accessible-name",
+    "tags": ["fact", "web", "name-differs"],
+    "prompt": "My Taproot web component button only contains an icon. Which attribute gives it a name for screen readers?",
+    "fields": ["attribute"],
+    "expected": { "attribute": "aria-label" },
+    "source": "get component.button --impl web"
+  },
+  {
+    "id": "fact-button-full-width",
+    "tags": ["fact", "web", "name-differs"],
+    "prompt": "Which attribute makes a Taproot web component button fill its container's width?",
+    "fields": ["attribute"],
+    "expected": { "attribute": "full-width" },
+    "source": "get component.button --impl web"
+  },
+  {
+    "id": "fact-progress-tag",
+    "tags": ["fact", "web"],
+    "prompt": "For the Taproot progress bar web component, what's the tag name, and which function do I import to register it?",
+    "fields": ["tag", "define_export"],
+    "expected": { "tag": "ds-progress-bar", "define_export": "defineProgressBar" },
+    "source": "get component.progress-bar --impl web"
+  },
+  {
+    "id": "fact-alert-dismiss-label",
+    "tags": ["fact", "web", "name-differs"],
+    "prompt": "We translate our UI. Which attribute on the Taproot alert web component sets the text for its dismiss control?",
+    "fields": ["attribute"],
+    "expected": { "attribute": "dismiss-label" },
+    "source": "get component.alert --impl web"
+  },
+  {
+    "id": "fact-dialog-keep-open",
+    "tags": ["fact", "web"],
+    "prompt": "On the Taproot dialog web component, someone presses Escape with unsaved work. Which event do I listen for and call preventDefault on to keep it open?",
+    "fields": ["event"],
+    "expected": { "event": "cancel" },
+    "source": "get component.dialog --impl web"
+  },
+  {
+    "id": "fact-dialog-action-slot",
+    "tags": ["fact", "web"],
+    "prompt": "Which slot do I put the Cancel and Delete buttons in on the Taproot dialog web component?",
+    "fields": ["slot"],
+    "expected": { "slot": "actions" },
+    "source": "get component.dialog --impl web"
+  },
+  {
+    "id": "fact-primary-hover-values",
+    "tags": ["fact", "token"],
+    "prompt": "What token sets the background of a Taproot primary button on hover, and what's its hex value in the light and dark themes?",
+    "fields": ["token", "light", "dark"],
+    "expected": {
+      "token": "semantic.color.background.action.primary.hover",
+      "light": "#823f1e",
+      "dark": "#e8c468"
+    },
+    "source": "tokens component.button --condition \"variant.primary + hover\" --resolve"
+  },
+  {
+    "id": "fact-focus-ring-tokens",
+    "tags": ["fact", "token"],
+    "prompt": "Which Taproot tokens set the focus ring's width and offset across the system?",
+    "fields": ["width_token", "offset_token"],
+    "expected": { "width_token": "semantic.focus.width", "offset_token": "semantic.focus.offset" },
+    "source": "format --resolve"
+  },
+  {
+    "id": "fact-tooltip-link-rule",
+    "tags": ["fact", "rule"],
+    "prompt": "A teammate wants to put a link inside a Taproot tooltip bubble. Which rule does that break? Give its address and level.",
+    "fields": ["rule", "level"],
+    "expected": { "rule": "component.tooltip#not-interactive", "level": "MUST" },
+    "source": "rules --id component.tooltip"
+  },
+  {
+    "id": "fact-dialog-backdrop-rule",
+    "tags": ["fact", "rule"],
+    "prompt": "A designer wants clicking outside a Taproot dialog to close it. Which rule covers that? Give its address and level.",
+    "fields": ["rule", "level"],
+    "expected": { "rule": "component.dialog#cancellation", "level": "MUST" },
+    "source": "rules --id component.dialog"
+  },
+  {
+    "id": "fact-react-slider",
+    "tags": ["fact", "react", "availability"],
+    "prompt": "In our React app, what do I import for a Taproot slider, and from which package?",
+    "fields": ["export", "package"],
+    "expected": { "export": "Slider", "package": "@taproot-ds/react-components" },
+    "source": "get component.slider --impl react"
+  },
+  {
+    "id": "avail-web-slider",
+    "tags": ["fact", "web", "availability"],
+    "prompt": "Is there a Taproot slider web component I can use today? If so, what's its tag name?",
+    "fields": ["available", "tag"],
+    "expected": { "available": false, "tag": null },
+    "absentFrom": { "source": "list --impl web", "text": "component.slider" }
+  },
+  {
+    "id": "avail-react-tooltip",
+    "tags": ["fact", "react", "availability"],
+    "prompt": "Is there a Taproot tooltip for React I can use today? If so, what's its export name?",
+    "fields": ["available", "export"],
+    "expected": { "available": false, "export": null },
+    "absentFrom": { "source": "list --impl react", "text": "component.tooltip" }
+  },
+  {
+    "id": "avail-web-tooltip",
+    "tags": ["fact", "web", "availability"],
+    "prompt": "Is there a Taproot tooltip web component I can use today? If so, what's its tag name?",
+    "fields": ["available", "tag"],
+    "expected": { "available": true, "tag": "ds-tooltip" },
+    "source": "get component.tooltip --impl web"
+  }
+]
