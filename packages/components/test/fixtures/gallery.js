@@ -84,6 +84,10 @@ export const gallery = {
       <option value="">Choose</option>
       <option value="post">Post</option>
     </ds-select>`,
+  slider: `
+    <ds-slider label="Maximum price (USD)" name="max-price" max="2000" step="50" value="800" hint="Shows homes at or below this price."></ds-slider>
+    <ds-slider label="Budget (USD)" value="90" error="Choose 50 or less for this plan."></ds-slider>
+    <ds-slider label="Volume" value="30" disabled></ds-slider>`,
   spinner: `<ds-spinner label="Saving draft"></ds-spinner>`,
   switch: `
     <ds-switch label="Notifications" hint="Sent right away." checked></ds-switch>
