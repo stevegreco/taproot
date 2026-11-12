@@ -9,6 +9,17 @@ const typeBranches = schema.allOf.map((branch) => ({
   fields: Object.keys(branch.then.properties),
 }));
 
+/** The schema's enums, in schema order, so no other file copies them. */
+export const RECORD_TYPES = Object.freeze(schema.properties.type.enum);
+export const STATUSES = Object.freeze(schema.properties.status.enum);
+export const TOPICS = Object.freeze(schema.$defs.ruleFields.properties.topic.enum);
+export const LEVELS = Object.freeze(schema.$defs.ruleFields.properties.level.enum);
+
+/** Each level's rank, strongest first: `must` is 0, so a lower rank is a stronger level. */
+export const LEVEL_RANK = Object.freeze(
+  Object.fromEntries(LEVELS.map((level, rank) => [level, rank])),
+);
+
 /** Fields every record may have. */
 export const COMMON_FIELDS = Object.freeze(Object.keys(schema.properties));
 

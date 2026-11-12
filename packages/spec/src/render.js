@@ -1,8 +1,8 @@
 import { stringify } from "yaml";
 import { gaps, links, recordRules, tokens } from "./query.js";
+import { TOPICS } from "./schema/info.js";
 import { byCodeUnit, recordIdOf } from "./util.js";
 
-const TOPICS = ["content", "behavior", "accessibility"];
 /** Shown under the summary for records that are not stable. */
 const STATUS_NOTES = {
   draft:

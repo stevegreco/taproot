@@ -1,5 +1,6 @@
 import { resolveRules } from "./inherit.js";
 import { INVERSE } from "./links.js";
+import { LEVEL_RANK } from "./schema/info.js";
 import { collectText, scoreRecord, tokenize } from "./search.js";
 import { byCodeUnit, editDistance, recordIdOf, typoAllowance } from "./util.js";
 
@@ -13,7 +14,6 @@ import { byCodeUnit, editDistance, recordIdOf, typoAllowance } from "./util.js";
  * @property {((ref: string) => Record<string, string> | undefined) | undefined} resolveToken
  */
 
-const LEVEL_ORDER = { must: 0, should: 1, may: 2 };
 const DEFAULT_SEARCH_LIMIT = 10;
 /** Hits scoring below this fraction of the top hit are dropped. */
 const RELEVANCE_FLOOR = 0.25;
@@ -203,7 +203,7 @@ export function rules(state, filter = {}) {
   }
   hits.sort(
     (a, b) =>
-      LEVEL_ORDER[a.hit.level] - LEVEL_ORDER[b.hit.level] ||
+      LEVEL_RANK[a.hit.level] - LEVEL_RANK[b.hit.level] ||
       byCodeUnit(a.hit.recordId, b.hit.recordId) ||
       a.order - b.order,
   );

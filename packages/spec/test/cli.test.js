@@ -790,11 +790,36 @@ describe("taproot CLI, agent friction", () => {
     expect(cli(["tokens", "card"]).out).not.toContain(note);
   });
 
+  it("takes the rules id as an argument or with --id, the same either way", () => {
+    for (const [plain, flag] of [
+      [
+        ["rules", "checkbox"],
+        ["rules", "--id", "checkbox"],
+      ],
+      [
+        ["rules", "text", "field"],
+        ["rules", "--id", "text field"],
+      ],
+      [
+        ["rules", "button#label-describes-result"],
+        ["rules", "--id", "button#label-describes-result"],
+      ],
+    ]) {
+      const a = cli(plain);
+      expect(a.code).toBe(0);
+      expect(a.out).toBe(cli(flag).out);
+    }
+    expect(cli(["rules", "nope"]).code).toBe(1);
+    const both = cli(["rules", "button", "--id", "button"]);
+    expect(both.code).toBe(2);
+    expect(both.err).toContain("rules takes its id once");
+  });
+
   it("tells a batch command to quote a value of several words", () => {
     const r = cli(["batch", "--command", "rules --query dismiss label"]);
     expect(r.code).toBe(2);
     expect(r.err).toContain(
-      "rules takes no positional arguments. Quote a value of several words, such as --query 'dismiss label'.",
+      "\"label\" is not a record. Quote a value of several words, such as --query 'dismiss label'.",
     );
     expect(cli(["batch", "--command", "rules --query 'dismiss label'"]).code).toBe(0);
   });

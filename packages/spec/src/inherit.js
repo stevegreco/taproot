@@ -32,9 +32,8 @@
  * @property {string} message
  */
 
+import { LEVEL_RANK } from "./schema/info.js";
 import { recordIdOf } from "./util.js";
-
-const LEVEL_RANK = { must: 0, should: 1, may: 2 };
 
 /**
  * @param {Record<string, any>} record

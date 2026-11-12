@@ -28,6 +28,7 @@
     "./tokens-dtcg": "./src/tokens-dtcg.js",
     "./implementation": "./src/implementation-files.js",
     "./schema/spec-record.json": "./src/schema/spec-record.schema.json",
+    "./schema/spec-config.json": "./src/schema/spec-config.schema.json",
     "./SPEC.md": "./SPEC.md",
     "./package.json": "./package.json"
   },

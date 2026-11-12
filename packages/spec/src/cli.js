@@ -1,9 +1,9 @@
 import { parseArgs } from "node:util";
 import { AGENT_INSTRUCTIONS } from "./agents.js";
 import { loadFromConfig, resolveConfig, validateFromConfig } from "./config.js";
-import { INVERSE } from "./links.js";
+import { LINK_KINDS } from "./links.js";
 import * as ops from "./operations.js";
-import { schema } from "./schema/info.js";
+import { LEVELS, RECORD_TYPES, STATUSES, TOPICS } from "./schema/info.js";
 import { splitWords } from "./util.js";
 
 const str = { type: "string" };
@@ -43,8 +43,9 @@ const COMMANDS = {
     options: { kind: str, direction: str },
   },
   rules: {
-    usage: "taproot rules [--id <id or address>] [--topic <t>] [--level <l>] [--query <text>]",
-    summary: "List must/should/may rules to review against.",
+    usage: "taproot rules [<id | name | address>] [--topic <t>] [--level <l>] [--query <text>]",
+    summary:
+      "List must/should/may rules to review against. With a component, includes the rules it inherits. --id <id> works too.",
     options: { id: str, topic: str, level: str, query: str },
   },
   tokens: {
@@ -103,11 +104,11 @@ function nextCall(id, names) {
 
 /** The values each filter flag takes. Any other value is a usage error. */
 const CHOICES = {
-  type: schema.properties.type.enum,
-  status: schema.properties.status.enum,
-  topic: schema.$defs.ruleFields.properties.topic.enum,
-  level: schema.$defs.ruleFields.properties.level.enum,
-  kind: Object.keys(INVERSE),
+  type: RECORD_TYPES,
+  status: STATUSES,
+  topic: TOPICS,
+  level: LEVELS,
+  kind: LINK_KINDS,
   direction: ["out", "in", "both"],
 };
 
@@ -245,7 +246,10 @@ export async function run(argv, io = {}) {
     // An id can be a name with spaces, such as `get text field`, so its words are joined.
     const takesId = ["get", "links", "tokens"].includes(command);
     if (takesId && positionals.length === 0) return usageError(`${command} needs an id.`);
-    if (!takesId && command !== "search" && positionals.length > 0) {
+    if (command === "rules" && positionals.length > 0 && values.id !== undefined) {
+      return usageError("rules takes its id once: as an argument or with --id, not both.");
+    }
+    if (!takesId && !["search", "rules"].includes(command) && positionals.length > 0) {
       return usageError(
         `${command} takes no positional arguments. Quote a value of several words, such as --query 'dismiss label'.`,
       );
@@ -305,13 +309,25 @@ export async function run(argv, io = {}) {
       }
       case "links":
         return print(ops.links(spec, { ...args, id: first }));
-      case "rules":
+      case "rules": {
+        // `rules --query dismiss label` leaves `label` as an argument. It reads as an id, so when it
+        // names no record and a query was given, say to quote the query instead.
+        if (first && values.query !== undefined && !ops.resolveId(spec, first.split("#")[0])) {
+          return usageError(
+            `"${first}" is not a record. Quote a value of several words, such as --query '${values.query} ${first}'.`,
+          );
+        }
         return print(
-          ops.rules(spec, args, {
-            detailHint: (address) =>
-              `Rationale, references, and examples are left out. Run \`taproot get <address>\`, such as \`taproot get ${address}\`, to read a rule in full.`,
-          }),
+          ops.rules(
+            spec,
+            { ...args, id: first || values.id },
+            {
+              detailHint: (address) =>
+                `Rationale, references, and examples are left out. Run \`taproot get <address>\`, such as \`taproot get ${address}\`, to read a rule in full.`,
+            },
+          ),
         );
+      }
       case "tokens":
         return print(ops.tokens(spec, { ...args, id: first }));
     }

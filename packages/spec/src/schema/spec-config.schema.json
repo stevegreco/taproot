@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:taproot:config:1",
+  "title": "spec.config.json",
+  "description": "Where the spec tools find content, token sets, and implementations, and the constants and vocabulary every component keeps to. Paths are relative to this file. SPEC.md and the package README describe each field.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "description": "The schema an editor checks this file against.",
+      "type": "string"
+    },
+    "content": {
+      "description": "The content folder.",
+      "type": "string",
+      "minLength": 1
+    },
+    "tokens": {
+      "description": "Token sets, such as light and dark. Every token reference must name a token in every set.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "sets"],
+      "properties": {
+        "format": { "const": "dtcg" },
+        "sets": {
+          "description": "Set name to DTCG files. Later files in a set win.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "implementations": {
+      "description": "Implementations by name, such as web. Each folder holds one <name>.md file per component, and may hold a README.md with the setup every component shares.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["folder", "technology"],
+        "properties": {
+          "folder": { "type": "string", "minLength": 1 },
+          "technology": { "enum": ["web-component", "react"] }
+        }
+      }
+    },
+    "constants": {
+      "description": "System-wide constants, such as border width, each with the token that holds it. Component records do not bind them.",
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/name" },
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "vocabulary": {
+      "description": "Concepts, such as size or status, that keep one set of words across components.",
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/name" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["values"],
+        "properties": {
+          "values": {
+            "description": "The words for the concept.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "parameter": {
+            "description": "An enum parameter with this name may use only the values.",
+            "type": "string",
+            "minLength": 1
+          },
+          "aliases": {
+            "description": "Words no enum value may use, each with the word in values to use instead.",
+            "type": "object",
+            "additionalProperties": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "name": {
+      "description": "Lowercase words joined by hyphens.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 {
+  "$schema": "./packages/spec/src/schema/spec-config.schema.json",
   "content": "packages/spec/content",
   "implementations": {
     "web": {
