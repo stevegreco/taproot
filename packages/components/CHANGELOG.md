@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- 21e0131: Ship a custom elements manifest, `dist/custom-elements.json`, and point to it with `customElements` in `package.json`. IDEs and framework tools read it for each element's attributes, properties, events, slots, and CSS parts. It is generated at build time from the implementation API tables and the spec, so it matches `taproot get <name> --impl web`.
+
+### Patch Changes
+
+- 3e35235: Control sizes come from tokens. A new semantic token, `semantic.indicator.width` (2px), sets the
+  thickness of a selection bar such as the selected tab's underline. Checkbox, Radio group, Switch,
+  and Tabs bind their box, dot, track, thumb, and indicator sizes in their spec records, and the web
+  components read those tokens instead of fixed pixel values. The Switch track is now 32 by 20
+  instead of 32 by 18, with the thumb centered; the other controls look the same.
+- ca95092: An implementation folder's `README.md` now holds the setup every component of that implementation shares: installing the package, loading its styles and the optional page defaults, fonts, and registering elements. `taproot setup --impl <name>` and the MCP `setup` tool print it, the hosted snapshot carries it, and `get --impl` ends with a line pointing to it. The web implementation files no longer repeat the token stylesheet paragraph.
+- 4484a22: Select and Text area now state a `forced-colors` rule. Tooltip's rationale records its maximum
+  width. The action hierarchy example image says Taproot instead of Ember & Sage. The web
+  implementation files for Button, Icon, Spinner, and Tabs explain why Button names itself with
+  `aria-label` and the others with `label`.
+- 6ca3993: A new `guideline.accessibility` defines the shared accessibility rules once: `visible-focus`,
+  `forced-colors`, `not-color-alone`, and `not-a-control`. Every component follows it and narrows a
+  rule with `extends` only to name its own parts. Rules that restated the guideline are gone, and
+  some addresses changed: `component.checkbox#state-not-color-alone`,
+  `component.switch#state-not-color-alone`, and `component.badge#text-communicates-state` are now
+  each component's `#not-color-alone`, and `pattern.form-field#visible-focus` is
+  `guideline.accessibility#visible-focus`.
+  
+  Button, Badge, and Text field gain forced-colors rules, and the web components meet them. Under
+  forced colors, Button's primary and destructive variants fill with the system highlight, secondary
+  is outlined, and tertiary is text alone, so emphasis no longer disappears. Badge keeps a visible
+  boundary, and Text field draws its boundary, focus, and disabled state in system colors like Text
+  area.
+- Updated dependencies [3e35235]
+- Updated dependencies [2ffce15]
+- Updated dependencies [032a7c8]
+  - @taproot-ds/tokens@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
