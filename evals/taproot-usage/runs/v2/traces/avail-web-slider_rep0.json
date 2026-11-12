@@ -1,0 +1,45 @@
+[
+  {
+    "role": "system",
+    "content": "You are helping in a project that uses the Taproot design system.\n\nEnd your reply with one line of JSON with exactly these keys: available, tag. Use null for a value that does not exist."
+  },
+  {
+    "role": "user",
+    "content": "Is there a Taproot slider web component I can use today? If so, what's its tag name?"
+  },
+  {
+    "role": "assistant",
+    "content": "I'll look up the slider in the Taproot spec and check its web implementation."
+  },
+  {
+    "role": "tool_call",
+    "name": "mcp__taproot__search",
+    "content": "{\n  \"query\": \"slider\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "{\"results\":[{\"id\":\"component.slider\",\"type\":\"component\",\"title\":\"Slider\",\"summary\":\"Use Slider to choose one number from a continuous range when the approximate value matters more than the exact one.\",\"tags\":[\"form\",\"input\",\"range\"],\"status\":\"stable\",\"score\":25.25,\"matches\":[\"id\",\"parameters\",\"rule:form-value\",\"summary\",\"title\",\"usage\"],\"weak\":false}]}"
+  },
+  {
+    "role": "tool_call",
+    "name": "mcp__taproot__get",
+    "content": "{\n  \"target\": \"slider\",\n  \"implementation\": \"web\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "No web implementation for component.slider."
+  },
+  {
+    "role": "tool_call",
+    "name": "mcp__taproot__list",
+    "content": "{\n  \"type\": \"component\",\n  \"implementation\": \"web\"\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "{\"results\":[{\"id\":\"component.accordion\",\"type\":\"component\",\"title\":\"Accordion\",\"summary\":\"Use Accordion to let people expand only the sections of a long page they need, one heading at a time.\",\"tags\":[\"disclosure\",\"faq\",\"collapsible\",\"expander\"],\"status\":\"stable\"},{\"id\":\"component.alert\",\"type\":\"component\",\"title\":\"Alert\",\"summary\":\"Use Alert for a short status message in the flow of the page, announced only when you ask.\",\"tags\":[\"status\",\"feedback\",\"live-region\",\"banner\",\"notification\",\"callout\"],\"status\":\"stable\"},{\"id\":\"component.avatar\",\"type\":\"component\",\"title\":\"Avatar\",\"summary\":\"Use Avatar to show a small picture of a person, so people can recognize who did, owns, or wrote something.\",\"tags\":[\"person\",\"profile\",\"user\",\"identity\",\"media\"],\"status\":\"stable\"},{\"id\":\"component.badge\",\"type\":\"component\",\"title\":\"Badge\",\"summary\":\"Use Badge for status or metadata. It is not a control.\",\"tags\":[\"status\",\"metadata\",\"chip\",\"pill\",\"lozenge\"],\"status\":\"stable\"},{\"id\":\"component.button\",\"type\":\"component\",\"title\":\"Button\",\"summary\":\"Use Button to trigger an action or to submit or reset a form.\",\"tags\":[\"action\",\"form\",\"cta\",\"destructive\"],\"status\":\"stable\"},{\"id\":\"component.card\",\"type\":\"component\",\"title\":\"Card\",\"summary\":\"Use Card to present one subject as a bounded summary, such as an item in a collection, that a person can scan and act on.\",\"tags\":[\"surface\",\"container\",\"collection\",\"tile\"],\"status\":\"stable\"},{\"id\":\"component.checkbox\",\"type\":\"component\",\"title\":\"Checkbox\",\"summary\":\"Use Checkbox to turn one independent option on or off, with a label, hint, and error.\",\"tags\":[\"form\",\"selection\",\"tickbox\"],\"status\":\"stable\"},{\"id\":\"component.dialog\",\"type\":\"component\",\"title\":\"Dialog\",\"summary\":\"Use Dialog for a focused task or confirmation that temporarily blocks the surrounding view.\",\"tags\":[\"overlay\",\"modal\",\"focus\",\"popup\",\"lightbox\"],\"status\":\"stable\"},{\"id\":\"component.divider\",\"type\":\"component\",\"title\":\"Divider\",\"summary\":\"Use Divider to separate groups of related content within one surface or region with a thin line.\",\"tags\":[\"separator\",\"rule\",\"layout\",\"hr\"],\"status\":\"stable\"},{\"id\":\"component.icon\",\"type\":\"component\",\"title\":\"Icon\",\"summary\":\"Use Icon to size and color a graphic you supply, beside text or inside another component.\",\"tags\":[\"icon\",\"graphic\",\"media\",\"glyph\",\"symbol\"],\"status\":\"stable\"},{\"id\":\"component.link\",\"type\":\"component\",\"title\":\"Link\",\"summary\":\"Use Link to navigate to another page, a location on the page, or a resource.\",\"tags\":[\"action\",\"navigation\",\"hyperlink\",\"anchor\"],\"status\":\"stable\"},{\"id\":\"component.progress-bar\",\"type\":\"component\",\"title\":\"Progress bar\",\"summary\":\"Use Progress bar to show how much of a task is done when you can measure it, such as an upload or a multi-step setup.\",\"tags\":[\"progress\",\"loading\",\"upload\",\"feedback\"],\"status\":\"stable\"},{\"id\":\"component.radio-group\",\"type\":\"component\",\"title\":\"Radio group\",\"summary\":\"Use Radio group to choose exactly one option from a short visible list.\",\"tags\":[\"form\",\"selection\"],\"status\":\"stable\"},{\"id\":\"component.select\",\"type\":\"component\",\"title\":\"Select\",\"summary\":\"Use Select to choose one value from a list with a label, hint, and error.\",\"tags\":[\"form\",\"input\",\"dropdown\",\"picker\"],\"status\":\"stable\"},{\"id\":\"component.spinner\",\"type\":\"component\",\"title\":\"Spinner\",\"summary\":\"Use Spinner to show that something is loading or working when you cannot say how long it will take.\",\"tags\":[\"loading\",\"progress\",\"busy\",\"feedback\",\"loader\",\"throbber\"],\"status\":\"stable\"},{\"id\":\"component.switch\",\"type\":\"component\",\"title\":\"Switch\",\"summary\":\"Use Switch to turn a setting on or off and apply the change immediately.\",\"tags\":[\"settings\",\"selection\",\"toggle\"],\"status\":\"stable\"},{\"id\":\"component.tabs\",\"type\":\"component\",\"title\":\"Tabs\",\"summary\":\"Use Tabs to switch between a few related views of the same subject, one view visible at a time.\",\"tags\":[\"navigation\",\"disclosure\",\"tablist\"],\"status\":\"stable\"},{\"id\":\"component.text-area\",\"type\":\"component\",\"title\":\"Text area\",\"summary\":\"Use Text area to collect multiple lines of text with a label, hint, and error.\",\"tags\":[\"form\",\"input\",\"textarea\",\"multiline\"],\"status\":\"stable\"},{\"id\":\"component.text-field\",\"type\":\"component\",\"title\":\"Text field\",\"summary\":\"Use Text field to collect a single line of text with a label, hint, and error.\",\"tags\":[\"form\",\"input\",\"textbox\"],\"status\":\"stable\"},{\"id\":\"component.tooltip\",\"type\":\"component\",\"title\":\"Tooltip\",\"summary\":\"Use Tooltip to show the name of an icon-only control when a person points at it or focuses it.\",\"tags\":[\"label\",\"icon-only\",\"hover\",\"overlay\",\"hint\"],\"status\":\"stable\"}]}"
+  },
+  {
+    "role": "assistant",
+    "content": "**No, Taproot doesn't have a slider web component yet, so there's no tag name to use.** Slider exists in the spec as `component.slider` (status: stable), but that's only a technology-neutral contract. The spec reports no web implementation for it, and Slider isn't among the components listed as having one.\n\nIf you need a slider now, you could build one from the contract, which covers its anatomy, parameters, states, rules and tokens. I can pull those details and implement it for your project if you'd like. Any tag name would be your own rather than an official Taproot one.\n\n{\"available\": false, \"tag\": null}"
+  }
+]

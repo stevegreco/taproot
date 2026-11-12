@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "You are helping in a project that uses the Taproot design system.\n\nEnd your reply with one line of JSON with exactly these keys: attribute, value. Use null for a value that does not exist."
+  },
+  {
+    "role": "user",
+    "content": "Using the web components, how do I make a Taproot button submit its form? Give me the exact attribute and value."
+  },
+  {
+    "role": "assistant",
+    "content": "Use `type=\"submit\"`, but I couldn't confirm this against Taproot's docs or your project's installed package, so it's based on the native `<button>` convention that web component libraries typically follow.\n\n```html\n<form>\n  <!-- Replace with Taproot's actual button tag -->\n  <taproot-button type=\"submit\">Save</taproot-button>\n</form>\n```\n\nThe tag name above is a placeholder. To confirm the attribute, check the button's entry in your Taproot package or docs. If the form doesn't submit, make sure the button is inside the `<form>` and check whether the docs mention any additional form setup.\n\n{\"attribute\": \"type\", \"value\": \"submit\"}"
+  }
+]

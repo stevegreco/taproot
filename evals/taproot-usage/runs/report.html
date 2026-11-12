@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>runs - eval report</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #1a1a1a;
+        --bg: #fff;
+        --muted: #666;
+        --line: #ddd;
+        --pill: #eee;
+        --warn: #b45309;
+        --best: #ecfdf5;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #e6e6e6;
+          --bg: #121212;
+          --muted: #9a9a9a;
+          --line: #333;
+          --pill: #2a2a2a;
+          --warn: #f59e0b;
+          --best: #0f2a1f;
+        }
+      }
+      body {
+        font:
+          14px/1.45 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        margin: 0;
+        padding: 24px;
+        max-width: 1400px;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 28px 0 8px;
+      }
+      .meta,
+      .hint {
+        color: var(--muted);
+        margin: 0 0 8px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 6px 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+      }
+      th.asc:after {
+        content: " \25B4";
+      }
+      th.desc:after {
+        content: " \25BE";
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      td.id {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        white-space: nowrap;
+      }
+      .pill {
+        display: inline-block;
+        background: var(--pill);
+        border-radius: 10px;
+        padding: 0 8px;
+        font-size: 12px;
+      }
+      .pill.warn {
+        color: var(--warn);
+      }
+      tr.best td {
+        background: var(--best);
+      }
+      .links {
+        font-size: 12px;
+      }
+      .links a {
+        margin-right: 6px;
+      }
+      td.prompt {
+        max-width: 520px;
+      }
+      details summary {
+        cursor: pointer;
+        color: var(--muted);
+      }
+      pre {
+        white-space: pre-wrap;
+        font-size: 12px;
+        margin: 6px 0 0;
+      }
+      .warnings {
+        color: var(--warn);
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>runs</h1>
+      <p class="meta">
+        3 variants &middot; 6 cases &middot; primary metric <code>correct</code> (also: answered)
+        &middot; generated 2026-11-05 01:38:55 UTC &middot; lite report (no transcripts inlined;
+        click rep links)
+      </p>
+    </header>
+    <section>
+      <h2>Variants</h2>
+      <table>
+        <thead>
+          <tr>
+            <th data-k="s">variant</th>
+            <th data-k="s">change</th>
+            <th data-k="s">model</th>
+            <th data-k="n">mean correct</th>
+            <th data-k="n">cases</th>
+            <th data-k="n">truncated</th>
+            <th data-k="s">failed attempts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>baseline</td>
+            <td>Control: no taproot tools, so the score shows what can be guessed</td>
+            <td>claude-opus-5-5</td>
+            <td class="num">0.500</td>
+            <td class="num">6</td>
+            <td class="num">0</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>v1</td>
+            <td>CLI only: the taproot CLI through Bash, with a one-line pointer to its help</td>
+            <td>claude-opus-5-5</td>
+            <td class="num">1.000</td>
+            <td class="num">6</td>
+            <td class="num">0</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>v2</td>
+            <td>MCP only: the taproot MCP server and its instructions</td>
+            <td>claude-opus-5-5</td>
+            <td class="num">0.833</td>
+            <td class="num">6</td>
+            <td class="num">0</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Cases</h2>
+      <p class="hint">
+        Click a column header to sort. Per-case values are the mean of <code>correct</code> over
+        status-ok reps.
+      </p>
+      <table id="cases">
+        <thead>
+          <tr>
+            <th data-k="s">id</th>
+            <th data-k="s">tags</th>
+            <th data-k="n">baseline</th>
+            <th data-k="n">v1</th>
+            <th data-k="n">v2</th>
+            <th data-k="s">prompt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="id">compose-avatar-presence</td>
+            <td><span class="pill">compose</span></td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links">
+                <a href="baseline/traces/compose-avatar-presence_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links">
+                <a href="v1/traces/compose-avatar-presence_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links">
+                <a href="v2/traces/compose-avatar-presence_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="prompt">
+              <details>
+                <summary>
+                  I want to show a person&#39;s picture and whether they&#39;re online. Which
+                  Taproot comp
+                </summary>
+                <pre>
+I want to show a person&#39;s picture and whether they&#39;re online. Which Taproot components do I use?</pre>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td class="id">nomatch-date-picker</td>
+            <td><span class="pill">no-match</span></td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links">
+                <a href="baseline/traces/nomatch-date-picker_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links"><a href="v1/traces/nomatch-date-picker_rep0.json">rep0</a></div>
+            </td>
+            <td class="num" data-v="0.000">
+              0.000
+              <div class="links"><a href="v2/traces/nomatch-date-picker_rep0.json">rep0</a></div>
+            </td>
+            <td class="prompt">
+              <details>
+                <summary>
+                  I need a date picker with a calendar popup for a booking form. Which Taproot com
+                </summary>
+                <pre>
+I need a date picker with a calendar popup for a booking form. Which Taproot component is that?</pre>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td class="id">choose-format-help</td>
+            <td><span class="pill">choose</span> <span class="pill">trap</span></td>
+            <td class="num" data-v="0.000">
+              0.000
+              <div class="links">
+                <a href="baseline/traces/choose-format-help_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links"><a href="v1/traces/choose-format-help_rep0.json">rep0</a></div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links"><a href="v2/traces/choose-format-help_rep0.json">rep0</a></div>
+            </td>
+            <td class="prompt">
+              <details>
+                <summary>
+                  I want a little tooltip explaining the required password format on our password
+                </summary>
+                <pre>
+I want a little tooltip explaining the required password format on our password field. Is that right in Taproot, or which component should carry that help?</pre>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td class="id">fact-button-submit</td>
+            <td>
+              <span class="pill">fact</span> <span class="pill">web</span>
+              <span class="pill">name-differs</span>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links">
+                <a href="baseline/traces/fact-button-submit_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links"><a href="v1/traces/fact-button-submit_rep0.json">rep0</a></div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links"><a href="v2/traces/fact-button-submit_rep0.json">rep0</a></div>
+            </td>
+            <td class="prompt">
+              <details>
+                <summary>
+                  Using the web components, how do I make a Taproot button submit its form? Give m
+                </summary>
+                <pre>
+Using the web components, how do I make a Taproot button submit its form? Give me the exact attribute and value.</pre>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td class="id">fact-primary-hover-values</td>
+            <td><span class="pill">fact</span> <span class="pill">token</span></td>
+            <td class="num" data-v="0.000">
+              0.000
+              <div class="links">
+                <a href="baseline/traces/fact-primary-hover-values_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links">
+                <a href="v1/traces/fact-primary-hover-values_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links">
+                <a href="v2/traces/fact-primary-hover-values_rep0.json">rep0</a>
+              </div>
+            </td>
+            <td class="prompt">
+              <details>
+                <summary>
+                  What token sets the background of a Taproot primary button on hover, and
+                  what&#39;s
+                </summary>
+                <pre>
+What token sets the background of a Taproot primary button on hover, and what&#39;s its hex value in the light and dark themes?</pre>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td class="id">avail-web-slider</td>
+            <td>
+              <span class="pill">fact</span> <span class="pill">web</span>
+              <span class="pill">availability</span>
+            </td>
+            <td class="num" data-v="0.000">
+              0.000
+              <div class="links"><a href="baseline/traces/avail-web-slider_rep0.json">rep0</a></div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links"><a href="v1/traces/avail-web-slider_rep0.json">rep0</a></div>
+            </td>
+            <td class="num" data-v="1.000">
+              1.000
+              <div class="links"><a href="v2/traces/avail-web-slider_rep0.json">rep0</a></div>
+            </td>
+            <td class="prompt">
+              <details>
+                <summary>
+                  Is there a Taproot slider web component I can use today? If so, what&#39;s its tag
+                  n
+                </summary>
+                <pre>
+Is there a Taproot slider web component I can use today? If so, what&#39;s its tag name?</pre>
+              </details>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <script>
+      document.querySelectorAll("th[data-k]").forEach(function (th) {
+        th.addEventListener("click", function () {
+          var t = th.closest("table"),
+            tb = t.tBodies[0],
+            i = Array.prototype.indexOf.call(th.parentNode.children, th);
+          var asc = !th.classList.contains("asc");
+          t.querySelectorAll("th").forEach(function (h) {
+            h.classList.remove("asc", "desc");
+          });
+          th.classList.add(asc ? "asc" : "desc");
+          var num = th.dataset.k === "n";
+          var rows = Array.prototype.slice.call(tb.rows);
+          rows.sort(function (a, b) {
+            var x = a.cells[i],
+              y = b.cells[i];
+            var u = num
+              ? parseFloat("v" in x.dataset ? x.dataset.v : x.textContent)
+              : x.textContent.trim().toLowerCase();
+            var w = num
+              ? parseFloat("v" in y.dataset ? y.dataset.v : y.textContent)
+              : y.textContent.trim().toLowerCase();
+            if (num) {
+              if (isNaN(u)) u = -Infinity;
+              if (isNaN(w)) w = -Infinity;
+            }
+            return (u < w ? -1 : u > w ? 1 : 0) * (asc ? 1 : -1);
+          });
+          rows.forEach(function (r) {
+            tb.appendChild(r);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

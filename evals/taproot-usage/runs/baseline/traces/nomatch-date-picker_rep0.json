@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "You are helping in a project that uses the Taproot design system.\n\nEnd your reply with one line of JSON: {\"components\": [\"component.<name>\"]}, listing each Taproot component to use. Use an empty list if Taproot has no component for this."
+  },
+  {
+    "role": "user",
+    "content": "I need a date picker with a calendar popup for a booking form. Which Taproot component is that?"
+  },
+  {
+    "role": "assistant",
+    "content": "I can't tell you which Taproot component this is because I don't have Taproot's component catalog or any tools in this session to search the project for it. I also don't want to guess a name that may not exist.\n\nTo find it, search Taproot's docs or package exports for `date`, `calendar`, or `picker`. Design systems sometimes split this into a date input and a separate calendar or popover, so you may need to combine them.\n\nIf you share the component list or the path to Taproot's docs, I can identify the right component for your booking form. The empty list below means I couldn't confirm a match, not that Taproot doesn't have one.\n\n{\"components\": []}"
+  }
+]

@@ -1,0 +1,12 @@
+Use `type="submit"`, but I couldn't confirm this against Taproot's docs or your project's installed package, so it's based on the native `<button>` convention that web component libraries typically follow.
+
+```html
+<form>
+  <!-- Replace with Taproot's actual button tag -->
+  <taproot-button type="submit">Save</taproot-button>
+</form>
+```
+
+The tag name above is a placeholder. To confirm the attribute, check the button's entry in your Taproot package or docs. If the form doesn't submit, make sure the button is inside the `<form>` and check whether the docs mention any additional form setup.
+
+{"attribute": "type", "value": "submit"}

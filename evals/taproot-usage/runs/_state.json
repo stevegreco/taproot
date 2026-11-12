@@ -1,0 +1,35 @@
+{
+  "flow": "taproot-usage",
+  "metrics": [
+    {
+      "id": "correct",
+      "label": "Correct",
+      "kind": "binary"
+    },
+    {
+      "id": "answered",
+      "label": "Answered",
+      "kind": "binary"
+    }
+  ],
+  "perf_fields": [
+    {
+      "id": "tool_calls",
+      "label": "Tool calls"
+    },
+    {
+      "id": "failed_tool_calls",
+      "label": "Failed calls"
+    },
+    {
+      "id": "latency_s",
+      "label": "Time (s)"
+    },
+    {
+      "id": "agent_cost_usd",
+      "label": "Cost ($)"
+    }
+  ],
+  "harness_paths": ["evals/taproot-usage/taproot-case.mjs"],
+  "harness_sha": "d0433b16c7026c3a8d42f11b9ed40a8ec5eb0da078d915372392d23a70a1b42a"
+}

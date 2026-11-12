@@ -1,0 +1,23 @@
+[
+  {
+    "role": "system",
+    "content": "You are helping in a project that uses the Taproot design system.\n\nEnd your reply with one line of JSON with exactly these keys: token, light, dark. Use null for a value that does not exist."
+  },
+  {
+    "role": "user",
+    "content": "What token sets the background of a Taproot primary button on hover, and what's its hex value in the light and dark themes?"
+  },
+  {
+    "role": "tool_call",
+    "name": "mcp__taproot__tokens",
+    "content": "{\n  \"id\": \"component.button\",\n  \"condition\": \"variant.primary + hover\",\n  \"property\": \"background\",\n  \"resolve\": true\n}"
+  },
+  {
+    "role": "tool_result",
+    "content": "{\"results\":[{\"part\":\"control\",\"condition\":\"variant.primary + hover\",\"property\":\"background\",\"token\":\"semantic.color.background.action.primary.hover\",\"values\":{\"light\":\"#823f1e\",\"dark\":\"#e8c468\"}}]}"
+  },
+  {
+    "role": "assistant",
+    "content": "A Taproot primary button's hover background is set by `semantic.color.background.action.primary.hover`, on the button's `control` part.\n\n| Theme | Hex value |\n| --- | --- |\n| Light | `#823f1e` |\n| Dark | `#e8c468` |\n\n{\"token\":\"semantic.color.background.action.primary.hover\",\"light\":\"#823f1e\",\"dark\":\"#e8c468\"}"
+  }
+]
