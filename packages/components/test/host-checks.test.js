@@ -61,7 +61,12 @@ async function trigger(event, target, options = {}) {
     } else await userEvent.selectOptions(target, "two");
     return;
   }
-  if (event === "click" || target.type === "checkbox" || target.type === "radio") {
+  if (
+    event === "click" ||
+    target.type === "checkbox" ||
+    target.type === "radio" ||
+    target.type === "range"
+  ) {
     await userEvent.click(target, options);
     return;
   }

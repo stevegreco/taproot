@@ -1,0 +1,202 @@
+:host {
+  display: block;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.field {
+  --thumb-size: var(--ds-primitives-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-primitives-space-2);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ds-primitives-space-2);
+}
+
+.label {
+  color: var(--ds-semantic-color-foreground-default);
+  font-family: var(--ds-semantic-typography-label-md-font-family);
+  font-size: var(--ds-semantic-typography-label-md-font-size);
+  font-weight: var(--ds-semantic-typography-label-md-font-weight);
+  line-height: var(--ds-semantic-typography-label-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-label-md-letter-spacing);
+}
+
+.value {
+  flex: none;
+  color: var(--ds-semantic-color-foreground-muted);
+  font-family: var(--ds-semantic-typography-body-md-font-family);
+  font-size: var(--ds-semantic-typography-body-md-font-size);
+  font-weight: var(--ds-semantic-typography-body-md-font-weight);
+  line-height: var(--ds-semantic-typography-body-md-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-md-letter-spacing);
+  font-variant-numeric: tabular-nums;
+}
+
+/* As tall as the thumb, so the whole thumb is inside the area the native input receives. */
+.slider {
+  position: relative;
+  block-size: var(--thumb-size);
+}
+
+/* The native input takes pointer and keyboard input and draws nothing. Its own thumb is the same
+   size as the drawn one, so a press lands where the drawn thumb is. */
+.control {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+}
+.control::-webkit-slider-thumb {
+  inline-size: var(--thumb-size);
+  block-size: var(--thumb-size);
+  appearance: none;
+  -webkit-appearance: none;
+}
+.control::-moz-range-thumb {
+  inline-size: var(--thumb-size);
+  block-size: var(--thumb-size);
+  border: 0;
+}
+.control:disabled {
+  cursor: not-allowed;
+}
+
+.track {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 50%;
+  block-size: var(--ds-primitives-space-2);
+  box-sizing: border-box;
+  transform: translateY(-50%);
+  border-radius: var(--ds-semantic-radius-pill);
+  background-color: var(--ds-semantic-color-background-muted);
+  overflow: hidden;
+}
+
+/* The fill ends under the thumb's center, which travels from half a thumb in from each end. */
+.fill {
+  block-size: 100%;
+  inline-size: calc(var(--thumb-size) / 2 + (100% - var(--thumb-size)) * var(--ratio, 0));
+  border-radius: var(--ds-semantic-radius-pill);
+  background-color: var(--ds-semantic-color-background-action-primary-default);
+}
+
+.thumb {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: calc((100% - var(--thumb-size)) * var(--ratio, 0));
+  inline-size: var(--thumb-size);
+  block-size: var(--thumb-size);
+  box-sizing: border-box;
+  border: var(--ds-semantic-border-width) solid var(--ds-semantic-color-background-surface);
+  border-radius: var(--ds-semantic-radius-pill);
+  background-color: var(--ds-semantic-color-background-action-primary-default);
+  pointer-events: none;
+}
+
+.control:hover:not(:disabled) ~ .thumb {
+  background-color: var(--ds-semantic-color-background-action-primary-hover);
+}
+
+/* As specific as the hover rule, and later, so the pointer still over the thumb keeps this color. */
+.field.is-dragging .control ~ .thumb {
+  background-color: var(--ds-semantic-color-background-action-primary-pressed);
+}
+
+.control:focus-visible ~ .thumb {
+  outline: var(--ds-semantic-focus-width) solid var(--ds-semantic-color-border-focus);
+  outline-offset: var(--ds-semantic-focus-offset);
+}
+
+.field.is-invalid .fill,
+.field.is-invalid .thumb {
+  background-color: var(--ds-semantic-color-border-status-danger-default);
+}
+
+.hint,
+.error {
+  margin: 0;
+  font-family: var(--ds-semantic-typography-body-sm-font-family);
+  font-size: var(--ds-semantic-typography-body-sm-font-size);
+  font-weight: var(--ds-semantic-typography-body-sm-font-weight);
+  line-height: var(--ds-semantic-typography-body-sm-line-height);
+  letter-spacing: var(--ds-semantic-typography-body-sm-letter-spacing);
+}
+
+.hint {
+  color: var(--ds-semantic-color-foreground-muted);
+}
+
+.error {
+  color: var(--ds-semantic-color-foreground-status-danger-default);
+}
+
+.field.is-disabled :is(.label, .value, .hint) {
+  color: var(--ds-semantic-color-foreground-disabled);
+}
+
+.field.is-disabled .track {
+  background-color: var(--ds-semantic-color-background-disabled);
+}
+
+.field.is-disabled :is(.fill, .thumb) {
+  background-color: var(--ds-semantic-color-border-disabled);
+}
+
+/* Forced colors drop backgrounds, so the track draws an outline and the fill and thumb paint
+   system colors themselves. */
+@media (forced-colors: active) {
+  .track {
+    border: var(--ds-semantic-border-width) solid CanvasText;
+  }
+
+  .fill,
+  .thumb {
+    forced-color-adjust: none;
+  }
+
+  .fill,
+  .thumb,
+  .field.is-invalid :is(.fill, .thumb),
+  .control:hover:not(:disabled) ~ .thumb,
+  .field.is-dragging .thumb {
+    background-color: Highlight;
+  }
+
+  .thumb {
+    border-color: Canvas;
+  }
+
+  .field.is-disabled :is(.fill, .thumb) {
+    background-color: GrayText;
+  }
+
+  .field.is-disabled .track {
+    border-color: GrayText;
+  }
+
+  .control:focus-visible ~ .thumb {
+    outline-color: Highlight;
+  }
+}

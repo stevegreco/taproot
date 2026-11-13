@@ -489,7 +489,7 @@ describe("tokens (component.slider tokens)", () => {
 
   test("invalid recolors the fill and thumb", async () => {
     await render(<Example defaultValue={50} error="Lower the volume." />);
-    const danger = token("--ds-semantic-color-background-status-danger-default");
+    const danger = token("--ds-semantic-color-border-status-danger-default");
     expect(getComputedStyle(part("fill")).backgroundColor).toBe(danger);
     expect(getComputedStyle(part("thumb")).backgroundColor).toBe(danger);
   });
