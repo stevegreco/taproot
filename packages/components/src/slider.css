@@ -131,7 +131,7 @@
 
 .field.is-invalid .fill,
 .field.is-invalid .thumb {
-  background-color: var(--ds-semantic-color-background-status-danger-default);
+  background-color: var(--ds-semantic-color-border-status-danger-default);
 }
 
 .hint,

@@ -260,10 +260,7 @@ describe("DsSlider", () => {
     expect(getComputedStyle(part(slider, "error")).display).not.toBe("none");
     expect(part(slider, "error").textContent).toBe("Choose 500 or less.");
     expect(getComputedStyle(part(slider, "fill")).backgroundColor).toBe(
-      resolvedValue(
-        "background-color",
-        "var(--ds-semantic-color-background-status-danger-default)",
-      ),
+      resolvedValue("background-color", "var(--ds-semantic-color-border-status-danger-default)"),
     );
 
     slider.error = "";
