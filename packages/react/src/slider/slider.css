@@ -79,7 +79,7 @@
 }
 
 .ds-slider[data-invalid] .ds-slider__fill {
-  background-color: var(--ds-semantic-color-background-status-danger-default);
+  background-color: var(--ds-semantic-color-border-status-danger-default);
 }
 
 .ds-slider[data-disabled] .ds-slider__fill {
@@ -109,7 +109,7 @@
 
 /* thumb: invalid wins over hover and dragging, and disabled wins over all. The spec does not say. */
 .ds-slider[data-invalid] .ds-slider__thumb {
-  background-color: var(--ds-semantic-color-background-status-danger-default);
+  background-color: var(--ds-semantic-color-border-status-danger-default);
 }
 
 .ds-slider[data-disabled] .ds-slider__thumb {

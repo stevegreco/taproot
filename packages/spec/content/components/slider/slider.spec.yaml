@@ -220,7 +220,7 @@ tokens:
     disabled:
       background: semantic.color.border.disabled
     invalid:
-      background: semantic.color.background.status.danger.default
+      background: semantic.color.border.status.danger.default
   thumb:
     base:
       background: semantic.color.background.action.primary.default
@@ -236,7 +236,7 @@ tokens:
     disabled:
       background: semantic.color.border.disabled
     invalid:
-      background: semantic.color.background.status.danger.default
+      background: semantic.color.border.status.danger.default
   hint:
     base:
       foreground: semantic.color.foreground.muted
@@ -308,6 +308,11 @@ rationale:
     why: >-
       A slider is a control, and action colors say it can be changed. Progress bar uses brand
       color because it cannot.
+  - decision: The invalid fill and thumb use the danger status border color.
+    why: >-
+      The danger status background is a pale tint meant to sit behind text, so a fill and thumb in
+      it disappear against the track. The danger border color is strong in both themes, and Switch
+      uses it for its invalid state too.
   - decision: The disabled fill and thumb use the disabled border color.
     why: >-
       No color token covers a disabled filled part. The disabled border color is visible against
