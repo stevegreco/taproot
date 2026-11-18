@@ -202,7 +202,8 @@ function parseArgs(argv) {
   const a = {
     flow: ".claude/hillclimb/flow",
     variant: "baseline",
-    model: undefined,
+    // Haiku keeps eval runs cheap. Pass --model to run another model.
+    model: "claude-haiku-5-5",
     reps: 1,
     concurrency: 4,
     timeoutS: 1800,
@@ -260,7 +261,7 @@ function parseArgs(argv) {
 }
 function usage() {
   eprint(
-    "usage: node run-eval.mjs --flow DIR --variant ID [--model ID] [--reps N] [--concurrency N] [--timeout-s N (0 = no ceiling)] [--approve-harness]",
+    "usage: node run-eval.mjs --flow DIR --variant ID [--model ID (default claude-haiku-5-5)] [--reps N] [--concurrency N] [--timeout-s N (0 = no ceiling)] [--approve-harness]",
   );
 }
 

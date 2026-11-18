@@ -86,10 +86,12 @@ node evals/taproot-usage/setup-project.mjs
 ```
 
 ```bash
-TAPROOT_EVAL_SUITE=build node evals/taproot-usage/run-eval.mjs --flow evals/taproot-usage/build-runs --variant baseline --model claude-opus-5-5 --concurrency 3
+TAPROOT_EVAL_SUITE=build node evals/taproot-usage/run-eval.mjs --flow evals/taproot-usage/build-runs --variant baseline --concurrency 3
 ```
 
-Use `--variant v1` for the CLI and `--variant v2` for MCP. A run that finds its results already
+Use `--variant v1` for the CLI and `--variant v2` for MCP. The runner uses `claude-haiku-5-5`
+unless `--model` names another model; this report's run used `--model claude-opus-5-5`, so compare
+a Haiku run against its own baseline, not these numbers. A run that finds its results already
 recorded skips them, so start a new flow folder for a new run. If the harness files changed, review
 them and add `--approve-harness`. Then summarize:
 
