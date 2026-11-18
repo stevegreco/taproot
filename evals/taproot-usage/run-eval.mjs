@@ -43,7 +43,6 @@ import {
 } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { gradeAnswer, loadCases as loadTaprootCases, runAgent } from "./taproot-case.mjs";
 
 // Every output write refuses symlinks: the flow dir is model-influenced, and a
 // prompt-injected round can plant `results.jsonl -> ~/.bashrc` where the next
@@ -180,14 +179,20 @@ function mkdirNoFollow(dir) {
 // the same list so a suffixed ref never gets an extensionless shadow.
 const REF_EXTS = ["", ".html", ".txt", ".json"];
 
-// --- the Taproot-specific parts are in taproot-case.mjs -----------------------
+// --- the Taproot-specific parts are in taproot-case.mjs and build-case.mjs -----
 
-const loadCases = loadTaprootCases;
-const runCase = (input, ctx) => runAgent(input, ctx);
-const gradeCase = async (input, run) => gradeAnswer(input, run.output);
+// TAPROOT_EVAL_SUITE picks the suite: "answer" (default) grades a JSON answer, "build" grades the
+// page the agent writes. Each suite has its own flow directory.
+const suite = await import(
+  process.env.TAPROOT_EVAL_SUITE === "build" ? "./build-case.mjs" : "./taproot-case.mjs"
+);
+const loadCases = suite.loadCases;
+const runCase = (input, ctx) => suite.runAgent(input, ctx);
+const gradeCase = async (input, run) => suite.grade(input, run);
 const perfFrom = (run) => ({
   tool_calls: run.tool_calls,
   failed_tool_calls: run.failed_tool_calls,
+  tokens: run.tokens,
   agent_cost_usd: run.agent_cost_usd,
 });
 

@@ -1,0 +1,211 @@
+[
+  {
+    "id": "build-settings-delete-account",
+    "tags": ["build", "action-hierarchy", "dialog"],
+    "prompt": "Build an account settings page. People can change their display name and email address and save the changes, or cancel. Below that, they can delete their account. Deleting asks them to confirm first, because it cannot be undone.",
+    "expected": {
+      "tags": { "ds-text-field": 2, "ds-button": 4, "ds-dialog": 1 },
+      "checks": [
+        {
+          "id": "email-type",
+          "description": "The email field uses the email type.",
+          "selector": "ds-text-field[type=email]",
+          "min": 1
+        },
+        {
+          "id": "save-is-primary",
+          "rule": "pattern.action-hierarchy",
+          "description": "Saving the changes is the primary action.",
+          "selector": "ds-button[variant=primary], ds-button:not([variant])",
+          "text": "save",
+          "min": 1
+        },
+        {
+          "id": "delete-is-destructive",
+          "rule": "component.button#destructive-for-risky-actions",
+          "description": "Deleting the account uses the destructive variant.",
+          "selector": "ds-button[variant=destructive]",
+          "text": "delete",
+          "min": 1
+        },
+        {
+          "id": "dialog-has-cancel",
+          "rule": "component.dialog#explicit-exit",
+          "description": "The confirmation dialog has a non-destructive way out.",
+          "selector": "ds-dialog ds-button:not([variant=destructive])",
+          "min": 1
+        },
+        {
+          "id": "no-primary-beside-destructive",
+          "rule": "pattern.action-hierarchy",
+          "description": "The confirmation dialog has no primary button competing with the destructive one.",
+          "selector": "ds-dialog ds-button[variant=primary], ds-dialog ds-button:not([variant])",
+          "max": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": "build-checkout-shipping",
+    "tags": ["build", "choose", "form"],
+    "prompt": "Build the shipping step of a checkout. People pick one of three shipping speeds: Standard (5 to 7 days, free), Express (2 to 3 days, $9), and Overnight ($25). They should be able to compare all three at a glance. They can also ask for gift wrapping, which is saved with the order. A Continue button submits the step.",
+    "expected": {
+      "tags": { "ds-radio-group": 1, "ds-checkbox": 1, "ds-button": 1 },
+      "checks": [
+        {
+          "id": "three-options",
+          "description": "The shipping choice has three options.",
+          "selector": "ds-radio-group option",
+          "min": 3
+        },
+        {
+          "id": "continue-submits",
+          "rule": "component.button#explicit-form-action",
+          "description": "Continue is a submit button inside a form.",
+          "selector": "form ds-button[type=submit]",
+          "min": 1
+        },
+        {
+          "id": "not-a-select",
+          "rule": "component.select",
+          "description": "A select hides the options people need to compare.",
+          "selector": "ds-select",
+          "max": 0
+        },
+        {
+          "id": "gift-wrap-not-a-switch",
+          "rule": "component.switch",
+          "description": "An option saved with the form is a checkbox, not a switch.",
+          "selector": "ds-switch",
+          "max": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": "build-notification-settings",
+    "tags": ["build", "choose"],
+    "prompt": "Build a notification settings panel. Email notifications and push notifications can each be turned on or off, and the change takes effect immediately, with no save button. There is also a notification sound volume from 0 to 100.",
+    "expected": {
+      "tags": { "ds-switch": 2, "ds-slider": 1 },
+      "checks": [
+        {
+          "id": "not-checkboxes",
+          "rule": "component.checkbox",
+          "description": "A setting that applies immediately is a switch, not a checkbox.",
+          "selector": "ds-checkbox",
+          "max": 0
+        },
+        {
+          "id": "no-save-button",
+          "description": "There is no save button.",
+          "selector": "ds-button",
+          "text": "save",
+          "max": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": "build-project-page",
+    "tags": ["build", "choose", "button-or-link"],
+    "prompt": "Build a project page. The header shows the project name, a small status label reading Active, and a way back to the list of all projects. The body has three views, Overview, Activity, and Members. Only one shows at a time, and the address does not change.",
+    "expected": {
+      "tags": { "ds-tabs": 1, "ds-tab-panel": 3, "ds-badge": 1, "ds-link": 1 },
+      "checks": [
+        {
+          "id": "back-is-a-link",
+          "rule": "pattern.action-hierarchy",
+          "description": "Going back to all projects is a link with a destination.",
+          "selector": "ds-link[href]",
+          "text": "project",
+          "min": 1
+        },
+        {
+          "id": "no-navigation-button",
+          "rule": "pattern.action-hierarchy",
+          "description": "No button only navigates to the projects list.",
+          "selector": "ds-button",
+          "text": "project",
+          "max": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": "build-failed-save",
+    "tags": ["build", "form", "alert"],
+    "prompt": "Build a profile form in the state after a save attempt failed. A message at the top of the form says the changes were not saved because the connection dropped, with a Try again action. The form has Name and Email fields and a Save button. The email field holds 'sam@' and shows what to fix.",
+    "expected": {
+      "tags": { "ds-alert": 1, "ds-text-field": 2, "ds-button": 2 },
+      "checks": [
+        {
+          "id": "alert-is-danger",
+          "rule": "component.alert",
+          "description": "The failure message uses the danger variant.",
+          "selector": "ds-alert[variant=danger]",
+          "min": 1
+        },
+        {
+          "id": "retry-in-alert",
+          "rule": "component.alert#actions-follow-hierarchy",
+          "description": "Try again is a button in the alert's actions.",
+          "selector": "ds-alert ds-button[slot=actions]",
+          "text": "try again",
+          "min": 1
+        },
+        {
+          "id": "retry-not-destructive",
+          "rule": "component.button#destructive-for-risky-actions",
+          "description": "Try again is not styled as destructive.",
+          "selector": "ds-alert ds-button[variant=destructive]",
+          "max": 0
+        },
+        {
+          "id": "email-error",
+          "rule": "pattern.form-field#error-says-what-to-fix",
+          "description": "The email field has an error message.",
+          "selector": "ds-text-field[error]:not([error=''])",
+          "min": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "build-address-form",
+    "tags": ["build", "choose", "form"],
+    "prompt": "Build an address form with a street address that can take several lines, a country chosen from about 200 countries (include five as a sample), and a required postal code. A Save address button submits it.",
+    "expected": {
+      "tags": { "ds-text-area": 1, "ds-select": 1, "ds-text-field": 1, "ds-button": 1 },
+      "checks": [
+        {
+          "id": "country-options",
+          "description": "The country choice has at least five options.",
+          "selector": "ds-select option",
+          "min": 5
+        },
+        {
+          "id": "postal-code-required",
+          "rule": "pattern.form-field#required-announced",
+          "description": "The postal code is marked required.",
+          "selector": "ds-text-field[required]",
+          "min": 1
+        },
+        {
+          "id": "save-submits",
+          "rule": "component.button#explicit-form-action",
+          "description": "Save address is a submit button inside a form.",
+          "selector": "form ds-button[type=submit]",
+          "min": 1
+        },
+        {
+          "id": "not-radio-buttons",
+          "rule": "component.radio-group",
+          "description": "Two hundred countries are too many for a radio group.",
+          "selector": "ds-radio-group",
+          "max": 0
+        }
+      ]
+    }
+  }
+]

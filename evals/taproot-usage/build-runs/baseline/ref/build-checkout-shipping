@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Checkout: Shipping</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/tokens.css" />
+    <link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/base.css" />
+    <script type="module">
+      import { defineRadioGroup } from "./node_modules/@taproot-ds/web-components/src/radio-group.js";
+      import { defineCheckbox } from "./node_modules/@taproot-ds/web-components/src/checkbox.js";
+      import { defineButton } from "./node_modules/@taproot-ds/web-components/src/button.js";
+      defineRadioGroup();
+      defineCheckbox();
+      defineButton();
+    </script>
+    <style>
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 36rem;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Shipping</h1>
+      <form method="post">
+        <ds-radio-group label="Shipping speed" name="shipping" value="standard" required>
+          <option value="standard">Standard: 5 to 7 days, Free</option>
+          <option value="express">Express: 2 to 3 days, $9</option>
+          <option value="overnight">Overnight: next day, $25</option>
+        </ds-radio-group>
+
+        <ds-checkbox
+          label="Add gift wrapping"
+          name="gift_wrap"
+          value="yes"
+          hint="Saved with your order."
+        ></ds-checkbox>
+
+        <div>
+          <ds-button type="submit" variant="primary">Continue</ds-button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>

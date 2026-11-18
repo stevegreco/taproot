@@ -1,0 +1,68 @@
+{
+  "flow": "taproot-build",
+  "metrics": [
+    {
+      "id": "correct",
+      "label": "Correct",
+      "kind": "binary"
+    },
+    {
+      "id": "wrote_page",
+      "label": "Wrote a page",
+      "kind": "binary"
+    },
+    {
+      "id": "components",
+      "label": "Components",
+      "kind": "binary"
+    },
+    {
+      "id": "api",
+      "label": "API names",
+      "kind": "binary"
+    },
+    {
+      "id": "rules",
+      "label": "MUST rules",
+      "kind": "binary"
+    },
+    {
+      "id": "task",
+      "label": "Task checks",
+      "kind": "binary"
+    },
+    {
+      "id": "setup",
+      "label": "Page setup",
+      "kind": "binary"
+    }
+  ],
+  "perf_fields": [
+    {
+      "id": "tool_calls",
+      "label": "Tool calls"
+    },
+    {
+      "id": "failed_tool_calls",
+      "label": "Failed calls"
+    },
+    {
+      "id": "latency_s",
+      "label": "Time (s)"
+    },
+    {
+      "id": "tokens",
+      "label": "Tokens"
+    },
+    {
+      "id": "agent_cost_usd",
+      "label": "Cost ($)"
+    }
+  ],
+  "harness_paths": [
+    "evals/taproot-usage/taproot-case.mjs",
+    "evals/taproot-usage/build-case.mjs",
+    "evals/taproot-usage/build-cases.json"
+  ],
+  "harness_sha": "8a603e26a1a76a3c25ea5e9eb6d7811f963722ea74faf058e1fde51ad99ff875"
+}
