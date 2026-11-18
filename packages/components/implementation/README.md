@@ -7,7 +7,11 @@ API; `taproot setup --impl web` prints this one.
 
 ```bash
 pnpm add @taproot-ds/web-components @taproot-ds/tokens
+pnpm add -D @taproot-ds/spec
 ```
+
+`@taproot-ds/spec` gives agents the `taproot` command and MCP server. With the other two packages
+installed beside it, it finds their API names and token values on its own, with no config file.
 
 ## Load the styles
 
@@ -50,4 +54,24 @@ shows. A define function takes another tag name when `ds-` names collide.
 
 The modules are standard ES modules with no runtime dependencies. Without a bundler, map the bare
 package names with an import map, or import the files under `node_modules/@taproot-ds/web-components/src/`.
+
+## Set up agents
+
+So that every later agent session queries the spec instead of guessing, add the output of
+`node_modules/.bin/taproot help agents` to the project's agent instructions (`AGENTS.md`, or the
+file your agent reads). For agents without a terminal, register the MCP server. In Claude Code,
+that is `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "taproot": {
+      "command": "node_modules/.bin/taproot-mcp"
+    }
+  }
+}
+```
+
+To check the setup, build one page with a component or two. Read each one with
+`taproot get <name> --impl web` first, and review the page with `taproot rules`.
 

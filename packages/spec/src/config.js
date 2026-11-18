@@ -145,15 +145,65 @@ function configMessage(error) {
 }
 
 /**
- * Work out the content folder and token resolver from flags and config.
+ * With no config file, the config for the shipped content, built from the Taproot packages
+ * installed next to the project: the web implementation from `@taproot-ds/web-components`, and the
+ * token sets and constants from `@taproot-ds/tokens`. A project that depends on them needs no file
+ * of its own. Its folders are absolute, and it has no `path`.
+ *
+ * @param {string} cwd
+ * @returns {{ path?: string, config: SpecConfig } | undefined}
+ */
+export function installedConfig(cwd) {
+  const web = findPackage(cwd, "@taproot-ds/web-components");
+  const tokens = findPackage(cwd, "@taproot-ds/tokens");
+  if (!web && !tokens) return undefined;
+  /** @type {SpecConfig} */
+  const config = {};
+  if (web && fs.existsSync(path.join(web, "implementation"))) {
+    config.implementations = {
+      web: { folder: path.join(web, "implementation"), technology: "web-component" },
+    };
+  }
+  if (tokens) {
+    const file = (name) => path.join(tokens, "src/tokens", name);
+    const shared = ["semantic/shape.tokens.json", "semantic/typography.tokens.json"];
+    const set = (theme) =>
+      ["primitives.tokens.json", `semantic/${theme}.tokens.json`, ...shared].map(file);
+    config.tokens = { format: "dtcg", sets: { light: set("light"), dark: set("dark") } };
+    config.constants = {
+      "border-width": "semantic.border.width",
+      "focus-ring-width": "semantic.focus.width",
+      "focus-ring-offset": "semantic.focus.offset",
+    };
+  }
+  return { config };
+}
+
+/** Walk up from `startDir` to the nearest `node_modules/<name>` folder with a package.json. */
+function findPackage(startDir, name) {
+  let dir = path.resolve(startDir);
+  for (;;) {
+    const candidate = path.join(dir, "node_modules", name);
+    if (fs.existsSync(path.join(candidate, "package.json"))) return fs.realpathSync(candidate);
+    const parent = path.dirname(dir);
+    if (parent === dir) return undefined;
+    dir = parent;
+  }
+}
+
+/**
+ * Work out the content folder and token resolver from flags and config. With no config file, the
+ * installed Taproot packages supply one (`installedConfig`).
  * Precedence for the content folder: `contentDir` > config `content` > library default.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string }} [options]
  * @returns {{ contentDir?: string, resolveToken?: (ref: string) => Record<string, string> | undefined, tokenSets?: Record<string, string[]>, implementations: Record<string, ImplementationConfig & import("./operations.js").ImplementationSource>, constants: Record<string, string>, vocabulary: Record<string, VocabularyTerm>, configPath?: string }}
  */
 export function resolveConfig({ cwd = process.cwd(), contentDir, configPath } = {}) {
-  const found = configPath ? readConfig(path.resolve(cwd, configPath)) : findConfig(cwd);
-  const base = found ? path.dirname(found.path) : undefined;
+  const found = configPath
+    ? readConfig(path.resolve(cwd, configPath))
+    : (findConfig(cwd) ?? installedConfig(cwd));
+  const base = found?.path ? path.dirname(found.path) : cwd;
   let dir;
   if (contentDir) dir = path.resolve(cwd, contentDir);
   else if (found?.config.content) dir = path.resolve(base, found.config.content);
@@ -241,7 +291,7 @@ export async function checkFromConfig({ implementations: names, ...options } = {
   const issues = [...result.issues];
 
   if (tokenNames) {
-    const file = path.relative(cwd, config.configPath);
+    const file = config.configPath ? path.relative(cwd, config.configPath) : CONFIG_FILE;
     for (const [name, token] of Object.entries(config.constants)) {
       const missing = [...tokenNames].filter(([, set]) => !set.has(token)).map(([set]) => set);
       if (missing.length === 0) continue;
