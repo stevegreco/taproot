@@ -157,6 +157,8 @@ rules:
     extends: guideline.accessibility#forced-colors
     statement: >-
       Under forced colors, the box outline, the indicator, and focus stay visible in every state.
+  - id: not-a-control
+    waived: A checkbox takes keyboard focus and toggles.
 accessibility:
   role: Checkbox
   name: Required from the visible label.

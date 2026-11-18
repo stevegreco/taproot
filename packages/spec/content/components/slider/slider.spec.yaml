@@ -170,6 +170,8 @@ rules:
     extends: guideline.accessibility#forced-colors
     statement: >-
       Keep the track outline, the fill, the thumb, and keyboard focus visible under forced colors.
+  - id: not-a-control
+    waived: A slider takes keyboard focus and changes its value.
 accessibility:
   role: Slider
   name: From the visible label.

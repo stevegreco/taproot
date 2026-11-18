@@ -133,6 +133,8 @@ rules:
     topic: content
     statement: >-
       Use a square picture centered on the person's face, so the circular crop keeps the face whole.
+  - id: visible-focus
+    waived: An avatar is not interactive, so no part takes keyboard focus.
 accessibility:
   role: Image when named. Otherwise hidden from assistive technology.
   name: From the name parameter. None when decorative or when there is no name.

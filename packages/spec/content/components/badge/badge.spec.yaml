@@ -80,6 +80,8 @@ rules:
     statement: >-
       Under forced colors, the badge keeps a visible boundary. Its tones look alike there, so its
       text tells them apart.
+  - id: visible-focus
+    waived: A badge is not interactive, so no part takes keyboard focus.
 accessibility:
   role: Non-interactive text
   name: Visible text is the accessible name.

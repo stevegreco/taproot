@@ -59,7 +59,7 @@ describe("spec MCP server", () => {
       arguments: { query: "destructive action" },
     });
     expect(text(found)).toContain("- pattern.action-hierarchy — Action hierarchy: ");
-    expect(found.structuredContent.results[0]).toHaveProperty("id");
+    expect(found.structuredContent).toBeUndefined();
 
     const got = await client.callTool({ name: "get", arguments: { target: "component.button" } });
     expect(text(got)).toMatch(/^# Button/);
@@ -71,9 +71,8 @@ describe("spec MCP server", () => {
   it("lists the components an implementation has", async () => {
     const { client } = await connect({ cwd: impls });
     const listed = await client.callTool({ name: "list", arguments: { implementation: "react" } });
-    const ids = listed.structuredContent.results.map((record) => record.id);
-    expect(ids).toContain("component.button");
-    expect(ids).not.toContain("component.card");
+    expect(text(listed)).toContain("component.button");
+    expect(text(listed)).not.toContain("component.card");
   });
 
   it("gets a component with its implementation", async () => {
@@ -88,7 +87,6 @@ describe("spec MCP server", () => {
       arguments: { target: "component.button", implementation: "web" },
     });
     expect(text(got)).toContain("- Element: `<ds-button>`");
-    expect(got.structuredContent.results.implementation.component).toBe("component.button");
 
     const pattern = await client.callTool({
       name: "get",
@@ -101,7 +99,6 @@ describe("spec MCP server", () => {
     const { client } = await connect({ cwd: impls });
     const setup = await client.callTool({ name: "setup", arguments: { implementation: "web" } });
     expect(text(setup)).toMatch(/^# Web components setup/);
-    expect(setup.structuredContent.results.technology).toBe("web-component");
     const got = await client.callTool({
       name: "get",
       arguments: { target: "component.divider", implementation: "web" },
@@ -116,10 +113,7 @@ describe("spec MCP server", () => {
 
     const typo = await client.callTool({ name: "get", arguments: { target: "buton" } });
     expect(typo.isError).toBe(true);
-    expect(typo.structuredContent.error).toEqual({
-      code: "ERR_UNKNOWN_RECORD",
-      suggestions: ["component.button"],
-    });
+    expect(text(typo)).toBe('Unknown record "buton". Did you mean: component.button?');
 
     const found = await client.callTool({ name: "search", arguments: { query: "buton" } });
     expect(text(found)).toContain(
@@ -133,11 +127,9 @@ describe("spec MCP server", () => {
     expect(text(plain)).toContain("| focus-ring-offset | `semantic.focus.offset` |");
     expect(text(plain)).toContain("Call `format` with resolve for values.");
     const resolved = await client.callTool({ name: "format", arguments: { resolve: true } });
-    expect(resolved.structuredContent.results.constants[1]).toEqual({
-      name: "focus-ring-width",
-      token: "semantic.focus.width",
-      values: { light: "2px", dark: "2px" },
-    });
+    expect(text(resolved)).toContain(
+      "| focus-ring-width | `semantic.focus.width` | `2px` | `2px` |",
+    );
   });
 
   it("resolves tokens, and lists rules and links", async () => {
@@ -185,9 +177,6 @@ describe("spec MCP server", () => {
       arguments: { target: "component.accordion", implementation: "web" },
     });
     expect(text(web)).toContain("### Section element: `<ds-accordion-section>`");
-    const { record, implementation } = web.structuredContent.results;
-    expect(Object.keys(record.items.section.parameters)).toEqual(["label", "expanded"]);
-    expect(implementation.items.section.tagName).toBe("ds-accordion-section");
 
     const fixtureClient = (await connect({ cwd: fixture("tools") })).client;
     const value = await fixtureClient.callTool({

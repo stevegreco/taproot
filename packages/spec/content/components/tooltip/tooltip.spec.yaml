@@ -155,6 +155,8 @@ rules:
     topic: behavior
     statement: >-
       Only one bubble is open at a time. Opening one closes any other.
+  - id: not-a-control
+    waived: A tooltip names a trigger that takes keyboard focus, and it shows on that focus.
 accessibility:
   role: None of its own. The trigger keeps its role.
   name: Gives the trigger its accessible name from the label parameter.

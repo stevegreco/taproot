@@ -85,6 +85,8 @@ rules:
     statement: >-
       Let the layout set equal space on both sides of the divider, the same space it uses between
       the groups.
+  - id: visible-focus
+    waived: A divider is not interactive, so no part takes keyboard focus.
 accessibility:
   role: Separator, with its orientation. Not focusable.
   name: None. The groups on either side carry the meaning.

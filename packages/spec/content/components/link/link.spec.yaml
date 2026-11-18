@@ -110,6 +110,8 @@ rules:
   - id: not-color-alone
     extends: guideline.accessibility#not-color-alone
     statement: An inline link does not depend on color alone to be identified.
+  - id: not-a-control
+    waived: A link takes keyboard focus and navigates.
 accessibility:
   role: Link
   name: Required from the link text.

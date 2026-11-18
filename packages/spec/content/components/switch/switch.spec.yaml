@@ -120,6 +120,8 @@ rules:
   - id: forced-colors
     extends: guideline.accessibility#forced-colors
     statement: Keep the track outline and thumb and keyboard focus visible under forced colors.
+  - id: not-a-control
+    waived: A switch takes keyboard focus and toggles.
 accessibility:
   role: Switch
   name: From the visible label.

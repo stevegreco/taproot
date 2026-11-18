@@ -144,6 +144,8 @@ rules:
     statement: >-
       Keep to a handful of tabs that fit in one row at common widths. A row that overflows scrolls
       sideways, and tabs off screen are easy to miss.
+  - id: not-a-control
+    waived: Each tab takes keyboard focus and shows its view.
 accessibility:
   role: A tab list of tabs, and one tab panel for the selected tab.
   name: >-

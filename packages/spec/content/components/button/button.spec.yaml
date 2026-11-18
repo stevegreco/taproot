@@ -138,6 +138,8 @@ rules:
       Under forced colors, emphasis stays visible: primary and destructive are filled, secondary is
       outlined, and tertiary is text alone. A disabled button stays distinguishable from an enabled
       one.
+  - id: not-a-control
+    waived: A button takes keyboard focus and activates.
 accessibility:
   role: Button
   name: Required from visible content or accessibleName.
