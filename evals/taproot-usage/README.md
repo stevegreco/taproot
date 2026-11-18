@@ -93,8 +93,10 @@ failed check, time, tool calls, tokens, and cost. Its `traces/` folder holds eac
 and in the build suite the transcript ends with the page the agent wrote. Read the transcripts, not
 only the scores. They show where agents skipped the tools, read package files, or wasted calls.
 
-The runner resumes: a case already in `results.jsonl` is skipped. To start a fresh run, use a new
-`--flow` folder, and copy `_state.json` into it from the suite's folder.
+The runner resumes: a case already in `results.jsonl` is skipped. To start a fresh run, name a new
+`--flow` folder, such as `evals/taproot-usage/build-runs-2026-11-18`. The runner creates it and
+copies the suite's `_state.json` into it (from `runs/` or `build-runs/`), so the new run keeps the
+suite's metrics and harness check.
 
 For the build suite, print the tables:
 

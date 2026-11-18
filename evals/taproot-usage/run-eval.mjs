@@ -10,7 +10,8 @@
 //   - parameterized by --variant / --model / --reps (no hardcoded A/B pair)
 //   - rep-aware filenames + resume (traces/<id>_rep<k>.json)
 //   - reads _state.json, never writes it (loop state belongs to the orchestrator) -
-//     the ONE exception is --approve-harness recording `harness_sha` (see below)
+//     the exceptions are --approve-harness recording `harness_sha` (see below) and
+//     a new flow folder starting from a copy of its suite's _state.json
 //   - refuses to run when the harness (this file + _state.json.harness_paths) has
 //     changed since the sha a human last approved with --approve-harness, so a
 //     round that edits the runner cannot execute unreviewed under a standing
@@ -183,8 +184,12 @@ const REF_EXTS = ["", ".html", ".txt", ".json"];
 
 // TAPROOT_EVAL_SUITE picks the suite: "answer" (default) grades a JSON answer, "build" grades the
 // page the agent writes. Each suite has its own flow directory.
-const suite = await import(
-  process.env.TAPROOT_EVAL_SUITE === "build" ? "./build-case.mjs" : "./taproot-case.mjs"
+const buildSuite = process.env.TAPROOT_EVAL_SUITE === "build";
+const suite = await import(buildSuite ? "./build-case.mjs" : "./taproot-case.mjs");
+// A new flow folder starts from a copy of this file, so it keeps the suite's metrics and the
+// harness files its check covers.
+const suiteStatePath = fileURLToPath(
+  new URL(buildSuite ? "./build-runs/_state.json" : "./runs/_state.json", import.meta.url),
 );
 const loadCases = suite.loadCases;
 const runCase = (input, ctx) => suite.runAgent(input, ctx);
@@ -472,10 +477,14 @@ async function main() {
   mkdirSync(args.flow, { recursive: true });
   flowRealRoot = realpathSync(args.flow);
   mkdirNoFollow(join(vdir, "traces"));
-  // _state.json is READ-ONLY here. The orchestrator owns it. Absent is fine
+  // _state.json is READ-ONLY here, apart from seeding a new flow below. Absent is fine
   // (a baseline-only run has no loop state yet), but present-and-unparsable
   // must not let the id-space gate below pass vacuously over a corrupt file.
   const statePath = join(args.flow, "_state.json");
+  if (readIfPresent(statePath) == null && resolve(statePath) !== suiteStatePath) {
+    writeFileNoFollow(statePath, readFileSync(suiteStatePath));
+    eprint(`new flow: copied ${relative(process.cwd(), suiteStatePath)} to ${statePath}`);
+  }
   let st = {};
   // Read through the no-follow opener like every other flow-dir file; the
   // parse message is not echoed (it can quote the file's first bytes).
