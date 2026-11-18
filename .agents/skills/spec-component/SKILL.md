@@ -69,8 +69,7 @@ Before you move on, check the anatomy for layout:
 - Does every piece a person sees or hears have a part?
 - Does every container that groups other parts have its own part? A row that holds the label and
   the value text, a header above the body, or a footer that holds the actions is a part, even when
-  it has no content of its own. The Slider draft missed its `header` this way, and the gap showed
-  up only when it was built.
+  it has no content of its own. A missing grouping part shows up only once the component is built.
 - Does each part's description say what it contains, so the grouping reads from the anatomy alone?
 
 - `status: draft` is required. The spec tests fail when a spec that is not a draft has no
