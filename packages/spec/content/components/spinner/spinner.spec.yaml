@@ -126,6 +126,8 @@ rules:
     topic: content
     statement: >-
       Use one spinner for a region that is loading, not one per item inside it.
+  - id: visible-focus
+    waived: A spinner is not interactive, so no part takes keyboard focus.
 accessibility:
   role: Progress indicator with no value (indeterminate).
   name: From the accessibleName parameter, which defaults to Loading.

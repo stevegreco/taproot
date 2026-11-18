@@ -145,6 +145,8 @@ rules:
     statement: >-
       Do not place an accordion inside another accordion's section. Nested levels hide content two
       clicks deep and blur the page outline.
+  - id: not-a-control
+    waived: Each section heading takes keyboard focus and expands or collapses its section.
 accessibility:
   role: A heading containing a button for each trigger, and a region for each expanded panel.
   name: >-

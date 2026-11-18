@@ -22,31 +22,18 @@ agent. Pick the option that fits how your agent works.
 
 | Option | Best for | Needs |
 | --- | --- | --- |
-| [Hosted MCP server](#hosted-mcp-server) | The quickest start, and agents with no terminal | A web address and nothing to install |
-| [Command line](#command-line) | Agents that can run commands, and a version pinned to your project | An install in your project |
-| [Local MCP server](#local-mcp-server) | MCP with a version pinned to your project | An install in your project |
+| [Command line](#command-line) | Agents that can run commands, such as Claude Code and Cursor | An install in your project |
+| [Hosted MCP server](#hosted-mcp-server) | Agents with no terminal, such as a chat app | A web address and nothing to install |
+| [Local MCP server](#local-mcp-server) | Agents with no terminal, on a version pinned to your project | An install in your project |
+
+An agent that can run commands should use the command line: it answers the same questions, and
+the agent instructions tell it to. Connect one MCP server at most. With two, an agent splits its
+calls between them, and they can answer from different versions.
 
 ## Hosted MCP server
 
 The server is at `https://mcp.stevegreco.workers.dev/mcp`. It needs no sign-in and it is read-only.
-
-In Claude Code, run:
-
-```bash
-claude mcp add --transport http taproot https://mcp.stevegreco.workers.dev/mcp
-```
-
-In Cursor, add it to `.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "taproot": {
-      "url": "https://mcp.stevegreco.workers.dev/mcp"
-    }
-  }
-}
-```
+Add it to your agent as a remote MCP server, or as a custom connector in a chat app.
 
 The hosted server always answers with the latest deployed content. It covers the web components, and
 it does not offer `validate`. To stay on one version, or to validate your own edits to the spec,
@@ -94,7 +81,7 @@ Going through pnpm adds about a second to each call. An agent making many calls 
 
 ## Local MCP server
 
-Add the installed server to your agent's MCP config. In Claude Code, that is `.mcp.json`:
+Add the installed server to your agent's MCP config, such as `.mcp.json`:
 
 ```json
 {
@@ -119,7 +106,7 @@ Each MCP tool has a command with the same name.
 | `rules` | Review work against the rules, and cite each one by its address and level |
 | `tokens` | See which tokens a part uses in a variant or state, with their values |
 | `format` | Read what records do not repeat, such as border width and focus-ring size |
-| `validate` | Check edited spec records. Not on the hosted server |
+| `validate` | Check edits to the spec's own records, not your code. Not on the hosted server |
 
 Each record is also an MCP resource at `spec://<id>`, such as `spec://component.button`.
 

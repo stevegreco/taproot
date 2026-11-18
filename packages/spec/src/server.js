@@ -45,20 +45,13 @@ export function createServer(source) {
     return warning ? `WARNING: ${warning}\n\n${text}` : text;
   };
 
+  // Text only: clients such as Claude Code show `structuredContent` in place of the text when both
+  // are sent, which would hand agents JSON instead of Markdown.
   /** @param {ops.Result} result */
-  const toResult = (result) => {
-    const text = disclose(result.text);
-    const warning = readWarning();
-    return {
-      content: [{ type: "text", text }],
-      structuredContent: {
-        results: result.data,
-        ...(result.error ? { error: result.error } : {}),
-        ...(warning ? { warning } : {}),
-      },
-      isError: !result.ok,
-    };
-  };
+  const toResult = (result) => ({
+    content: [{ type: "text", text: disclose(result.text) }],
+    isError: !result.ok,
+  });
   const tool = (name, description, inputSchema, run) =>
     server.registerTool(name, { description, inputSchema }, async (args) => {
       try {
@@ -201,7 +194,7 @@ export function createServer(source) {
   if (source.validate) {
     tool(
       "validate",
-      "Check every record in the content folder and list issues. Use after editing content.",
+      "Check the spec's own records in the content folder and list issues. Use after editing spec records. It does not check code that uses the components: review that against `rules`.",
       {},
       source.validate,
     );

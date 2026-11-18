@@ -114,6 +114,8 @@ rules:
     statement: >-
       Meaning carried by an icon does not depend on its color. The symbol or its accessible name
       carries it.
+  - id: visible-focus
+    waived: An icon is not interactive, so no part takes keyboard focus.
 accessibility:
   role: Image when named. Otherwise hidden from assistive technology.
   name: From the accessibleName parameter. None when decorative.

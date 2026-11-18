@@ -254,7 +254,7 @@ Branch on `code`, not on the message.
 `search`, `get`, `setup`, `list`, `links`, `rules`, `tokens`, `format`, and `validate`. `get` takes an
 optional `implementation`, such as `"web"`, that works like `--impl`, and `setup` takes a required
 one. Names, typo suggestions, and next-step
-lines work as in the CLI, and a failed call's `structuredContent.error` holds `{ code, suggestions }`. Every record is also a resource
+lines work as in the CLI. Results are Markdown text, and a failed call sets `isError`. Every record is also a resource
 at `spec://<id>`. The server reloads when the content folder changes. Like the CLI, it leaves out each
 record file with an issue that makes it wrong, still loads unfinished drafts, and fails an
 incomplete `rules` list with `ERR_INCOMPLETE_RULES`. While a file is left out, each tool result and

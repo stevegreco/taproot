@@ -125,6 +125,8 @@ rules:
   - id: visible-focus
     extends: guideline.accessibility#visible-focus
     statement: Keyboard focus is visibly indicated, including when the title receives initial focus.
+  - id: not-a-control
+    waived: A dialog holds keyboard focus while open, and the controls inside it activate.
 accessibility:
   role: Dialog
   name: Required from its visible title.

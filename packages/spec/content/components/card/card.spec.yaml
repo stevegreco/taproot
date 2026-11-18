@@ -168,6 +168,10 @@ rules:
     statement: >-
       Cards in one collection have the same parts in the same order, and either all have a
       destination or none do, so they can be scanned and compared.
+  - id: not-a-control
+    waived: >-
+      A card with a destination has a title link, and a card can hold actions, which take keyboard
+      focus and act.
 accessibility:
   role: >-
     None for the card itself. The title is a heading at the heading level parameter, containing a

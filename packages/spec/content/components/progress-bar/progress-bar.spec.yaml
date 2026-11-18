@@ -140,6 +140,8 @@ rules:
     statement: >-
       Use one bar for one task. For a batch, show the batch's overall progress, not a bar per item,
       unless people act on items one at a time.
+  - id: visible-focus
+    waived: A progress bar is not interactive, so no part takes keyboard focus.
 accessibility:
   role: Progress indicator with a value (determinate).
   name: From the label parameter, which is shown.

@@ -107,6 +107,8 @@ rules:
     statement: >-
       Under forced colors, the control boundary and keyboard focus stay visible, and a disabled
       field stays distinguishable from an enabled one.
+  - id: not-a-control
+    waived: A text field takes keyboard focus and accepts input.
 accessibility:
   role: Text input
   name: Required from the visible label.

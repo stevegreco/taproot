@@ -175,7 +175,6 @@ describe("a followed record that is left out", () => {
       /^WARNING: Left out 1 record file with issues: guide\.md\./,
     );
     expect(result.content[0].text).toContain("INCOMPLETE: ");
-    expect(result.structuredContent.error.code).toBe("ERR_INCOMPLETE_RULES");
   });
 });
 
