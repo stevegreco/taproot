@@ -4,7 +4,7 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "test": "turbo run test",
+    "test": "turbo run test && vitest run --project evals",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",

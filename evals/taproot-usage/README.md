@@ -10,7 +10,7 @@ Each task runs in three setups, with the same model:
 | `v2` | MCP | The taproot MCP server |
 
 The evals call a model, so they cost usage. They run only when someone starts them, never in
-`pnpm test`.
+`pnpm test`. The grader's tests do run in `pnpm test`: they grade saved pages and call no model.
 
 ## The two suites
 
@@ -34,6 +34,7 @@ The evals call a model, so they cost usage. They run only when someone starts th
 | `setup-project.mjs` | Builds the throwaway project the agents work in, from the packed packages. |
 | `check-cases.mjs` | Checks every expected answer in `cases.json` against the current spec and rewrites `cases.md`. Calls no model. |
 | `summarize-build.mjs` | Prints the build suite's results as Markdown tables. |
+| `test/` | Tests for the build grader, on pages saved in `build-runs/`. They call no model and run in `pnpm test`. |
 | `runs/` | The answer suite's results. |
 | `build-runs/` | The build suite's results. |
 
