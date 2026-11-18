@@ -127,7 +127,9 @@ describe("spec MCP server", () => {
     expect(text(plain)).toContain("| focus-ring-offset | `semantic.focus.offset` |");
     expect(text(plain)).toContain("Call `format` with resolve for values.");
     const resolved = await client.callTool({ name: "format", arguments: { resolve: true } });
-    expect(text(resolved)).toContain("| focus-ring-width | `semantic.focus.width` | `2px` | `2px` |");
+    expect(text(resolved)).toContain(
+      "| focus-ring-width | `semantic.focus.width` | `2px` | `2px` |",
+    );
   });
 
   it("resolves tokens, and lists rules and links", async () => {
