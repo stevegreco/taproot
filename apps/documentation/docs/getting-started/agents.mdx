@@ -4,8 +4,21 @@ description: Give an AI coding agent the design system's rules, tokens, and API 
 ---
 
 The design system's spec describes each component: when to use it, its rules, its tokens, and the API
-names for each technology. An agent can look these up instead of guessing. Pick the option that fits
-how your agent works.
+names for each technology. An agent can look these up instead of guessing.
+
+## Set up a project
+
+To start a project with the design system, give your coding agent this prompt:
+
+```text
+Set up the Taproot design system in this project. Install @taproot-ds/web-components
+and @taproot-ds/tokens, and @taproot-ds/spec as a dev dependency, then run
+`node_modules/.bin/taproot setup --impl web` and follow what it prints.
+```
+
+The setup it prints covers the styles, fonts, and elements, and connects the project's agents to
+the spec, so later sessions look things up too. The rest of this page covers each way to connect an
+agent. Pick the option that fits how your agent works.
 
 | Option | Best for | Needs |
 | --- | --- | --- |
@@ -47,41 +60,9 @@ The command line and the local MCP server both come from this package.
 pnpm add -D @taproot-ds/spec @taproot-ds/tokens @taproot-ds/web-components
 ```
 
-The records work right away. For API names and token values, add a `spec.config.json` at your project
-root, which points at the other two packages:
-
-```json
-{
-  "implementations": {
-    "web": {
-      "folder": "node_modules/@taproot-ds/web-components/implementation",
-      "technology": "web-component"
-    }
-  },
-  "constants": {
-    "border-width": "semantic.border.width",
-    "focus-ring-width": "semantic.focus.width",
-    "focus-ring-offset": "semantic.focus.offset"
-  },
-  "tokens": {
-    "format": "dtcg",
-    "sets": {
-      "light": [
-        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/light.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
-      ],
-      "dark": [
-        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/dark.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
-      ]
-    }
-  }
-}
-```
+With `@taproot-ds/tokens` and `@taproot-ds/web-components` installed beside it, the package finds
+their API names and token values on its own. A `spec.config.json` at the project root replaces
+that, for your own records or another implementation.
 
 ## Command line
 

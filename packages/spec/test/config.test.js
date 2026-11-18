@@ -205,3 +205,45 @@ describe("vocabulary", () => {
     fs.rmSync(tmp, { recursive: true });
   });
 });
+
+describe("installed packages, with no config file", () => {
+  const repo = path.resolve(import.meta.dirname, "../../..");
+  const project = () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "spec-installed-"));
+    const scope = path.join(tmp, "node_modules/@taproot-ds");
+    fs.mkdirSync(scope, { recursive: true });
+    fs.symlinkSync(path.join(repo, "packages/components"), path.join(scope, "web-components"));
+    fs.symlinkSync(path.join(repo, "packages/tokens"), path.join(scope, "tokens"));
+    fs.mkdirSync(path.join(tmp, "src"));
+    return tmp;
+  };
+
+  it("configures the web implementation, token sets, and constants from them", () => {
+    const tmp = project();
+    const config = resolveConfig({ cwd: path.join(tmp, "src") });
+    expect(config.configPath).toBeUndefined();
+    expect(config.contentDir).toBeUndefined();
+    expect(config.implementations.web).toMatchObject({
+      folder: path.join(repo, "packages/components/implementation"),
+      technology: "web-component",
+    });
+    expect(config.implementations.web.setup()).toMatch(/^# Web components setup/);
+    expect(Object.keys(config.tokenSets)).toEqual(["light", "dark"]);
+    expect(config.resolveToken(config.constants["border-width"])).toHaveProperty("light");
+    fs.rmSync(tmp, { recursive: true });
+  });
+
+  it("validates the shipped content against them", async () => {
+    const tmp = project();
+    const { issues } = await validateFromConfig({ cwd: tmp });
+    expect(issues).toEqual([]);
+    fs.rmSync(tmp, { recursive: true });
+  });
+
+  it("gives way to a config file", () => {
+    const tmp = project();
+    fs.writeFileSync(path.join(tmp, "spec.config.json"), "{}");
+    expect(resolveConfig({ cwd: tmp }).implementations).toEqual({});
+    fs.rmSync(tmp, { recursive: true });
+  });
+});
