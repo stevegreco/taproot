@@ -64,5 +64,5 @@
     "evals/taproot-usage/build-case.mjs",
     "evals/taproot-usage/build-cases.json"
   ],
-  "harness_sha": "8a603e26a1a76a3c25ea5e9eb6d7811f963722ea74faf058e1fde51ad99ff875"
+  "harness_sha": "f918ced7623b4204ff1634ce8d404f627659b7aa2123aece7f7aae3acc17674c"
 }
