@@ -143,6 +143,13 @@ After packages are already built, `pnpm exec vitest run` still runs the Vitest 5
 repo root. Prefer `pnpm test` in a clean tree. Use `pnpm --filter <pkg> exec …` only for commands
 that are not package scripts with workspace build dependencies, such as `blume validate`.
 
+## Evals
+
+`evals/taproot-usage/` measures whether agents do better work with the spec tools than without
+them. The evals call a model through `claude -p`, so they cost usage and run only on request,
+never in `pnpm test`. [`evals/taproot-usage/README.md`](evals/taproot-usage/README.md) explains the
+two suites and how to set up, run, and read them. Reports on runs are in `docs/reviews/`.
+
 ## Releases
 
 `@taproot-ds/tokens`, `@taproot-ds/web-components`, and `@taproot-ds/spec` are
