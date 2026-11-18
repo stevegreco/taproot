@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Northwind Migration · Projects</title>
+    <link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/tokens.css" />
+    <link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/base.css" />
+    <script type="module" src="node_modules/@taproot-ds/web-components/src/link.js"></script>
+    <script type="module" src="node_modules/@taproot-ds/web-components/src/badge.js"></script>
+    <script type="module" src="node_modules/@taproot-ds/web-components/src/tabs.js"></script>
+    <style>
+      body {
+        margin: 0;
+      }
+      .page {
+        max-width: 60rem;
+        margin: 0 auto;
+        padding: var(--ds-primitives-space-8) var(--ds-primitives-space-6);
+      }
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ds-primitives-space-3);
+        margin-bottom: var(--ds-primitives-space-8);
+      }
+      .title-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--ds-primitives-space-3);
+      }
+      h1,
+      h2 {
+        margin: 0;
+      }
+      .muted {
+        color: var(--ds-semantic-color-foreground-muted);
+      }
+      ds-tab-panel > * + * {
+        margin-top: var(--ds-primitives-space-4);
+      }
+      ds-tab-panel {
+        display: block;
+        padding-top: var(--ds-primitives-space-6);
+      }
+      ul.plain {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      ul.plain li {
+        padding: var(--ds-primitives-space-3) 0;
+        border-bottom: 1px solid var(--ds-semantic-color-border-default);
+      }
+      dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: var(--ds-primitives-space-2) var(--ds-primitives-space-6);
+        margin: 0;
+      }
+      dt {
+        color: var(--ds-semantic-color-foreground-muted);
+      }
+      dd {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <nav aria-label="Breadcrumb">
+          <ds-link variant="standalone" href="/projects">All projects</ds-link>
+        </nav>
+        <div class="title-row">
+          <h1>Northwind Migration</h1>
+          <ds-badge variant="success">Active</ds-badge>
+        </div>
+      </header>
+
+      <main>
+        <ds-tabs label="Project views" value="overview">
+          <ds-tab-panel label="Overview" value="overview">
+            <h2>Overview</h2>
+            <p>
+              Moving the Northwind order system from the legacy data center to the cloud platform,
+              with zero downtime for customers.
+            </p>
+            <dl>
+              <dt>Owner</dt>
+              <dd>Platform team</dd>
+              <dt>Started</dt>
+              <dd>September 2, 2026</dd>
+              <dt>Target</dt>
+              <dd>January 30, 2027</dd>
+            </dl>
+          </ds-tab-panel>
+
+          <ds-tab-panel label="Activity" value="activity">
+            <h2>Activity</h2>
+            <ul class="plain">
+              <li>Database replica cut over to the new region. <small class="muted">2 hours ago</small></li>
+              <li>Load test passed at 3× peak traffic. <small class="muted">Yesterday</small></li>
+              <li>Rollback runbook approved. <small class="muted">November 12</small></li>
+            </ul>
+          </ds-tab-panel>
+
+          <ds-tab-panel label="Members" value="members">
+            <h2>Members</h2>
+            <ul class="plain">
+              <li>Priya Raman <small class="muted">· Project lead</small></li>
+              <li>Marcus Bell <small class="muted">· Infrastructure</small></li>
+              <li>Ana Souza <small class="muted">· Database</small></li>
+              <li>Jonah Kim <small class="muted">· QA</small></li>
+            </ul>
+          </ds-tab-panel>
+        </ds-tabs>
+      </main>
+    </div>
+  </body>
+</html>

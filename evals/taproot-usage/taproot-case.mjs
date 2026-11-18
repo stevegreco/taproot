@@ -8,11 +8,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const projectDir = process.env.TAPROOT_EVAL_PROJECT ?? join(tmpdir(), "taproot-eval-project");
+export const projectDir =
+  process.env.TAPROOT_EVAL_PROJECT ?? join(tmpdir(), "taproot-eval-project");
 const claudeBin = process.env.TAPROOT_EVAL_CLAUDE ?? "claude";
 
 const PROJECT_CONTEXT = "You are helping in a project that uses the Taproot design system.";
-const MCP_TOOL_PREFIX = "mcp__taproot__";
+export const MCP_TOOL_PREFIX = "mcp__taproot__";
 
 // The report only reads directories named baseline or v<N>, so the setups use those names.
 export const SETUPS = {
@@ -60,22 +61,22 @@ function answerFormat(c) {
   return 'End your reply with one line of JSON: {"components": ["component.<name>"]}, listing each Taproot component to use. Use an empty list if Taproot has no component for this.';
 }
 
-function harnessError(message) {
+export function harnessError(message) {
   const error = new Error(message);
   error.failure_class = "harness";
   return error;
 }
 
 /** Fail the attempt if the agent had anything other than the setup's tools. */
-function assertIsolated(init, setup) {
+export function assertIsolated(init, setup) {
   const tools = init.tools ?? [];
-  const unexpected = tools.filter((tool) =>
-    setup.mcp ? !tool.startsWith(MCP_TOOL_PREFIX) : tool !== setup.builtInTools,
+  const builtIn = setup.builtInTools ? setup.builtInTools.split(",") : [];
+  const unexpected = tools.filter(
+    (tool) => !builtIn.includes(tool) && !(setup.mcp && tool.startsWith(MCP_TOOL_PREFIX)),
   );
   if (unexpected.length) throw harnessError(`unexpected tools: ${unexpected.join(", ")}`);
-  if (setup.builtInTools && !tools.includes(setup.builtInTools)) {
-    throw harnessError(`${setup.builtInTools} is missing`);
-  }
+  const missing = builtIn.filter((tool) => !tools.includes(tool));
+  if (missing.length) throw harnessError(`missing tools: ${missing.join(", ")}`);
 
   const servers = init.mcp_servers ?? [];
   if (setup.mcp) {
@@ -102,7 +103,8 @@ function cleanEnv() {
   return env;
 }
 
-function runClaude(prompt, systemText, setup, ctx) {
+/** Run claude -p in cwd with only the setup's tools. extraArgs adds flags such as --add-dir. */
+export function runClaude(prompt, systemText, setup, ctx, cwd = projectDir, extraArgs = []) {
   const args = [
     "-p",
     "--output-format",
@@ -126,11 +128,12 @@ function runClaude(prompt, systemText, setup, ctx) {
     "--append-system-prompt",
     systemText,
     ...(setup.allowedTools.length ? ["--allowedTools", ...setup.allowedTools] : []),
+    ...extraArgs,
   ];
 
   return new Promise((resolve, reject) => {
     const child = spawn(claudeBin, args, {
-      cwd: projectDir,
+      cwd,
       env: cleanEnv(),
       stdio: ["pipe", "pipe", "pipe"],
     });
@@ -154,8 +157,12 @@ export async function runAgent(c, ctx) {
   if (!setup) throw harnessError(`no setup for variant ${ctx.variant}`);
 
   const systemText = `${setup.context}\n\n${answerFormat(c)}`;
-  const { stdout, stderr, code } = await runClaude(c.prompt, systemText, setup, ctx);
+  const raw = await runClaude(c.prompt, systemText, setup, ctx);
+  return parseRun(raw, setup, systemText, c.prompt);
+}
 
+/** Turn claude's stream-json output into the runner's record: reply, transcript, usage, counts. */
+export function parseRun({ stdout, stderr, code }, setup, systemText, prompt) {
   const events = stdout
     .split("\n")
     .filter((line) => line.startsWith("{"))
@@ -175,7 +182,7 @@ export async function runAgent(c, ctx) {
 
   const transcript = [
     { role: "system", content: systemText },
-    { role: "user", content: c.prompt },
+    { role: "user", content: prompt },
   ];
   let model;
   let stopReason;
@@ -208,6 +215,7 @@ export async function runAgent(c, ctx) {
     }
   }
 
+  const usage = result.usage ?? {};
   return {
     output: result.result,
     transcript,
@@ -217,8 +225,16 @@ export async function runAgent(c, ctx) {
     tool_calls: toolCalls,
     failed_tool_calls: failedToolCalls,
     agent_cost_usd: result.total_cost_usd,
+    tokens:
+      (usage.input_tokens ?? 0) +
+      (usage.cache_creation_input_tokens ?? 0) +
+      (usage.cache_read_input_tokens ?? 0) +
+      (usage.output_tokens ?? 0),
   };
 }
+
+/** The runner's grade hook for this suite. */
+export const grade = (c, run) => gradeAnswer(c, run.output);
 
 /** The last line that parses as a JSON object, or undefined. */
 export function parseAnswer(text) {

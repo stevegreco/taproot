@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit profile</title>
+  <link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/tokens.css">
+  <script type="module">
+    import { defineAlert } from "./node_modules/@taproot-ds/web-components/src/alert.js";
+    import { defineButton } from "./node_modules/@taproot-ds/web-components/src/button.js";
+    import { defineTextField } from "./node_modules/@taproot-ds/web-components/src/text-field.js";
+    defineAlert();
+    defineButton();
+    defineTextField();
+  </script>
+  <style>
+    body {
+      margin: 0;
+      background: var(--ds-semantic-color-background-default);
+      color: var(--ds-semantic-color-foreground-default);
+      font-family: var(--ds-semantic-typography-body-md-font-family);
+      font-size: var(--ds-semantic-typography-body-md-font-size);
+      line-height: var(--ds-semantic-typography-body-md-line-height);
+    }
+    main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: var(--ds-primitives-space-12) var(--ds-primitives-space-6);
+    }
+    h1 {
+      margin: 0 0 var(--ds-primitives-space-6);
+      font-family: var(--ds-semantic-typography-heading-md-font-family);
+      font-size: var(--ds-semantic-typography-heading-md-font-size);
+      font-weight: var(--ds-semantic-typography-heading-md-font-weight);
+      line-height: var(--ds-semantic-typography-heading-md-line-height);
+      letter-spacing: var(--ds-semantic-typography-heading-md-letter-spacing);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ds-primitives-space-5);
+    }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="profile-heading">Profile</h1>
+    <form novalidate aria-labelledby="profile-heading">
+      <ds-alert variant="danger" label="Changes not saved" announce="polite">
+        The connection dropped before your changes reached the server. Your edits are still here.
+        <ds-button slot="actions" variant="secondary" size="small">Try again</ds-button>
+      </ds-alert>
+
+      <ds-text-field
+        label="Name"
+        name="name"
+        autocomplete="name"
+        value="Sam Rivera"
+        required></ds-text-field>
+
+      <ds-text-field
+        label="Email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        value="sam@"
+        error="Enter the full email address, including the part after @, like sam@example.com."
+        required></ds-text-field>
+
+      <div class="actions">
+        <ds-button type="submit" variant="primary">Save</ds-button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

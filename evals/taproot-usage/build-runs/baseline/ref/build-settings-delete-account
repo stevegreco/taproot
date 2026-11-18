@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Account settings</title>
+    <link rel="stylesheet" href="./node_modules/@taproot-ds/tokens/dist/css/tokens.css" />
+    <link rel="stylesheet" href="./node_modules/@taproot-ds/tokens/dist/css/base.css" />
+    <script type="module">
+      import { defineAlert } from "./node_modules/@taproot-ds/web-components/src/alert.js";
+      import { defineButton } from "./node_modules/@taproot-ds/web-components/src/button.js";
+      import { defineDialog } from "./node_modules/@taproot-ds/web-components/src/dialog.js";
+      import { defineTextField } from "./node_modules/@taproot-ds/web-components/src/text-field.js";
+
+      defineAlert();
+      defineButton();
+      defineDialog();
+      defineTextField();
+    </script>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      main {
+        box-sizing: border-box;
+        max-width: 40rem;
+        margin-inline: auto;
+        padding: var(--ds-primitives-space-12) var(--ds-primitives-space-6);
+        display: grid;
+        gap: var(--ds-primitives-space-10);
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      .section {
+        display: grid;
+        gap: var(--ds-primitives-space-6);
+      }
+
+      .section-header {
+        display: grid;
+        gap: var(--ds-primitives-space-2);
+      }
+
+      .supporting {
+        color: var(--ds-semantic-color-foreground-muted);
+      }
+
+      form {
+        display: grid;
+        gap: var(--ds-primitives-space-5);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: var(--ds-primitives-space-3);
+        padding-block-start: var(--ds-primitives-space-2);
+      }
+
+      .danger-zone {
+        padding: var(--ds-primitives-space-6);
+        border: var(--ds-primitives-space-px) solid var(--ds-semantic-color-border-default);
+        border-radius: var(--ds-semantic-radius-surface);
+        background-color: var(--ds-semantic-color-background-surface);
+      }
+
+      .danger-zone .actions {
+        justify-content: flex-start;
+        padding-block-start: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Account settings</h1>
+
+      <section class="section" aria-labelledby="profile-heading">
+        <div class="section-header">
+          <h2 id="profile-heading">Profile</h2>
+          <p class="supporting">Update how your name appears and where we send account email.</p>
+        </div>
+
+        <ds-alert
+          id="saved-alert"
+          variant="success"
+          label="Changes saved"
+          announce="polite"
+          dismissible
+          hidden
+        >
+          Your display name and email address are up to date.
+        </ds-alert>
+
+        <form id="profile-form" novalidate>
+          <ds-text-field
+            id="display-name"
+            label="Display name"
+            name="displayName"
+            value="Alex Rivera"
+            autocomplete="name"
+            hint="Shown to other people on your profile and in comments."
+            required
+          ></ds-text-field>
+
+          <ds-text-field
+            id="email"
+            label="Email address"
+            name="email"
+            type="email"
+            value="alex.rivera@example.com"
+            autocomplete="email"
+            hint="Used for sign-in and account notifications."
+            required
+          ></ds-text-field>
+
+          <div class="actions">
+            <ds-button type="reset" variant="secondary">Cancel</ds-button>
+            <ds-button type="submit" variant="primary">Save changes</ds-button>
+          </div>
+        </form>
+      </section>
+
+      <section class="section danger-zone" aria-labelledby="danger-heading">
+        <div class="section-header">
+          <h2 id="danger-heading">Delete account</h2>
+          <p class="supporting">
+            Permanently delete your account and all of its data. This cannot be undone.
+          </p>
+        </div>
+
+        <ds-alert id="deleted-alert" variant="info" label="Account deleted" announce="polite" hidden>
+          Your account and its data have been permanently deleted.
+        </ds-alert>
+
+        <div class="actions">
+          <ds-button id="delete-open" variant="destructive">Delete account</ds-button>
+        </div>
+      </section>
+    </main>
+
+    <ds-dialog
+      id="delete-dialog"
+      label="Delete your account?"
+      description="This permanently deletes your account, profile, and all of your data. This cannot be undone."
+    >
+      <p>You will be signed out and will no longer be able to sign in with this email address.</p>
+      <ds-button id="delete-cancel" slot="actions" variant="secondary" autofocus>Cancel</ds-button>
+      <ds-button id="delete-confirm" slot="actions" variant="destructive">Delete account</ds-button>
+    </ds-dialog>
+
+    <script type="module">
+      const form = document.getElementById("profile-form");
+      const nameField = document.getElementById("display-name");
+      const emailField = document.getElementById("email");
+      const savedAlert = document.getElementById("saved-alert");
+      const fields = [nameField, emailField];
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      function validate() {
+        const name = nameField.value.trim();
+        const email = emailField.value.trim();
+        nameField.error = name ? "" : "Enter a display name.";
+        emailField.error = !email
+          ? "Enter an email address."
+          : emailPattern.test(email)
+            ? ""
+            : "Enter an email address in the format name@example.com.";
+        return fields.find((field) => field.error);
+      }
+
+      for (const field of fields) {
+        field.addEventListener("input", () => {
+          field.error = "";
+          savedAlert.hidden = true;
+        });
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        savedAlert.hidden = true;
+        const invalid = validate();
+        if (invalid) {
+          invalid.focus();
+          return;
+        }
+        // Make the saved values the new baseline that Cancel (form reset) returns to.
+        for (const field of fields) {
+          const value = field.value.trim();
+          field.setAttribute("value", value);
+          field.value = value;
+        }
+        savedAlert.hidden = false;
+      });
+
+      form.addEventListener("reset", () => {
+        for (const field of fields) field.error = "";
+        savedAlert.hidden = true;
+      });
+
+      const dialog = document.getElementById("delete-dialog");
+      const openButton = document.getElementById("delete-open");
+      const deletedAlert = document.getElementById("deleted-alert");
+
+      openButton.addEventListener("click", () => dialog.showModal());
+      document.getElementById("delete-cancel").addEventListener("click", () => dialog.close());
+      document.getElementById("delete-confirm").addEventListener("click", () => {
+        dialog.close();
+        openButton.disabled = true;
+        form.querySelectorAll("ds-text-field, ds-button").forEach((el) => (el.disabled = true));
+        savedAlert.hidden = true;
+        deletedAlert.hidden = false;
+      });
+    </script>
+  </body>
+</html>

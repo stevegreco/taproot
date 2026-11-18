@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Notification settings</title>
+    <link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/tokens.css" />
+    <link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/base.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--ds-primitives-space-8) var(--ds-primitives-space-4);
+      }
+
+      .panel {
+        box-sizing: border-box;
+        max-width: 32rem;
+        margin: 0 auto;
+        padding: var(--ds-primitives-space-6);
+        background: var(--ds-semantic-color-background-surface);
+        border: var(--ds-primitives-space-px) solid var(--ds-semantic-color-border-default);
+        border-radius: var(--ds-semantic-radius-surface);
+      }
+
+      .panel h1 {
+        margin: 0 0 var(--ds-primitives-space-1);
+      }
+
+      .panel > p {
+        margin: 0 0 var(--ds-primitives-space-6);
+        color: var(--ds-semantic-color-foreground-muted);
+      }
+
+      .settings {
+        display: grid;
+        gap: var(--ds-primitives-space-6);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel" aria-labelledby="panel-title">
+        <h1 id="panel-title">Notifications</h1>
+        <p>Changes are saved as soon as you make them.</p>
+
+        <div class="settings">
+          <ds-switch
+            id="email"
+            label="Email notifications"
+            hint="Get updates sent to your email address."
+            checked
+          ></ds-switch>
+
+          <ds-switch
+            id="push"
+            label="Push notifications"
+            hint="Get alerts on your devices."
+            checked
+          ></ds-switch>
+
+          <ds-slider
+            id="volume"
+            label="Notification sound volume"
+            hint="0 is silent."
+            min="0"
+            max="100"
+            step="1"
+            value="70"
+          ></ds-slider>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { defineSwitch } from "./node_modules/@taproot-ds/web-components/src/switch.js";
+      import { defineSlider } from "./node_modules/@taproot-ds/web-components/src/slider.js";
+
+      defineSwitch();
+      defineSlider();
+
+      const STORAGE_KEY = "notification-settings";
+
+      // Stand-in for the settings API: persists locally and resolves when saved.
+      async function saveSetting(key, value) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
+        saved[key] = value;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      }
+
+      const email = document.getElementById("email");
+      const push = document.getElementById("push");
+      const volume = document.getElementById("volume");
+
+      // Restore previously saved values without firing change events.
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
+      if (typeof saved.email === "boolean") email.checked = saved.email;
+      if (typeof saved.push === "boolean") push.checked = saved.push;
+      if (typeof saved.volume === "number") volume.value = saved.volume;
+
+      function bindSwitch(el, key, name) {
+        let committed = el.checked;
+        el.addEventListener("change", async () => {
+          const next = el.checked;
+          el.error = "";
+          el.disabled = true;
+          try {
+            await saveSetting(key, next);
+            committed = next;
+          } catch {
+            el.checked = committed;
+            el.error = `Couldn't update ${name}. Try again.`;
+          } finally {
+            el.disabled = false;
+            el.focus();
+          }
+        });
+      }
+
+      bindSwitch(email, "email", "email notifications");
+      bindSwitch(push, "push", "push notifications");
+
+      let committedVolume = volume.value;
+      volume.addEventListener("change", async () => {
+        const next = volume.value;
+        volume.error = "";
+        try {
+          await saveSetting("volume", next);
+          committedVolume = next;
+        } catch {
+          volume.value = committedVolume;
+          volume.error = "Couldn't update the volume. Try again.";
+        }
+      });
+    </script>
+  </body>
+</html>

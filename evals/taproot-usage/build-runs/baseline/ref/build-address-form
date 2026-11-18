@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Address</title>
+    <link rel="stylesheet" href="node_modules/@taproot-ds/tokens/dist/css/tokens.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--ds-primitives-space-8) var(--ds-primitives-space-4);
+        background: var(--ds-semantic-color-background-default);
+        color: var(--ds-semantic-color-foreground-default);
+        font-family: var(--ds-semantic-typography-body-md-font-family);
+        font-size: var(--ds-semantic-typography-body-md-font-size);
+      }
+
+      main {
+        max-width: 32rem;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 var(--ds-primitives-space-6);
+        font-family: var(--ds-semantic-typography-heading-md-font-family);
+        font-size: var(--ds-semantic-typography-heading-md-font-size);
+        font-weight: var(--ds-semantic-typography-heading-md-font-weight);
+        line-height: var(--ds-semantic-typography-heading-md-line-height);
+        letter-spacing: var(--ds-semantic-typography-heading-md-letter-spacing);
+      }
+
+      form {
+        display: grid;
+        gap: var(--ds-primitives-space-5);
+      }
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+      }
+    </style>
+    <script type="module">
+      import { defineTextArea } from "./node_modules/@taproot-ds/web-components/src/text-area.js";
+      import { defineSelect } from "./node_modules/@taproot-ds/web-components/src/select.js";
+      import { defineTextField } from "./node_modules/@taproot-ds/web-components/src/text-field.js";
+      import { defineButton } from "./node_modules/@taproot-ds/web-components/src/button.js";
+
+      defineTextArea();
+      defineSelect();
+      defineTextField();
+      defineButton();
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>Address</h1>
+      <form method="post">
+        <ds-text-area
+          label="Street address"
+          name="street"
+          rows="3"
+          autocomplete="street-address"
+          hint="Include apartment, suite, or unit on its own line."
+        ></ds-text-area>
+
+        <ds-select label="Country" name="country">
+          <option value="">Choose a country</option>
+          <!-- Sample of the full list of about 200 countries. -->
+          <option value="AU">Australia</option>
+          <option value="CA">Canada</option>
+          <option value="DE">Germany</option>
+          <option value="GB">United Kingdom</option>
+          <option value="US">United States</option>
+        </ds-select>
+
+        <ds-text-field
+          label="Postal code"
+          name="postal-code"
+          autocomplete="postal-code"
+          required
+        ></ds-text-field>
+
+        <div class="actions">
+          <ds-button type="submit" variant="primary">Save address</ds-button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
