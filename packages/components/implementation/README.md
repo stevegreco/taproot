@@ -35,7 +35,17 @@ The components read semantic tokens directly, so they follow the active theme. W
 ## Fonts
 
 The font tokens name Lora, Source Sans 3, and JetBrains Mono, with system fallbacks. The packages do
-not ship the font files. The tokens package's readme has the links to load them.
+not ship the font files. On the web, load them from Google Fonts in the document head, before the
+token stylesheet:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+```
 
 ## Register the elements
 
@@ -48,6 +58,12 @@ import "@taproot-ds/web-components";
 Or import one component's module and call its define function, as each component's Import section
 shows. A define function takes another tag name when `ds-` names collide.
 
-The modules are standard ES modules with no runtime dependencies. Without a bundler, map the bare
-package names with an import map, or import the files under `node_modules/@taproot-ds/web-components/src/`.
+The modules are standard ES modules with no runtime dependencies. Without a bundler, import the
+package root's file directly, or map the bare package name to it with an import map:
+
+```html
+<script type="module" src="/node_modules/@taproot-ds/web-components/src/index.js"></script>
+```
+
+One component's module is `src/<name>.js` in the same folder.
 
