@@ -13,3 +13,12 @@ dist
 .pnpm-store/
 
 .wrangler
+
+# design-sync
+.design-sync/sb-reference/
+.design-sync/learnings/
+.design-sync/.cache/
+.design-sync/node_modules
+.design-sync/react-wrappers/dist/
+.ds-sync/
+ds-bundle/

@@ -1,0 +1,29 @@
+{
+  "projectId": "1b3814b4-e7d5-47df-a4c6-ea2dc0e33e16",
+  "pkg": "@taproot-ds/react-wrappers",
+  "globalName": "Taproot",
+  "shape": "storybook",
+  "storybookConfigDir": "apps/storybook/.storybook",
+  "storybookStatic": ".design-sync/sb-reference",
+  "entry": ".design-sync/react-wrappers/dist/index.js",
+  "buildCmd": "pnpm exec turbo run build --filter=@taproot-ds/web-components... --filter=@taproot-ds/react-components... && node .design-sync/react-wrappers/generate.mjs",
+  "cssEntry": "dist/taproot.css",
+  "titleMap": {
+    "Progressbar": "ProgressBar",
+    "Radiogroup": "RadioGroup",
+    "Textarea": "TextArea",
+    "Textfield": "TextField",
+    "Primitives": null,
+    "Semantic": null
+  },
+  "overrides": {
+    "Dialog": {
+      "cardMode": "single",
+      "primaryStory": "Open"
+    },
+    "Avatar": {
+      "cardMode": "column"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
