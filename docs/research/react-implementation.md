@@ -1,5 +1,8 @@
 # React implementation research
 
+> Uses names from before the rename to Taproot ([ADR 0008](../adr/0008-rename-to-taproot.md)): the
+> `ds-spec` CLI is now `taproot`.
+
 This log goes with `packages/react`, a second implementation of the spec built in React. The work
 tests two claims:
 
