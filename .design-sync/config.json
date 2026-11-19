@@ -6,7 +6,7 @@
   "storybookConfigDir": "apps/storybook/.storybook",
   "storybookStatic": ".design-sync/sb-reference",
   "entry": ".design-sync/react-wrappers/dist/index.js",
-  "buildCmd": "pnpm exec turbo run build --filter=@taproot-ds/web-components... && node .design-sync/react-wrappers/generate.mjs",
+  "buildCmd": "pnpm exec turbo run build --filter=@taproot-ds/web-components... --filter=@taproot-ds/react-components... && node .design-sync/react-wrappers/generate.mjs",
   "cssEntry": "dist/taproot.css",
   "titleMap": {
     "Progressbar": "ProgressBar",

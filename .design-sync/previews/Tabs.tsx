@@ -1,18 +1,19 @@
 import * as React from "react";
-import { TabPanel, Tabs } from "@taproot-ds/react-wrappers";
+import { Tabs, TabsSection } from "@taproot-ds/react-wrappers";
 
-// Mirrors apps/storybook/stories/tabs.stories.js. Each TabPanel is one tab; `value` picks the selected one.
+// Mirrors apps/storybook/stories/tabs.stories.js with Tabs from @taproot-ds/react-components.
+// Each TabsSection is one tab and needs a unique `value`; `value` on Tabs picks the selected one.
 const Settings = ({ value = "profile" }: { value?: string }) => (
-  <Tabs label="Account settings" value={value}>
-    <TabPanel label="Profile" value="profile">
+  <Tabs accessibleName="Account settings" value={value}>
+    <TabsSection label="Profile" value="profile">
       <p>Your name, photo, and contact details.</p>
-    </TabPanel>
-    <TabPanel label="Notifications" value="notifications">
+    </TabsSection>
+    <TabsSection label="Notifications" value="notifications">
       <p>Choose which updates reach you by email.</p>
-    </TabPanel>
-    <TabPanel label="Billing" value="billing">
+    </TabsSection>
+    <TabsSection label="Billing" value="billing">
       <p>Your plan, payment method, and invoices.</p>
-    </TabPanel>
+    </TabsSection>
   </Tabs>
 );
 
@@ -22,12 +23,12 @@ export const SecondSelected = () => <Settings value="notifications" />;
 
 export const Overflowing = () => (
   <div style={{ maxWidth: 320 }}>
-    <Tabs label="Account settings">
+    <Tabs accessibleName="Account settings">
       {["Overview", "Activity", "Members", "Permissions", "Integrations", "Settings"].map(
         (name) => (
-          <TabPanel key={name} label={name}>
+          <TabsSection key={name} label={name} value={name.toLowerCase()}>
             <p>{name} content.</p>
-          </TabPanel>
+          </TabsSection>
         ),
       )}
     </Tabs>

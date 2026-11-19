@@ -1,9 +1,10 @@
 # Building with Taproot
 
-Taproot ships as web components (`<ds-button>`, `<ds-alert>`, …). Every export on `window.Taproot` is a
-thin React wrapper that renders one of those elements. The elements style themselves inside shadow DOM,
+Taproot ships as web components (`<ds-button>`, `<ds-alert>`, …). Most exports on `window.Taproot` are
+thin React wrappers that render one of those elements. The elements style themselves inside shadow DOM,
 so you cannot restyle them with classes. Choose the look through props, and use tokens for your own
-layout.
+layout. `Select`, `Tabs` and `TabsSection` are different: they come from the React package
+`@taproot-ds/react-components`, render plain DOM, and take only the props in their `.d.ts`.
 
 ## Setup
 
@@ -20,13 +21,18 @@ layout.
   Button's accessible name is `aria-label`. Read each `<Name>.d.ts` for the exact set and values.
 - Children go in the default slot. Put a child in a named slot with `slot`: Alert has `icon` and
   `actions`; Card has `media` and `actions`; Dialog has `actions`.
-- Compound parts: `Accordion` takes `AccordionSection label=…` children; `Tabs` takes
-  `TabPanel label=… value=…` children (`value` on Tabs picks the selected tab).
-- `Select` and `RadioGroup` take native `<option>` (and `<optgroup>`) children. Don't pass an options prop.
+- Compound parts: `Accordion` takes `AccordionSection label=…` children. `Tabs` needs
+  `accessibleName` and takes `TabsSection label=… value=…` children, each with a unique `value`
+  (`value` or `defaultValue` on Tabs picks the selected tab).
+- `Select` takes its choices in `options`: `[{ value, label, disabled? }]`, or a group
+  `{ label, options: [...] }`. `RadioGroup` takes native `<option>` children.
+- The React-package components have no `slot` prop. To put one in a named slot, wrap it:
+  `<div slot="actions"><Select … /></div>`.
 - `Icon` wraps an inline `<svg>` you supply. There is no icon set. Give `label` only when the icon
   carries meaning by itself.
 - Events: `onChange`, `onInput`, `onClick`, `onClose`, `onDismiss`, `onToggle`. Read state from
   `event.currentTarget` (`.value`, `.checked`). For controlled use, pass `value`/`checked`/`open` and update them in the handler.
+  `Select`'s and `Tabs`' `onChange` (and Select's `onInput`) receive the new value string, not an event.
 - Dialog is controlled with `open` plus `onClose`. Close it from action buttons by setting `open` to false.
 
 ## Tokens for your own layout
