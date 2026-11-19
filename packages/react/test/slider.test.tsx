@@ -95,6 +95,12 @@ describe("component.slider#value-shown (MUST)", () => {
     expect(input().getAttribute("aria-valuetext")).toBe("40");
   });
 
+  test("assistive technology hears the value once, from the slider", async () => {
+    await render(<Example defaultValue={40} />);
+    expect(part("value").getAttribute("aria-hidden")).toBe("true");
+    expect(part("value").closest("[role]")).toBeNull();
+  });
+
   test("the value text follows the reader's locale", async () => {
     await render(<Example min={0} max={5000} step={500} defaultValue={2500} />);
     const expected = new Intl.NumberFormat().format(2500);

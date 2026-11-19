@@ -97,11 +97,6 @@ type Case = {
   known?: string;
 };
 
-const SLIDER_VALUE =
-  "React exposes the visible value a second time, as text beside the slider, inside a group " +
-  "named by the label. The web slider hides that text, so assistive technology hears the value " +
-  "once, from the slider.";
-
 const cases: Record<string, Case[]> = {
   badge: [
     {
@@ -172,13 +167,11 @@ const cases: Record<string, Case[]> = {
         />
       ),
       act: () => userEvent.keyboard("{ArrowRight}{ArrowRight}"),
-      known: SLIDER_VALUE,
     },
     {
       name: "disabled, with an error",
       web: `<ds-slider label="Volume" error="Too loud." disabled value="40"></ds-slider>`,
       react: <Slider label="Volume" error="Too loud." disabled defaultValue={40} />,
-      known: SLIDER_VALUE,
     },
   ],
   select: [
