@@ -146,8 +146,9 @@ function configMessage(error) {
 
 /**
  * With no config file, the config for the shipped content, built from the Taproot packages
- * installed next to the project: the web implementation from `@taproot-ds/web-components`, and the
- * token sets and constants from `@taproot-ds/tokens`. A project that depends on them needs no file
+ * installed next to the project: the web implementation from `@taproot-ds/web-components`, the React
+ * implementation from `@taproot-ds/react-components`, and the token sets and constants from
+ * `@taproot-ds/tokens`. A project that depends on them needs no file
  * of its own. Its folders are absolute, and it has no `path`.
  *
  * @param {string} cwd
@@ -155,15 +156,20 @@ function configMessage(error) {
  */
 export function installedConfig(cwd) {
   const web = findPackage(cwd, "@taproot-ds/web-components");
+  const react = findPackage(cwd, "@taproot-ds/react-components");
   const tokens = findPackage(cwd, "@taproot-ds/tokens");
-  if (!web && !tokens) return undefined;
+  if (!web && !react && !tokens) return undefined;
   /** @type {SpecConfig} */
   const config = {};
+  /** @type {Record<string, ImplementationConfig>} */
+  const implementations = {};
   if (web && fs.existsSync(path.join(web, "implementation"))) {
-    config.implementations = {
-      web: { folder: path.join(web, "implementation"), technology: "web-component" },
-    };
+    implementations.web = { folder: path.join(web, "implementation"), technology: "web-component" };
   }
+  if (react && fs.existsSync(path.join(react, "implementation"))) {
+    implementations.react = { folder: path.join(react, "implementation"), technology: "react" };
+  }
+  if (Object.keys(implementations).length > 0) config.implementations = implementations;
   if (tokens) {
     const file = (name) => path.join(tokens, "src/tokens", name);
     const shared = ["semantic/shape.tokens.json", "semantic/typography.tokens.json"];

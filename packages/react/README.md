@@ -1,9 +1,16 @@
 # @taproot-ds/react-components
 
 React components built from the design system spec and styled with the design system tokens. The
-package is a second implementation of the spec, and a research project: it checks that the spec is
-enough to build a component in another technology. Findings are logged in
-[`docs/research/react-implementation.md`](../../docs/research/react-implementation.md).
+package is a second implementation of the spec. It began as a research project to check that the
+spec is enough to build a component in another technology, and the findings are logged in
+[`docs/research/react-implementation.md`](../../docs/research/react-implementation.md). It is
+published to npm at 0.x, so its props can still change between minor versions.
+
+```bash
+pnpm add @taproot-ds/react-components @taproot-ds/tokens
+```
+
+The components need React 19.
 
 Components wrap [React Aria Components](https://react-spectrum.adobe.com/react-aria/) for behavior
 and accessibility, and style it with the token custom properties. The Tabs bake-off in the research

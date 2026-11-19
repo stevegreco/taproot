@@ -152,7 +152,7 @@ two suites and how to set up, run, and read them. Reports on runs are in `docs/r
 
 ## Releases
 
-`@taproot-ds/tokens`, `@taproot-ds/web-components`, and `@taproot-ds/spec` are
-published to npm with Changesets. A change to one of them adds a changeset with `pnpm changeset`, in
-the same pull request. Merging to `main` opens or updates a Version Packages pull request, and
-merging that one publishes. `@taproot-ds/react-components` is private and is not published.
+`@taproot-ds/tokens`, `@taproot-ds/web-components`, `@taproot-ds/react-components`, and
+`@taproot-ds/spec` are published to npm with Changesets. A change to one of them adds a changeset
+with `pnpm changeset`, in the same pull request. Merging to `main` opens or updates a Version
+Packages pull request, and merging that one publishes.

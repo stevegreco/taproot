@@ -11,6 +11,8 @@ showed.
 
 ## Status
 
+`@taproot-ds/react-components` is now published to npm, at 0.x.
+
 This is a dated log, so the findings below stay as written. Open ones are filed as issues #271
 through #283. These are resolved:
 
