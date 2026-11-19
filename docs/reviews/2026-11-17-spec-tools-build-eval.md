@@ -79,24 +79,16 @@ saved page was graded again without rerunning the agents.
 
 ## Run it again
 
-From the repository root, after `pnpm build`:
+From the repository root, this command builds the packages and the eval project, runs all three
+setups, and prints the tables above:
 
 ```bash
-node evals/taproot-usage/setup-project.mjs
+pnpm eval build --model claude-opus-5-5 --concurrency 3
 ```
 
-```bash
-TAPROOT_EVAL_SUITE=build node evals/taproot-usage/run-eval.mjs --flow evals/taproot-usage/build-runs --variant baseline --concurrency 3
-```
+Without `--model` the runner uses `claude-haiku-5-5`, so compare a Haiku run against its own
+baseline, not these numbers. Results go to a new dated folder. If the harness files changed since
+this run, review them and add `--approve-harness`.
 
-Use `--variant v1` for the CLI and `--variant v2` for MCP. The runner uses `claude-haiku-5-5`
-unless `--model` names another model; this report's run used `--model claude-opus-5-5`, so compare
-a Haiku run against its own baseline, not these numbers. A run that finds its results already
-recorded skips them, so start a new flow folder for a new run. If the harness files changed, review
-them and add `--approve-harness`. Then summarize:
-
-```bash
-node evals/taproot-usage/summarize-build.mjs
-```
-
-Results and full transcripts, including each page, are in `evals/taproot-usage/build-runs/`.
+This report's results and full transcripts, including each page, are in
+`evals/taproot-usage/build-runs/`.

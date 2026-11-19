@@ -4,13 +4,14 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "test": "turbo run test",
+    "test": "turbo run test && vitest run --project evals",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
     "spec": "node packages/spec/bin/taproot.js",
     "bench": "node packages/spec/scripts/bench.js",
+    "eval": "node evals/taproot-usage/run-suite.mjs",
     "component:new": "node scripts/component-new.mjs",
     "component:status": "node scripts/component-status.mjs",
     "changeset": "changeset"
