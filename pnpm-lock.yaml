@@ -163,6 +163,9 @@ importers:
         specifier: ^1.22.1
         version: 1.22.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
     devDependencies:
+      '@taproot-ds/web-components':
+        specifier: workspace:*
+        version: link:../components
       '@tsdown/css':
         specifier: ~0.23.4
         version: 0.23.4(jiti@2.7.0)(postcss@8.5.28)(tsdown@0.23.4)(yaml@2.9.0)

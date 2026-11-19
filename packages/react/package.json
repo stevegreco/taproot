@@ -41,6 +41,7 @@
     "react-aria-components": "^1.22.1"
   },
   "devDependencies": {
+    "@taproot-ds/web-components": "workspace:*",
     "@tsdown/css": "~0.23.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
