@@ -213,12 +213,13 @@ describe("installed packages, with no config file", () => {
     const scope = path.join(tmp, "node_modules/@taproot-ds");
     fs.mkdirSync(scope, { recursive: true });
     fs.symlinkSync(path.join(repo, "packages/components"), path.join(scope, "web-components"));
+    fs.symlinkSync(path.join(repo, "packages/react"), path.join(scope, "react-components"));
     fs.symlinkSync(path.join(repo, "packages/tokens"), path.join(scope, "tokens"));
     fs.mkdirSync(path.join(tmp, "src"));
     return tmp;
   };
 
-  it("configures the web implementation, token sets, and constants from them", () => {
+  it("configures the web and React implementations, token sets, and constants from them", () => {
     const tmp = project();
     const config = resolveConfig({ cwd: path.join(tmp, "src") });
     expect(config.configPath).toBeUndefined();
@@ -228,6 +229,11 @@ describe("installed packages, with no config file", () => {
       technology: "web-component",
     });
     expect(config.implementations.web.setup()).toMatch(/^# Web components setup/);
+    expect(config.implementations.react).toMatchObject({
+      folder: path.join(repo, "packages/react/implementation"),
+      technology: "react",
+    });
+    expect(config.implementations.react.setup()).toMatch(/^# React components setup/);
     expect(Object.keys(config.tokenSets)).toEqual(["light", "dark"]);
     expect(config.resolveToken(config.constants["border-width"])).toHaveProperty("light");
     fs.rmSync(tmp, { recursive: true });

@@ -3,8 +3,16 @@
 What every React component needs, once per project. Each component's own file in this folder maps
 its API; `taproot setup --impl react` prints this one.
 
-`@taproot-ds/react-components` is a research implementation and is not published to npm. Use it
-from this repository's workspace.
+## Install
+
+```bash
+pnpm add @taproot-ds/react-components @taproot-ds/tokens
+pnpm add -D @taproot-ds/spec
+```
+
+The components need React 19. `@taproot-ds/spec` gives agents the `taproot` command and MCP server.
+With the other two packages installed beside it, it finds their API names and token values on its
+own, with no config file.
 
 ## Load the styles
 
