@@ -93,9 +93,10 @@ Button means Badge is the alternative to Button.
 
 ## Config
 
-Both tools find their content with a `spec.config.json`, found by walking up from the working
-directory. Paths are relative to the config file. `implementations`, `constants`, `vocabulary`, and
-`tokens` are optional. The file is checked against
+A `spec.config.json` is optional. Without one, the tools configure themselves from the installed
+Taproot packages (see [Use in another project](#use-in-another-project)). With one, found by walking
+up from the working directory, they use only the file and detect nothing. Paths are relative to the
+config file, and every field is optional. The file is checked against
 [`src/schema/spec-config.schema.json`](src/schema/spec-config.schema.json), exported as
 `@taproot-ds/spec/schema/spec-config.json`. Point `$schema` at it for checks and completion in an
 editor. Every problem in the file is reported at once.
@@ -266,48 +267,22 @@ resource read starts with a warning that names it and its issues.
 
 ## Use in another project
 
-The package ships the records, so `taproot` and `taproot-mcp` work after an install. Implementation
-names (`get --impl`), token values (`--resolve`), and the system-wide constants come from the other
-packages, so add a `spec.config.json` at the project root that points at the ones you install. Leave
-out `content` to use the shipped records, and leave out the implementation you do not use.
+The package ships the records, so `taproot` and `taproot-mcp` work after an install. With no
+`spec.config.json`, they configure themselves from the Taproot packages installed in `node_modules`
+in the working directory or a folder above it:
+
+- `@taproot-ds/web-components`: the `web` implementation, for `get --impl web` and `setup --impl web`.
+- `@taproot-ds/react-components`: the `react` implementation.
+- `@taproot-ds/tokens`: the `light` and `dark` token sets for `--resolve`, and the system-wide
+  constants for `format`.
 
 ```bash
 pnpm add -D @taproot-ds/spec @taproot-ds/tokens @taproot-ds/web-components
 ```
 
-```json
-{
-  "$schema": "./node_modules/@taproot-ds/spec/src/schema/spec-config.schema.json",
-  "implementations": {
-    "web": {
-      "folder": "node_modules/@taproot-ds/web-components/implementation",
-      "technology": "web-component"
-    }
-  },
-  "constants": {
-    "border-width": "semantic.border.width",
-    "focus-ring-width": "semantic.focus.width",
-    "focus-ring-offset": "semantic.focus.offset"
-  },
-  "tokens": {
-    "format": "dtcg",
-    "sets": {
-      "light": [
-        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/light.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
-      ],
-      "dark": [
-        "node_modules/@taproot-ds/tokens/src/tokens/primitives.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/dark.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/shape.tokens.json",
-        "node_modules/@taproot-ds/tokens/src/tokens/semantic/typography.tokens.json"
-      ]
-    }
-  }
-}
-```
+Add a `spec.config.json` only to change that, for example to serve your own records or check a
+vocabulary. A config file replaces detection instead of adding to it, so name everything you want
+the tools to use, as in the example under [Config](#config).
 
 ```json
 { "mcpServers": { "taproot": { "command": "node_modules/.bin/taproot-mcp" } } }
