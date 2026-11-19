@@ -7,6 +7,11 @@
  *   implementation  runtime, tests, web API file, and stories (implement-component)
  *
  *   pnpm component:status <name> [--phase spec|implementation] [--impl <name>]
+ *   pnpm component:status --changed [--base <ref>]
+ *
+ * `--changed` checks each component whose files differ from `--base` (default `origin/main`, or
+ * `main` without a remote), committed or not, so a change is checked against the rules of what it
+ * touched.
  *
  * With no phase, every phase is checked. The implementation phase checks each
  * implementation in `spec.config.json` that has a mapping file for the
@@ -20,13 +25,15 @@
  * Lists that tests derive from the filesystem (content.test.js,
  * package-root.test.js) need no entry and are not checked here.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { validateFromConfig } from "../packages/spec/src/config.js";
 import { loadSpec } from "../packages/spec/src/index.js";
+import { RULE_TEST_FILES, testableMustRules, untestedRules } from "./lib/rule-coverage.mjs";
 
 /**
  * The "decide what it ships" checklist. A spec settles an item with a
@@ -99,8 +106,8 @@ const CHECKLIST = [
 /**
  * The files a built component needs, by implementation technology, besides the mapping file in
  * the implementation's configured folder. Paths are relative to the package that holds that
- * folder. `test` is the file whose `[rule-id]` tags count toward rule coverage. Storybook shows
- * only the web components (ADR 0007), so only they need stories.
+ * folder. RULE_TEST_FILES names the tests that count toward rule coverage. Storybook shows only
+ * the web components (ADR 0007), so only they need stories.
  */
 const TECHNOLOGY_FILES = {
   "web-component": (slug) => ({
@@ -111,12 +118,10 @@ const TECHNOLOGY_FILES = {
       `test/${slug}.test.js`,
       `test/host-checks/${slug}.js`,
     ],
-    test: `test/${slug}.test.js`,
     repoFiles: [`apps/storybook/stories/${slug}.stories.js`],
   }),
   react: (slug) => ({
     files: [`src/${slug}/${pascal(slug)}.tsx`, `src/${slug}/${slug}.css`, `test/${slug}.test.tsx`],
-    test: `test/${slug}.test.tsx`,
     repoFiles: [],
   }),
 };
@@ -125,8 +130,14 @@ const PHASES = ["spec", "implementation"];
 const root = fileURLToPath(new URL("../", import.meta.url));
 const { values, positionals } = parseArgs({
   allowPositionals: true,
-  options: { phase: { type: "string" }, impl: { type: "string" } },
+  options: {
+    phase: { type: "string" },
+    impl: { type: "string" },
+    changed: { type: "boolean" },
+    base: { type: "string" },
+  },
 });
+if (values.changed) checkChanged(values.base);
 const slug = positionals[0];
 const phase = values.phase;
 const config = JSON.parse(readFileSync(path.join(root, "spec.config.json"), "utf8"));
@@ -141,7 +152,7 @@ if (
   (values.impl && !implementations.some(([name]) => name === values.impl))
 ) {
   console.error(
-    `Usage: pnpm component:status <name> [--phase ${PHASES.join("|")}] [--impl ${implementations.map(([name]) => name).join("|")}]   (for example: checkbox)`,
+    `Usage: pnpm component:status <name> [--phase ${PHASES.join("|")}] [--impl ${implementations.map(([name]) => name).join("|")}]   (for example: checkbox)\n       pnpm component:status --changed [--base <ref>]`,
   );
   process.exit(2);
 }
@@ -218,11 +229,11 @@ if (inPhase("implementation")) {
       continue;
     }
     const pkg = path.posix.dirname(entry.folder);
-    const { files, test, repoFiles } = kind(slug);
+    const { files, repoFiles } = kind(slug);
     for (const file of [...files.map((f) => `${pkg}/${f}`), ...repoFiles]) {
       row(existsSync(path.join(root, file)), file);
     }
-    tests.push(`${pkg}/${test}`);
+    tests.push(RULE_TEST_FILES[entry.technology](slug).map((file) => `${pkg}/${file}`));
   }
   if (spec) {
     const draft = spec.status === "draft";
@@ -303,12 +314,6 @@ function checklist(spec) {
 }
 
 /**
- * MUST rules, including inherited ones, with no test named `[<rule-id>] …` in the component's
- * test file. A test that
- * proves several rules starts with each tag, with or without spaces: `[a] [b] …`.
- * Content rules say what authors write, which a component test can't check.
- */
-/**
  * The component's rules, with the ones it inherits from the patterns and guidelines it follows.
  * Falls back to the rules in the file when the spec does not load, which validation reports.
  */
@@ -319,16 +324,17 @@ async function componentRules(spec) {
   return loaded.rules({ id: spec.id });
 }
 
-function ruleCoverage(rules, testPath) {
-  const testSource = read(testPath) ?? "";
-  const tagged = new Set();
-  for (const [, tags] of testSource.matchAll(/["'`]((?:\[[a-z0-9-]+\] ?)+) /g)) {
-    for (const [, id] of tags.matchAll(/\[([a-z0-9-]+)\]/g)) tagged.add(id);
-  }
-  const must = rules.filter((rule) => rule.level === "must" && rule.topic !== "content");
-  const untested = must.filter((rule) => !tagged.has(rule.id));
+/**
+ * MUST rules, including inherited ones, that no test cites by `[rule-id]` tag or by address
+ * (scripts/lib/rule-coverage.mjs). Content rules say what authors write, which a component test
+ * can't check.
+ */
+function ruleCoverage(rules, testPaths) {
+  const source = testPaths.map((file) => read(file) ?? "").join("\n");
+  const must = testableMustRules(rules);
+  const untested = untestedRules(rules, source);
 
-  console.log(`\n  MUST rules (except content) with a test tagged [rule-id] in ${testPath}`);
+  console.log(`\n  MUST rules (except content) cited by a test in ${testPaths.join(", ")}`);
   if (untested.length === 0) {
     row(true, `all ${must.length} MUST rule(s)`);
     return;
@@ -338,6 +344,59 @@ function ruleCoverage(rules, testPath) {
     const from = rule.appliesTo ? `, from ${rule.address}` : "";
     row("warn", `[${rule.id}] has no test${from}`, rule.statement.trim());
   }
+}
+
+/**
+ * Check each component whose files differ from `base`: committed on this branch, staged,
+ * unstaged, or untracked. Runs this script once per component and exits with the worst code.
+ */
+function checkChanged(chosen) {
+  const root = fileURLToPath(new URL("../", import.meta.url));
+  const git = (...args) =>
+    execFileSync("git", args, { cwd: root, encoding: "utf8" }).split("\n").filter(Boolean);
+  // A local main is often behind, which would count everything merged since as changed.
+  const hasRemote = spawnSync("git", ["rev-parse", "--verify", "--quiet", "origin/main"], {
+    cwd: root,
+  }).status;
+  const base = chosen ?? (hasRemote === 0 ? "origin/main" : "main");
+  const files = [
+    ...git("diff", "--name-only", `${base}...HEAD`),
+    ...git("diff", "--name-only", "HEAD"),
+    ...git("ls-files", "--others", "--exclude-standard"),
+  ];
+  const known = new Set(readdirSync(path.join(root, "packages/spec/content/components")));
+  const folders = [
+    "packages/spec/content/components/",
+    "packages/components/src/",
+    "packages/components/test/",
+    "packages/components/test/host-checks/",
+    "packages/components/implementation/",
+    "packages/react/src/",
+    "packages/react/test/",
+    "packages/react/implementation/",
+    "apps/storybook/stories/",
+  ];
+  const slugs = new Set();
+  for (const file of files) {
+    for (const folder of folders) {
+      if (!file.startsWith(folder)) continue;
+      const name = file.slice(folder.length).split("/")[0].split(".")[0];
+      if (known.has(name)) slugs.add(name);
+    }
+  }
+  if (slugs.size === 0) {
+    console.log(`No component changed since ${base}.`);
+    process.exit(0);
+  }
+  console.log(`Components changed since ${base}: ${[...slugs].join(", ")}`);
+  let worst = 0;
+  for (const name of slugs) {
+    const result = spawnSync(process.execPath, [fileURLToPath(import.meta.url), name], {
+      stdio: "inherit",
+    });
+    worst = Math.max(worst, result.status ?? 1);
+  }
+  process.exit(worst);
 }
 
 /** `text-field` → `TextField`, the React component and file name. */

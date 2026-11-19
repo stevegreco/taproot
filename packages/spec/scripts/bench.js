@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * Time how long `taproot get button` takes, the way an agent calls it: a fresh `node` process per
- * call, run from the repository root so it finds spec.config.json. Not part of `pnpm test`; a
- * looser 1 s limit in test/cli.test.js catches large regressions.
+ * call, run from the repository root so it finds spec.config.json. Not part of `pnpm test`, which
+ * does not time the CLI.
  *
  *   pnpm bench [--runs <n>]
  */

@@ -1,6 +1,6 @@
 # Taproot usage eval: draft tasks
 
-Generated from `cases.json` by `check-cases.mjs`. 36 tasks. Each runs through the CLI, the MCP server, and the control with neither.
+Generated from `cases.json` by `check-cases.mjs`. 42 tasks. Each runs through the CLI, the MCP server, and the control with neither.
 
 Drafted from the spec, not from real requests, so they may be cleaner than what people actually ask.
 
@@ -59,3 +59,14 @@ Drafted from the spec, not from real requests, so they may be cleaner than what 
 | `avail-web-slider` | Is there a Taproot slider web component I can use today? If so, what's its tag name? | available: false; tag: null |
 | `avail-react-tooltip` | Is there a Taproot tooltip for React I can use today? If so, what's its export name? | available: false; export: null |
 | `avail-web-tooltip` | Is there a Taproot tooltip web component I can use today? If so, what's its tag name? | available: true; tag: ds-tooltip |
+
+## review (6)
+
+| Id | Request | Expected |
+| --- | --- | --- |
+| `review-slider-invalid-contrast` | The invalid fill and thumb use a pale background color, so an invalid slider's position nearly disappears against the track. (code from b7cf5ff) | rule: component.slider#thumb-contrast |
+| `review-slider-invalid-contrast-fixed` | The fixed version: the invalid fill and thumb use the strong danger color. It breaks no rule. (code from b7cf5ff) | rule: null |
+| `review-dialog-escape-scope` | Every open dialog listens for Escape in the capture phase and ignores whether a control or text composition already handled it, so Escape in a combobox or an IME, or in a nested dialog, dismisses the dialog. (code from c757c16) | rule: component.dialog#cancellation |
+| `review-dialog-escape-scope-fixed` | The fixed version: only the newest open dialog acts on an Escape that nothing else handled. It breaks no rule. (code from c757c16) | rule: null |
+| `review-button-forced-colors` | Nothing handles forced colors, so the variant fills drop away and primary, secondary, tertiary, and destructive buttons all look alike. (code from 6ca3993) | rule: component.button#forced-colors,guideline.accessibility#forced-colors |
+| `review-button-forced-colors-fixed` | The fixed version: under forced colors each variant keeps its emphasis in system colors. It breaks no rule. (code from 6ca3993) | rule: null |

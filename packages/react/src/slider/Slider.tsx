@@ -3,7 +3,7 @@
  * `onChange` and the end of a drag or key press through `onChangeEnd`; this component maps them to
  * the spec's input and change, and filters what the spec does not count as a person's change.
  */
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import {
   I18nProvider,
   Label,
@@ -125,6 +125,14 @@ export function Slider({
   const rootRef = useRef<HTMLDivElement>(null);
   const locale = useDirectionLocale(rootRef);
 
+  // React Aria makes the root a group named by the label, for sliders with several thumbs. With one
+  // thumb the slider already has that name, so a screen reader would announce it twice. Its props
+  // win over ours, so remove the role and name after each render (component.slider#value-shown).
+  useLayoutEffect(() => {
+    rootRef.current?.removeAttribute("role");
+    rootRef.current?.removeAttribute("aria-labelledby");
+  });
+
   const id = useId();
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
@@ -160,7 +168,9 @@ export function Slider({
     >
       <div className="ds-slider__header">
         <Label className="ds-slider__label">{label}</Label>
-        <SliderOutput className="ds-slider__value" />
+        {/* The thumb already gives assistive technology the value text, so the visible copy is
+            hidden from it, as in the web component (component.slider#value-shown). */}
+        <SliderOutput className="ds-slider__value" aria-hidden="true" />
       </div>
       {locale ? <I18nProvider locale={locale}>{track}</I18nProvider> : track}
       {hint ? (

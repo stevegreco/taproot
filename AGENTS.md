@@ -116,6 +116,12 @@ review pauses after each commit:
 `pnpm component:status <name> [--phase spec|implementation] [--impl <name>]` checks it. The
 implementation phase checks each implementation in `spec.config.json` that has a mapping file for
 the component, so a component built only in React passes; `--impl` checks one.
+`pnpm component:status --changed` checks every component a branch or working tree touches.
+
+Every testable MUST rule of a built component needs a test that cites it, by a `[rule-id]` tag at
+the start of its name or by the rule's address. `packages/components/test/node/rule-coverage.test.js`
+enforces this for every implementation. Its list of known gaps, `untested-rules.json`, may only
+shrink.
 
 Token decisions live in `packages/tokens/docs/adr/`, also listed in `docs/adr/README.md`. Do not place design system facts only in a
 documentation page or an agent skill. Those consume the spec.

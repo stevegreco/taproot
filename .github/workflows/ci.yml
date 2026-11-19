@@ -60,8 +60,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
+      # The tests run headless, which uses Chromium's headless shell, so that is all CI installs.
+      # The runner image already has the system libraries Chrome needs, so --with-deps (an apt
+      # install that once took 96s on a slow mirror) is left out. If a library goes missing, the
+      # browser fails to launch with an error naming it.
+      - name: Read the Playwright version
+        id: playwright
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-headless-shell
+
+      - name: Install Chromium headless shell
+        run: pnpm exec playwright install --only-shell chromium
 
       - name: Build
         run: pnpm build
