@@ -92,9 +92,8 @@ describe("the shipped spec", () => {
         const found = shipped.section(rule.address);
         expect(found).toBeDefined();
         expect(found.content.statement).toBe(rule.statement);
-        // A rule that extends another keeps only `extends` and `statement` in its section, so the
-        // level comes from the rule it extends. `rules` fills it in; `section` does not.
-        if (!found.content.extends) expect(found.content.level).toBe(rule.level);
+        expect(found.content.level).toBe(rule.level);
+        expect(found.content.topic).toBe(rule.topic);
       }),
     );
   });

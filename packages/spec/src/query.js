@@ -46,8 +46,20 @@ export function section(state, target) {
     recordId,
     section: name,
     title: entry.title,
-    content: entry.content,
+    content: withInheritedLevel(state, target, entry.content),
   });
+}
+
+/**
+ * A rule that extends another is written with only its id, `extends`, and statement. Give it the
+ * level and topic it resolves to, as `rules` does, so a JSON reader sees how strong it is.
+ */
+function withInheritedLevel(state, target, content) {
+  if (content?.extends === undefined) return content;
+  const recordId = target.slice(0, target.indexOf("#"));
+  const resolved = recordRules(state, recordId).rules.find((rule) => rule.address === target);
+  if (!resolved) return content;
+  return Object.freeze({ ...content, level: resolved.level, topic: resolved.topic });
 }
 
 /** Every word in the search index, built once per state. */
