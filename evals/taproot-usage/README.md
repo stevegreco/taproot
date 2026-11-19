@@ -17,6 +17,10 @@ The evals call a model, so they cost usage. They run only when someone starts th
 - **Answer suite** (default): the agent answers a design system question, such as which component
   fits, and ends with a line of JSON. It is graded on that JSON. The questions are in
   `cases.json`, and `cases.md` lists them for review. The agent has no file tools.
+  The `review` cases show code from a past bug fix and ask which MUST rule it breaks. Each bug case
+  has a one-sentence `answer_key` and the commit it came from (`from`), and only the rule the fix
+  restored counts. Each has a control: the fixed code, where the right answer is no rule, so an
+  agent that flags everything scores no better than one that flags nothing.
 - **Build suite** (`TAPROOT_EVAL_SUITE=build`): the agent builds a page with the web components and
   writes `index.html`. The grade checks that HTML: the expected components; attributes, values, and
   slots against the package's `custom-elements.json`; the MUST rules a script can check;

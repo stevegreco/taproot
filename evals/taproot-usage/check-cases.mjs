@@ -35,10 +35,12 @@ for (const c of cases) {
   }
   if (c.source) {
     const output = taproot(c.source).toLowerCase();
-    for (const [field, value] of Object.entries(c.expected)) {
-      if (value === null || typeof value === "boolean") continue;
-      if (!output.includes(String(value).toLowerCase())) {
-        problems.push(`${c.id}: "${value}" (${field}) not in \`taproot ${c.source}\``);
+    for (const [field, expected] of Object.entries(c.expected)) {
+      if (expected === null || typeof expected === "boolean") continue;
+      for (const value of [expected].flat()) {
+        if (!output.includes(String(value).toLowerCase())) {
+          problems.push(`${c.id}: "${value}" (${field}) not in \`taproot ${c.source}\``);
+        }
       }
     }
   }
@@ -61,11 +63,14 @@ const answer = (c) =>
         .map(([key, value]) => `${key}: ${value}`)
         .join("; ");
 
-const groups = ["choose", "no-match", "compose", "fact"];
+// A review case's prompt holds code, which a table cell cannot, so its row shows the answer key.
+const request = (c) => (c.answer_key ? `${c.answer_key} (code from ${c.from})` : c.prompt);
+
+const groups = ["choose", "no-match", "compose", "fact", "review"];
 const sections = groups.map((group) => {
   const rows = cases
     .filter((c) => c.tags[0] === group)
-    .map((c) => `| \`${c.id}\` | ${cell(c.prompt)} | ${cell(answer(c))} |`);
+    .map((c) => `| \`${c.id}\` | ${cell(request(c))} | ${cell(answer(c))} |`);
   return [
     `## ${group} (${rows.length})`,
     "",
@@ -88,7 +93,7 @@ ${sections.join("\n\n")}
 );
 
 console.log(
-  `${cases.length} cases: ${count("choose")} choose (${count("trap")} traps), ${count("no-match")} no-match, ${count("compose")} compose, ${count("fact")} fact`,
+  `${cases.length} cases: ${count("choose")} choose (${count("trap")} traps), ${count("no-match")} no-match, ${count("compose")} compose, ${count("fact")} fact, ${count("review")} review (${count("control")} controls)`,
 );
 if (problems.length) {
   console.error(problems.join("\n"));

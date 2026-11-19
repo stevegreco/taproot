@@ -293,10 +293,12 @@ export function gradeAnswer(c, text) {
   } else {
     for (const [field, expected] of Object.entries(c.expected)) {
       const actual = answer[field];
+      // A list holds every answer that counts, such as a component rule and the rule it extends.
       const matches =
         expected === null || typeof expected === "boolean"
           ? actual === expected
-          : actual != null && normalize(actual) === normalize(expected);
+          : actual != null &&
+            [expected].flat().some((value) => normalize(actual) === normalize(value));
       if (!matches)
         wrong.push(`${field}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
     }
