@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.menu
+type: component
+title: Menu
+summary: Use Menu to offer a list of actions from one button, such as the less frequent actions on a page or an item.
+status: draft
+tags:
+  - actions
+  - overflow
+  - kebab
+  - more
+links:
+  follows:
+    - pattern.action-hierarchy
+    - guideline.compose-or-propose
+    - guideline.accessibility
+  related:
+    - component.button
+    - component.select
+description: >-
+  A button that opens a short list of actions. Choosing an action runs it and closes the list.
+  The list floats above the page next to its button and closes when a person chooses, presses
+  Escape, or moves elsewhere.
+usage:
+  do:
+    - Hold an item's less frequent actions, such as Rename, Duplicate, and Delete, behind one "More actions" button on each row or card.
+    - Gather the secondary actions of a page header when there is no room to show each as a button.
+  avoid:
+    - situation: Offer one or two actions, or the action people use most.
+      instead: component.button
+      why: >-
+        A menu hides its actions behind an extra step. Actions people need often, or the primary
+        action, belong in view.
+    - situation: Choose a value that is saved or submitted with a form.
+      instead: component.select
+      why: Select stores the choice and shows it. A menu runs an action and keeps nothing.
+    - situation: Move between the pages of a site or app.
+      instead: component.link
+      why: Navigation belongs to links, so the address, history, and back button work.
+    - situation: Show content or a form that people read or fill in, beside the control that opened it.
+      instead: A popover, which the system does not have yet
+      why: A menu holds only actions, and closes as soon as one is chosen.
+    - situation: Name an icon-only control.
+      instead: component.tooltip
+      why: Tooltip names a control. A menu's button still needs a name of its own.
+anatomy:
+  trigger:
+    role: interactive-surface
+    description: The button that opens and closes the list. It says, by its label or icon and its name, that it holds more actions.
+  list:
+    role: container
+    description: The floating list of actions next to the trigger, shown only while the menu is open.
+  item:
+    role: interactive-surface
+    description: One action in the list, named by its visible text, with an optional icon before it.
+  group:
+    role: container
+    description: Optional labeled run of related items. Groups do not nest.
+  separator:
+    role: container
+    description: Optional line between groups of items. It is not focusable.
