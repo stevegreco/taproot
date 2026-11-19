@@ -115,7 +115,7 @@ describe("host checks", () => {
   );
 
   test.each(rows(focusable))(
-    "<%s> shows a focus outline when reached by keyboard",
+    "[visible-focus] <%s> shows a focus outline when reached by keyboard",
     async (_tagName, element) => {
       const host = render(element);
       const target = focusTarget(element, host);
