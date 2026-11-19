@@ -2,6 +2,7 @@
 
 **Status:** Accepted
 **Amended by:** [ADR 0006](0006-hosted-mcp-server.md), for the hosted MCP server.
+**Names:** Written before [ADR 0008](0008-rename-to-taproot.md). The `ds-spec` CLI is now `taproot`.
 
 This ADR and ADRs 0001 and 0002 replaced earlier ADRs, which are in git history.
 

@@ -1,6 +1,7 @@
 # ADR 0001: Spec scope
 
 **Status:** Accepted
+**Names:** Written before [ADR 0008](0008-rename-to-taproot.md). Ember & Sage is now Taproot.
 
 This ADR and ADRs 0002 and 0003 replaced earlier ADRs, which are in git history. The package was
 called the knowledge layer until October 2026.

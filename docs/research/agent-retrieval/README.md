@@ -1,7 +1,9 @@
 # Agent retrieval evaluation
 
-> This record predates the rename to the spec. The `knowledge` CLI is now `ds-spec`, and other names
-> have changed since, such as the components package and Button's `danger` variant.
+> Historical record. It predates the rename to the spec and the rename to Taproot
+> ([ADR 0008](../../adr/0008-rename-to-taproot.md)): the `knowledge` CLI is now `taproot`, and other
+> names have changed since, such as the components package and Button's `danger` variant. Use the
+> `taproot` CLI for current names.
 
 - Started: 2026-10-01.
 - Question: can an agent build correct markup with the design system using only the knowledge CLI?
