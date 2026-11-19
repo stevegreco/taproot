@@ -5,50 +5,64 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { AGENT_INSTRUCTIONS } from "../src/agents.js";
+import { run } from "../src/cli.js";
 import { splitWords } from "../src/util.js";
 import { fixture } from "./helpers.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const bin = path.resolve(here, "../bin/taproot.js");
+const binPath = path.resolve(here, "../bin/taproot.js");
 const repoRoot = path.resolve(here, "../../..");
 const tools = fixture("tools");
 // Implementations come from a fixture config, so adding one to the repository changes no output.
 const impls = fixture("implementations");
 
-function cli(args, cwd = repoRoot) {
-  const result = spawnSync(process.execPath, [bin, ...args], { cwd, encoding: "utf8" });
+/** Run the CLI in this process, which saves starting Node for each call. */
+async function cli(args, cwd = repoRoot) {
+  let out = "";
+  let err = "";
+  const code = await run(args, {
+    cwd,
+    stdout: (text) => (out += text),
+    stderr: (text) => (err += text),
+  });
+  return { code, out, err };
+}
+
+/** Run the installed binary in a new process, as a shell does. */
+function bin(args, cwd = repoRoot) {
+  const result = spawnSync(process.execPath, [binPath, ...args], { cwd, encoding: "utf8" });
   return { code: result.status, out: result.stdout, err: result.stderr };
 }
 
 describe("taproot CLI, real content", () => {
-  it("validates", () => {
-    const r = cli(["validate"]);
+  it("validates", async () => {
+    const r = await cli(["validate"]);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/^OK: \d+ records, no issues\./);
   });
 
-  it("lists with filters", () => {
-    const r = cli(["list", "--type", "component"]);
+  it("lists with filters", async () => {
+    const r = await cli(["list", "--type", "component"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("- component.button — Button: ");
     expect(r.out).not.toContain("pattern.action-hierarchy");
   });
 
-  it("searches", () => {
-    const r = cli(["search", "destructive", "action"]);
+  it("searches", async () => {
+    const r = await cli(["search", "destructive", "action"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("- pattern.action-hierarchy — Action hierarchy: ");
   });
 
-  it("gets a record and a section", () => {
-    expect(cli(["get", "component.button"]).out).toMatch(/^# Button/);
-    const section = cli(["get", "pattern.action-hierarchy#assign-emphasis"]);
+  it("gets a record and a section", async () => {
+    expect((await cli(["get", "component.button"])).out).toMatch(/^# Button/);
+    const section = await cli(["get", "pattern.action-hierarchy#assign-emphasis"]);
     expect(section.code).toBe(0);
     expect(section.out).toContain("## Assign emphasis");
   });
 
-  it("gets an example with every annotation and its references", () => {
-    const { out } = cli(["get", "example.action-hierarchy.settings"]);
+  it("gets an example with every annotation and its references", async () => {
+    const { out } = await cli(["get", "example.action-hierarchy.settings"]);
     for (const id of ["profile-actions", "danger-zone", "outcome-labels"]) {
       expect(out).toContain(`\`example.action-hierarchy.settings#${id}\``);
     }
@@ -56,51 +70,51 @@ describe("taproot CLI, real content", () => {
     expect(out).toContain("(component.button#label-describes-result)");
   });
 
-  it("shows links grouped by kind", () => {
-    const r = cli(["links", "component.link", "--kind", "alternative"]);
+  it("shows links grouped by kind", async () => {
+    const r = await cli(["links", "component.link", "--kind", "alternative"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("## alternative");
     expect(r.out).toContain("- component.button: ");
   });
 
-  it("shows incoming links with both ends, apart from outgoing ones", () => {
-    const r = cli(["links", "component.badge", "--direction", "in", "--kind", "alternative"]);
+  it("shows incoming links with both ends, apart from outgoing ones", async () => {
+    const r = await cli(["links", "component.badge", "--direction", "in", "--kind", "alternative"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("## alternative (incoming)");
     expect(r.out).toContain("- component.button → component.badge: ");
   });
 
-  it("lists rules as addresses", () => {
-    const r = cli(["rules", "--level", "must", "--topic", "accessibility"]);
+  it("lists rules as addresses", async () => {
+    const r = await cli(["rules", "--level", "must", "--topic", "accessibility"]);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/^- \*\*MUST\*\* component\.\w[\w-]*#[\w-]+: /m);
     expect(r.out).not.toContain("**SHOULD**");
   });
 
-  it("keeps a conditional rule's condition, and says how to read a rule in full", () => {
-    const r = cli(["rules", "--id", "component.checkbox#form-value"]);
+  it("keeps a conditional rule's condition, and says how to read a rule in full", async () => {
+    const r = await cli(["rules", "--id", "component.checkbox#form-value"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain(
       "- **SHOULD** component.checkbox#form-value (extends pattern.form-field#form-value): ",
     );
     // A rule that extends another keeps the condition it inherits.
     expect(r.out).toContain("\n  - Applies when: The control belongs to a form.");
-    const all = cli(["rules", "--id", "checkbox"]);
+    const all = await cli(["rules", "--id", "checkbox"]);
     expect(all.out).toMatch(
       /Run `taproot get <address>`, such as `taproot get (?:component\.checkbox|pattern\.form-field)#[\w-]+`/,
     );
   });
 
-  it("gets a parameter value with its example and guidance", () => {
-    const r = cli(["get", "component.button#parameters.variant.destructive"]);
+  it("gets a parameter value with its example and guidance", async () => {
+    const r = await cli(["get", "component.button#parameters.variant.destructive"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("Destructive or difficult-to-reverse action.");
     expect(r.out).toContain("Example: Delete project");
     expect(r.out).toContain("Guidance: [Action hierarchy](pattern.action-hierarchy#destructive)");
   });
 
-  it("resolves tokens for light and dark", () => {
-    const r = cli([
+  it("resolves tokens for light and dark", async () => {
+    const r = await cli([
       "tokens",
       "component.button",
       "--condition",
@@ -113,14 +127,14 @@ describe("taproot CLI, real content", () => {
     expect(r.out).toContain("`#e8c468`");
   });
 
-  it("omits values without --resolve", () => {
-    const r = cli(["tokens", "component.button", "--part", "control"]);
+  it("omits values without --resolve", async () => {
+    const r = await cli(["tokens", "component.button", "--part", "control"]);
     expect(r.out).toContain("| Part | Condition | Property | Token |");
     expect(r.out).not.toContain("light");
   });
 
-  it("prints the agent instructions, and AGENTS.md carries the same text", () => {
-    const r = cli(["help", "agents"]);
+  it("prints the agent instructions, and AGENTS.md carries the same text", async () => {
+    const r = await cli(["help", "agents"]);
     expect(r.code).toBe(0);
     expect(r.out).toBe(`${AGENT_INSTRUCTIONS}\n`);
     const agents = fs.readFileSync(path.join(repoRoot, "AGENTS.md"), "utf8");
@@ -130,8 +144,8 @@ describe("taproot CLI, real content", () => {
     expect(copy?.[1], "AGENTS.md copy of `taproot help agents`").toBe(AGENT_INSTRUCTIONS);
   });
 
-  it("prints help", () => {
-    const r = cli(["help", "tokens"]);
+  it("prints help", async () => {
+    const r = await cli(["help", "tokens"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("taproot tokens <id>");
   });
@@ -153,66 +167,66 @@ describe("taproot CLI, --json", () => {
       (d) => expect(d[0].values).toHaveProperty("light"),
     ],
     [["validate"], (d) => expect(d.issues).toEqual([])],
-  ])("%j parses", (args, check) => {
-    const r = cli([...args, "--json"]);
+  ])("%j parses", async (args, check) => {
+    const r = await cli([...args, "--json"]);
     expect(r.code).toBe(0);
     check(JSON.parse(r.out));
   });
 });
 
 describe("taproot CLI, failures", () => {
-  it("exits 2 on usage errors", () => {
-    expect(cli([]).code).toBe(0);
-    expect(cli(["bogus"]).code).toBe(2);
-    expect(cli(["get"]).code).toBe(2);
-    expect(cli(["search"]).code).toBe(2);
-    expect(cli(["list", "--nope"]).code).toBe(2);
-    expect(cli(["search", "x", "--limit", "abc"]).code).toBe(2);
-    expect(cli(["links", "component.button", "--direction", "up"]).code).toBe(2);
-    expect(cli(["help", "bogus"]).code).toBe(2);
-    expect(cli(["get"]).err).toContain("get needs an id");
-    expect(cli(["list", "extra"]).err).toContain("takes no positional arguments");
+  it("exits 2 on usage errors", async () => {
+    expect((await cli([])).code).toBe(0);
+    expect((await cli(["bogus"])).code).toBe(2);
+    expect((await cli(["get"])).code).toBe(2);
+    expect((await cli(["search"])).code).toBe(2);
+    expect((await cli(["list", "--nope"])).code).toBe(2);
+    expect((await cli(["search", "x", "--limit", "abc"])).code).toBe(2);
+    expect((await cli(["links", "component.button", "--direction", "up"])).code).toBe(2);
+    expect((await cli(["help", "bogus"])).code).toBe(2);
+    expect((await cli(["get"])).err).toContain("get needs an id");
+    expect((await cli(["list", "extra"])).err).toContain("takes no positional arguments");
   });
 
-  it("exits 1 for unknown ids and sections, with the error on stderr", () => {
-    const record = cli(["get", "component.nope"]);
+  it("exits 1 for unknown ids and sections", async () => {
+    const record = await cli(["get", "component.nope"]);
     expect(record.code).toBe(1);
     expect(record.out).toContain('Unknown record "component.nope"');
-    expect(cli(["get", "component.button#nope"]).code).toBe(1);
-    expect(cli(["links", "component.nope"]).code).toBe(1);
-    expect(cli(["tokens", "component.nope"]).code).toBe(1);
+    expect((await cli(["get", "component.button#nope"])).code).toBe(1);
+    expect((await cli(["links", "component.nope"])).code).toBe(1);
+    expect((await cli(["tokens", "component.nope"])).code).toBe(1);
   });
 
-  it("exits 1 and lists issues for invalid content", () => {
+  it("exits 1 and lists issues for invalid content", async () => {
     const content = fixture("unknown-field");
-    const v = cli(["validate", "--content", content]);
+    const v = await cli(["validate", "--content", content]);
     expect(v.code).toBe(1);
     expect(v.out).toMatch(/\.yaml:\d+ \S+ .+\n\d+ issues? in/);
-    const g = cli(["get", "component.thing", "--content", content]);
+    const g = await cli(["get", "component.thing", "--content", content]);
     expect(g.code).toBe(1);
     expect(g.err).toContain("Warning: left out 1 record file with issues: thing.spec.yaml.");
   });
 
-  it("serves the valid records when one is invalid", () => {
+  it("serves the valid records when one is invalid", async () => {
     const content = fixture("link-to-invalid");
-    const r = cli(["get", "pattern.guide", "--content", fixture("unknown-section")]);
+    const r = await cli(["get", "pattern.guide", "--content", fixture("unknown-section")]);
     expect(r.code).toBe(0);
     expect(r.err).toContain("left out 1 record file with issues: thing.spec.yaml");
     // Thing links to Broken but has no issue of its own, so only Broken is left out.
-    expect(cli(["list", "--content", content]).err).toContain(
+    expect((await cli(["list", "--content", content])).err).toContain(
       "left out 1 record file with issues: broken.md.",
     );
   });
 
-  it("exits 1 on empty results", () => {
-    expect(cli(["list", "--tag", "nope"]).code).toBe(1);
-    expect(cli(["rules", "--id", "component.button", "--query", "zzzz"]).code).toBe(1);
-    expect(cli(["links", "component.thing", "--kind", "examples"], tools).code).toBe(1);
-    expect(cli(["tokens", "button", "--part", "nope"]).code).toBe(1);
-    expect(cli(["search", "zzzz"]).code).toBe(1);
+  it("exits 1 on empty results", async () => {
+    expect((await cli(["list", "--tag", "nope"])).code).toBe(1);
+    expect((await cli(["rules", "--id", "component.button", "--query", "zzzz"])).code).toBe(1);
+    expect((await cli(["links", "component.thing", "--kind", "examples"], tools)).code).toBe(1);
+    expect((await cli(["tokens", "button", "--part", "nope"])).code).toBe(1);
+    expect((await cli(["search", "zzzz"])).code).toBe(1);
   });
 
-  it("rejects unknown filter values with the valid ones", () => {
+  it("rejects unknown filter values with the valid ones", async () => {
     for (const [args, valid] of [
       [["list", "--type", "bogus"], "component, pattern, guideline, example"],
       [["list", "--status", "old"], "draft, stable, deprecated"],
@@ -220,47 +234,57 @@ describe("taproot CLI, failures", () => {
       [["rules", "--level", "must-not"], "must, should, may"],
       [["links", "button", "--kind", "bogus"], "alternative, alternative-to, composes"],
     ]) {
-      const r = cli(args);
+      const r = await cli(args);
       expect(r.code).toBe(2);
       expect(r.err).toContain(valid);
     }
   });
 
-  it("exits 2 for a bad config", () => {
-    const r = cli(["list", "--config", path.join(tools, "bad.config.json")]);
+  it("exits 2 for a bad config", async () => {
+    const r = await cli(["list", "--config", path.join(tools, "bad.config.json")]);
     expect(r.code).toBe(2);
     expect(r.err).toContain("Invalid config");
   });
 });
 
-describe("taproot CLI, startup", () => {
+// The other tests call the CLI in this process. These start the binary, as a shell does.
+describe("taproot CLI, binary", () => {
   // A loose limit that catches a large regression, such as loading a dependency per call, without
   // failing on a slow machine. The best of three runs ignores a call slowed by parallel tests.
   // `pnpm bench` measures against the real target.
   it("gets a record in under a second", () => {
     const times = Array.from({ length: 3 }, () => {
       const started = performance.now();
-      expect(cli(["get", "button"]).code).toBe(0);
+      const r = bin(["get", "button"]);
+      expect(r.code).toBe(0);
+      expect(r.out).toContain("component.button");
       return performance.now() - started;
     });
     expect(Math.min(...times)).toBeLessThan(1000);
   });
+
+  it("exits 2 with a usage error on stderr", () => {
+    const r = bin(["nope"]);
+    expect(r.code).toBe(2);
+    expect(r.out).toBe("");
+    expect(r.err).toContain('Unknown command "nope"');
+  });
 });
 
 describe("taproot CLI, fixture config", () => {
-  it("finds the config from the working directory", () => {
-    const r = cli(["list"], tools);
+  it("finds the config from the working directory", async () => {
+    const r = await cli(["list"], tools);
     expect(r.out).toContain("component.thing");
     expect(r.out).not.toContain("component.button");
   });
 
-  it("--content overrides the config", () => {
-    const r = cli(["list", "--content", path.join(tools, "content")], repoRoot);
+  it("--content overrides the config", async () => {
+    const r = await cli(["list", "--content", path.join(tools, "content")], repoRoot);
     expect(r.out).toContain("component.thing");
   });
 
-  it("resolves fixture tokens", () => {
-    const r = cli(
+  it("resolves fixture tokens", async () => {
+    const r = await cli(
       ["tokens", "component.thing", "--condition", "tone.loud + hover", "--resolve"],
       tools,
     );
@@ -270,8 +294,8 @@ describe("taproot CLI, fixture config", () => {
 });
 
 describe("taproot CLI, implementations", () => {
-  it("gets a component with its web implementation", () => {
-    const r = cli(["get", "component.button", "--impl", "web"], impls);
+  it("gets a component with its web implementation", async () => {
+    const r = await cli(["get", "component.button", "--impl", "web"], impls);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/^# Button/);
     expect(r.out).toContain("## Web implementation");
@@ -285,35 +309,39 @@ describe("taproot CLI, implementations", () => {
     expect(r.out).toContain("### Forms");
   });
 
-  it("points a plain get at the implementation", () => {
-    const { out } = cli(["get", "component.button"], impls);
+  it("points a plain get at the implementation", async () => {
+    const { out } = await cli(["get", "component.button"], impls);
     expect(out).not.toContain("## Web implementation");
     expect(out.trimEnd().split("\n").slice(-2)).toEqual([
       "Implementations: web, react. Run `taproot get component.button --impl <web | react>` for the package, import, and API names.",
       "Tokens: 50 bindings, left out here. Run `taproot tokens component.button` to filter them by part, condition, or property.",
     ]);
-    expect(cli(["get", "pattern.action-hierarchy"], impls).out).not.toContain("Implementations:");
+    expect((await cli(["get", "pattern.action-hierarchy"], impls)).out).not.toContain(
+      "Implementations:",
+    );
   });
 
-  it("returns the record and implementation as JSON", () => {
-    const data = JSON.parse(cli(["get", "component.link", "--impl", "web", "--json"], impls).out);
+  it("returns the record and implementation as JSON", async () => {
+    const data = JSON.parse(
+      (await cli(["get", "component.link", "--impl", "web", "--json"], impls)).out,
+    );
     expect(data.record.id).toBe("component.link");
     expect(data.implementation.tagName).toBe("ds-link");
   });
 
-  it("explains a missing or unknown implementation", () => {
-    const pattern = cli(["get", "pattern.action-hierarchy", "--impl", "web"], impls);
+  it("explains a missing or unknown implementation", async () => {
+    const pattern = await cli(["get", "pattern.action-hierarchy", "--impl", "web"], impls);
     expect(pattern.code).toBe(1);
     expect(pattern.out).toContain("No web implementation for pattern.action-hierarchy.");
-    const unknown = cli(["get", "component.button", "--impl", "ios"], impls);
+    const unknown = await cli(["get", "component.button", "--impl", "ios"], impls);
     expect(unknown.code).toBe(1);
     expect(unknown.out).toContain('No implementation named "ios". Configured: web, react.');
-    const section = cli(["get", "component.button#rules", "--impl", "web"], impls);
+    const section = await cli(["get", "component.button#rules", "--impl", "web"], impls);
     expect(section.code).toBe(2);
     expect(section.err).toContain("not a section");
   });
 
-  it("rejects an implementation that does not match its record", () => {
+  it("rejects an implementation that does not match its record", async () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "spec-impl-"));
     fs.mkdirSync(path.join(tmp, "web"));
     const button = fs.readFileSync(
@@ -331,7 +359,7 @@ describe("taproot CLI, implementations", () => {
         implementations: { web: { folder: "web", technology: "web-component" } },
       }),
     );
-    const r = cli(["get", "button", "--impl", "web", "--json"], tmp);
+    const r = await cli(["get", "button", "--impl", "web", "--json"], tmp);
     expect(r.code).toBe(1);
     const error = JSON.parse(r.out);
     expect(error.code).toBe("ERR_INVALID_IMPLEMENTATION");
@@ -339,64 +367,66 @@ describe("taproot CLI, implementations", () => {
     fs.rmSync(tmp, { recursive: true });
   });
 
-  it("explains that no implementations are configured", () => {
-    const r = cli(["get", "component.thing", "--impl", "web"], tools);
+  it("explains that no implementations are configured", async () => {
+    const r = await cli(["get", "component.thing", "--impl", "web"], tools);
     expect(r.code).toBe(1);
     expect(r.out).toContain("No implementations are configured.");
   });
 
-  it("prints the setup every component of an implementation shares", () => {
-    const r = cli(["setup", "--impl", "web"], impls);
+  it("prints the setup every component of an implementation shares", async () => {
+    const r = await cli(["setup", "--impl", "web"], impls);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/^# Web components setup/);
     expect(r.out).toContain('import "@taproot-ds/tokens/css";');
-    const data = JSON.parse(cli(["setup", "--impl", "react", "--json"], impls).out);
+    const data = JSON.parse((await cli(["setup", "--impl", "react", "--json"], impls)).out);
     expect(data).toMatchObject({ implementation: "react", technology: "react" });
     expect(data.setup).toMatch(/^# React components setup/);
   });
 
-  it("points get --impl at the setup once, instead of repeating it", () => {
-    const { out } = cli(["get", "component.divider", "--impl", "web"], impls);
+  it("points get --impl at the setup once, instead of repeating it", async () => {
+    const { out } = await cli(["get", "component.divider", "--impl", "web"], impls);
     expect(out.trimEnd().split("\n").at(-1)).toBe(
       "Setup: install, styles, and fonts are the same for every component. Run `taproot setup --impl web` once per project.",
     );
     expect(out).not.toContain('import "@taproot-ds/tokens/css";');
   });
 
-  it("explains a setup call it cannot answer", () => {
-    const none = cli(["setup"], impls);
+  it("explains a setup call it cannot answer", async () => {
+    const none = await cli(["setup"], impls);
     expect(none.code).toBe(2);
     expect(none.err).toContain("setup needs an implementation. Configured: web, react.");
-    expect(cli(["setup", "--impl", "ios"], impls).out).toContain('No implementation named "ios".');
+    expect((await cli(["setup", "--impl", "ios"], impls)).out).toContain(
+      'No implementation named "ios".',
+    );
     const config = ["--config", path.join(impls, "missing-folder.config.json")];
-    const missing = cli(["setup", "--impl", "react", "--json", ...config]);
+    const missing = await cli(["setup", "--impl", "react", "--json", ...config]);
     expect(missing.code).toBe(1);
     expect(JSON.parse(missing.out).code).toBe("ERR_NO_SETUP");
     // Without a setup file, get --impl has no setup line.
-    expect(cli(["get", "component.button", "--impl", "react", ...config]).out).not.toContain(
-      "Setup:",
-    );
+    expect(
+      (await cli(["get", "component.button", "--impl", "react", ...config])).out,
+    ).not.toContain("Setup:");
   });
 
-  it("reads a missing implementation folder as nothing implemented", () => {
+  it("reads a missing implementation folder as nothing implemented", async () => {
     const config = ["--config", path.join(impls, "missing-folder.config.json")];
-    const r = cli(["get", "component.button", "--impl", "react", ...config]);
+    const r = await cli(["get", "component.button", "--impl", "react", ...config]);
     expect(r.code).toBe(1);
     expect(r.err).toBe("");
     expect(r.out).toContain("No react implementation for component.button.");
     // The folder that exists still counts, and the missing one is not offered.
-    expect(cli(["get", "component.button", ...config]).out).toContain(
+    expect((await cli(["get", "component.button", ...config])).out).toContain(
       "Implementations: web. Run `taproot get component.button --impl web` for",
     );
-    expect(cli(["search", "chekbox", ...config]).out).toContain(
+    expect((await cli(["search", "chekbox", ...config])).out).toContain(
       "  → taproot get component.checkbox --impl web\n",
     );
   });
 });
 
 describe("taproot CLI, format reference", () => {
-  it("prints the token properties, keywords, roles, and constants", () => {
-    const r = cli(["format"]);
+  it("prints the token properties, keywords, roles, and constants", async () => {
+    const r = await cli(["format"]);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/^# Spec format\n\nFormat version 1\./);
     expect(r.out).toContain("`border-width`, `radius`");
@@ -406,11 +436,11 @@ describe("taproot CLI, format reference", () => {
     expect(r.out).toContain("Run `taproot format --resolve` for values.");
   });
 
-  it("resolves each constant in each token set", () => {
-    const r = cli(["format", "--resolve"]);
+  it("resolves each constant in each token set", async () => {
+    const r = await cli(["format", "--resolve"]);
     expect(r.out).toContain("| Constant | Token | light | dark |");
     expect(r.out).toContain("| border-width | `semantic.border.width` | `1px` | `1px` |");
-    const data = JSON.parse(cli(["format", "--resolve", "--json"]).out);
+    const data = JSON.parse((await cli(["format", "--resolve", "--json"])).out);
     expect(data.constants.map((row) => row.name)).toEqual([
       "border-width",
       "focus-ring-width",
@@ -420,14 +450,14 @@ describe("taproot CLI, format reference", () => {
     expect(data.properties).toContain("track");
   });
 
-  it("says when no constants are configured", () => {
-    const r = cli(["format"], tools);
+  it("says when no constants are configured", async () => {
+    const r = await cli(["format"], tools);
     expect(r.code).toBe(0);
     expect(r.out).toContain("None are configured. Add `constants` to spec.config.json.");
-    expect(cli(["format", "extra"]).code).toBe(2);
+    expect((await cli(["format", "extra"])).code).toBe(2);
   });
 
-  it("fails validation for a constant that names no token", () => {
+  it("fails validation for a constant that names no token", async () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "spec-constants-"));
     const config = JSON.parse(fs.readFileSync(path.join(tools, "spec.config.json"), "utf8"));
     fs.writeFileSync(
@@ -447,7 +477,7 @@ describe("taproot CLI, format reference", () => {
         constants: { "border-width": "semantic.nope" },
       }),
     );
-    const r = cli(["validate"], tmp);
+    const r = await cli(["validate"], tmp);
     expect(r.code).toBe(1);
     expect(r.out).toContain(
       "spec.config.json /constants/border-width `semantic.nope` is not a token",
@@ -457,47 +487,47 @@ describe("taproot CLI, format reference", () => {
 });
 
 describe("taproot CLI, items", () => {
-  it("prints each item's parameters as a table, in the record and as a section", () => {
-    const { out } = cli(["get", "component.accordion"]);
+  it("prints each item's parameters as a table, in the record and as a section", async () => {
+    const { out } = await cli(["get", "component.accordion"]);
     expect(out).toContain("## Items\n\n### section\n\nOptions of each `section`.");
     expect(out).toContain("| expanded | boolean |  | `false` |");
-    const item = cli(["get", "component.accordion#items.section"]);
+    const item = await cli(["get", "component.accordion#items.section"]);
     expect(item.code).toBe(0);
     expect(item.out).toMatch(/^## section\n\nOptions of each `section`\./);
     expect(item.out).toContain("| label | string |");
-    const parameters = cli(["get", "component.accordion#items.section.parameters"]);
+    const parameters = await cli(["get", "component.accordion#items.section.parameters"]);
     expect(parameters.out).toMatch(/^## Parameters\n\n\| Name \| Kind/);
-    const one = cli(["get", "component.accordion#items.section.parameters.expanded"]);
+    const one = await cli(["get", "component.accordion#items.section.parameters.expanded"]);
     expect(one.out).toMatch(/^## items.section.parameters.expanded\n/);
     expect(one.out).toContain("default: false");
   });
 
-  it("prints an item's events as a list, not YAML", () => {
-    const { code, out } = cli(["get", "component.thing#items.entry.events"], tools);
+  it("prints an item's events as a list, not YAML", async () => {
+    const { code, out } = await cli(["get", "component.thing#items.entry.events"], tools);
     expect(code).toBe(0);
     expect(out).toMatch(/^## Events\n\n- `pick`: The entry was picked\./);
   });
 
-  it("names the item sections when one does not exist", () => {
-    const r = cli(["get", "component.accordion#items.section.parameters.open"]);
+  it("names the item sections when one does not exist", async () => {
+    const r = await cli(["get", "component.accordion#items.section.parameters.open"]);
     expect(r.code).toBe(1);
     expect(r.out).toContain("component.accordion#items.section.parameters.expanded");
   });
 
-  it("reads an item's parameter by its short path", () => {
-    const r = cli(["get", "component.accordion#items.section.expanded"]);
+  it("reads an item's parameter by its short path", async () => {
+    const r = await cli(["get", "component.accordion#items.section.expanded"]);
     expect(r.code).toBe(0);
     expect(r.out).toMatch(/^## items\.section\.parameters\.expanded\n/);
   });
 
-  it("maps each item's element and attributes in the web implementation", () => {
-    const { out } = cli(["get", "component.accordion", "--impl", "web"], impls);
+  it("maps each item's element and attributes in the web implementation", async () => {
+    const { out } = await cli(["get", "component.accordion", "--impl", "web"], impls);
     expect(out).toContain("### Section element: `<ds-accordion-section>`");
     expect(out).toContain(
       "| `expanded` | attribute | section parameter `expanded` | boolean | Whether the section's content is shown.",
     );
     const data = JSON.parse(
-      cli(["get", "component.accordion", "--impl", "web", "--json"], impls).out,
+      (await cli(["get", "component.accordion", "--impl", "web", "--json"], impls)).out,
     );
     expect(Object.keys(data.record.items)).toEqual(["section"]);
     expect(data.implementation.items.section.tagName).toBe("ds-accordion-section");
@@ -509,43 +539,43 @@ describe("taproot CLI, items", () => {
     ]);
   });
 
-  it("gets an item value with its guidance, and links it both ways", () => {
-    const value = cli(["get", "component.thing#items.entry.parameters.size.large"], tools);
+  it("gets an item value with its guidance, and links it both ways", async () => {
+    const value = await cli(["get", "component.thing#items.entry.parameters.size.large"], tools);
     expect(value.code).toBe(0);
     expect(value.out).toContain("Example: Featured");
     expect(value.out).toContain("Guidance: [Guide](pattern.guide#second-step)");
-    expect(cli(["links", "component.thing"], tools).out).toContain(
+    expect((await cli(["links", "component.thing"], tools)).out).toContain(
       "- items.entry.parameters.size.large → pattern.guide#second-step",
     );
-    expect(cli(["links", "pattern.guide", "--direction", "in"], tools).out).toContain(
+    expect((await cli(["links", "pattern.guide", "--direction", "in"], tools)).out).toContain(
       "- component.thing#items.entry.parameters.size.large → pattern.guide#second-step",
     );
   });
 
-  it("finds a record by its item parameters", () => {
-    expect(cli(["search", "zephyr"], tools).out).toContain("- component.thing — Thing: ");
+  it("finds a record by its item parameters", async () => {
+    expect((await cli(["search", "zephyr"], tools)).out).toContain("- component.thing — Thing: ");
   });
 });
 
 describe("taproot CLI, parts", () => {
-  it("prints a part's parameters as a table, in the record and as a section", () => {
-    const { out } = cli(["get", "component.card"]);
+  it("prints a part's parameters as a table, in the record and as a section", async () => {
+    const { out } = await cli(["get", "component.card"]);
     expect(out).toContain("## Parts\n\n### title\n\nOptions of the `title` part.");
-    const part = cli(["get", "component.card#parts.title.parameters.headingLevel"]);
+    const part = await cli(["get", "component.card#parts.title.parameters.headingLevel"]);
     expect(part.code).toBe(0);
     expect(part.out).toMatch(/^## parts\.title\.parameters\.headingLevel\n/);
   });
 
-  it("suggests the sections a bare part name probably means", () => {
-    const r = cli(["get", "component.dialog#title"]);
+  it("suggests the sections a bare part name probably means", async () => {
+    const r = await cli(["get", "component.dialog#title"]);
     expect(r.code).toBe(1);
     expect(r.out).toContain(
       'Unknown section "component.dialog#title". Did you mean component.dialog#anatomy.title, component.dialog#parts.title?',
     );
   });
 
-  it("maps a part's attributes on the element in the web implementation", () => {
-    const { out } = cli(["get", "component.card", "--impl", "web"], impls);
+  it("maps a part's attributes on the element in the web implementation", async () => {
+    const { out } = await cli(["get", "component.card", "--impl", "web"], impls);
     expect(out).toContain("### Title part, on `<ds-card>`");
     expect(out).toContain(
       "| `heading-level` | attribute | title parameter `headingLevel` | number |",
@@ -554,110 +584,112 @@ describe("taproot CLI, parts", () => {
 });
 
 describe("taproot CLI, short records", () => {
-  it("leaves the token table out of a whole component record", () => {
+  it("leaves the token table out of a whole component record", async () => {
     for (const args of [
       ["get", "button"],
       ["get", "button", "--impl", "web"],
     ]) {
-      const { out } = cli(args);
+      const { out } = await cli(args);
       expect(out).not.toContain("## Tokens");
       expect(out).not.toContain("semantic.color.background.action.primary.hover");
       expect(out).toContain("Tokens: 50 bindings, left out here.");
     }
   });
 
-  it("still prints the tokens section and the tokens command", () => {
-    expect(cli(["get", "button#tokens"]).out).toContain(
+  it("still prints the tokens section and the tokens command", async () => {
+    expect((await cli(["get", "button#tokens"])).out).toContain(
       "semantic.color.background.action.primary.hover",
     );
-    expect(cli(["tokens", "button"]).out).toContain(
+    expect((await cli(["tokens", "button"])).out).toContain(
       "semantic.color.background.action.primary.hover",
     );
   });
 
-  it("keeps the full record in JSON", () => {
-    const data = JSON.parse(cli(["get", "button", "--json"]).out);
+  it("keeps the full record in JSON", async () => {
+    const data = JSON.parse((await cli(["get", "button", "--json"])).out);
     expect(Object.keys(data.tokens)).toContain("control");
   });
 
-  it("adds no tokens line to a record without tokens", () => {
-    expect(cli(["get", "pattern.action-hierarchy"]).out).not.toContain("Tokens:");
+  it("adds no tokens line to a record without tokens", async () => {
+    expect((await cli(["get", "pattern.action-hierarchy"])).out).not.toContain("Tokens:");
   });
 });
 
 describe("taproot CLI, forgiving lookups", () => {
-  it("matches the start of a name or title", () => {
-    expect(cli(["search", "chec"]).out).toMatch(/^- component\.checkbox — /);
-    expect(cli(["search", "textfi"]).out).toMatch(/^- component\.text-field — /);
+  it("matches the start of a name or title", async () => {
+    expect((await cli(["search", "chec"])).out).toMatch(/^- component\.checkbox — /);
+    expect((await cli(["search", "textfi"])).out).toMatch(/^- component\.text-field — /);
     // Too short, or too little of the word, to count.
-    expect(cli(["search", "che"]).out).toMatch(/^No results for "che"\. /);
-    expect(cli(["search", "comp"]).out).not.toContain("component.button");
+    expect((await cli(["search", "che"])).out).toMatch(/^No results for "che"\. /);
+    expect((await cli(["search", "comp"])).out).not.toContain("component.button");
   });
 
-  it("finds a record by name", () => {
-    expect(cli(["get", "button"]).out).toMatch(/^# Button/);
-    expect(cli(["get", "Text", "field"]).out).toMatch(/^# Text field/);
-    expect(cli(["get", "textfield", "--impl", "web"], impls).out).toContain("`<ds-text-field>`");
-    expect(cli(["get", "button#rules"]).out).toContain("## Rules");
-    expect(cli(["tokens", "button", "--part", "control"]).code).toBe(0);
-    expect(cli(["links", "link"]).out).toContain("component.button");
-    expect(cli(["rules", "--id", "button#label-describes-result"]).out).toContain(
+  it("finds a record by name", async () => {
+    expect((await cli(["get", "button"])).out).toMatch(/^# Button/);
+    expect((await cli(["get", "Text", "field"])).out).toMatch(/^# Text field/);
+    expect((await cli(["get", "textfield", "--impl", "web"], impls)).out).toContain(
+      "`<ds-text-field>`",
+    );
+    expect((await cli(["get", "button#rules"])).out).toContain("## Rules");
+    expect((await cli(["tokens", "button", "--part", "control"])).code).toBe(0);
+    expect((await cli(["links", "link"])).out).toContain("component.button");
+    expect((await cli(["rules", "--id", "button#label-describes-result"])).out).toContain(
       "component.button#label-describes-result",
     );
   });
 
-  it("suggests the record a typo meant", () => {
-    const typo = cli(["get", "buton"]);
+  it("suggests the record a typo meant", async () => {
+    const typo = await cli(["get", "buton"]);
     expect(typo.code).toBe(1);
     expect(typo.out).toContain('Unknown record "buton". Did you mean: component.button?');
-    expect(cli(["get", "hierarchy"]).out).toContain("pattern.action-hierarchy");
+    expect((await cli(["get", "hierarchy"])).out).toContain("pattern.action-hierarchy");
   });
 
-  it("returns an error envelope in JSON", () => {
-    const record = JSON.parse(cli(["get", "buton", "--json"]).out);
+  it("returns an error envelope in JSON", async () => {
+    const record = JSON.parse((await cli(["get", "buton", "--json"])).out);
     expect(record).toEqual({
       error: 'Unknown record "buton". Did you mean: component.button?',
       code: "ERR_UNKNOWN_RECORD",
       suggestions: ["component.button"],
     });
-    const section = JSON.parse(cli(["get", "component.button#rule", "--json"]).out);
+    const section = JSON.parse((await cli(["get", "component.button#rule", "--json"])).out);
     expect(section.code).toBe("ERR_UNKNOWN_SECTION");
     expect(section.suggestions).toContain("component.button#rules");
-    const impl = JSON.parse(cli(["get", "button", "--impl", "ios", "--json"], impls).out);
+    const impl = JSON.parse((await cli(["get", "button", "--impl", "ios", "--json"], impls)).out);
     expect(impl).toMatchObject({
       code: "ERR_UNKNOWN_IMPLEMENTATION",
       suggestions: ["web", "react"],
     });
     const none = JSON.parse(
-      cli(["get", "pattern.action-hierarchy", "--impl", "web", "--json"], impls).out,
+      (await cli(["get", "pattern.action-hierarchy", "--impl", "web", "--json"], impls)).out,
     );
     expect(none.code).toBe("ERR_NO_IMPLEMENTATION");
   });
 
-  it("searches through typos and names the next command", () => {
-    const r = cli(["search", "chekbox"], impls);
+  it("searches through typos and names the next command", async () => {
+    const r = await cli(["search", "chekbox"], impls);
     expect(r.out).toContain("- component.checkbox — Checkbox: ");
     expect(r.out).toContain("  → taproot get component.checkbox --impl <web | react>\n");
     // One edit is the allowance for a word this short, so two edits match nothing.
-    expect(cli(["search", "buxxon"]).out).toMatch(/^No results for "buxxon"\. /);
+    expect((await cli(["search", "buxxon"])).out).toMatch(/^No results for "buxxon"\. /);
     // Four letters get no typo allowance, and words in a longer query are not corrected.
-    expect(cli(["search", "lnik"]).out).toMatch(/^No results for "lnik"\. /);
-    expect(cli(["search", "buton", "zzzz"]).out).toMatch(/^No results for "buton zzzz"\. /);
-    expect(cli(["search", "destructive", "action"], impls).out).toContain(
+    expect((await cli(["search", "lnik"])).out).toMatch(/^No results for "lnik"\. /);
+    expect((await cli(["search", "buton", "zzzz"])).out).toMatch(/^No results for "buton zzzz"\. /);
+    expect((await cli(["search", "destructive", "action"], impls)).out).toContain(
       "  → taproot get pattern.action-hierarchy\n",
     );
   });
 
-  it("says when nothing fits, and marks weak hits", () => {
-    const weak = cli(["search", "toast", "notification"]);
+  it("says when nothing fits, and marks weak hits", async () => {
+    const weak = await cli(["search", "toast", "notification"]);
     expect(weak.code).toBe(0);
     expect(weak.out).toMatch(/^No strong match for "toast notification"\./);
     expect(weak.out).toContain("`taproot list`, or read guideline.compose-or-propose");
     expect(weak.out).toContain("(weak match)");
-    const strong = cli(["search", "loading"]);
+    const strong = await cli(["search", "loading"]);
     expect(strong.out).toMatch(/^- component\.spinner — /);
     expect(strong.out.split("\n")[0]).not.toContain("(weak match)");
-    const json = JSON.parse(cli(["search", "toast", "notification", "--json"]).out);
+    const json = JSON.parse((await cli(["search", "toast", "notification", "--json"])).out);
     expect(json.every((hit) => hit.weak)).toBe(true);
   });
 });
@@ -671,9 +703,10 @@ describe("taproot CLI, batch", () => {
   ];
   const batchArgs = commands.flatMap((command) => ["--command", command]);
 
-  it("prints what each command prints alone, in order", () => {
-    const batch = cli(["batch", ...batchArgs], impls);
-    const alone = commands.map((command) => cli(splitWords(command), impls));
+  it("prints what each command prints alone, in order", async () => {
+    const batch = await cli(["batch", ...batchArgs], impls);
+    const alone = [];
+    for (const command of commands) alone.push(await cli(splitWords(command), impls));
     expect(batch.out).toBe(
       commands.map((command, i) => `$ taproot ${command}\n${alone[i].out}`).join("\n"),
     );
@@ -681,19 +714,19 @@ describe("taproot CLI, batch", () => {
     expect(batch.code).toBe(1);
   });
 
-  it("returns an array of each command's JSON", () => {
-    const batch = JSON.parse(cli(["batch", "--json", ...batchArgs], impls).out);
+  it("returns an array of each command's JSON", async () => {
+    const batch = JSON.parse((await cli(["batch", "--json", ...batchArgs], impls)).out);
     expect(batch.map((entry) => entry.command)).toEqual(commands);
     expect(batch.map((entry) => entry.exitCode)).toEqual([0, 0, 0, 1]);
-    commands.forEach((command, i) => {
+    for (const [i, command] of commands.entries()) {
       expect(batch[i].result).toEqual(
-        JSON.parse(cli([...splitWords(command), "--json"], impls).out),
+        JSON.parse((await cli([...splitWords(command), "--json"], impls)).out),
       );
-    });
+    }
   });
 
-  it("keeps going after a failed command and exits with the worst code", () => {
-    const r = cli([
+  it("keeps going after a failed command and exits with the worst code", async () => {
+    const r = await cli([
       "batch",
       "--command",
       "list --type nope",
@@ -714,22 +747,22 @@ describe("taproot CLI, batch", () => {
     expect(r.err).toContain(`Cannot read "get 'button": unclosed single quote.`);
   });
 
-  it("passes the batch's global flags to every command", () => {
-    const r = cli(["batch", "--content", path.join(tools, "content"), "--command", "list"]);
+  it("passes the batch's global flags to every command", async () => {
+    const r = await cli(["batch", "--content", path.join(tools, "content"), "--command", "list"]);
     expect(r.out).toContain("component.thing");
     expect(r.out).not.toContain("component.button");
   });
 
-  it("needs a command", () => {
-    expect(cli(["batch"]).code).toBe(2);
-    expect(cli(["batch", "get", "button"]).err).toContain(
+  it("needs a command", async () => {
+    expect((await cli(["batch"])).code).toBe(2);
+    expect((await cli(["batch", "get", "button"])).err).toContain(
       "batch takes its commands with --command.",
     );
   });
 });
 
 describe("splitWords", () => {
-  it("splits like a shell, without expansion", () => {
+  it("splits like a shell, without expansion", async () => {
     expect(splitWords("  get  button --impl web ")).toEqual(["get", "button", "--impl", "web"]);
     expect(splitWords(`tokens button --condition "variant.primary + hover"`)).toEqual([
       "tokens",
@@ -749,7 +782,7 @@ describe("splitWords", () => {
     expect(splitWords("")).toEqual([]);
   });
 
-  it("rejects an unclosed quote or a trailing backslash", () => {
+  it("rejects an unclosed quote or a trailing backslash", async () => {
     expect(() => splitWords(`get "button`)).toThrow("unclosed double quote");
     expect(() => splitWords("get 'button")).toThrow("unclosed single quote");
     expect(() => splitWords("get button\\")).toThrow("trailing backslash");
@@ -757,40 +790,40 @@ describe("splitWords", () => {
 });
 
 describe("taproot CLI, agent friction", () => {
-  it("heads a section read with its path", () => {
-    const r = cli(["get", "component.card#parts.title.parameters.headingLevel"]);
+  it("heads a section read with its path", async () => {
+    const r = await cli(["get", "component.card#parts.title.parameters.headingLevel"]);
     expect(r.code).toBe(0);
     expect(r.out.startsWith("## parts.title.parameters.headingLevel\n")).toBe(true);
   });
 
-  it("fails a missing implementation without printing the contract", () => {
-    const r = cli(["get", "card", "--impl", "react"], impls);
+  it("fails a missing implementation without printing the contract", async () => {
+    const r = await cli(["get", "card", "--impl", "react"], impls);
     expect(r.code).toBe(1);
     expect(r.out).toBe("No react implementation for component.card.\n");
   });
 
-  it("lists the components an implementation has", () => {
-    const r = cli(["list", "--impl", "web"], impls);
+  it("lists the components an implementation has", async () => {
+    const r = await cli(["list", "--impl", "web"], impls);
     expect(r.code).toBe(0);
     expect(r.out).toContain("- component.button — Button: ");
     expect(r.out).not.toContain("pattern.");
-    const react = cli(["list", "--impl", "react"], impls).out;
+    const react = (await cli(["list", "--impl", "react"], impls)).out;
     expect(react).toContain("- component.button — Button: ");
     expect(react).not.toContain("component.card ");
-    const unknown = cli(["list", "--impl", "ios"], impls);
+    const unknown = await cli(["list", "--impl", "ios"], impls);
     expect(unknown.code).toBe(1);
     expect(unknown.out).toContain('No implementation named "ios". Configured: web, react.');
   });
 
-  it("says the base tokens still apply under a condition", () => {
+  it("says the base tokens still apply under a condition", async () => {
     const note =
       "Only the bindings for this condition are shown. The `base` bindings still apply where these do not override them.";
-    expect(cli(["tokens", "card", "--condition", "hover"]).out).toContain(note);
-    expect(cli(["tokens", "card", "--condition", "base"]).out).not.toContain(note);
-    expect(cli(["tokens", "card"]).out).not.toContain(note);
+    expect((await cli(["tokens", "card", "--condition", "hover"])).out).toContain(note);
+    expect((await cli(["tokens", "card", "--condition", "base"])).out).not.toContain(note);
+    expect((await cli(["tokens", "card"])).out).not.toContain(note);
   });
 
-  it("takes the rules id as an argument or with --id, the same either way", () => {
+  it("takes the rules id as an argument or with --id, the same either way", async () => {
     for (const [plain, flag] of [
       [
         ["rules", "checkbox"],
@@ -805,22 +838,22 @@ describe("taproot CLI, agent friction", () => {
         ["rules", "--id", "button#label-describes-result"],
       ],
     ]) {
-      const a = cli(plain);
+      const a = await cli(plain);
       expect(a.code).toBe(0);
-      expect(a.out).toBe(cli(flag).out);
+      expect(a.out).toBe((await cli(flag)).out);
     }
-    expect(cli(["rules", "nope"]).code).toBe(1);
-    const both = cli(["rules", "button", "--id", "button"]);
+    expect((await cli(["rules", "nope"])).code).toBe(1);
+    const both = await cli(["rules", "button", "--id", "button"]);
     expect(both.code).toBe(2);
     expect(both.err).toContain("rules takes its id once");
   });
 
-  it("tells a batch command to quote a value of several words", () => {
-    const r = cli(["batch", "--command", "rules --query dismiss label"]);
+  it("tells a batch command to quote a value of several words", async () => {
+    const r = await cli(["batch", "--command", "rules --query dismiss label"]);
     expect(r.code).toBe(2);
     expect(r.err).toContain(
       "\"label\" is not a record. Quote a value of several words, such as --query 'dismiss label'.",
     );
-    expect(cli(["batch", "--command", "rules --query 'dismiss label'"]).code).toBe(0);
+    expect((await cli(["batch", "--command", "rules --query 'dismiss label'"])).code).toBe(0);
   });
 });
