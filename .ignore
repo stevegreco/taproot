@@ -1,0 +1,6 @@
+# Search tools such as ripgrep skip these paths; git still tracks them.
+# They hold saved eval output: model transcripts and results that mention component names
+# and would otherwise outnumber source files in search results. Read them by path when
+# working on the evals (see evals/taproot-usage/README.md).
+evals/taproot-usage/runs/
+evals/taproot-usage/build-runs/
