@@ -189,8 +189,8 @@ section, or a `rules` list with rules missing, 2 usage error, including a filter
 `--level`) that is not one of the valid ones, which the error lists. In this repo, run it as
 `node packages/spec/bin/taproot.js ...`. `pnpm spec ...` also works, but pnpm adds about a second
 to each call. Elsewhere, run the installed bin (`node_modules/.bin/taproot`), not an `npx` download
-per call. `pnpm bench` times `taproot get button` against a 300 ms target, and a test in
-`pnpm test` fails if it takes over a second.
+per call. `pnpm bench` times `taproot get button` against a 300 ms target. `pnpm test` does not
+time it, because a timing test fails on a busy machine.
 
 `taproot help agents` prints how an agent should use the spec. The MCP server sends the same text
 as its instructions, and AGENTS.md carries a copy that a test keeps equal.
