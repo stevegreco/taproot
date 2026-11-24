@@ -1,10 +1,11 @@
-import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
+import { createMcpHandler } from "@modelcontextprotocol/server";
 import { createSnapshotServer } from "./server.js";
 
 /**
  * Answer one MCP request over HTTP from a snapshot, with a standard web `Request` and `Response`,
  * so any host can call it. A host keeps nothing between requests, so each gets its own server, with
- * no session and a plain JSON answer.
+ * no session and a plain JSON answer. Clients on protocol `2026-07-28` and on the 2025 revisions
+ * are both served.
  *
  * @param {import("./snapshot.js").Snapshot} snapshot
  * @param {Request} request
@@ -19,10 +20,6 @@ export async function handleMcpRequest(snapshot, request) {
       headers: { allow: "POST" },
     });
   }
-  const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: undefined,
-    enableJsonResponse: true,
-  });
-  await createSnapshotServer(snapshot).connect(transport);
-  return transport.handleRequest(request);
+  const handler = createMcpHandler(() => createSnapshotServer(snapshot), { responseMode: "json" });
+  return handler.fetch(request);
 }

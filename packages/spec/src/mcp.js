@@ -7,7 +7,11 @@ import { createServer } from "./server.js";
  * Create the local spec MCP server, which reads the source files, and its reload watcher.
  *
  * @param {{ cwd?: string, contentDir?: string, configPath?: string, watch?: boolean, debounceMs?: number }} [options]
- * @returns {Promise<{ server: import("@modelcontextprotocol/sdk/server/mcp.js").McpServer, reload: () => Promise<void>, close: () => void }>}
+ * `server` is one server for a caller that connects it once. `newServer` makes another over the same
+ * load, for `serveStdio`, which may replace the first server of a connection when a client falls
+ * back from protocol `2026-07-28` to a 2025 revision.
+ *
+ * @returns {Promise<{ server: import("@modelcontextprotocol/server").McpServer, newServer: () => import("@modelcontextprotocol/server").McpServer, reload: () => Promise<void>, close: () => void }>}
  */
 export async function createSpecServer(options = {}) {
   const { cwd = process.cwd(), contentDir, configPath, watch = true, debounceMs = 200 } = options;
@@ -25,15 +29,22 @@ export async function createSpecServer(options = {}) {
   };
   let { spec, warning } = await load();
 
-  const server = createServer({
-    spec: () => spec,
-    config: () => resolveConfig(loadOptions),
-    warning: () => warning,
-    validate: async () => {
-      const { issues, recordCount } = await validateFromConfig(loadOptions);
-      return ops.formatIssues(issues, recordCount);
-    },
-  });
+  // Every server made here reads the same loaded spec, and a reload notifies each one connected.
+  const servers = new Set();
+  const newServer = () => {
+    const instance = createServer({
+      spec: () => spec,
+      config: () => resolveConfig(loadOptions),
+      warning: () => warning,
+      validate: async () => {
+        const { issues, recordCount } = await validateFromConfig(loadOptions);
+        return ops.formatIssues(issues, recordCount);
+      },
+    });
+    servers.add(instance);
+    return instance;
+  };
+  const server = newServer();
 
   async function reload() {
     try {
@@ -42,8 +53,8 @@ export async function createSpecServer(options = {}) {
       // A config or file system error keeps the last index.
       warning = `Reload failed, so answers come from the last load: ${error.message}`;
     }
-    if (server.isConnected()) {
-      server.sendResourceListChanged();
+    for (const instance of servers) {
+      if (instance.isConnected()) instance.sendResourceListChanged();
     }
   }
 
@@ -62,6 +73,7 @@ export async function createSpecServer(options = {}) {
   }
   return {
     server,
+    newServer,
     reload,
     close() {
       clearTimeout(timer);
