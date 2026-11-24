@@ -19,6 +19,7 @@ In this folder.
 | [0008](0008-rename-to-taproot.md)         | The system is named Taproot (formerly Ember & Sage; the CLI was `ds-spec`); the `ds` prefix on tags and CSS variables stays.   | Accepted                       |
 | [0009](0009-inherited-rules.md)           | Patterns and guidelines may have rules, and a component inherits the rules of each record it follows.                          | Accepted                       |
 | [0010](0010-implementation-setup.md)      | Setup every component shares lives once per implementation, in its folder's `README.md`, served by `taproot setup`.            | Accepted                       |
+| [0011](0011-skills-over-mcp.md)           | After a v2 SDK upgrade, the MCP server serves workflow-only skills from `packages/spec/skills/`; the instructions stay as well. | Proposed                       |
 
 ## Tokens
 
