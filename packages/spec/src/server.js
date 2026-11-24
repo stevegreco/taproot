@@ -1,4 +1,4 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import * as ops from "./operations.js";
 import { AGENT_INSTRUCTIONS } from "./agents.js";
@@ -52,8 +52,8 @@ export function createServer(source) {
     content: [{ type: "text", text: disclose(result.text) }],
     isError: !result.ok,
   });
-  const tool = (name, description, inputSchema, run) =>
-    server.registerTool(name, { description, inputSchema }, async (args) => {
+  const tool = (name, description, shape, run) =>
+    server.registerTool(name, { description, inputSchema: z.object(shape) }, async (args) => {
       try {
         return toResult(await run(args));
       } catch (error) {

@@ -1,10 +1,15 @@
+import { spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { Client, InMemoryTransport } from "@modelcontextprotocol/client";
+import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
+import {
+  CLIENT_CAPABILITIES_META_KEY,
+  CLIENT_INFO_META_KEY,
+  PROTOCOL_VERSION_META_KEY,
+} from "@modelcontextprotocol/server";
 import { afterEach, describe, expect, it } from "vitest";
 import { AGENT_INSTRUCTIONS } from "../src/agents.js";
 import { createSpecServer } from "../src/mcp.js";
@@ -293,8 +298,56 @@ describe("spec MCP server", () => {
       .toContain("component.thing");
   });
 
-  it("serves over stdio", async () => {
-    const client = new Client({ name: "test", version: "0.0.0" });
+  it("serves a stdio client that asks for protocol 2026-07-28 and falls back to 2025", async () => {
+    const child = spawn(process.execPath, [path.join(here, "../bin/taproot-mcp.js")], {
+      cwd: repoRoot,
+    });
+    cleanups.push(() => child.kill());
+    const waiting = new Map();
+    let buffer = "";
+    child.stdout.on("data", (data) => {
+      buffer += data;
+      let end;
+      while ((end = buffer.indexOf("\n")) >= 0) {
+        const message = JSON.parse(buffer.slice(0, end));
+        buffer = buffer.slice(end + 1);
+        waiting.get(message.id)?.(message);
+      }
+    });
+    const request = (id, method, params) => {
+      const answer = new Promise((resolve) => waiting.set(id, resolve));
+      child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", id, method, params })}\n`);
+      return answer;
+    };
+    const clientInfo = { name: "test", version: "0.0.0" };
+
+    const discover = await request(1, "server/discover", {
+      _meta: {
+        [PROTOCOL_VERSION_META_KEY]: "2026-07-28",
+        [CLIENT_INFO_META_KEY]: clientInfo,
+        [CLIENT_CAPABILITIES_META_KEY]: {},
+      },
+    });
+    expect(discover.result.supportedVersions).toContain("2026-07-28");
+
+    const initialize = await request(2, "initialize", {
+      protocolVersion: "2025-11-25",
+      capabilities: {},
+      clientInfo,
+    });
+    expect(initialize.result.protocolVersion).toBe("2025-11-25");
+    child.stdin.write(
+      `${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" })}\n`,
+    );
+    const listed = await request(3, "tools/list", {});
+    expect(listed.result.tools).toHaveLength(9);
+  });
+
+  it.each([
+    ["2025-11-25", undefined],
+    ["2026-07-28", { mode: { pin: "2026-07-28" } }],
+  ])("serves over stdio on protocol %s", async (version, versionNegotiation) => {
+    const client = new Client({ name: "test", version: "0.0.0" }, { versionNegotiation });
     const transport = new StdioClientTransport({
       command: process.execPath,
       args: [path.join(here, "../bin/taproot-mcp.js")],
@@ -302,6 +355,7 @@ describe("spec MCP server", () => {
     });
     cleanups.push(() => client.close());
     await client.connect(transport);
+    expect(client.getNegotiatedProtocolVersion()).toBe(version);
     const { tools } = await client.listTools();
     expect(tools).toHaveLength(9);
   });
