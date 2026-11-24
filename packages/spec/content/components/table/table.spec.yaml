@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=../../../src/schema/spec-record.schema.json
+id: component.table
+type: component
+title: Table
+summary: Use Table to show records in rows and columns, so people can scan, compare, and find values across many items.
+status: draft
+tags:
+  - data
+  - grid
+  - list
+  - collection
+links:
+  follows:
+    - guideline.compose-or-propose
+    - guideline.accessibility
+  related:
+    - component.card
+description: >-
+  Rows of records with the same fields, arranged in labeled columns. Each row is one record and
+  each column is one field, so a value is read by its row and its column header together.
+usage:
+  do:
+    - List records that share the same fields, such as invoices, users, or files, so people can compare them down a column.
+    - Show a record's values where people look up one value by two labels, such as a price by plan and by feature.
+  avoid:
+    - situation: Show a few subjects that each need media, a summary, or their own actions, more than shared fields.
+      instead: component.card
+      why: >-
+        Cards give each subject room of its own. A table only helps when the items share fields
+        that people compare down a column.
+    - situation: Arrange content side by side for layout, such as a form beside a preview.
+      instead: product layout styled with semantic tokens
+      why: >-
+        A table tells assistive technology that cells relate by row and column. Layout content has
+        no such relation, so reading it as a table misleads.
+    - situation: Show the label and value pairs of one record.
+      instead: A list of labels and values in product markup
+      why: One record has no rows to compare. A two-column table adds headers that say nothing.
+    - situation: Edit values in place cell by cell, as in a spreadsheet.
+      instead: A data grid, which the system does not have yet
+      why: >-
+        Editing cells needs a composite keyboard model that moves focus between cells. A table
+        keeps the page's normal reading and focus order.
+anatomy:
+  container:
+    role: container
+    description: The whole table, with its caption, header row, and body. Scrolls sideways on its own when the columns are wider than the space.
+  caption:
+    role: label
+    description: Names what the table lists. It is the table's accessible name, shown or hidden.
+  header-row:
+    role: container
+    description: The row of column headers, above the body.
+  column-header:
+    role: label
+    description: Names one column, and labels every cell below it.
+  body:
+    role: container
+    description: The rows of records, below the header row.
+  row:
+    role: container
+    description: One record, as a cell for each column in column order.
+  row-header:
+    role: label
+    description: Optional first cell of a row that names the record, such as an invoice number, and labels the other cells in its row.
+  cell:
+    role: container
+    description: One value of one record. Holds text, or a small component such as a Badge or a Link.
