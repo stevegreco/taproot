@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.0
+
+### Minor Changes
+
+- 7f28dc0: MCP tools return Markdown text only, without `structuredContent`, so clients such as Claude Code show agents the Markdown instead of JSON. Components waive the accessibility guideline's `not-a-control` or `visible-focus` rule, whichever does not fit them, so `rules` lists only the rules that apply.
+- dbef635: The MCP server runs on the v2 MCP SDK (`@modelcontextprotocol/server`) and serves clients on protocol `2026-07-28` as well as the 2025 revisions, over stdio and HTTP. Tools and their answers do not change. Code that connects the server from `createServer` or `createSpecServer` to its own transport must use v2 SDK transports.
+- c785f4b: With no config file, `taproot` finds an installed `@taproot-ds/react-components` the same way it finds `@taproot-ds/web-components`, so `get --impl react` and `setup --impl react` work in a project that depends on it.
+
+### Patch Changes
+
+- 5267b4c: `get <address> --json` and `spec.section()` give a rule that extends another the `level` and `topic` it inherits, as `rules` does. Before, the JSON had only `id`, `extends`, and `statement`, so a reader could not tell how strong the rule was.
+- 5dde22a: The README says `spec.config.json` is optional: with no file, the tools configure themselves from the installed `@taproot-ds/web-components`, `@taproot-ds/react-components`, and `@taproot-ds/tokens`, and a config file replaces that detection.
+
 ## 0.4.0
 
 ### Minor Changes
